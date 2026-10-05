@@ -1,0 +1,9 @@
+node_modules
+dist
+dev-dist
+coverage
+package-lock.json
+supabase/.temp
+# Documentazione scritta a mano: non riformattare
+DOCS
+CLAUDE.md

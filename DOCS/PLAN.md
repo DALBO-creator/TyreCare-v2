@@ -77,6 +77,7 @@ TyreCare è una **PWA** gestita da **gommisti/officine**.
 - **Supabase JS client** — autenticazione, query al database senza SQL scritto a mano, storage, realtime,
   chiamata alle funzioni
 - **HTML5 + CSS3**
+- **TypeScript** (accettata P1: non più opzionale)
 
 ### Backend
 
@@ -101,7 +102,6 @@ TyreCare è una **PWA** gestita da **gommisti/officine**.
 
 ### Opzionali
 
-- TypeScript anche nel frontend
 - PowerSync per sincronizzazione offline avanzata
 - Stripe per i pagamenti
 
@@ -109,12 +109,13 @@ TyreCare è una **PWA** gestita da **gommisti/officine**.
 
 # PARTE B — Considerazioni e proposte di modifica
 
-Ogni proposta ha un codice (`P1`, `P2`, …) così possiamo discuterle singolarmente. Stato: 🟡 da decidere ·
-✅ accettata · ❌ scartata.
+Ogni proposta ha un codice (`P1`, `P2`, …). Stato: 🟡 da decidere · ✅ accettata · ❌ scartata.
+
+> **2026-10-06:** tutte le proposte P1–P19 sono state accettate.
 
 ## B1. Architettura e stack
 
-### P1 — TypeScript anche nel frontend, da subito 🟡
+### P1 — TypeScript anche nel frontend, da subito ✅
 
 Consiglio di non lasciarlo opzionale. Gli schemi **Zod** possono essere scritti **una sola volta** in un pacchetto
 condiviso e usati sia dal backend (validazione delle richieste) sia dal frontend (validazione dei form e tipi).
@@ -122,7 +123,7 @@ Inoltre la Supabase CLI genera automaticamente i **tipi TypeScript del database*
 danno autocompletamento e controllo errori su ogni query. Migrare a TS più avanti costa molto di più che
 partire con TS. Vite supporta TypeScript senza configurazione aggiuntiva.
 
-### P2 — Dividere chiaramente i compiti tra Supabase e Fastify 🟡
+### P2 — Dividere chiaramente i compiti tra Supabase e Fastify ✅
 
 Con Supabase client nel frontend **e** un backend Fastify si rischia di fare la stessa cosa in due posti.
 Proposta di regola:
@@ -141,7 +142,7 @@ La sicurezza vera sta nelle **Row Level Security (RLS)** di Postgres: anche se i
 il database, ogni utente vede solo i dati che gli spettano. Fastify usa la `service_role` key solo dove serve e
 verifica sempre il JWT Supabase dell'utente prima di agire.
 
-### P3 — Fastify su Vercel 🟡
+### P3 — Fastify su Vercel ✅
 
 Vercel supporta Fastify come **funzione serverless**: va bene, ma ogni richiesta può subire un "cold start" e non
 ci sono processi sempre attivi (niente cron interni a Fastify). I job programmati (reminder) vanno quindi su
@@ -149,7 +150,7 @@ ci sono processi sempre attivi (niente cron interni a Fastify). I job programmat
 protetta. Nota: le Supabase Edge Functions girano su **Deno**, non su Node; codice condiviso con Fastify va
 tenuto in TypeScript "puro", senza dipendenze specifiche di Node.
 
-### P4 — Struttura del repository a monorepo 🟡
+### P4 — Struttura del repository a monorepo ✅
 
 ```
 TyreCare-v2/
@@ -168,7 +169,7 @@ TyreCare-v2/
 
 Un solo repo, un solo `npm install`, tipi condivisi, CI unica.
 
-### P5 — Notifiche push: limite iOS 🟡
+### P5 — Notifiche push: limite iOS ✅
 
 Su **iPhone/iPad** le Web Push funzionano **solo se la PWA è installata nella schermata Home** (iOS 16.4+) e
 l'utente concede il permesso. Una parte dei clienti non lo farà. Proposta:
@@ -177,13 +178,13 @@ l'utente concede il permesso. Una parte dei clienti non lo farà. Proposta:
 - **canale di riserva**: email (es. Resend) e, in futuro, SMS/WhatsApp per i reminder importanti;
 - preferenze notifiche per cliente.
 
-### P6 — Offline: partire semplice 🟡
+### P6 — Offline: partire semplice ✅
 
 Per l'MVP basta la cache del service worker (vite-plugin-pwa / Workbox): app shell + ultimi dati consultati in
 sola lettura. **PowerSync** ha senso solo se l'officina deve **scrivere** dati offline (es. controlli in
 piazzale senza rete). Lo spostiamo in `IMPLEMENTAZIONI.md`.
 
-### P7 — Strumenti di qualità aggiuntivi 🟡
+### P7 — Strumenti di qualità aggiuntivi ✅
 
 - **GitHub Actions**: lint + test + build ad ogni push/PR.
 - **Playwright** (in futuro) per test end-to-end dei flussi critici (prenotazione).
@@ -192,7 +193,7 @@ piazzale senza rete). Lo spostiamo in `IMPLEMENTAZIONI.md`.
 
 ## B2. Dati e import dal gestionale
 
-### P8 — L'import è il rischio principale del progetto 🟡
+### P8 — L'import è il rischio principale del progetto ✅
 
 Ogni gestionale esporta in formati diversi (CSV, Excel, nomi colonne diversi, date e decimali all'italiana).
 Proposta:
@@ -207,13 +208,13 @@ Proposta:
 Va chiarito con 2–3 gommisti reali **quale gestionale usano** e **cosa riescono a esportare** (e con che
 frequenza). Senza questo dato non sappiamo quanto sarà "aggiornato" lo stato degli pneumatici visto dal cliente.
 
-### P9 — Inserimento controlli direttamente da TyreCare 🟡
+### P9 — Inserimento controlli direttamente da TyreCare ✅
 
 Oltre all'import, una **schermata "Nuovo controllo"** per l'officina (da tablet/telefono in officina):
 profondità battistrada per posizione, pressione, DOT, danni, foto. Così TyreCare è utile anche se l'export
 del gestionale è scarso, ed è il primo passo verso il futuro gestionale TyreCare.
 
-### P10 — Modello "stato di salute" del pneumatico 🟡
+### P10 — Modello "stato di salute" del pneumatico ✅
 
 Dati per singolo pneumatico (per posizione: AS, AD, PS, PD, scorta):
 
@@ -227,7 +228,7 @@ Dati per singolo pneumatico (per posizione: AS, AD, PS, PD, scorta):
 Da questi si calcola un **indicatore semplice** (verde / giallo / rosso) con motivazione leggibile dal cliente.
 Le soglie stanno in `packages/shared` così frontend e backend usano le stesse regole.
 
-### P11 — Reminder intelligenti 🟡
+### P11 — Reminder intelligenti ✅
 
 Oltre ai controlli di routine:
 
@@ -238,7 +239,7 @@ Oltre ai controlli di routine:
 
 Il motore reminder gira come job schedulato giornaliero.
 
-### P12 — Modello dati iniziale (bozza) 🟡
+### P12 — Modello dati iniziale (bozza) ✅
 
 ```
 profiles        (id = auth.users.id, ruolo, nome, telefono, …)
@@ -265,7 +266,7 @@ verifica targa + telefono).
 
 ## B3. Funzionalità
 
-### P13 — "Garage": due viste distinte 🟡
+### P13 — "Garage": due viste distinte ✅
 
 Così com'è descritto, il garage è una vista **dell'officina** ("veicoli registrati in una determinata officina").
 Propongo:
@@ -274,7 +275,7 @@ Propongo:
 - **Garage officina**: elenco veicoli dei propri clienti, con filtri (stato rosso, cambio stagionale da fare,
   nessun controllo da X mesi) → diventa anche uno **strumento commerciale** per l'officina.
 
-### P14 — Prenotazioni: cosa serve davvero 🟡
+### P14 — Prenotazioni: cosa serve davvero ✅
 
 - **catalogo servizi per officina** (durata, prezzo indicativo, prenotabile sì/no);
 - **disponibilità**: orari di apertura + capienza (ponti/operatori) + chiusure → slot liberi;
@@ -284,14 +285,14 @@ Propongo:
   calendario con slot automatici in una fase successiva.
 - **Lista officine affiliate**: filtri per distanza (geolocalizzazione), servizi offerti, orari.
 
-### P15 — Intervento su strada è un flusso diverso 🟡
+### P15 — Intervento su strada è un flusso diverso ✅
 
 Non è una prenotazione con slot: è una **richiesta urgente** con posizione GPS, foto, descrizione e telefono.
 Serve: invio alle officine vicine che offrono il servizio, **accettazione da parte di una sola**, stato in
 realtime per il cliente. Valutare responsabilità e assicurazione (TyreCare fa da intermediario, il servizio è
 dell'officina) e la gestione degli orari notturni/festivi. Suggerisco di farlo **dopo** l'MVP.
 
-### P16 — Ruoli: un livello in più per le officine 🟡
+### P16 — Ruoli: un livello in più per le officine ✅
 
 `OFFICINA` probabilmente va diviso in **titolare** (gestisce servizi, utenti, abbonamento, import) e
 **operatore** (inserisce controlli, gestisce prenotazioni). Si implementa con un campo in `officina_utenti`,
@@ -300,7 +301,7 @@ custom claim nel JWT.
 
 ## B4. Aspetti legali e privacy
 
-### P17 — GDPR 🟡
+### P17 — GDPR ✅
 
 I dati dei clienti caricati dall'officina sono **dell'officina** (titolare del trattamento); TyreCare è
 **responsabile del trattamento** → serve un **accordo di nomina (DPA, art. 28 GDPR)** con ogni officina affiliata.
@@ -308,7 +309,7 @@ Inoltre: informativa privacy e cookie, consenso esplicito per notifiche marketin
 diritto alla cancellazione/esportazione, dati su server UE (scegliere la **regione UE** su Supabase e Vercel),
 registro dei trattamenti. Da verificare con un consulente privacy prima del lancio.
 
-### P18 — Licenza 🟡
+### P18 — Licenza ✅
 
 Il repo è **privato**: bene. `LICENSE.md` contiene una licenza proprietaria "tutti i diritti riservati". Prima di
 distribuire l'app alle officine servono anche **termini di servizio** (contratto di abbonamento) e una revisione
@@ -316,7 +317,7 @@ da parte di un avvocato. Valutare deposito del marchio "TyreCare" (verificare pr
 
 ## B5. Modello di business (dettaglio in `PRODUZIONE-MARKETING.md`)
 
-### P19 — Abbonamento come base, commissione da rivedere 🟡
+### P19 — Abbonamento come base, commissione da rivedere ✅
 
 Il **1% sui preventivi** è difficile da applicare: un preventivo non è una vendita, la transazione avviene in
 officina fuori dall'app e non è verificabile. Proposta: **abbonamento** come ricavo principale, eventualmente
@@ -329,7 +330,7 @@ documento dedicato.
 
 | Fase | Contenuto | Stato |
 |------|-----------|-------|
-| 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | ⬜ |
+| 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | 🟨 codice fatto; mancano Docker, progetto Supabase, Vercel |
 | 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | ⬜ |
 | 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | ⬜ |
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | ⬜ |

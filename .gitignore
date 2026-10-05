@@ -1,0 +1,23 @@
+node_modules/
+dist/
+dev-dist/
+coverage/
+.vercel/
+*.log
+*.tsbuildinfo
+
+# Variabili d'ambiente (mai committare segreti)
+.env
+.env.*
+!.env.example
+
+# Supabase locale
+supabase/.branches/
+supabase/.temp/
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
