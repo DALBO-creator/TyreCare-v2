@@ -5,7 +5,29 @@
 
 ## Prossima sessione
 
-### ⚠️ PRIMA COSA DA FARE: verificare WSL + Docker dopo il riavvio
+### 💻 La sessione 3 si svolge su un ALTRO PC
+
+Prima di tutto verificare/configurare l'ambiente sul nuovo PC (nulla di locale è stato copiato: solo GitHub):
+
+- [ ] **Git** e **GitHub CLI** (`winget install --id GitHub.cli`) → `gh auth login`
+- [ ] **Node.js 24 LTS** (`node --version` → v24.x; versione indicata in `.nvmrc`)
+- [ ] Clonare il repo: `gh repo clone DALBO-creator/TyreCare-v2` → `cd TyreCare-v2` → `npm install`
+- [ ] Verificare che tutto funzioni: `npm run check` (formattazione, lint, tipi, test, build)
+- [ ] **Claude Code**: reinstallare la skill di design (comandi slash, da digitare nella chat di Claude Code):
+  `/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill` →
+  `/plugin install ui-ux-pro-max@ui-ux-pro-max-skill`
+- [ ] **Python 3** (serve allo script di ricerca della skill `ui-ux-pro-max`)
+- [ ] **Supabase CLI**: generare un token nuovo su https://supabase.com/dashboard/account/tokens (e revocare il
+  vecchio comparso in chat), poi **da un terminale normale**: `npx supabase login --token …` e
+  `npx supabase link --project-ref boqksbqcqulrtmyshhxe`
+- [ ] **Docker Desktop** sul nuovo PC (richiede WSL 2: `wsl --install --no-distribution` da PowerShell
+  amministratore + riavvio), poi `npx supabase start` — vedi controlli sotto
+- [ ] File `.env` locali: non sono nel repo, vanno ricreati da `apps/web/.env.example` e `apps/api/.env.example`
+
+Il PC precedente (sessione 1–2) resta configurato; la verifica WSL/Docker qui sotto vale per qualunque PC
+su cui si voglia usare Supabase in locale.
+
+### ⚠️ Verificare WSL + Docker (PC della sessione 2, dopo il riavvio — oppure sul nuovo PC)
 
 A fine sessione 2 il titolare ha eseguito `wsl --install --no-distribution` (PowerShell amministratore) e
 riavviato il PC. Situazione prima del riavvio: Docker Desktop 4.94 installato in
