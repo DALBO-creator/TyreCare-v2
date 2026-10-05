@@ -1,2 +1,2 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+# Normalizza i file di testo a LF (richiesto da Prettier ed EditorConfig)
+* text=auto eol=lf
