@@ -30,6 +30,14 @@ RemoteSigned`.
 Docker Desktop sul PC scolastico chiede di condividere le cartelle: in *Settings → Resources → File sharing*
 è stata aggiunta `C:\Users\76672576\Documents\GitHub`.
 
+Altre particolarità del PC scolastico:
+
+- La rete passa da un **proxy (Squid)**: `curl` da Bash verso `localhost` risponde con una pagina d'errore
+  del proxy → usare `curl --noproxy '*' http://localhost:…`.
+- **Chrome headless è bloccato** (esce con codice 21): per gli screenshot automatici usare **Edge**
+  (`msedge.exe --headless=new --screenshot=…`). Larghezza minima della finestra headless ~500 px.
+- GitHub CLI è in `%LOCALAPPDATA%\gh\bin\gh.exe` (versione portable).
+
 ## Prossima sessione
 
 **Da fare dal titolare (fuori da Claude):**
@@ -37,16 +45,15 @@ Docker Desktop sul PC scolastico chiede di condividere le cartelle: in *Settings
 - [ ] Sicurezza: revocare il vecchio token Supabase CLI e generarne uno nuovo su
   https://supabase.com/dashboard/account/tokens, poi **da un terminale normale** (PC scolastico: `npx.cmd`):
   `npx supabase login --token …` e `npx supabase link --project-ref boqksbqcqulrtmyshhxe`
-- [ ] Guardare l'anteprima del design system v3 (`npm run dev:web` → http://localhost:5173, anche da telefono)
-  e dire cosa cambiare
 
-**Fase 1 — Fondamenta (continuare):**
+**Fase 1 — Fondamenta (continuare) — prossimo passo: la prima migrazione**
 
 - [x] Design system con la skill `ui-ux-pro-max` → [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md), Bootstrap via Sass
   (v3: "cruscotto sportivo" stile My Porsche, rosso e nero)
-- [ ] Logo definitivo (quello in `apps/web/public/logo.svg` è provvisorio) → rigenerare le icone PWA
-  (`npm run icons -w @tyrecare/web`)
-- [ ] Prima migrazione: `profiles`, `officine`, `officina_utenti` con ruoli (P16) e policy RLS; `supabase/seed.sql`
+- [ ] Logo definitivo nello stile del design v3 (quello in `apps/web/public/logo.svg` è provvisorio) →
+  rigenerare le icone PWA (`npm run icons -w @tyrecare/web`)
+- [ ] (Facoltativo) rifinire il disegno dell'auto in `src/ui/auto.ts` se il titolare lo desidera
+- [ ] **Prima migrazione:** `profiles`, `officine`, `officina_utenti` con ruoli (P16) e policy RLS; `supabase/seed.sql`
   con dati di prova; `supabase gen types` per i tipi TypeScript del database
 - [ ] Auth: registrazione/login (schermate secondo il design system), verifica del JWT Supabase nelle rotte Fastify
 - [ ] Router lato client e prime schermate reali al posto di `src/anteprima.ts`
@@ -89,13 +96,20 @@ Docker Desktop sul PC scolastico chiede di condividere le cartelle: in *Settings
 - **Design system v3** (la v2 è stata giudicata "spoglia, non premium"): direzione **cruscotto sportivo**
   con riferimento **My Porsche** scelta dal titolare. Auto vista dall'alto in SVG con ruote illuminate del
   colore dello stato, indicatori a contagiri per ogni ruota, solo font Inter, liste "di lusso", hero con
-  modello in grande, animazioni d'ingresso. Corretto un bug di layout (area di griglia chiamata `auto`)
+  modello in grande, animazioni d'ingresso. Corretto un bug di layout (area di griglia chiamata `auto`).
+  **Approvato dal titolare** dopo averlo visto dal telefono su Vercel
+- Commit su `main` (CI verde, deploy Vercel riuscito su https://tyre-care-v2.vercel.app):
+  `cca8174` design system v1, `5a70057` NEXT, `5e8027c` design system v3
 - Aggiornati `NOTES.md`, `STRUCT.md` (anche righe Supabase/Vercel ferme alla sessione 1), `PLAN.md`
 
 **Note**
 
 - Avvisi di deprecazione Sass di Bootstrap 5.3 silenziati in `vite.config.ts` (spariranno con Bootstrap 6).
 - Il bundle JS include Zod tramite `@tyrecare/shared` (~17 kB gzip): voluto.
+- La v2 non è mai stata pubblicata (sostituita dalla v3 prima del commit).
+- Lezione sul design: per "premium" non basta ricolorare Bootstrap; serve un **elemento protagonista**
+  (qui l'auto + contagiri) e una tipografia con forti contrasti di dimensione. Chiedere subito riferimenti
+  visivi al titolare (es. app che considera premium) prima di disegnare.
 
 ### Sessione 2 — 2026-10-06
 
