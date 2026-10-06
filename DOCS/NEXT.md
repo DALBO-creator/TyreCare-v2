@@ -96,7 +96,9 @@ con email reale → conferma → accesso → modifica profilo → esci → recup
 Fase 2:**
 
 - [ ] Un **file `.xls` di esempio** esportato da GESTITYRE, se possibile con dati anonimizzati o finti
-  (nomi, telefoni, targhe): serve per progettare l'adattatore di import e le tabelle della Fase 2
+  (nomi, telefoni, targhe): serve per progettare l'adattatore di import e le tabelle della Fase 2.
+  **Richiesto dal titolare il 2026-10-06**: lo comunicherà lui quando lo avrà ricevuto (non metterlo nel
+  repo se contiene dati reali di clienti)
 - [ ] Quali **esportazioni** offre GESTITYRE (clienti, veicoli, pneumatici montati, deposito gomme,
   interventi/controlli con misure del battistrada?) e quali campi contengono
 - [ ] Ogni quanto riuscirebbero a esportare (giornaliero, settimanale…) e chi lo farebbe in officina
