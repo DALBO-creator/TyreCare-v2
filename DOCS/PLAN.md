@@ -10,6 +10,7 @@
 |------|-----------|---------------|
 | [`PLAN.md`](PLAN.md) | Visione, funzionalità, ruoli, stack, roadmap | Quando cambia una decisione |
 | [`NEXT.md`](NEXT.md) | Cosa è stato fatto nella sessione e cosa fare nella prossima | **Ogni sessione (obbligatorio)** |
+| [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) | Colori, tipografia, componenti e regole di accessibilità | Quando cambia l'aspetto |
 | [`NOTES.md`](NOTES.md) | Spiegazione del codice più complesso e del funzionamento delle funzionalità | Ad ogni funzionalità implementata |
 | [`STRUCT.md`](STRUCT.md) | Linguaggi, framework e librerie con spiegazione d'uso | Ad ogni nuova dipendenza |
 | [`PRODUZIONE-MARKETING.md`](PRODUZIONE-MARKETING.md) | Costi, modello di ricavo, BEP, go-to-market | Quando cambiano costi/prezzi |
@@ -330,8 +331,8 @@ documento dedicato.
 
 | Fase | Contenuto | Stato |
 |------|-----------|-------|
-| 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | 🟨 codice fatto; mancano Docker, progetto Supabase, Vercel |
-| 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | ⬜ |
+| 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | ✅ (resta solo il deploy di `apps/api`, rimandato) |
+| 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | 🟨 design system fatto |
 | 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | ⬜ |
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | ⬜ |
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | ⬜ |

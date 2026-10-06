@@ -1,0 +1,70 @@
+// Token del design system TyreCare (DOCS/DESIGN-SYSTEM.md).
+// Unica fonte dei colori: i componenti usano questi token o le variabili CSS che ne derivano,
+// mai valori esadecimali scritti a mano.
+
+// --- Palette di base -----------------------------------------------------------------------
+$tc-navy-950: #0b1220;
+$tc-navy-900: #0f172a;
+$tc-navy-850: #131c2e;
+$tc-slate-700: #334155;
+$tc-slate-600: #475569;
+$tc-slate-400: #94a3b8;
+$tc-slate-200: #e2e8f0;
+$tc-slate-100: #f1f5f9;
+$tc-slate-50: #f8fafc;
+$tc-white: #ffffff;
+
+// Blu "azione": usato SOLO per pulsanti, link e selezione. Mai per comunicare uno stato.
+$tc-blu-700: #0369a1;
+$tc-blu-300: #7dd3fc;
+
+// --- Stato di salute dello pneumatico (StatoSalute in @tyrecare/shared) ---------------------
+// Ogni stato ha: colore pieno (barre, indicatori), sfondo tenue + testo scuro (badge).
+// Il colore non è mai l'unico segnale: si accompagna sempre a icona ed etichetta.
+$tc-stati: (
+  'verde': (
+    'pieno': #15803d,
+    'tenue': #dcfce7,
+    'testo': #14532d,
+    'pieno-dark': #22c55e,
+    'tenue-dark': #052e16,
+    'testo-dark': #bbf7d0,
+  ),
+  'giallo': (
+    'pieno': #f59e0b,
+    'tenue': #fef3c7,
+    'testo': #78350f,
+    'pieno-dark': #fbbf24,
+    'tenue-dark': #451a03,
+    'testo-dark': #fde68a,
+  ),
+  'rosso': (
+    'pieno': #b91c1c,
+    'tenue': #fee2e2,
+    'testo': #7f1d1d,
+    'pieno-dark': #f87171,
+    'tenue-dark': #450a0a,
+    'testo-dark': #fecaca,
+  ),
+);
+
+// --- Tipografia ----------------------------------------------------------------------------
+$tc-font-titoli:
+  'Lexend Variable',
+  system-ui,
+  -apple-system,
+  'Segoe UI',
+  Roboto,
+  sans-serif;
+$tc-font-testo:
+  'Source Sans 3 Variable',
+  system-ui,
+  -apple-system,
+  'Segoe UI',
+  Roboto,
+  sans-serif;
+
+// --- Misure --------------------------------------------------------------------------------
+$tc-touch-min: 2.75rem; // 44px: area minima di tocco
+$tc-appbar-h: 3.5rem;
+$tc-bottomnav-h: 4rem;

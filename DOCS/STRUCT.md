@@ -44,7 +44,10 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 
 | Tecnologia | Versione | Stato | Uso in TyreCare |
 |------------|----------|-------|-----------------|
-| **Bootstrap 5** | 5.3 | ✅ | Griglia responsive e componenti. Per ora importato per intero (CSS ~230 kB): in Fase 1 si passerà all'import selettivo via Sass. |
+| **Bootstrap 5** | 5.3 | ✅ | Griglia responsive e componenti. Importato **via Sass in modo selettivo** (`src/styles/_tema-bootstrap.scss`) con i colori del design system. |
+| **Sass** (dart-sass) | 1.105 | ✅ | Preprocessore CSS (dev): variabili, cicli e personalizzazione di Bootstrap. Compilato da Vite. Gli avvisi di deprecazione di Bootstrap sono silenziati in `vite.config.ts`. |
+| **Lexend** + **Source Sans 3** (`@fontsource-variable/*`) | 5.3 | ✅ | Font di titoli e testo, **inclusi nell'app** (no Google Fonts: offline + GDPR). |
+| **Lucide** | 1.52 | ✅ | Icone SVG (`src/ui/icone.ts`); si importano solo quelle usate. |
 | **Vite** | 8.3 | ✅ | Server di sviluppo con hot reload e build ottimizzata. |
 | **vite-plugin-pwa** | 2.0 | ✅ | Genera `manifest.webmanifest` e il service worker (Workbox) con precache dell'app. Aggiornamenti in modalità `prompt`: l'utente sceglie quando ricaricare. |
 | **@vite-pwa/assets-generator** | 2.0 | ✅ | Genera favicon, icone PWA e icona Apple dal logo SVG. |
@@ -55,6 +58,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | Tecnologia | Versione | Stato | Uso in TyreCare |
 |------------|----------|-------|-----------------|
 | **Node.js (LTS)** | 24 | ✅ | Runtime. Versione fissata in `.nvmrc` e `engines`. |
+| **fnm** (Fast Node Manager) | 1.39 | ✅ | Solo sul PC scolastico: installa Node 24 per l'utente senza permessi di amministratore (Node di sistema è v22). Va attivato in ogni terminale: vedi `NEXT.md` → Promemoria permanenti. |
 | **Fastify** | 5.12 | ✅ | API HTTPS. Per ora solo `GET /health`. |
 | **Zod** | 4.6 | ✅ | Validazione: variabili d'ambiente (`src/env.ts`) e, in seguito, dati in ingresso. Usato anche in `packages/shared`. |
 | **tsx** | 4.23 | ✅ | Esegue TypeScript direttamente in sviluppo, con riavvio automatico (`npm run dev:api`). |
@@ -65,10 +69,10 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 
 | Tecnologia | Versione | Stato | Uso in TyreCare |
 |------------|----------|-------|-----------------|
-| **Supabase** | — | 🟡 | PostgreSQL gestito + Auth + Storage + Realtime + Edge Functions. Sicurezza con **RLS**. Progetto cloud da creare. |
-| **Supabase CLI** | 2.119 | ✅ | Installata come dipendenza (`npx supabase …`). Configurazione in `supabase/config.toml`. Il database locale richiede **Docker Desktop** (non ancora installato). |
+| **Supabase** | — | ✅ | PostgreSQL gestito + Auth + Storage + Realtime + Edge Functions. Sicurezza con **RLS**. Progetto cloud `boqksbqcqulrtmyshhxe` (eu-west-1). |
+| **Supabase CLI** | 2.119 | ✅ | Installata come dipendenza (`npx supabase …`). Configurazione in `supabase/config.toml`. Il database locale (`npx supabase start`) gira su **Docker Desktop**: API http://127.0.0.1:54321, Studio http://127.0.0.1:54323. |
 | **Supabase Cron** | — | 🟡 | Job giornaliero dei reminder (Fase 5). |
-| **Vercel** | — | 🟡 | Hosting di PWA e API. Account e collegamento al repo da configurare. |
+| **Vercel** | — | ✅ | Hosting della PWA: https://tyre-care-v2.vercel.app (Root Directory `apps/web`). L'API avrà un secondo progetto Vercel in Fase 1. |
 
 ## Qualità e sviluppo
 
@@ -93,7 +97,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 
 | Tecnologia | Stato | Uso |
 |------------|-------|-----|
-| **ui-ux-pro-max** (skill Claude Code) | ✅ | Generazione del design system (Fase 1). |
+| **ui-ux-pro-max** (skill Claude Code) | ✅ | Generazione del design system (Fase 1) → [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md). |
 
 ## Note di sicurezza sulle dipendenze
 
@@ -101,3 +105,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
   al server di sviluppo integrato di esbuild su Windows. Il progetto **non usa** quel server: nessun impatto.
   Si risolverà aggiornando `tsup`.
 - npm 11 blocca gli script di installazione non approvati: `esbuild` è stato approvato con `npm approve-scripts`.
+  `@parcel/watcher` (dipendenza di Sass, serve solo a `sass --watch` da riga di comando) **non** è approvato:
+  Vite non lo usa, nessun impatto.
+- Il bundle JS della PWA include **Zod** (~55 kB, ~17 kB gzip) tramite `@tyrecare/shared`: è voluto (stessi
+  schemi per validare i form, PLAN P1). Se diventasse un problema: `zod/mini`.

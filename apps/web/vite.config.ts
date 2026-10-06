@@ -2,6 +2,16 @@ import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig({
+  css: {
+    preprocessorOptions: {
+      scss: {
+        // Bootstrap 5.3 usa ancora @import e le funzioni globali di Sass: avvisi noti, si
+        // risolveranno con Bootstrap 6. Nascosti per non coprire eventuali avvisi nostri.
+        quietDeps: true,
+        silenceDeprecations: ['import', 'global-builtin', 'color-functions', 'if-function'],
+      },
+    },
+  },
   plugins: [
     VitePWA({
       registerType: 'prompt',
@@ -13,8 +23,8 @@ export default defineConfig({
         lang: 'it',
         start_url: '/',
         display: 'standalone',
-        theme_color: '#0d6efd',
-        background_color: '#ffffff',
+        theme_color: '#0f172a',
+        background_color: '#f8fafc',
         icons: [
           { src: 'pwa-64x64.png', sizes: '64x64', type: 'image/png' },
           { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png' },
@@ -26,6 +36,11 @@ export default defineConfig({
             purpose: 'maskable',
           },
         ],
+      },
+      workbox: {
+        // Oltre ai file di default precarica icone e i font dei soli caratteri latini (italiano):
+        // gli altri alfabeti si scaricano solo se servono
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}', '**/*-latin-wght-normal-*.woff2'],
       },
       // Service worker attivo anche in `npm run dev`, per provare la PWA in locale
       devOptions: { enabled: true, type: 'module' },

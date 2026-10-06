@@ -1,0 +1,90 @@
+// Bootstrap 5 personalizzato e importato in modo selettivo (solo i moduli usati).
+// L'ordine degli import è quello richiesto dalla documentazione di Bootstrap 5.3.
+
+@import 'tokens';
+@import 'bootstrap/scss/functions';
+
+// --- Colori ------------------------------------------------------------------------------
+$primary: $tc-blu-700;
+$secondary: $tc-slate-600;
+$success: map-get(map-get($tc-stati, 'verde'), 'pieno');
+$warning: map-get(map-get($tc-stati, 'giallo'), 'pieno');
+$danger: map-get(map-get($tc-stati, 'rosso'), 'pieno');
+$info: $tc-blu-700;
+$light: $tc-slate-100;
+$dark: $tc-navy-900;
+
+// Testo bianco o scuro sui componenti colorati: sempre almeno 4.5:1 (WCAG AA)
+$min-contrast-ratio: 4.5;
+$color-contrast-dark: $tc-navy-900;
+$color-contrast-light: $tc-white;
+
+$body-bg: $tc-slate-50;
+$body-color: $tc-navy-900;
+$body-secondary-color: $tc-slate-600;
+$body-tertiary-bg: $tc-slate-100;
+$border-color: $tc-slate-200;
+$link-color: $tc-blu-700;
+
+// Modalità scura (attivata da data-bs-theme="dark" su <html>, vedi src/ui/tema.ts)
+$body-bg-dark: $tc-navy-950;
+$body-color-dark: $tc-slate-200;
+$body-secondary-color-dark: $tc-slate-400;
+$body-tertiary-bg-dark: $tc-navy-850;
+$border-color-dark: $tc-slate-700;
+$link-color-dark: $tc-blu-300;
+
+// --- Tipografia --------------------------------------------------------------------------
+$font-family-sans-serif: $tc-font-testo;
+$headings-font-family: $tc-font-titoli;
+$headings-font-weight: 600;
+$font-size-base: 1rem; // 16px: mai testo di base più piccolo
+$line-height-base: 1.5;
+$display-font-weight: 700;
+
+// --- Forme e spazi -----------------------------------------------------------------------
+$border-radius: 0.5rem;
+$border-radius-sm: 0.375rem;
+$border-radius-lg: 0.75rem;
+$border-radius-xl: 1rem;
+
+// Pulsanti e campi alti 44px (area di tocco minima)
+$input-btn-padding-y: 0.625rem;
+$input-btn-padding-x: 1rem;
+$btn-font-weight: 600;
+
+$card-bg: var(--tc-superficie);
+$card-border-color: var(--bs-border-color);
+$card-border-radius: $border-radius-lg;
+
+$enable-shadows: false;
+$enable-reduced-motion: true;
+
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+@import 'bootstrap/scss/mixins';
+@import 'bootstrap/scss/utilities';
+
+// --- Moduli inclusi ----------------------------------------------------------------------
+@import 'bootstrap/scss/root';
+@import 'bootstrap/scss/reboot';
+@import 'bootstrap/scss/type';
+@import 'bootstrap/scss/images';
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+@import 'bootstrap/scss/forms';
+@import 'bootstrap/scss/buttons';
+@import 'bootstrap/scss/transitions';
+@import 'bootstrap/scss/nav';
+@import 'bootstrap/scss/card';
+@import 'bootstrap/scss/badge';
+@import 'bootstrap/scss/alert';
+@import 'bootstrap/scss/progress';
+@import 'bootstrap/scss/list-group';
+@import 'bootstrap/scss/close';
+@import 'bootstrap/scss/toasts';
+@import 'bootstrap/scss/modal';
+@import 'bootstrap/scss/spinners';
+@import 'bootstrap/scss/helpers';
+@import 'bootstrap/scss/utilities/api';

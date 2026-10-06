@@ -1,0 +1,201 @@
+// Componenti specifici di TyreCare, costruiti sopra Bootstrap.
+
+// --- Variabili CSS del tema ---------------------------------------------------------------
+:root,
+[data-bs-theme='light'] {
+  --tc-superficie: #{$tc-white};
+  --tc-appbar-bg: #{$tc-navy-900};
+  --tc-appbar-color: #{$tc-white};
+
+  @each $stato, $valori in $tc-stati {
+    --tc-#{$stato}: #{map-get($valori, 'pieno')};
+    --tc-#{$stato}-tenue: #{map-get($valori, 'tenue')};
+    --tc-#{$stato}-testo: #{map-get($valori, 'testo')};
+  }
+}
+
+[data-bs-theme='dark'] {
+  --tc-superficie: #{$tc-navy-850};
+  --tc-appbar-bg: #{$tc-navy-850};
+  --tc-appbar-color: #{$tc-slate-200};
+
+  @each $stato, $valori in $tc-stati {
+    --tc-#{$stato}: #{map-get($valori, 'pieno-dark')};
+    --tc-#{$stato}-tenue: #{map-get($valori, 'tenue-dark')};
+    --tc-#{$stato}-testo: #{map-get($valori, 'testo-dark')};
+  }
+}
+
+// --- Base --------------------------------------------------------------------------------
+body {
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.tc-titolo {
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+// Focus sempre visibile da tastiera (mai rimuovere l'anello di focus)
+:focus-visible {
+  outline: 3px solid var(--bs-primary);
+  outline-offset: 2px;
+}
+
+.tc-icona {
+  width: 1.25em;
+  height: 1.25em;
+  flex-shrink: 0;
+  vertical-align: -0.25em;
+}
+
+// --- Barra superiore ---------------------------------------------------------------------
+.tc-appbar {
+  position: sticky;
+  top: 0;
+  z-index: $zindex-sticky;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: calc(#{$tc-appbar-h} + env(safe-area-inset-top, 0px));
+  padding: env(safe-area-inset-top, 0px) 1rem 0;
+  background: var(--tc-appbar-bg);
+  color: var(--tc-appbar-color);
+
+  &__titolo {
+    margin: 0;
+    font-family: $tc-font-titoli;
+    font-size: 1.125rem;
+    font-weight: 600;
+  }
+}
+
+// --- Navigazione inferiore (massimo 5 voci) ----------------------------------------------
+.tc-bottomnav {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: $zindex-fixed;
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--tc-superficie);
+  border-top: 1px solid var(--bs-border-color);
+
+  &__voce {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.125rem;
+    min-height: $tc-bottomnav-h;
+    min-width: $tc-touch-min;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s ease-out;
+
+    &:hover {
+      color: var(--bs-body-color);
+    }
+
+    &[aria-current='page'] {
+      color: var(--bs-primary);
+    }
+
+    .tc-icona {
+      width: 1.5rem;
+      height: 1.5rem;
+    }
+  }
+}
+
+// Spazio in fondo alla pagina per non coprire il contenuto con la navigazione
+.tc-con-bottomnav {
+  padding-bottom: calc(#{$tc-bottomnav-h} + env(safe-area-inset-bottom, 0px) + 1rem);
+}
+
+// --- Badge di stato -----------------------------------------------------------------------
+.tc-stato {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  border-radius: $border-radius-pill;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  white-space: nowrap;
+
+  @each $stato, $_ in $tc-stati {
+    &--#{$stato} {
+      background: var(--tc-#{$stato}-tenue);
+      color: var(--tc-#{$stato}-testo);
+    }
+  }
+}
+
+// --- Scheda pneumatico --------------------------------------------------------------------
+.tc-pneumatico {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  background: var(--tc-superficie);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $border-radius-lg;
+
+  &__intestazione {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  &__posizione {
+    margin: 0;
+    font-family: $tc-font-titoli;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  &__valore {
+    font-family: $tc-font-titoli;
+    font-size: 1.75rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  &__unita {
+    margin-left: 0.25rem;
+    font-size: 1rem;
+    color: var(--bs-secondary-color);
+  }
+}
+
+// Misuratore del battistrada: la barra si colora in base allo stato
+.tc-battistrada {
+  height: 0.5rem;
+  background: var(--bs-tertiary-bg);
+  border-radius: $border-radius-pill;
+  overflow: hidden;
+
+  &__livello {
+    height: 100%;
+    border-radius: inherit;
+    transition: width 0.3s ease-out;
+  }
+
+  @each $stato, $_ in $tc-stati {
+    &--#{$stato} &__livello {
+      background: var(--tc-#{$stato});
+    }
+  }
+}
