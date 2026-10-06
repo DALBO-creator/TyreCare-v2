@@ -15,7 +15,8 @@
     "@supabase/supabase-js": "^2.117.2",
     "@tyrecare/shared": "^0.0.0",
     "bootstrap": "^5.3.8",
-    "lucide": "^1.52.0"
+    "lucide": "^1.52.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@vite-pwa/assets-generator": "^2.0.0",

@@ -1,0 +1,230 @@
+// Stili delle schermate reali (accesso, home, profilo), sopra i componenti di `_componenti.scss`.
+
+// --- Pagine di accesso --------------------------------------------------------------------
+.tc-auth {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding: calc(1.5rem + env(safe-area-inset-top, 0px)) 1.25rem
+    calc(2rem + env(safe-area-inset-bottom, 0px));
+  // Stessa luce da studio della hero, qui in alto: un riflesso rosso tenue dietro il titolo
+  background:
+    radial-gradient(70% 40% at 50% 0%, rgba($tc-rosso, 0.14) 0%, transparent 70%),
+    radial-gradient(60% 50% at 50% 30%, rgba($tc-bianco, 0.04) 0%, transparent 70%);
+
+  &__marchio {
+    align-self: center;
+    text-decoration: none;
+  }
+
+  &__contenuto {
+    width: 100%;
+    max-width: 26rem;
+    margin: auto;
+    padding-block: 2.5rem;
+
+    @media (prefers-reduced-motion: no-preference) {
+      > * {
+        animation: tc-entra 0.6s $tc-transizione both;
+      }
+
+      @for $i from 2 through 4 {
+        > :nth-child(#{$i}) {
+          animation-delay: #{($i - 1) * 0.06}s;
+        }
+      }
+    }
+  }
+
+  &__titolo {
+    margin: 0 0 0.75rem;
+    font-size: clamp(2.25rem, 10vw, 3rem);
+    font-weight: 250;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+    color: $tc-bianco;
+
+    &:focus {
+      outline: none; // riceve il focus solo dal codice, per gli annunci dei lettori di schermo
+    }
+  }
+
+  &__sottotitolo {
+    margin: 0 0 2rem;
+    color: var(--bs-secondary-color);
+  }
+
+  &__modulo {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  // Nome e cognome affiancati quando c'è spazio
+  &__coppia {
+    display: grid;
+    gap: 1.25rem;
+
+    @media (min-width: 26rem) {
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+  }
+
+  &__link-secondario {
+    justify-self: end;
+    margin-top: -0.5rem;
+    padding-block: 0.5rem; // area di tocco più alta
+    font-size: 0.875rem;
+  }
+
+  &__piede {
+    margin: 2rem 0 0;
+    color: var(--bs-secondary-color);
+    text-align: center;
+
+    a {
+      font-weight: 500;
+    }
+  }
+
+  &__conferma {
+    padding: 1.5rem 1.25rem;
+    background: var(--tc-superficie);
+    border: 1px solid var(--bs-border-color);
+    border-radius: $tc-raggio-card;
+  }
+
+  &__icona-conferma {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+    color: var(--tc-verde);
+    background: var(--tc-verde-tenue);
+    border-radius: 50%;
+  }
+}
+
+// --- Campi dei moduli ----------------------------------------------------------------------
+.tc-campo {
+  .form-label {
+    margin-bottom: 0.375rem;
+  }
+
+  // Pulsante mostra/nascondi password, attaccato al campo
+  &__mostra {
+    min-width: $tc-touch-min;
+    color: var(--bs-secondary-color);
+    background: $tc-superficie-alta;
+    border: var(--bs-border-width) solid $tc-bordo-campo;
+    border-left: 0;
+
+    &:hover,
+    &[aria-pressed='true'] {
+      color: $tc-bianco;
+      background: $tc-superficie-alta;
+      border-color: $tc-bordo-campo;
+    }
+  }
+
+  // Con il focus o l'errore sul campo, il bordo del pulsante segue quello del campo
+  .form-control:focus + &__mostra {
+    border-color: $input-focus-border-color;
+  }
+
+  .form-control.is-invalid + &__mostra {
+    border-color: var(--tc-rosso);
+  }
+
+  &__errore {
+    display: flex;
+    gap: 0.375rem;
+    margin-top: 0.375rem;
+    color: var(--tc-rosso-testo);
+    font-size: 0.875rem;
+  }
+}
+
+// Campo errato: bordo corallo (lo stesso rosso "di stato"), senza l'icona di Bootstrap
+.form-control.is-invalid {
+  border-color: var(--tc-rosso);
+  background-image: none;
+  padding-right: $input-btn-padding-x;
+
+  &:focus {
+    border-color: var(--tc-rosso);
+    box-shadow: 0 0 0 0.25rem rgba(map-get(map-get($tc-stati, 'rosso'), 'pieno'), 0.25);
+  }
+}
+
+// --- Caricamento e stati vuoti ---------------------------------------------------------------
+.tc-caricamento {
+  display: grid;
+  place-items: center;
+  min-height: 50vh;
+  color: var(--bs-secondary-color);
+}
+
+.tc-vuoto {
+  padding: 2rem 1.5rem;
+  text-align: center;
+  background: var(--tc-superficie);
+  border: 1px dashed $tc-bordo-hover;
+  border-radius: $tc-raggio-card;
+
+  &__icona {
+    display: inline-grid;
+    place-items: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    margin-bottom: 1rem;
+    color: var(--bs-secondary-color);
+    background: var(--tc-superficie-alta);
+    border-radius: 50%;
+
+    .tc-icona {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+  }
+
+  &__titolo {
+    margin: 0 0 0.375rem;
+    color: $tc-bianco;
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+
+  &__testo {
+    max-width: 22rem;
+    margin: 0 auto;
+    color: var(--bs-secondary-color);
+    font-size: 0.9375rem;
+  }
+}
+
+// Saluto e nome nel profilo: grandi e sottili come il modello dell'auto, ma più piccoli
+.tc-hero__modello--saluto {
+  margin-top: 0;
+  font-size: clamp(2.5rem, 11vw, 3.25rem);
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// Stato di affiliazione dell'officina (non è uno stato di salute: niente verde/giallo/rosso pieni)
+.tc-stato-officina {
+  padding: 0.25rem 0.625rem;
+  border-radius: $border-radius-pill;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--bs-secondary-color);
+  box-shadow: inset 0 0 0 1px $tc-bordo-hover;
+
+  &--attiva {
+    color: $tc-testo;
+  }
+}

@@ -1,0 +1,122 @@
+/**
+ * Router minimo basato sulla History API: URL puliti (`/accedi`, `/profilo`) senza dipendenze.
+ * Ogni rotta dichiara chi può vederla; il router reindirizza chi non ha accesso.
+ */
+
+/** `pubblica`: tutti · `ospite`: solo senza login (accedi, registrati) · `utente`: solo con login. */
+export type Accesso = 'pubblica' | 'ospite' | 'utente';
+
+export interface Rotta {
+  percorso: string;
+  accesso: Accesso;
+  /** Titolo della scheda del browser (si aggiunge " · TyreCare"). */
+  titolo: string;
+  mostra: (app: HTMLElement) => void | Promise<void>;
+}
+
+interface OpzioniRouter {
+  rotte: Rotta[];
+  nonTrovata: Rotta;
+  /** Vero se c'è un utente autenticato. */
+  autenticato: () => boolean;
+}
+
+let opzioni: OpzioniRouter | undefined;
+let contenitore: HTMLElement | undefined;
+let primaVisualizzazione = true;
+// Contatore delle visualizzazioni: se una pagina asincrona finisce dopo un nuovo cambio di pagina,
+// non deve sovrascriverla
+let generazione = 0;
+
+export const PAGINA_ACCESSO = '/accedi';
+export const PAGINA_INIZIALE = '/';
+
+function rottaPer(percorso: string): Rotta {
+  return opzioni?.rotte.find((r) => r.percorso === percorso) ?? opzioni!.nonTrovata;
+}
+
+/** La rotta della pagina mostrata ora. */
+export function rottaCorrente(): Rotta {
+  return rottaPer(location.pathname);
+}
+
+/** Vero se la visualizzazione `n` è ancora quella sullo schermo (per le pagine asincrone). */
+export function ancoraAttuale(n: number): boolean {
+  return n === generazione;
+}
+
+/** Numero della visualizzazione in corso: le pagine asincrone lo confrontano con `ancoraAttuale`. */
+export function visualizzazioneCorrente(): number {
+  return generazione;
+}
+
+/** Porta alla pagina indicata. `sostituisci` non aggiunge una voce alla cronologia (redirect). */
+export function vaiA(destinazione: string, { sostituisci = false } = {}): void {
+  if (sostituisci) history.replaceState(null, '', destinazione);
+  else history.pushState(null, '', destinazione);
+  void mostraPagina();
+}
+
+/** Mostra la pagina dell'URL attuale, applicando le regole di accesso. */
+export async function mostraPagina(): Promise<void> {
+  if (!opzioni || !contenitore) return;
+  const rotta = rottaCorrente();
+  const autenticato = opzioni.autenticato();
+
+  if (rotta.accesso === 'utente' && !autenticato) {
+    // Dopo l'accesso si torna alla pagina richiesta
+    const dopo = encodeURIComponent(location.pathname + location.search);
+    return vaiA(`${PAGINA_ACCESSO}?dopo=${dopo}`, { sostituisci: true });
+  }
+  if (rotta.accesso === 'ospite' && autenticato) {
+    return vaiA(destinazioneDopoAccesso(), { sostituisci: true });
+  }
+
+  generazione++;
+  document.title = rotta.titolo ? `${rotta.titolo} · TyreCare` : 'TyreCare';
+  window.scrollTo(0, 0);
+  await rotta.mostra(contenitore);
+
+  // Per chi usa un lettore di schermo: dopo un cambio di pagina il focus va sul titolo, così la
+  // nuova pagina viene annunciata (al primo caricamento no, il browser parte già dall'inizio)
+  if (!primaVisualizzazione) contenitore.querySelector<HTMLElement>('h1')?.focus();
+  primaVisualizzazione = false;
+}
+
+/** Pagina a cui andare dopo l'accesso: `?dopo=` se è un percorso interno, altrimenti la home. */
+export function destinazioneDopoAccesso(): string {
+  const dopo = new URLSearchParams(location.search).get('dopo');
+  // Solo percorsi interni ("/…" ma non "//…", che porterebbe a un altro sito): evita redirect aperti
+  return dopo && dopo.startsWith('/') && !dopo.startsWith('//') ? dopo : PAGINA_INIZIALE;
+}
+
+/** Avvia il router: intercetta i link interni e i pulsanti avanti/indietro del browser. */
+export function avviaRouter(app: HTMLElement, opz: OpzioniRouter): Promise<void> {
+  opzioni = opz;
+  contenitore = app;
+
+  document.addEventListener('click', (evento) => {
+    const link = (evento.target as Element | null)?.closest('a');
+    if (
+      !link ||
+      evento.defaultPrevented ||
+      evento.button !== 0 ||
+      evento.metaKey ||
+      evento.ctrlKey ||
+      evento.shiftKey ||
+      evento.altKey ||
+      link.target ||
+      link.hasAttribute('download') ||
+      link.origin !== location.origin
+    ) {
+      return;
+    }
+    evento.preventDefault();
+    // Link alla pagina stessa (es. "Riprova"): la si ricarica senza aggiungerla alla cronologia
+    if (link.pathname + link.search === location.pathname + location.search) void mostraPagina();
+    else vaiA(link.pathname + link.search);
+  });
+
+  window.addEventListener('popstate', () => void mostraPagina());
+  return mostraPagina();
+}

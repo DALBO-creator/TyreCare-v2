@@ -212,3 +212,62 @@ un'eccezione. Tutto è in una transazione annullata con `rollback`.
 
 `ruoli.test.ts` — confronta gli enum Zod (`RuoloSchema`, `RuoloOfficinaSchema`) con quelli generati dal
 database (`Constants.public.Enums`): se una migrazione cambia un enum e lo schema Zod no, il test fallisce.
+
+## Auth — accesso, registrazione, recupero password (Fase 1)
+
+**File coinvolti:** `packages/shared/src/auth.ts` (schemi Zod), `apps/web/src/main.ts` (rotte),
+`apps/web/src/lib/{auth,router,profilo,html}.ts`, `apps/web/src/ui/{modulo,layout}.ts`,
+`apps/web/src/pagine/*.ts`, `apps/web/src/styles/_pagine.scss`, `apps/api/src/auth.ts`,
+`apps/api/src/routes/me.ts`, `supabase/config.toml` (sezione `[auth]`)
+
+**Come funziona:**
+
+- **Pagine:** `/accedi`, `/registrati`, `/password-dimenticata`, `/nuova-password` (arrivo dal link email),
+  `/` home, `/profilo` (dati + "Esci"), `/anteprima` (design system con dati finti), 404 per il resto.
+- **Router** (`lib/router.ts`, senza librerie): URL puliti con la History API. Ogni rotta dichiara
+  l'accesso: `utente` (serve il login → altrimenti `/accedi?dopo=<pagina>`), `ospite` (solo senza login →
+  altrimenti home), `pubblica`. Su Vercel `vercel.json` → `rewrites` serve `index.html` per ogni URL che non
+  è un file, così si può aprire o ricaricare direttamente `/profilo`.
+- **Sessione** (`lib/auth.ts`): Supabase salva la sessione nel browser e la rinnova da solo.
+  `onAuthStateChange` avvisa `main.ts`, che sposta l'utente: dopo l'accesso alla pagina richiesta, dopo
+  l'uscita su `/accedi`, dal link di recupero su `/nuova-password`.
+- **Registrazione:** nome e cognome vanno nei metadati dell'utente; il trigger del database crea il profilo
+  (ruolo sempre CLIENTE). Con la **conferma email** attiva (locale e cloud) si mostra "Controlla la posta":
+  in locale le email si leggono su **Mailpit** http://127.0.0.1:54324.
+- **Moduli** (`ui/modulo.ts`): stessi schemi Zod di `@tyrecare/shared` (riusabili da Fastify). Etichette
+  sempre visibili, errore sotto il campo all'uscita dal campo, focus sul primo errore all'invio, errore
+  generale annunciato (`role="alert"`), pulsante con spinner, mostra/nascondi password, incolla permesso,
+  `autocomplete` corretto per i password manager. Messaggi d'errore di Supabase tradotti per codice.
+- **API:** le rotte registrate nel plugin "protette" di `app.ts` richiedono `Authorization: Bearer <token>`
+  (il token di Supabase dell'utente). `GET /me` restituisce `{ id, email }`. Senza token valido: 401.
+
+### Codice complesso
+
+`apps/api/src/auth.ts` → `jwtVerify` di **jose** — Supabase firma i token con una chiave **privata**
+(ES256) e pubblica le chiavi **pubbliche** su `/auth/v1/.well-known/jwks.json`. L'API verifica la firma
+con quelle, senza conoscere alcun segreto; `createRemoteJWKSet` le scarica una volta e le tiene in cache
+(e le riscarica se Supabase cambia chiave). Si controllano anche emittente (`iss`), destinatario
+(`aud: authenticated`) e scadenza. I test creano una coppia di chiavi propria e firmano token validi,
+scaduti, di altri emittenti o firmati con un'altra chiave.
+
+`app.register(async (protette) => { protette.addHook('onRequest', …) })` — in Fastify un plugin crea un
+contesto **incapsulato**: l'hook vale solo per le rotte registrate lì dentro. Una nuova rotta è protetta se
+viene registrata in quel blocco, pubblica se fuori (come `/health`).
+
+`lib/html.ts` → `esc()` — le pagine sono template HTML inseriti con `innerHTML`: ogni dato che viene
+dall'utente o dal database va passato da `esc()`, altrimenti un nome come `<img src=x onerror=…>`
+eseguirebbe codice (XSS).
+
+`lib/router.ts` → `destinazioneDopoAccesso()` — accetta solo percorsi che iniziano con `/` ma non con `//`:
+`//sito-malevolo.it` è un URL di un altro sito, e un link `/accedi?dopo=//…` porterebbe lì l'utente
+appena autenticato (*open redirect*).
+
+`lib/router.ts` → `generazione` / `ancoraAttuale(n)` — home e profilo caricano dati in modo asincrono; se
+nel frattempo l'utente ha cambiato pagina, al termine il risultato viene scartato invece di sovrascrivere
+la pagina nuova.
+
+`lib/auth.ts` → `setTimeout` in `onAuthStateChange` — la documentazione di Supabase avverte che chiamare
+altre funzioni di Supabase dentro quel callback può bloccare il client: si rimanda al giro successivo.
+
+`pagine/password-dimenticata.ts` — il messaggio di conferma è lo stesso che l'email sia registrata o no: non
+si rivela a un estraneo chi ha un account.

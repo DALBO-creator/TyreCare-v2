@@ -52,6 +52,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **Sass** (dart-sass) | 1.105 | ✅ | Preprocessore CSS (dev): variabili, cicli e personalizzazione di Bootstrap. Compilato da Vite. Gli avvisi di deprecazione di Bootstrap sono silenziati in `vite.config.ts`. |
 | **Inter** (`@fontsource-variable/inter`) | 5.3 | ✅ | Unico carattere dell'app, **incluso nell'app** (no Google Fonts: offline + GDPR). |
 | **Lucide** | 1.52 | ✅ | Icone SVG (`src/ui/icone.ts`); si importano solo quelle usate. |
+| **Router interno** | — | ✅ | `src/lib/router.ts`: poche righe sulla History API, niente librerie. Rotte e regole di accesso in `src/main.ts`. |
 | **Vite** | 8.3 | ✅ | Server di sviluppo con hot reload e build ottimizzata. |
 | **vite-plugin-pwa** | 2.0 | ✅ | Genera `manifest.webmanifest` e il service worker (Workbox) con precache dell'app. Aggiornamenti in modalità `prompt`: l'utente sceglie quando ricaricare. |
 | **@vite-pwa/assets-generator** | 2.0 | ✅ | Genera favicon, icone PWA e icona Apple dal logo SVG. |
@@ -63,8 +64,9 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 |------------|----------|-------|-----------------|
 | **Node.js (LTS)** | 24 | ✅ | Runtime. Versione fissata in `.nvmrc` e `engines`. |
 | **fnm** (Fast Node Manager) | 1.39 | ✅ | Solo sul PC scolastico: installa Node 24 per l'utente senza permessi di amministratore (Node di sistema è v22). Va attivato in ogni terminale: vedi `NEXT.md` → Promemoria permanenti. |
-| **Fastify** | 5.12 | ✅ | API HTTPS. Per ora solo `GET /health`. |
-| **Zod** | 4.6 | ✅ | Validazione: variabili d'ambiente (`src/env.ts`) e, in seguito, dati in ingresso. Usato anche in `packages/shared`. |
+| **Fastify** | 5.12 | ✅ | API HTTPS. `GET /health` (pubblica), `GET /me` (richiede il token dell'utente). |
+| **Zod** | 4.6 | ✅ | Validazione: variabili d'ambiente (`src/env.ts`) e, in seguito, dati in ingresso. Usato anche in `packages/shared` (schemi dei moduli di accesso) e nel web. |
+| **jose** | 6 | ✅ | Verifica dei JWT di Supabase Auth con le chiavi pubbliche (JWKS, ES256) in `src/auth.ts`: nessun segreto nel backend. |
 | **tsx** | 4.23 | ✅ | Esegue TypeScript direttamente in sviluppo, con riavvio automatico (`npm run dev:api`). |
 | **tsup** | 8.5 | ✅ | Compila l'API in un unico file JavaScript (`dist/server.js`), includendo il codice di `@tyrecare/shared`. |
 | **web-push** | — | 🟡 | Invio notifiche push con chiavi VAPID (Fase 5). |

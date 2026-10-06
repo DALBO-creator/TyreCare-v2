@@ -40,21 +40,23 @@ Altre particolarità del PC scolastico:
 
 ## Prossima sessione
 
-**Da fare dal titolare (fuori da Claude):**
+**Da fare dal titolare (dashboard, per far funzionare l'auth online):**
 
-- [ ] Sicurezza: revocare il vecchio token Supabase CLI e generarne uno nuovo su
-  https://supabase.com/dashboard/account/tokens, poi **da un terminale normale** (PC scolastico: `npx.cmd`):
-  `npx supabase login --token …` e `npx supabase link --project-ref boqksbqcqulrtmyshhxe`
+- [ ] Supabase → *Authentication → URL Configuration*: **Site URL** `https://tyre-care-v2.vercel.app`,
+  **Redirect URLs** `https://tyre-care-v2.vercel.app/**`
+- [ ] Supabase → *Authentication → Providers → Email*: lunghezza minima password **8** (come in locale)
+- [ ] Vercel → progetto web → *Environment Variables*: `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` del
+  progetto cloud (senza, l'app online non parte)
 
-- [ ] Dopo il nuovo login: pubblicare la migrazione sul progetto cloud con `npx supabase db push` (il seed
-  **non** va in cloud)
+**Fase 1 — Fondamenta (chiudere) → poi Fase 2**
 
-**Fase 1 — Fondamenta (continuare) — prossimo passo: l'auth**
-
-- [ ] **Auth:** registrazione/login (schermate secondo il design system, nome e cognome nei metadati →
-  il trigger crea il profilo), logout, recupero password (in locale le email arrivano su Inbucket/Mailpit:
-  http://127.0.0.1:54324), verifica del JWT Supabase nelle rotte Fastify
-- [ ] Router lato client e prime schermate reali al posto di `src/anteprima.ts`
+- [ ] Email di Supabase in italiano (template di conferma e recupero password) e, prima del pilota, SMTP
+  proprio (quello incluso in Supabase ha limiti molto bassi)
+- [ ] Profilo: modifica di nome, cognome e telefono
+- [ ] Bug di design preesistente: in `_componenti.scss` la variabile CSS `--tc-rosso` (rosso brand) viene
+  sovrascritta dal ciclo degli stati (`--tc-rosso` = corallo): "CARE" nel marchio, pallino della navigazione
+  e fanali dell'auto escono corallo invece che rosso brand. Rinominare la variabile del brand (es.
+  `--tc-brand`) dopo averlo fatto vedere al titolare
 - [ ] Logo definitivo nello stile del design v3 (quello in `apps/web/public/logo.svg` è provvisorio) →
   rigenerare le icone PWA (`npm run icons -w @tyrecare/web`)
 - [ ] (Facoltativo) rifinire il disegno dell'auto in `src/ui/auto.ts` se il titolare lo desidera
@@ -86,11 +88,23 @@ Altre particolarità del PC scolastico:
 - Tipi del database generati in `packages/shared/src/database.types.ts`, client Supabase del web tipizzato;
   test che verifica l'allineamento enum Zod ↔ database
 - Script npm `db:start`, `db:reset`, `db:test`, `db:types`
+- Titolare: token Supabase CLI rinnovato, login + link, **migrazione pubblicata sul cloud** con `db push`
+  (commit `81bfabd`)
+- **Auth (web):** router lato client senza librerie, pagine accedi / registrati / password dimenticata /
+  nuova password / home / profilo con "Esci" / 404; `/anteprima` resta come riferimento del design.
+  Moduli accessibili (skill `ui-ux-pro-max`) con schemi Zod condivisi in `packages/shared/src/auth.ts`
+- **Auth (API):** verifica dei JWT di Supabase con `jose` e le chiavi pubbliche JWKS; rotte protette in un
+  plugin Fastify; `GET /me`. 7 test (token valido, assente, scaduto, altro emittente/destinatario/chiave)
+- `supabase/config.toml`: site URL `http://localhost:5173`, conferma email attiva, password minima 8
+- Verificato in locale: `/me` con token reale, registrazione → email di conferma su Mailpit → profilo creato
+  dal trigger; screenshot delle pagine con Edge headless
 - Aggiornati `NOTES.md`, `STRUCT.md`, `PLAN.md`
 
 **Note**
 
 - Il token Supabase CLI per il cloud **non** serve per lavorare in locale: serve solo per `link`/`db push`.
+- Anche sul PC di casa PowerShell blocca gli script `.ps1`: in un terminale normale usare `npx.cmd`/`npm.cmd`
+  (oppure `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`).
 - Ruolo globale e stato di affiliazione li cambia solo un ADMIN (o il backend con service role): decisione
   coerente con P2 (operazioni sensibili lato server).
 

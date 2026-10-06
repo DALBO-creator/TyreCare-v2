@@ -1,0 +1,28 @@
+import { AccessoSchema } from '@tyrecare/shared';
+import { accedi } from '../lib/auth';
+import { paginaAuth } from '../ui/layout';
+import { RIQUADRO_ERRORE, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
+
+export function mostraAccedi(app: HTMLElement): void {
+  app.innerHTML = paginaAuth({
+    titolo: 'Accedi',
+    sottotitolo: 'Lo stato dei tuoi pneumatici, sempre sotto controllo.',
+    corpo: `
+      <form class="tc-auth__modulo" novalidate>
+        ${RIQUADRO_ERRORE}
+        ${campo({ nome: 'email', etichetta: 'Email', tipo: 'email', autocomplete: 'email' })}
+        ${campo({
+          nome: 'password',
+          etichetta: 'Password',
+          tipo: 'password',
+          autocomplete: 'current-password',
+        })}
+        <a class="tc-auth__link-secondario" href="/password-dimenticata">Password dimenticata?</a>
+        ${pulsanteInvio('Accedi', 'Accesso in corso…')}
+      </form>`,
+    piede: 'Non hai un account? <a href="/registrati">Registrati</a>',
+  });
+
+  // Dopo l'accesso il cambio di pagina lo fa main.ts, quando Supabase segnala SIGNED_IN
+  collegaModulo(app.querySelector('form')!, AccessoSchema, accedi);
+}
