@@ -12,7 +12,7 @@ TyreCare-v2/
 │   └── api/          # Backend (@tyrecare/api): Fastify + TypeScript
 ├── packages/
 │   └── shared/       # @tyrecare/shared: schemi Zod, tipi, regole condivise
-├── supabase/         # configurazione Supabase CLI (migrazioni, funzioni)
+├── supabase/         # Supabase CLI: config.toml, migrations/, seed.sql, tests/database/ (pgTAP)
 ├── .github/workflows # CI GitHub Actions
 └── DOCS/
 ```
@@ -30,6 +30,10 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | `npm run test` / `npm run test:watch` | Test una volta / in modalità watch |
 | `npm run format` | Formatta il codice con Prettier |
 | `npm run icons -w @tyrecare/web` | Rigenera le icone PWA da `apps/web/public/logo.svg` |
+| `npm run db:start` | Avvia Supabase locale (serve Docker Desktop acceso) |
+| `npm run db:reset` | Ricrea il database locale: applica le migrazioni e `supabase/seed.sql` |
+| `npm run db:test` | Test pgTAP del database (policy RLS, trigger) in `supabase/tests/database/` |
+| `npm run db:types` | Rigenera i tipi TypeScript del database in `packages/shared/src/database.types.ts` |
 
 ## Linguaggi
 
@@ -38,7 +42,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **HTML5** | — | ✅ | Struttura delle pagine della PWA (`apps/web/index.html`). |
 | **CSS3** | — | ✅ | Stili personalizzati sopra Bootstrap (`apps/web/src/style.css`). |
 | **TypeScript** | 6.0 | ✅ | Frontend, backend e pacchetto condiviso (PLAN P1). Configurazione comune in `tsconfig.base.json` con controlli severi (`strict`, `noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`). |
-| **SQL (PostgreSQL)** | — | 🟡 | Migrazioni, policy RLS e funzioni del database. |
+| **SQL (PostgreSQL)** | 17 | ✅ | Migrazioni (`supabase/migrations/`), policy RLS, funzioni e trigger del database. |
 
 ## Frontend (`apps/web`)
 
@@ -51,7 +55,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **Vite** | 8.3 | ✅ | Server di sviluppo con hot reload e build ottimizzata. |
 | **vite-plugin-pwa** | 2.0 | ✅ | Genera `manifest.webmanifest` e il service worker (Workbox) con precache dell'app. Aggiornamenti in modalità `prompt`: l'utente sceglie quando ricaricare. |
 | **@vite-pwa/assets-generator** | 2.0 | ✅ | Genera favicon, icone PWA e icona Apple dal logo SVG. |
-| **@supabase/supabase-js** | 2.117 | ✅ | Client Supabase (`src/lib/supabase.ts`), creato al primo utilizzo. Auth, query, storage, realtime. |
+| **@supabase/supabase-js** | 2.117 | ✅ | Client Supabase (`src/lib/supabase.ts`), creato al primo utilizzo e **tipizzato** con `Database` (tipi generati da `supabase gen types`). Auth, query, storage, realtime. |
 
 ## Backend (`apps/api`)
 
@@ -71,6 +75,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 |------------|----------|-------|-----------------|
 | **Supabase** | — | ✅ | PostgreSQL gestito + Auth + Storage + Realtime + Edge Functions. Sicurezza con **RLS**. Progetto cloud `boqksbqcqulrtmyshhxe` (eu-west-1). |
 | **Supabase CLI** | 2.119 | ✅ | Installata come dipendenza (`npx supabase …`). Configurazione in `supabase/config.toml`. Il database locale (`npx supabase start`) gira su **Docker Desktop**: API http://127.0.0.1:54321, Studio http://127.0.0.1:54323. |
+| **pgTAP** | — | ✅ | Test del database in SQL (`npm run db:test`): verificano le policy RLS impersonando ogni ruolo. Estensione già presente nell'immagine Postgres di Supabase. |
 | **Supabase Cron** | — | 🟡 | Job giornaliero dei reminder (Fase 5). |
 | **Vercel** | — | ✅ | Hosting della PWA: https://tyre-care-v2.vercel.app (Root Directory `apps/web`). L'API avrà un secondo progetto Vercel in Fase 1. |
 

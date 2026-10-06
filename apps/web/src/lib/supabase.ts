@@ -1,9 +1,10 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '@tyrecare/shared';
 
-let client: SupabaseClient | undefined;
+let client: SupabaseClient<Database> | undefined;
 
-/** Client Supabase condiviso, creato al primo utilizzo. */
-export function getSupabase(): SupabaseClient {
+/** Client Supabase condiviso, creato al primo utilizzo. Tipizzato sullo schema (`npm run db:types`). */
+export function getSupabase(): SupabaseClient<Database> {
   if (client) return client;
 
   const url = import.meta.env.VITE_SUPABASE_URL;
@@ -12,6 +13,6 @@ export function getSupabase(): SupabaseClient {
     throw new Error('Configura VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY in apps/web/.env');
   }
 
-  client = createClient(url, key);
+  client = createClient<Database>(url, key);
   return client;
 }

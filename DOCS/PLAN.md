@@ -332,7 +332,7 @@ documento dedicato.
 | Fase | Contenuto | Stato |
 |------|-----------|-------|
 | 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | ✅ (resta solo il deploy di `apps/api`, rimandato) |
-| 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | 🟨 design system fatto |
+| 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | 🟨 design system, ruoli/RLS (profili, officine) fatti; manca auth nell'interfaccia |
 | 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | ⬜ |
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | ⬜ |
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | ⬜ |

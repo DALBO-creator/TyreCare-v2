@@ -141,3 +141,74 @@ schermo legge "3,4 millimetri, da controllare" invece di una percentuale senza s
 `as const satisfies { … }` — `as const` rende i valori letterali e immutabili; `satisfies` verifica che
 l'oggetto rispetti la forma richiesta (es. una soglia per **ogni** stagione) senza perdere i tipi precisi.
 Se in futuro si aggiunge una stagione a `StagioneSchema`, TypeScript segnala subito la soglia mancante.
+
+## Database — fondamenta: profili, officine, ruoli e RLS (Fase 1)
+
+**File coinvolti:** `supabase/migrations/20261006120000_fondamenta.sql`, `supabase/seed.sql`,
+`supabase/tests/database/fondamenta.test.sql`, `packages/shared/src/database.types.ts` (generato),
+`packages/shared/src/ruoli.test.ts`, `apps/web/src/lib/supabase.ts`
+
+**Come funziona:**
+
+- **`profiles`**: un profilo per ogni account di Supabase Auth, creato in automatico alla registrazione dal
+  trigger `on_auth_user_created`. Contiene il ruolo globale (`ADMIN` / `OFFICINA` / `CLIENTE`, default
+  `CLIENTE`), nome, cognome, telefono.
+- **`officine`**: anagrafica (ragione sociale, P.IVA a 11 cifre unica, indirizzo, coordinate, orari in JSON)
+  e `stato_affiliazione` (`IN_ATTESA` → `ATTIVA` / `SOSPESA`).
+- **`officina_utenti`**: chi lavora in quale officina e con che livello, `TITOLARE` o `OPERATORE` (PLAN P16).
+
+Chi può fare cosa (policy RLS):
+
+| Tabella | Lettura | Modifica |
+|---------|---------|----------|
+| `profiles` | il proprio, i colleghi di officina, ADMIN tutti | il proprio (non il ruolo); ADMIN tutti |
+| `officine` | **tutti, anche senza login, se ATTIVA**; i membri la propria; ADMIN tutte | TITOLARE la propria (non lo stato); crea/elimina solo ADMIN |
+| `officina_utenti` | i membri della stessa officina; ADMIN | TITOLARE della propria officina; ADMIN |
+
+Regole aggiuntive garantite da trigger:
+
+- il **ruolo** di un profilo e lo **stato di affiliazione** di un'officina li cambia solo un ADMIN (o il
+  backend con la service role);
+- un'officina **non può restare senza titolare** (un titolare non può rimuoversi o declassarsi se è l'unico).
+
+Dati di prova (`npm run db:reset`): `admin@`, `titolare@`, `operatore@`, `cliente@tyrecare.test`, password
+`password123`; officine "Gomme Rossi" (ATTIVA, con titolare e operatore) e "Pneus Express" (IN_ATTESA).
+
+Flusso di lavoro sul database: modificare lo schema **solo con nuove migrazioni**
+(`npx supabase migration new <nome>`), poi `npm run db:reset`, `npm run db:test`, `npm run db:types`.
+
+### Codice complesso
+
+Funzioni `is_admin()`, `is_membro_officina()`, `is_titolare_officina()`, `is_collega()` — sono
+**`security definer`**: girano con i permessi del proprietario e quindi leggono `profiles`/`officina_utenti`
+**senza** passare dalle policy. Senza questo, una policy su `officina_utenti` che interroga
+`officina_utenti` richiamerebbe sé stessa all'infinito (errore di ricorsione). Sono sicure perché rispondono
+solo su chi sta chiamando (`auth.uid()`), e hanno `set search_path = ''` (ogni nome è scritto con lo schema,
+così nessuno può "sostituire" una tabella creandone una omonima in un altro schema).
+
+`(select auth.uid())` invece di `auth.uid()` — con il `select` Postgres calcola il valore **una volta per
+query** invece che una volta per riga: consiglio ufficiale di Supabase per le prestazioni delle policy.
+
+`proteggi_campi_riservati()` — le policy RLS decidono **quali righe** si possono modificare, non **quali
+colonne**: per impedire a un utente di cambiarsi il ruolo serve un trigger. Se `auth.uid()` è nullo la
+modifica viene dal backend (service role), da una migrazione o dal seed, ed è permessa. I controlli sono
+`IF` annidati e non `tabella = 'x' and new.campo …`: PL/pgSQL valuta comunque `new.campo`, e su una tabella
+che non ha quel campo dà errore (bug trovato dai test).
+
+`crea_profilo_nuovo_utente()` — il ruolo **non** viene mai preso dai metadati della registrazione
+(`raw_user_meta_data`), perché li sceglie l'utente: chiunque potrebbe registrarsi come ADMIN.
+
+`verifica_titolare_rimasto()` — trigger `after` (conta i titolari _dopo_ la modifica). È disattivato per
+ADMIN e service role, così l'eliminazione a cascata di un'officina o di un account non viene bloccata.
+
+`seed.sql` — gli utenti si inseriscono direttamente in `auth.users` con la password cifrata
+(`extensions.crypt(…, gen_salt('bf'))`) e una riga in `auth.identities`; i campi token vanno messi a `''`
+perché con `NULL` il login di Supabase Auth fallisce.
+
+`fondamenta.test.sql` — ogni test simula un utente con `set local role authenticated` e il JWT in
+`request.jwt.claims` (da cui `auth.uid()` legge il `sub`). Un `update` bloccato dalla RLS **non** dà errore:
+semplicemente non modifica righe, per questo il test dell'operatore rilegge il valore invece di aspettarsi
+un'eccezione. Tutto è in una transazione annullata con `rollback`.
+
+`ruoli.test.ts` — confronta gli enum Zod (`RuoloSchema`, `RuoloOfficinaSchema`) con quelli generati dal
+database (`Constants.public.Enums`): se una migrazione cambia un enum e lo schema Zod no, il test fallisce.

@@ -46,17 +46,21 @@ Altre particolarità del PC scolastico:
   https://supabase.com/dashboard/account/tokens, poi **da un terminale normale** (PC scolastico: `npx.cmd`):
   `npx supabase login --token …` e `npx supabase link --project-ref boqksbqcqulrtmyshhxe`
 
-**Fase 1 — Fondamenta (continuare) — prossimo passo: la prima migrazione**
+- [ ] Dopo il nuovo login: pubblicare la migrazione sul progetto cloud con `npx supabase db push` (il seed
+  **non** va in cloud)
 
-- [x] Design system con la skill `ui-ux-pro-max` → [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md), Bootstrap via Sass
-  (v3: "cruscotto sportivo" stile My Porsche, rosso e nero)
+**Fase 1 — Fondamenta (continuare) — prossimo passo: l'auth**
+
+- [ ] **Auth:** registrazione/login (schermate secondo il design system, nome e cognome nei metadati →
+  il trigger crea il profilo), logout, recupero password (in locale le email arrivano su Inbucket/Mailpit:
+  http://127.0.0.1:54324), verifica del JWT Supabase nelle rotte Fastify
+- [ ] Router lato client e prime schermate reali al posto di `src/anteprima.ts`
 - [ ] Logo definitivo nello stile del design v3 (quello in `apps/web/public/logo.svg` è provvisorio) →
   rigenerare le icone PWA (`npm run icons -w @tyrecare/web`)
 - [ ] (Facoltativo) rifinire il disegno dell'auto in `src/ui/auto.ts` se il titolare lo desidera
-- [ ] **Prima migrazione:** `profiles`, `officine`, `officina_utenti` con ruoli (P16) e policy RLS; `supabase/seed.sql`
-  con dati di prova; `supabase gen types` per i tipi TypeScript del database
-- [ ] Auth: registrazione/login (schermate secondo il design system), verifica del JWT Supabase nelle rotte Fastify
-- [ ] Router lato client e prime schermate reali al posto di `src/anteprima.ts`
+- [ ] Invito di un utente in un'officina (oggi un titolare può aggiungere qualunque `profile_id`, ma non ha
+  modo di trovarlo): flusso di invito via email/codice, probabilmente su Fastify
+- [ ] Valutare un job CI che esegue `supabase start` + `npm run db:test` (oggi i test pgTAP girano solo in locale)
 - [ ] Deploy di `apps/api` su un secondo progetto Vercel (quando avrà rotte vere)
 
 **Ancora in sospeso dalla sessione 1:**
@@ -66,6 +70,29 @@ Altre particolarità del PC scolastico:
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 4 — 2026-10-06 (PC di casa)
+
+**Fatto**
+
+- **Ambiente sul PC di casa:** Node 24.19 di sistema (fnm non serve), `npm install` + `npm run check` verdi,
+  Docker 29.8 → **Supabase locale avviato**; creati `apps/web/.env` (chiavi demo locali) e `apps/api/.env`
+- **Prima migrazione** `supabase/migrations/20261006120000_fondamenta.sql`: tabelle `profiles`, `officine`,
+  `officina_utenti` (TITOLARE/OPERATORE), enum, funzioni dei ruoli `security definer`, policy RLS, trigger
+  (creazione profilo alla registrazione, campi riservati solo ADMIN, almeno un titolare per officina)
+- `supabase/seed.sql`: 4 utenti di prova (password `password123`) e 2 officine; login verificato via API
+- **Test pgTAP** `supabase/tests/database/fondamenta.test.sql`: 17 test sulle policy per ogni ruolo, tutti
+  verdi (hanno trovato un bug nel trigger dei campi riservati, corretto)
+- Tipi del database generati in `packages/shared/src/database.types.ts`, client Supabase del web tipizzato;
+  test che verifica l'allineamento enum Zod ↔ database
+- Script npm `db:start`, `db:reset`, `db:test`, `db:types`
+- Aggiornati `NOTES.md`, `STRUCT.md`, `PLAN.md`
+
+**Note**
+
+- Il token Supabase CLI per il cloud **non** serve per lavorare in locale: serve solo per `link`/`db push`.
+- Ruolo globale e stato di affiliazione li cambia solo un ADMIN (o il backend con service role): decisione
+  coerente con P2 (operazioni sensibili lato server).
 
 ### Sessione 3 — 2026-10-06 (PC scolastico)
 
