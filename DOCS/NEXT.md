@@ -3,70 +3,53 @@
 > **Da aggiornare in ogni sessione.** All'inizio di una sessione si legge la sezione "Prossima sessione";
 > alla fine si sposta il lavoro svolto nello storico e si scrive cosa fare dopo.
 
+## 📌 Promemoria permanenti
+
+> Sezione fissa: **non** va spostata nello storico. Claude deve ricordarla all'inizio di ogni sessione.
+
+### 🏫 PC scolastico → attivare fnm (Node 24)
+
+Sul PC scolastico Node di sistema è la **v22** (`C:\Program Files\nodejs`, non aggiornabile senza permessi di
+amministratore), mentre il progetto richiede **Node 24**. Node 24 è installato per l'utente tramite **fnm**
+(Fast Node Manager). **In ogni nuovo terminale PowerShell, prima di lavorare sul progetto:**
+
+```powershell
+fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
+fnm use 24
+node --version   # deve stampare v24.x
+```
+
+Se `node --version` stampa `v22.x`, fnm non è attivo: `npm install`, `npm run check` e la build possono
+fallire o comportarsi in modo diverso dalla CI.
+
+Sul PC scolastico l'esecuzione di script PowerShell è disabilitata: `npm`/`npx` di fnm sono file `.ps1` e
+vengono bloccati (*"L'esecuzione di script è disabilitata nel sistema in uso"*). Usare **`npm.cmd`** e
+**`npx.cmd`** (es. `npx.cmd supabase status`), oppure, se consentito, `Set-ExecutionPolicy -Scope CurrentUser
+RemoteSigned`.
+
+Docker Desktop sul PC scolastico chiede di condividere le cartelle: in *Settings → Resources → File sharing*
+è stata aggiunta `C:\Users\76672576\Documents\GitHub`.
+
 ## Prossima sessione
 
-### 💻 La sessione 3 si svolge su un ALTRO PC
+**Da fare dal titolare (fuori da Claude):**
 
-Prima di tutto verificare/configurare l'ambiente sul nuovo PC (nulla di locale è stato copiato: solo GitHub):
+- [ ] Sicurezza: revocare il vecchio token Supabase CLI e generarne uno nuovo su
+  https://supabase.com/dashboard/account/tokens, poi **da un terminale normale** (PC scolastico: `npx.cmd`):
+  `npx supabase login --token …` e `npx supabase link --project-ref boqksbqcqulrtmyshhxe`
+- [ ] Guardare l'anteprima del design system (`npm run dev:web` → http://localhost:5173, anche da telefono e
+  in modalità scura) e dire cosa cambiare: colori, font, componenti
 
-- [ ] **Git** e **GitHub CLI** (`winget install --id GitHub.cli`) → `gh auth login`
-- [ ] **Node.js 24 LTS** (`node --version` → v24.x; versione indicata in `.nvmrc`)
-- [ ] Clonare il repo: `gh repo clone DALBO-creator/TyreCare-v2` → `cd TyreCare-v2` → `npm install`
-- [ ] Verificare che tutto funzioni: `npm run check` (formattazione, lint, tipi, test, build)
-- [ ] **Claude Code**: reinstallare la skill di design (comandi slash, da digitare nella chat di Claude Code):
-  `/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill` →
-  `/plugin install ui-ux-pro-max@ui-ux-pro-max-skill`
-- [ ] **Python 3** (serve allo script di ricerca della skill `ui-ux-pro-max`)
-- [ ] **Supabase CLI**: generare un token nuovo su https://supabase.com/dashboard/account/tokens (e revocare il
-  vecchio comparso in chat), poi **da un terminale normale**: `npx supabase login --token …` e
-  `npx supabase link --project-ref boqksbqcqulrtmyshhxe`
-- [ ] **Docker Desktop** sul nuovo PC (richiede WSL 2: `wsl --install --no-distribution` da PowerShell
-  amministratore + riavvio), poi `npx supabase start` — vedi controlli sotto
-- [ ] File `.env` locali: non sono nel repo, vanno ricreati da `apps/web/.env.example` e `apps/api/.env.example`
+**Fase 1 — Fondamenta (continuare):**
 
-Il PC precedente (sessione 1–2) resta configurato; la verifica WSL/Docker qui sotto vale per qualunque PC
-su cui si voglia usare Supabase in locale.
-
-### ⚠️ Verificare WSL + Docker (PC della sessione 2, dopo il riavvio — oppure sul nuovo PC)
-
-A fine sessione 2 il titolare ha eseguito `wsl --install --no-distribution` (PowerShell amministratore) e
-riavviato il PC. Situazione prima del riavvio: Docker Desktop 4.94 installato in
-`C:\Users\albod\AppData\Local\Programs\DockerDesktop`, WSL **non** installato (`wsl --status` → exit 50),
-virtualizzazione attiva (`HypervisorPresent = True`, il BIOS non va toccato).
-
-Controlli da eseguire (aggiornare prima il PATH della shell: `$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')`):
-
-- [ ] `wsl --status` e `wsl --version` → devono rispondere senza errori, versione predefinita 2
-  - se mostrano solo l'elenco dei comandi o exit 50 → l'installazione non è andata a buon fine: ripetere
-    `wsl --install --no-distribution` da PowerShell **amministratore** e riavviare
-- [ ] `docker info --format "{{.ServerVersion}}"` → deve restituire una versione
-  - se `failed to connect to the docker API … docker_engine` → Docker Desktop non è aperto: avviarlo da
-    `C:\Users\albod\AppData\Local\Programs\DockerDesktop\Docker Desktop.exe` e attendere *Engine running*
-  - se Docker Desktop segnala errori su WSL → `wsl --update` (ora disponibile), poi riavviare Docker Desktop
-- [ ] `npx supabase start` nella root del repo → al termine stampa URL e chiavi locali (prima volta: diversi
-  minuti per scaricare le immagini)
-- [ ] `npx supabase status` → tutti i servizi attivi; Studio locale su http://127.0.0.1:54323
-
-**Completare la Fase 0** (richiede azioni del titolare del progetto):
-
-- [x] Installare **Docker Desktop**
-- [x] Creare il progetto **Supabase** cloud — Project ID `boqksbqcqulrtmyshhxe`
-- [x] Vercel: PWA online su **https://tyre-care-v2.vercel.app** (Root Directory `apps/web`, variabili
-  `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` configurate)
-- [x] CI su GitHub Actions verde
-- [x] Supabase CLI autenticata e repo collegato al cloud (`npx supabase link`, regione eu-west-1)
-- [x] WSL 2: comando di installazione eseguito + riavvio (**esito da verificare**, vedi sopra)
-- [ ] Docker Desktop in esecuzione e Supabase locale avviato (`npx supabase start`)
-- [ ] Sicurezza: revocare il token Supabase CLI comparso in chat e rifare il login con un token nuovo da un
-  terminale normale (`npx supabase login --token …`), non tramite Claude
-- [ ] Compilare `apps/web/.env` in locale da `.env.example`
-- [ ] Deploy di `apps/api` su un secondo progetto Vercel (in Fase 1, quando avrà rotte vere)
-
-**Poi avviare la Fase 1 — Fondamenta:**
-
-- [ ] Design system con la skill `ui-ux-pro-max` (palette, tipografia, componenti) → Bootstrap via Sass
-- [ ] Prima migrazione: `profiles`, `officine`, `officina_utenti` con ruoli e policy RLS
-- [ ] Auth: registrazione/login, verifica del JWT Supabase nelle rotte Fastify
+- [x] Design system con la skill `ui-ux-pro-max` → [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md), Bootstrap via Sass
+- [ ] Logo definitivo (quello in `apps/web/public/logo.svg` è provvisorio) → rigenerare le icone PWA
+  (`npm run icons -w @tyrecare/web`)
+- [ ] Prima migrazione: `profiles`, `officine`, `officina_utenti` con ruoli (P16) e policy RLS; `supabase/seed.sql`
+  con dati di prova; `supabase gen types` per i tipi TypeScript del database
+- [ ] Auth: registrazione/login (schermate secondo il design system), verifica del JWT Supabase nelle rotte Fastify
+- [ ] Router lato client e prime schermate reali al posto di `src/anteprima.ts`
+- [ ] Deploy di `apps/api` su un secondo progetto Vercel (quando avrà rotte vere)
 
 **Ancora in sospeso dalla sessione 1:**
 
@@ -75,6 +58,35 @@ Controlli da eseguire (aggiornare prima il PATH della shell: `$env:Path = [Envir
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 3 — 2026-10-06 (PC scolastico)
+
+**Fatto**
+
+- **Ambiente sul PC scolastico** (vedi Promemoria permanenti):
+  - GitHub CLI portable (installazione MSI bloccata senza permessi di amministratore) + `gh auth login`
+    (account `DALBO-creator`) + `gh auth setup-git`
+  - Node di sistema è v22 → installato **fnm** per l'utente con Node 24.21
+  - `npm install`, `npm run check` verde; Python 3.13 presente
+  - WSL 2 e Docker 28.1 funzionanti; condivisa la cartella `Documents\GitHub` in Docker Desktop;
+    **Supabase locale avviato**
+  - `apps/web/.env` e `apps/api/.env` creati (puntano a Supabase locale)
+  - Skill `ui-ux-pro-max` reinstallata
+- **Fase 1 — design system** ([`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md)):
+  - palette navy + blu per le azioni; verde/ambra/rosso riservati allo stato degli pneumatici, contrasti
+    verificati (tutti ≥ 4.5:1, chiaro e scuro); scartata la prima proposta della skill (rosso come colore
+    delle azioni, stile da landing page)
+  - font Lexend + Source Sans 3 inclusi nell'app (offline, GDPR); icone Lucide
+  - Bootstrap importato via Sass in modo selettivo (`apps/web/src/styles/`), tema scuro automatico
+  - componenti: barra superiore, navigazione inferiore, badge di stato, scheda pneumatico con misuratore
+    del battistrada; pagina di anteprima `src/anteprima.ts`
+  - `theme-color` della PWA → navy `#0f172a`; font latini nella precache del service worker
+- Aggiornati `NOTES.md`, `STRUCT.md` (anche righe Supabase/Vercel ferme alla sessione 1), `PLAN.md`
+
+**Note**
+
+- Avvisi di deprecazione Sass di Bootstrap 5.3 silenziati in `vite.config.ts` (spariranno con Bootstrap 6).
+- Il bundle JS include Zod tramite `@tyrecare/shared` (~17 kB gzip): voluto.
 
 ### Sessione 2 — 2026-10-06
 
