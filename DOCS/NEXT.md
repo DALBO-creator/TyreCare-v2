@@ -40,30 +40,61 @@ Altre particolarità del PC scolastico:
 
 ## Prossima sessione
 
-**Da fare dal titolare (dashboard, per far funzionare l'auth online):**
+> **Obiettivo della sessione 5: chiudere definitivamente la Fase 1**, poi (se avanza tempo) iniziare la
+> Fase 2. La Fase 1 è chiusa quando tutti i punti A–D sono spuntati, `npm run check` e la CI sono verdi e
+> registrazione + recupero password funzionano **dal telefono sul sito Vercel**, con email in italiano.
 
+**Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web` (e
+`npm run dev:api` se serve). In un terminale normale usare `npx.cmd`/`npm.cmd`.
+
+**A — Configurazione online (titolare, dalla dashboard; Claude guida passo passo)**
+
+- [x] Vercel: `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` del cloud — accesso dal sito funzionante
 - [ ] Supabase → *Authentication → URL Configuration*: **Site URL** `https://tyre-care-v2.vercel.app`,
-  **Redirect URLs** `https://tyre-care-v2.vercel.app/**`
+  **Redirect URLs** `https://tyre-care-v2.vercel.app/**` (da verificare se già fatto)
 - [ ] Supabase → *Authentication → Providers → Email*: lunghezza minima password **8** (come in locale)
-- [ ] Vercel → progetto web → *Environment Variables*: `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` del
-  progetto cloud (senza, l'app online non parte)
+- [ ] **SMTP proprio**: scegliere il servizio (proposta: **Resend**, gratuito fino a 3.000 email/mese) e il
+  mittente (es. `noreply@<dominio>`; serve un dominio verificato — se non c'è ancora, decidere quale
+  acquistare); configurarlo in *Project Settings → Authentication → SMTP Settings*; alzare il limite in
+  *Authentication → Rate Limits*. Senza questo il servizio incluso manda ~2 email l'ora
 
-**Fase 1 — Fondamenta (chiudere) → poi Fase 2**
+**B — Email in italiano (Claude)**
 
-- [ ] Email di Supabase in italiano (template di conferma e recupero password) e, prima del pilota, SMTP
-  proprio (quello incluso in Supabase ha limiti molto bassi)
-- [ ] Profilo: modifica di nome, cognome e telefono
-- [ ] Bug di design preesistente: in `_componenti.scss` la variabile CSS `--tc-rosso` (rosso brand) viene
-  sovrascritta dal ciclo degli stati (`--tc-rosso` = corallo): "CARE" nel marchio, pallino della navigazione
-  e fanali dell'auto escono corallo invece che rosso brand. Rinominare la variabile del brand (es.
-  `--tc-brand`) dopo averlo fatto vedere al titolare
-- [ ] Logo definitivo nello stile del design v3 (quello in `apps/web/public/logo.svg` è provvisorio) →
-  rigenerare le icone PWA (`npm run icons -w @tyrecare/web`)
-- [ ] (Facoltativo) rifinire il disegno dell'auto in `src/ui/auto.ts` se il titolare lo desidera
-- [ ] Invito di un utente in un'officina (oggi un titolare può aggiungere qualunque `profile_id`, ma non ha
-  modo di trovarlo): flusso di invito via email/codice, probabilmente su Fastify
-- [ ] Valutare un job CI che esegue `supabase start` + `npm run db:test` (oggi i test pgTAP girano solo in locale)
-- [ ] Deploy di `apps/api` su un secondo progetto Vercel (quando avrà rotte vere)
+- [ ] Template HTML in italiano, nello stile nero/rosso del design, per: conferma registrazione, recupero
+  password, cambio email. File in `supabase/templates/*.html`, collegati in `supabase/config.toml`
+  (`[auth.email.template.*]`) → provati in locale su Mailpit (http://127.0.0.1:54324)
+- [ ] Copiarli nel cloud: dashboard → *Authentication → Email Templates* (oggetto + corpo)
+
+**C — Profilo (Claude)**
+
+- [ ] Modifica di nome, cognome e telefono dalla pagina Profilo (schema Zod in `packages/shared`, la RLS già
+  permette di modificare solo il proprio profilo e il trigger blocca il ruolo)
+- [ ] Cambio password da utente già autenticato (riusa `impostaNuovaPassword`)
+
+**D — Rifiniture del design (titolare decide, Claude esegue)**
+
+- [ ] Colore del marchio: in `_componenti.scss` `--tc-rosso` (rosso brand) è sovrascritta dal ciclo degli
+  stati (= corallo `#ff6b6b`): "CARE", pallino della navigazione e fanali dell'auto escono corallo. Mostrare
+  al titolare le due versioni (screenshot) e, se approva, rinominare la variabile del brand in `--tc-brand`
+- [ ] Logo definitivo nello stile del design v3 (`apps/web/public/logo.svg` è provvisorio) → rigenerare le
+  icone PWA (`npm run icons -w @tyrecare/web`)
+- [ ] (Facoltativo) rifinire il disegno dell'auto in `src/ui/auto.ts`
+
+**Chiusura Fase 1:** `npm run check` + `npm run db:test` verdi, prova completa dal telefono (registrazione
+con email reale → conferma → accesso → modifica profilo → esci → recupero password), PLAN.md → Fase 1 ✅.
+
+**Rimandati (non bloccano la Fase 1):**
+
+- Invito di un utente in un'officina (oggi un titolare può aggiungere un `profile_id` ma non ha modo di
+  trovarlo): flusso di invito via email/codice su Fastify → **Fase 2**, insieme ai clienti dell'officina
+- Job CI con `supabase start` + `npm run db:test` (oggi i test pgTAP girano solo in locale) → quando le
+  migrazioni aumentano (Fase 2)
+- Deploy di `apps/api` su un secondo progetto Vercel → quando servirà la prima rotta usata dal web (import
+  CSV in Fase 2); servirà anche CORS (`@fastify/cors`) e la variabile `SUPABASE_URL`
+
+**Poi — Fase 2 (Dati):** migrazione `veicoli`, `veicoli_officina`, `clienti_officina`, `pneumatici`,
+`controlli`, `misure_pneumatico` (PLAN P12) con RLS e test pgTAP; inserimento di un controllo dall'app
+(lato officina); garage del cliente con il cruscotto dell'anteprima alimentato da dati veri.
 
 **Ancora in sospeso dalla sessione 1:**
 
@@ -103,6 +134,10 @@ Altre particolarità del PC scolastico:
 **Note**
 
 - Il token Supabase CLI per il cloud **non** serve per lavorare in locale: serve solo per `link`/`db push`.
+- Link delle email aperti su iPhone → errore `NSURLErrorDomain`: puntavano a `localhost` perché nel progetto
+  cloud il Site URL non era ancora impostato (Supabase ignora i redirect non in elenco e usa il Site URL).
+- Creare un account senza email: dashboard → *Authentication → Users → Add user → Create new user* con
+  "Auto Confirm User"; nome, cognome e ruolo si impostano con un `update public.profiles` dal SQL Editor.
 - Anche sul PC di casa PowerShell blocca gli script `.ps1`: in un terminale normale usare `npx.cmd`/`npm.cmd`
   (oppure `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`).
 - Ruolo globale e stato di affiliazione li cambia solo un ADMIN (o il backend con service role): decisione
