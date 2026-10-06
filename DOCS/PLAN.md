@@ -209,6 +209,23 @@ Proposta:
 Va chiarito con 2–3 gommisti reali **quale gestionale usano** e **cosa riescono a esportare** (e con che
 frequenza). Senza questo dato non sappiamo quanto sarà "aggiornato" lo stato degli pneumatici visto dal cliente.
 
+#### Primo partner: LA SANTI GOMME — gestionale GESTITYRE (aggiornamento 2026-10-06)
+
+- **Prima officina partner:** **LA SANTI GOMME** (gommista/officina) — sarà l'officina del pilota (Fase 6)
+  e il riferimento reale per import, schermate officina e test con clienti veri.
+- **Gestionale:** **GESTITYRE**, che esporta in **Excel `.xls`** (formato binario "vecchio" di Excel 97–2003,
+  non `.xlsx`).
+- **Conseguenze sul piano:**
+  - il **primo adattatore** di import (punto 2) sarà **GESTITYRE `.xls` → formato TyreCare**; il formato
+    standard resta, così altri gestionali si aggiungeranno con un nuovo adattatore;
+  - serve una libreria che legga il `.xls` binario (non tutte lo fanno: vedi `STRUCT.md`);
+  - il parsing avviene in **Fastify** (come da P2): il file non va mai elaborato nel browser con dati di
+    clienti in chiaro più del necessario;
+  - **prima di scrivere l'adattatore** serve un **file di esempio reale** dell'export (meglio se con dati
+    anonimizzati) e la lista delle esportazioni disponibili in GESTITYRE (clienti, veicoli, pneumatici,
+    deposito gomme, interventi?) — vedi `NEXT.md`;
+  - prima di caricare dati reali di clienti di LA SANTI GOMME serve l'**accordo di nomina (DPA)** di P17.
+
 ### P9 — Inserimento controlli direttamente da TyreCare ✅
 
 Oltre all'import, una **schermata "Nuovo controllo"** per l'officina (da tablet/telefono in officina):
@@ -343,6 +360,9 @@ documento dedicato.
 ## 7. Domande aperte
 
 - Quale gestionale usano i gommisti target e quali export permette? (formato, frequenza, campi)
+  → **in parte risolta:** il primo partner LA SANTI GOMME usa **GESTITYRE**, export **Excel `.xls`** (vedi
+  P8). Restano da capire **campi** (serve un file di esempio) e **frequenza** dell'export (manuale? ogni
+  quanto?)
 - Il cliente si registra da solo o solo su invito dell'officina?
 - Le officine devono poter vedere i veicoli dei clienti di altre officine? (proposta: **no**)
 - Prezzi mostrati nell'app (indicativi) o solo su preventivo?

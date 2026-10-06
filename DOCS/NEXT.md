@@ -92,13 +92,25 @@ con email reale → conferma → accesso → modifica profilo → esci → recup
 - Deploy di `apps/api` su un secondo progetto Vercel → quando servirà la prima rotta usata dal web (import
   CSV in Fase 2); servirà anche CORS (`@fastify/cors`) e la variabile `SUPABASE_URL`
 
+**Da chiedere a LA SANTI GOMME (primo partner, gestionale GESTITYRE — vedi `PLAN.md` P8) prima della
+Fase 2:**
+
+- [ ] Un **file `.xls` di esempio** esportato da GESTITYRE, se possibile con dati anonimizzati o finti
+  (nomi, telefoni, targhe): serve per progettare l'adattatore di import e le tabelle della Fase 2
+- [ ] Quali **esportazioni** offre GESTITYRE (clienti, veicoli, pneumatici montati, deposito gomme,
+  interventi/controlli con misure del battistrada?) e quali campi contengono
+- [ ] Ogni quanto riuscirebbero a esportare (giornaliero, settimanale…) e chi lo farebbe in officina
+- [ ] Nome/dati dell'officina per creare il suo profilo officina sul cloud (ragione sociale, P.IVA, indirizzo,
+  orari) — e chi sarà il **TITOLARE** in TyreCare
+
 **Poi — Fase 2 (Dati):** migrazione `veicoli`, `veicoli_officina`, `clienti_officina`, `pneumatici`,
 `controlli`, `misure_pneumatico` (PLAN P12) con RLS e test pgTAP; inserimento di un controllo dall'app
 (lato officina); garage del cliente con il cruscotto dell'anteprima alimentato da dati veri.
 
 **Ancora in sospeso dalla sessione 1:**
 
-- [ ] Rispondere alle domande aperte di `PLAN.md` §7 (soprattutto: quale gestionale e quali export)
+- [ ] Rispondere alle domande aperte di `PLAN.md` §7 (gestionale: **GESTITYRE, export `.xls`** — restano
+  campi e frequenza, vedi sopra le domande per LA SANTI GOMME)
 - [ ] Rivedere prezzi e ipotesi in `PRODUZIONE-MARKETING.md`
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 

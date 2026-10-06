@@ -69,6 +69,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **jose** | 6 | ✅ | Verifica dei JWT di Supabase Auth con le chiavi pubbliche (JWKS, ES256) in `src/auth.ts`: nessun segreto nel backend. |
 | **tsx** | 4.23 | ✅ | Esegue TypeScript direttamente in sviluppo, con riavvio automatico (`npm run dev:api`). |
 | **tsup** | 8.5 | ✅ | Compila l'API in un unico file JavaScript (`dist/server.js`), includendo il codice di `@tyrecare/shared`. |
+| **Lettore Excel `.xls`** (proposta: **SheetJS**) | — | 🟡 | Import dell'export del gestionale **GESTITYRE** (primo partner LA SANTI GOMME, PLAN P8), che produce `.xls` binari (Excel 97–2003). SheetJS legge sia `.xls` che `.xlsx`; ExcelJS invece legge solo `.xlsx`. Attenzione: la versione aggiornata di SheetJS si installa dal loro CDN (`https://cdn.sheetjs.com/`), quella su npm (`xlsx`) è ferma e ha vulnerabilità note. Da decidere in Fase 2 con un file di esempio. |
 | **web-push** | — | 🟡 | Invio notifiche push con chiavi VAPID (Fase 5). |
 
 ## Database e servizi

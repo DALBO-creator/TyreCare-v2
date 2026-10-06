@@ -109,6 +109,8 @@ Formula: `Risultato = n × 468 − (5.467 + n × 170)`.
 ## 5. Go-to-market
 
 1. **Pilota gratuito (3 mesi)** con 2–3 gommisti della zona: dati reali, feedback, testimonianze.
+   **Primo partner confermato: LA SANTI GOMME** (gestionale GESTITYRE, export `.xls`). Altri gommisti che
+   usano GESTITYRE sono i candidati più facili per il pilota: l'adattatore di import sarà già pronto.
 2. **Argomento di vendita** per l'officina: reminder automatici del cambio stagionale = clienti che tornano;
    prenotazioni senza telefonate; immagine moderna verso il cliente.
 3. **Canali**: visita diretta, passaparola tra gommisti, associazioni di categoria, distributori di pneumatici,
