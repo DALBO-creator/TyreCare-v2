@@ -37,12 +37,13 @@ Docker Desktop sul PC scolastico chiede di condividere le cartelle: in *Settings
 - [ ] Sicurezza: revocare il vecchio token Supabase CLI e generarne uno nuovo su
   https://supabase.com/dashboard/account/tokens, poi **da un terminale normale** (PC scolastico: `npx.cmd`):
   `npx supabase login --token …` e `npx supabase link --project-ref boqksbqcqulrtmyshhxe`
-- [ ] Guardare l'anteprima del design system (`npm run dev:web` → http://localhost:5173, anche da telefono e
-  in modalità scura) e dire cosa cambiare: colori, font, componenti
+- [ ] Guardare l'anteprima del design system v3 (`npm run dev:web` → http://localhost:5173, anche da telefono)
+  e dire cosa cambiare
 
 **Fase 1 — Fondamenta (continuare):**
 
 - [x] Design system con la skill `ui-ux-pro-max` → [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md), Bootstrap via Sass
+  (v3: "cruscotto sportivo" stile My Porsche, rosso e nero)
 - [ ] Logo definitivo (quello in `apps/web/public/logo.svg` è provvisorio) → rigenerare le icone PWA
   (`npm run icons -w @tyrecare/web`)
 - [ ] Prima migrazione: `profiles`, `officine`, `officina_utenti` con ruoli (P16) e policy RLS; `supabase/seed.sql`
@@ -81,6 +82,14 @@ Docker Desktop sul PC scolastico chiede di condividere le cartelle: in *Settings
   - componenti: barra superiore, navigazione inferiore, badge di stato, scheda pneumatico con misuratore
     del battistrada; pagina di anteprima `src/anteprima.ts`
   - `theme-color` della PWA → navy `#0f172a`; font latini nella precache del service worker
+- **Design system v2** su richiesta del titolare: interfaccia **premium rosso e nera**, tema sempre scuro,
+  font Outfit + Inter, rosso brand `#E10600` per le azioni e rosso corallo `#FF6B6B` (con ottagono) per lo
+  stato "da sostituire"; nuovi componenti scheda veicolo, targa, avviso di stato, etichette di sezione.
+  Verificato con screenshot headless di Edge (Chrome headless è bloccato sul PC scolastico)
+- **Design system v3** (la v2 è stata giudicata "spoglia, non premium"): direzione **cruscotto sportivo**
+  con riferimento **My Porsche** scelta dal titolare. Auto vista dall'alto in SVG con ruote illuminate del
+  colore dello stato, indicatori a contagiri per ogni ruota, solo font Inter, liste "di lusso", hero con
+  modello in grande, animazioni d'ingresso. Corretto un bug di layout (area di griglia chiamata `auto`)
 - Aggiornati `NOTES.md`, `STRUCT.md` (anche righe Supabase/Vercel ferme alla sessione 1), `PLAN.md`
 
 **Note**

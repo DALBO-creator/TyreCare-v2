@@ -9,8 +9,12 @@ export const STATI: Record<StatoSalute, { etichetta: string; icona: IconNode; cl
   ROSSO: { etichetta: 'Da sostituire', icona: OctagonAlert, classe: 'rosso' },
 };
 
-/** Badge di stato: colore + icona + testo, così lo stato è chiaro anche senza distinguere i colori. */
-export function badgeStato(stato: StatoSalute): string {
+/**
+ * Badge di stato: colore + icona + testo, così lo stato è chiaro anche senza distinguere i colori.
+ * `dettaglio` (facoltativo) si aggiunge dopo l'etichetta, es. il numero di pneumatici.
+ */
+export function badgeStato(stato: StatoSalute, dettaglio?: string): string {
   const s = STATI[stato];
-  return `<span class="tc-stato tc-stato--${s.classe}">${icona(s.icona)}${s.etichetta}</span>`;
+  const testo = dettaglio ? `${s.etichetta} · ${dettaglio}` : s.etichetta;
+  return `<span class="tc-stato tc-stato--${s.classe}">${icona(s.icona)}${testo}</span>`;
 }

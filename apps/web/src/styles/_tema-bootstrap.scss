@@ -1,61 +1,77 @@
 // Bootstrap 5 personalizzato e importato in modo selettivo (solo i moduli usati).
 // L'ordine degli import è quello richiesto dalla documentazione di Bootstrap 5.3.
+// L'app usa sempre il tema scuro (`data-bs-theme="dark"` in index.html): i valori "-dark" sono
+// quelli effettivi; i valori chiari sono allineati per coerenza.
 
 @import 'tokens';
 @import 'bootstrap/scss/functions';
 
 // --- Colori ------------------------------------------------------------------------------
-$primary: $tc-blu-700;
-$secondary: $tc-slate-600;
+$primary: $tc-rosso;
+$secondary: $tc-testo-secondario;
 $success: map-get(map-get($tc-stati, 'verde'), 'pieno');
 $warning: map-get(map-get($tc-stati, 'giallo'), 'pieno');
 $danger: map-get(map-get($tc-stati, 'rosso'), 'pieno');
-$info: $tc-blu-700;
-$light: $tc-slate-100;
-$dark: $tc-navy-900;
+$info: $tc-testo-secondario;
+$light: $tc-testo;
+$dark: $tc-nero;
 
-// Testo bianco o scuro sui componenti colorati: sempre almeno 4.5:1 (WCAG AA)
+// Testo bianco o nero sui componenti colorati: sempre almeno 4.5:1 (WCAG AA)
 $min-contrast-ratio: 4.5;
-$color-contrast-dark: $tc-navy-900;
-$color-contrast-light: $tc-white;
+$color-contrast-dark: $tc-nero;
+$color-contrast-light: $tc-bianco;
 
-$body-bg: $tc-slate-50;
-$body-color: $tc-navy-900;
-$body-secondary-color: $tc-slate-600;
-$body-tertiary-bg: $tc-slate-100;
-$border-color: $tc-slate-200;
-$link-color: $tc-blu-700;
+$body-bg: $tc-nero;
+$body-color: $tc-testo;
+$body-secondary-color: $tc-testo-secondario;
+$body-tertiary-bg: $tc-superficie-alta;
+$border-color: $tc-bordo;
+$link-color: $tc-rosso-chiaro;
 
-// Modalità scura (attivata da data-bs-theme="dark" su <html>, vedi src/ui/tema.ts)
-$body-bg-dark: $tc-navy-950;
-$body-color-dark: $tc-slate-200;
-$body-secondary-color-dark: $tc-slate-400;
-$body-tertiary-bg-dark: $tc-navy-850;
-$border-color-dark: $tc-slate-700;
-$link-color-dark: $tc-blu-300;
+$body-bg-dark: $tc-nero;
+$body-color-dark: $tc-testo;
+$body-emphasis-color-dark: $tc-bianco;
+$body-secondary-color-dark: $tc-testo-secondario;
+$body-secondary-bg-dark: $tc-superficie;
+$body-tertiary-color-dark: $tc-testo-secondario;
+$body-tertiary-bg-dark: $tc-superficie-alta;
+$border-color-dark: $tc-bordo;
+$headings-color-dark: $tc-bianco;
+$link-color-dark: $tc-rosso-chiaro;
+$link-hover-color-dark: $tc-bianco;
 
 // --- Tipografia --------------------------------------------------------------------------
-$font-family-sans-serif: $tc-font-testo;
-$headings-font-family: $tc-font-titoli;
-$headings-font-weight: 600;
+$font-family-sans-serif: $tc-font;
+$headings-font-family: $tc-font;
+$headings-font-weight: 500;
 $font-size-base: 1rem; // 16px: mai testo di base più piccolo
-$line-height-base: 1.5;
+$line-height-base: 1.55;
 $display-font-weight: 700;
 
 // --- Forme e spazi -----------------------------------------------------------------------
-$border-radius: 0.5rem;
-$border-radius-sm: 0.375rem;
-$border-radius-lg: 0.75rem;
-$border-radius-xl: 1rem;
+$border-radius: $tc-raggio-pulsante;
+$border-radius-sm: 0.25rem;
+$border-radius-lg: $tc-raggio-card;
+$border-radius-xl: 1.25rem;
 
-// Pulsanti e campi alti 44px (area di tocco minima)
-$input-btn-padding-y: 0.625rem;
-$input-btn-padding-x: 1rem;
-$btn-font-weight: 600;
+// Pulsanti e campi alti almeno 48px: più comodi del minimo di 44px
+$input-btn-padding-y: 0.75rem;
+$input-btn-padding-x: 1.25rem;
+$btn-font-weight: 500;
+$btn-border-radius-lg: $tc-raggio-pulsante;
+$input-border-radius-lg: $tc-raggio-pulsante;
 
-$card-bg: var(--tc-superficie);
-$card-border-color: var(--bs-border-color);
-$card-border-radius: $border-radius-lg;
+$input-bg: $tc-superficie-alta;
+$input-border-color: $tc-bordo-campo;
+$input-focus-border-color: $tc-rosso-chiaro;
+$input-placeholder-color: $tc-testo-secondario;
+$form-label-font-weight: 500;
+
+$card-bg: $tc-superficie;
+$card-border-color: $tc-bordo;
+$card-border-radius: $tc-raggio-card;
+$card-spacer-y: 1.25rem;
+$card-spacer-x: 1.25rem;
 
 $enable-shadows: false;
 $enable-reduced-motion: true;

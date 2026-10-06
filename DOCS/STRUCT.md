@@ -46,7 +46,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 |------------|----------|-------|-----------------|
 | **Bootstrap 5** | 5.3 | ✅ | Griglia responsive e componenti. Importato **via Sass in modo selettivo** (`src/styles/_tema-bootstrap.scss`) con i colori del design system. |
 | **Sass** (dart-sass) | 1.105 | ✅ | Preprocessore CSS (dev): variabili, cicli e personalizzazione di Bootstrap. Compilato da Vite. Gli avvisi di deprecazione di Bootstrap sono silenziati in `vite.config.ts`. |
-| **Lexend** + **Source Sans 3** (`@fontsource-variable/*`) | 5.3 | ✅ | Font di titoli e testo, **inclusi nell'app** (no Google Fonts: offline + GDPR). |
+| **Inter** (`@fontsource-variable/inter`) | 5.3 | ✅ | Unico carattere dell'app, **incluso nell'app** (no Google Fonts: offline + GDPR). |
 | **Lucide** | 1.52 | ✅ | Icone SVG (`src/ui/icone.ts`); si importano solo quelle usate. |
 | **Vite** | 8.3 | ✅ | Server di sviluppo con hot reload e build ottimizzata. |
 | **vite-plugin-pwa** | 2.0 | ✅ | Genera `manifest.webmanifest` e il service worker (Workbox) con precache dell'app. Aggiornamenti in modalità `prompt`: l'utente sceglie quando ricaricare. |

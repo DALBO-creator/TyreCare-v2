@@ -77,7 +77,7 @@ usare il database, con un messaggio che spiega cosa configurare.
 ## Web — Design system (Fase 1)
 
 **File coinvolti:** `apps/web/src/styles/` (`_tokens.scss`, `_tema-bootstrap.scss`, `_componenti.scss`,
-`main.scss`), `src/ui/` (`icone.ts`, `stato.ts`, `tema.ts`), `src/anteprima.ts`, `vite.config.ts`.
+`main.scss`), `src/ui/` (`icone.ts`, `stato.ts`, `auto.ts`, `indicatore.ts`), `src/anteprima.ts`, `vite.config.ts`.
 Regole visive in [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md).
 
 **Come funziona:** Vite compila `main.scss` con Sass. I colori sono definiti una sola volta in `_tokens.scss`;
@@ -85,21 +85,36 @@ Regole visive in [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md).
 importa **solo i moduli usati** (CSS da ~230 kB a ~174 kB, font inclusi a parte). `_componenti.scss` aggiunge i
 componenti TyreCare (`tc-…`). In TypeScript, `badgeStato()` trasforma uno `StatoSalute` del pacchetto condiviso
 nel badge corrispondente: le regole (soglie) stanno in `@tyrecare/shared`, l'aspetto in `apps/web`.
-`seguiTemaDiSistema()` imposta `data-bs-theme="dark"|"light"` su `<html>` secondo il sistema operativo.
+Il tema è **sempre scuro** (design v2 rosso/nero): `data-bs-theme="dark"` è scritto direttamente in
+`index.html`, così non c'è un lampo bianco all'avvio.
 
 ### Codice complesso
+
+`src/ui/indicatore.ts` — l'arco "contagiri" è un `<circle>` con `stroke-dasharray`: il primo numero è la
+lunghezza del tratto disegnato, il secondo lo spazio vuoto. Con `ARCO = 75%` della circonferenza e una
+rotazione di 135° si ottiene un arco di 270° aperto in basso; il valore è `ARCO × (mm / 8)`. Le tacche si
+calcolano con seno e coseno (`punto()`), una per millimetro più quella del limite di legge.
+L'animazione CSS `tc-arco` parte da `stroke-dasharray: 0 999` e arriva al valore scritto nell'attributo,
+quindi l'arco "si riempie" senza JavaScript.
+
+`_componenti.scss` → `.tc-cruscotto` — griglia con aree nominate (`'as veicolo ad' 'ps veicolo pd'`): l'auto
+occupa le due righe della colonna centrale. L'area **non** può chiamarsi `auto`, perché `grid-area: auto` è
+una parola chiave (posizionamento automatico): l'auto finiva nella sola prima riga e il cruscotto si
+allungava. Per lo stesso motivo il quadrante ha `width: 6.75rem` fisso e non `min(100%, …)`.
 
 `_tema-bootstrap.scss` — l'ordine è obbligato: prima `functions`, poi **le nostre variabili**, poi `variables`
 di Bootstrap. Le variabili di Bootstrap sono dichiarate con `!default` ("usa questo valore solo se non ne è
 già stato dato uno"), quindi i nostri valori, definiti prima, vincono.
 
 `_componenti.scss` — `@each $stato, $valori in $tc-stati` genera con un ciclo le variabili CSS
-(`--tc-verde`, `--tc-verde-tenue`, …) per il tema chiaro e quello scuro, e le classi `.tc-stato--verde` ecc.
-Aggiungere uno stato = aggiungere una voce alla mappa in `_tokens.scss`. I componenti usano le variabili CSS
-(non i valori Sass), così il cambio di tema avviene **senza ricaricare** il CSS.
+(`--tc-verde`, `--tc-verde-tenue`, …) e le classi `.tc-stato--verde`, `.tc-avviso--verde`,
+`.tc-battistrada--verde` ecc. Aggiungere uno stato = aggiungere una voce alla mappa in `_tokens.scss`.
 
-`$card-bg: var(--tc-superficie)` — a Bootstrap si può passare anche una variabile CSS invece di un colore:
-la card è bianca in chiaro e blu scuro in scuro con un solo valore.
+`_tema-bootstrap.scss` — con `data-bs-theme="dark"` Bootstrap usa le variabili `…-dark`
+(`$body-bg-dark`, `$link-color-dark`…): per questo sono impostate quelle, oltre alle chiare.
+
+`.btn-primary { --bs-btn-hover-bg: … }` — Bootstrap 5.3 disegna i pulsanti con variabili CSS locali:
+basta ridefinirle per cambiare il colore al passaggio/pressione senza riscrivere il componente.
 
 `src/ui/icone.ts` — `createElement(nodo, …).outerHTML` di Lucide crea l'elemento SVG e lo converte in stringa,
 così si può inserire nei template HTML. Ogni icona si importa per nome (`import { Car } from 'lucide'`): il

@@ -1,11 +1,12 @@
-// Componenti specifici di TyreCare, costruiti sopra Bootstrap.
+// Componenti specifici di TyreCare, costruiti sopra Bootstrap. Stile "cruscotto sportivo":
+// nero profondo, un solo carattere, numeri grandi e sottili, rosso usato con parsimonia.
 
-// --- Variabili CSS del tema ---------------------------------------------------------------
-:root,
-[data-bs-theme='light'] {
-  --tc-superficie: #{$tc-white};
-  --tc-appbar-bg: #{$tc-navy-900};
-  --tc-appbar-color: #{$tc-white};
+// --- Variabili CSS ------------------------------------------------------------------------
+:root {
+  --tc-superficie: #{$tc-superficie};
+  --tc-superficie-alta: #{$tc-superficie-alta};
+  --tc-rosso: #{$tc-rosso};
+  --tc-rosso-chiaro: #{$tc-rosso-chiaro};
 
   @each $stato, $valori in $tc-stati {
     --tc-#{$stato}: #{map-get($valori, 'pieno')};
@@ -14,21 +15,12 @@
   }
 }
 
-[data-bs-theme='dark'] {
-  --tc-superficie: #{$tc-navy-850};
-  --tc-appbar-bg: #{$tc-navy-850};
-  --tc-appbar-color: #{$tc-slate-200};
-
-  @each $stato, $valori in $tc-stati {
-    --tc-#{$stato}: #{map-get($valori, 'pieno-dark')};
-    --tc-#{$stato}-tenue: #{map-get($valori, 'tenue-dark')};
-    --tc-#{$stato}-testo: #{map-get($valori, 'testo-dark')};
-  }
-}
-
 // --- Base --------------------------------------------------------------------------------
 body {
   -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv11', 'ss01'; // varianti di Inter più eleganti (a e 1 a un piano)
 }
 
 h1,
@@ -36,23 +28,107 @@ h2,
 h3,
 h4,
 h5,
-h6,
-.tc-titolo {
-  letter-spacing: -0.01em;
+h6 {
+  letter-spacing: -0.02em;
   text-wrap: balance;
 }
 
 // Focus sempre visibile da tastiera (mai rimuovere l'anello di focus)
 :focus-visible {
-  outline: 3px solid var(--bs-primary);
-  outline-offset: 2px;
+  outline: 2px solid var(--tc-rosso-chiaro);
+  outline-offset: 3px;
 }
 
 .tc-icona {
   width: 1.25em;
   height: 1.25em;
   flex-shrink: 0;
+  stroke-width: 1.75;
   vertical-align: -0.25em;
+}
+
+// Etichetta di sezione: piccola, maiuscola, spaziata
+.tc-etichetta {
+  margin: 0 0 0.75rem;
+  color: var(--bs-secondary-color);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+// Marchio: lettere spaziate in maiuscolo, "CARE" in rosso
+.tc-marchio {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: $tc-bianco;
+
+  span {
+    color: var(--tc-rosso);
+  }
+}
+
+// --- Entrata morbida degli elementi (disattivata con "riduci movimento") ------------------
+@keyframes tc-entra {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tc-hero > *,
+  .tc-contenuto > * {
+    animation: tc-entra 0.7s $tc-transizione both;
+  }
+
+  @for $i from 2 through 6 {
+    .tc-hero > :nth-child(#{$i}),
+    .tc-contenuto > :nth-child(#{$i}) {
+      animation-delay: #{($i - 1) * 0.07}s;
+    }
+  }
+}
+
+// --- Pulsanti -----------------------------------------------------------------------------
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  letter-spacing: 0.01em;
+  transition:
+    background-color 0.2s $tc-transizione,
+    border-color 0.2s $tc-transizione,
+    box-shadow 0.2s $tc-transizione,
+    transform 0.1s $tc-transizione;
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+.btn-primary {
+  --bs-btn-hover-bg: #{$tc-rosso-scuro};
+  --bs-btn-hover-border-color: #{$tc-rosso-scuro};
+  --bs-btn-active-bg: #{$tc-rosso-scuro};
+  --bs-btn-active-border-color: #{$tc-rosso-scuro};
+  box-shadow: 0 0.5rem 1.5rem rgba($tc-rosso, 0.28);
+}
+
+// Secondario: contorno sottile, al passaggio si illumina appena (non diventa bianco pieno)
+.btn-outline-light {
+  --bs-btn-color: #{$tc-testo};
+  --bs-btn-border-color: #{rgba($tc-bianco, 0.22)};
+  --bs-btn-hover-color: #{$tc-bianco};
+  --bs-btn-hover-bg: #{rgba($tc-bianco, 0.06)};
+  --bs-btn-hover-border-color: #{rgba($tc-bianco, 0.4)};
+  --bs-btn-active-color: #{$tc-bianco};
+  --bs-btn-active-bg: #{rgba($tc-bianco, 0.1)};
+  --bs-btn-active-border-color: #{rgba($tc-bianco, 0.4)};
 }
 
 // --- Barra superiore ---------------------------------------------------------------------
@@ -62,18 +138,422 @@ h6,
   z-index: $zindex-sticky;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
   min-height: calc(#{$tc-appbar-h} + env(safe-area-inset-top, 0px));
-  padding: env(safe-area-inset-top, 0px) 1rem 0;
-  background: var(--tc-appbar-bg);
-  color: var(--tc-appbar-color);
+  padding: env(safe-area-inset-top, 0px) 0.5rem 0 1.25rem;
+  background: rgba($tc-nero, 0.72);
+  backdrop-filter: saturate(140%) blur(16px);
 
-  &__titolo {
-    margin: 0;
-    font-family: $tc-font-titoli;
-    font-size: 1.125rem;
-    font-weight: 600;
+  &__azione {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: $tc-touch-min;
+    height: $tc-touch-min;
+    padding: 0;
+    color: var(--bs-body-color);
+    background: none;
+    border: 0;
+    border-radius: 50%;
+
+    &:hover {
+      background: rgba($tc-bianco, 0.06);
+    }
   }
+}
+
+// Pallino di notifica
+.tc-punto {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.6875rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--tc-rosso);
+  border: 2px solid $tc-nero;
+  border-radius: 50%;
+}
+
+// --- Pagina ------------------------------------------------------------------------------
+.tc-pagina {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.tc-contenuto {
+  display: grid;
+  gap: 2.5rem;
+  padding: 0.5rem 1.25rem 0;
+}
+
+// --- Hero: veicolo + cruscotto ------------------------------------------------------------
+.tc-hero {
+  position: relative;
+  padding: 1.25rem 1.25rem 2rem;
+  // Luce da studio dietro l'auto + riflesso rosso tenue a terra
+  background:
+    radial-gradient(60% 45% at 50% 58%, rgba($tc-bianco, 0.07) 0%, transparent 70%),
+    radial-gradient(50% 18% at 50% 96%, rgba($tc-rosso, 0.16) 0%, transparent 100%);
+
+  &__modello {
+    margin: -0.5rem 0 0.75rem;
+    font-size: clamp(3rem, 14vw, 4rem);
+    font-weight: 250;
+    letter-spacing: -0.045em;
+    line-height: 1;
+    color: $tc-bianco;
+  }
+
+  &__dettagli {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 1rem;
+    margin: 0;
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+  }
+}
+
+// Griglia del cruscotto: indicatori ai quattro angoli, auto al centro
+.tc-cruscotto {
+  display: grid;
+  grid-template-columns: 1fr minmax(6.5rem, 9.5rem) 1fr;
+  grid-template-areas:
+    'as veicolo ad'
+    'ps veicolo pd';
+  gap: 1rem 0.5rem;
+  margin-top: 1.75rem;
+
+  // Nome dell'area: "veicolo", non "auto" (parola chiave CSS: grid-area: auto = posizionamento automatico)
+  &__veicolo {
+    grid-area: veicolo;
+    align-self: center;
+  }
+
+  &__as {
+    grid-area: as;
+    align-self: start;
+  }
+
+  &__ad {
+    grid-area: ad;
+    align-self: start;
+  }
+
+  &__ps {
+    grid-area: ps;
+    align-self: end;
+  }
+
+  &__pd {
+    grid-area: pd;
+    align-self: end;
+  }
+}
+
+// --- Auto vista dall'alto ------------------------------------------------------------------
+.tc-auto {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 2;
+  overflow: visible;
+
+  &__ruota {
+    fill: #{$tc-nero};
+    stroke-width: 1.5;
+
+    @each $stato, $_ in $tc-stati {
+      &--#{$stato} {
+        stroke: var(--tc-#{$stato});
+        filter: drop-shadow(0 0 5px var(--tc-#{$stato}));
+      }
+    }
+  }
+
+  &__fanale {
+    stroke: var(--tc-rosso);
+  }
+}
+
+// --- Indicatore circolare (contagiri) ------------------------------------------------------
+@keyframes tc-arco {
+  from {
+    stroke-dasharray: 0 999;
+  }
+}
+
+.tc-indicatore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  text-align: center;
+
+  &__quadrante {
+    position: relative;
+    // Larghezza fissa (non percentuale): con una percentuale la griglia del cruscotto calcola
+    // righe troppo alte, perché la risolve sull'intera colonna durante il dimensionamento
+    width: 6.75rem;
+    max-width: 100%;
+    aspect-ratio: 1;
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+  }
+
+  &__tacche line {
+    stroke: rgba($tc-bianco, 0.28);
+    stroke-width: 0.8;
+  }
+
+  &__limite {
+    stroke: var(--tc-rosso);
+    stroke-width: 1.6;
+  }
+
+  &__binario,
+  &__arco {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+  }
+
+  &__binario {
+    stroke: rgba($tc-bianco, 0.08);
+  }
+
+  &__arco {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: tc-arco 1.4s 0.25s $tc-transizione both;
+    }
+  }
+
+  &__valore {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    padding-top: 37%;
+    color: $tc-bianco;
+    font-size: 1.5rem;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.03em;
+    line-height: 1;
+
+    small {
+      margin-left: 0.125rem;
+      color: var(--bs-secondary-color);
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  figcaption {
+    display: grid;
+    gap: 0.125rem;
+    margin-top: -0.5rem;
+  }
+
+  &__sigla {
+    color: var(--bs-secondary-color);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  &__stato {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    line-height: 1.3;
+
+    .tc-icona {
+      width: 1em;
+      height: 1em;
+    }
+  }
+
+  @each $stato, $_ in $tc-stati {
+    &--#{$stato} &__arco {
+      stroke: var(--tc-#{$stato});
+      filter: drop-shadow(0 0 3px var(--tc-#{$stato}));
+    }
+
+    &--#{$stato} &__stato {
+      color: var(--tc-#{$stato});
+    }
+  }
+}
+
+// Targa in stile italiano: bianca con bande blu ai lati
+.tc-targa {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.0625rem 0.5rem;
+  background: $tc-bianco;
+  color: $tc-nero;
+  border-left: 0.4375rem solid $tc-blu-targa;
+  border-right: 0.4375rem solid $tc-blu-targa;
+  border-radius: 0.1875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  font-variant-numeric: tabular-nums;
+}
+
+// --- Azione consigliata -------------------------------------------------------------------
+.tc-azione {
+  display: grid;
+  gap: 0.875rem;
+}
+
+// Avviso legato a uno stato (es. pneumatico sotto il limite di legge)
+.tc-avviso {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  padding: 1rem 1.125rem;
+  border-radius: $tc-raggio-card;
+  font-size: 0.9375rem;
+
+  @each $stato, $_ in $tc-stati {
+    &--#{$stato} {
+      background: linear-gradient(90deg, var(--tc-#{$stato}-tenue), rgba($tc-superficie, 0.6));
+      color: var(--tc-#{$stato}-testo);
+      box-shadow: inset 0 0 0 1px rgba(map-get(map-get($tc-stati, $stato), 'pieno'), 0.25);
+
+      .tc-icona {
+        color: var(--tc-#{$stato});
+      }
+    }
+  }
+
+  .tc-icona {
+    margin-top: 0.125rem;
+  }
+}
+
+// --- Badge di stato -----------------------------------------------------------------------
+.tc-stato {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.3125rem 0.75rem;
+  border-radius: $border-radius-pill;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.25;
+  white-space: nowrap;
+
+  @each $stato, $_ in $tc-stati {
+    &--#{$stato} {
+      background: var(--tc-#{$stato}-tenue);
+      color: var(--tc-#{$stato}-testo);
+      box-shadow: inset 0 0 0 1px rgba(map-get(map-get($tc-stati, $stato), 'pieno'), 0.3);
+    }
+  }
+}
+
+// --- Lista "di lusso": righe con separatori sottili ----------------------------------------
+.tc-lista {
+  overflow: hidden;
+  background: var(--tc-superficie);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $tc-raggio-card;
+
+  &__riga {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 4.25rem;
+    padding: 0.75rem 1rem 0.75rem 1.125rem;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    transition: background-color 0.2s $tc-transizione;
+
+    & + & {
+      border-top: 1px solid var(--bs-border-color);
+    }
+
+    &:hover {
+      color: var(--bs-body-color);
+      background: var(--tc-superficie-alta);
+    }
+
+    > .tc-icona {
+      color: var(--bs-secondary-color);
+    }
+  }
+
+  &__icona {
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    flex-shrink: 0;
+    background: var(--tc-superficie-alta);
+    border-radius: 0.5rem;
+    color: $tc-testo;
+  }
+
+  &__testo {
+    display: grid;
+    flex: 1;
+    font-weight: 500;
+    line-height: 1.35;
+
+    small {
+      color: var(--bs-secondary-color);
+      font-size: 0.875rem;
+      font-weight: 400;
+    }
+  }
+}
+
+// --- Officina -----------------------------------------------------------------------------
+.tc-officina {
+  padding: 1.25rem;
+  background: linear-gradient(160deg, var(--tc-superficie-alta), var(--tc-superficie) 60%);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $tc-raggio-card;
+
+  &__nome {
+    margin: 0 0 0.375rem;
+    font-size: 1.375rem;
+    font-weight: 400;
+  }
+
+  &__indirizzo {
+    margin: 0 0 1.25rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+  }
+
+  &__azioni {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+}
+
+// --- Modulo (anteprima) ---------------------------------------------------------------------
+.tc-modulo {
+  padding: 1.25rem;
+  background: var(--tc-superficie);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $tc-raggio-card;
 }
 
 // --- Navigazione inferiore (massimo 5 voci) ----------------------------------------------
@@ -82,31 +562,48 @@ h6,
   inset: auto 0 0;
   z-index: $zindex-fixed;
   display: flex;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: var(--tc-superficie);
-  border-top: 1px solid var(--bs-border-color);
+  justify-content: center;
+  padding: 0 0.25rem env(safe-area-inset-bottom, 0px);
+  background: rgba($tc-nero, 0.78);
+  backdrop-filter: saturate(140%) blur(16px);
+  border-top: 1px solid rgba($tc-bianco, 0.06);
 
   &__voce {
+    position: relative;
     flex: 1;
+    max-width: 6rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.125rem;
+    gap: 0.25rem;
     min-height: $tc-bottomnav-h;
     min-width: $tc-touch-min;
     color: var(--bs-secondary-color);
-    font-size: 0.8125rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
     text-decoration: none;
-    transition: color 0.15s ease-out;
+    transition: color 0.2s $tc-transizione;
 
     &:hover {
       color: var(--bs-body-color);
     }
 
+    // Voce attiva: bianca, più marcata e con pallino rosso (non solo colore)
     &[aria-current='page'] {
-      color: var(--bs-primary);
+      color: $tc-bianco;
+      font-weight: 600;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: 0.4375rem;
+        width: 0.25rem;
+        height: 0.25rem;
+        border-radius: 50%;
+        background: var(--tc-rosso);
+      }
     }
 
     .tc-icona {
@@ -118,84 +615,5 @@ h6,
 
 // Spazio in fondo alla pagina per non coprire il contenuto con la navigazione
 .tc-con-bottomnav {
-  padding-bottom: calc(#{$tc-bottomnav-h} + env(safe-area-inset-bottom, 0px) + 1rem);
-}
-
-// --- Badge di stato -----------------------------------------------------------------------
-.tc-stato {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.25rem 0.625rem;
-  border-radius: $border-radius-pill;
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.25;
-  white-space: nowrap;
-
-  @each $stato, $_ in $tc-stati {
-    &--#{$stato} {
-      background: var(--tc-#{$stato}-tenue);
-      color: var(--tc-#{$stato}-testo);
-    }
-  }
-}
-
-// --- Scheda pneumatico --------------------------------------------------------------------
-.tc-pneumatico {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding: 1rem;
-  background: var(--tc-superficie);
-  border: 1px solid var(--bs-border-color);
-  border-radius: $border-radius-lg;
-
-  &__intestazione {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.5rem;
-  }
-
-  &__posizione {
-    margin: 0;
-    font-family: $tc-font-titoli;
-    font-size: 1rem;
-    font-weight: 600;
-  }
-
-  &__valore {
-    font-family: $tc-font-titoli;
-    font-size: 1.75rem;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    line-height: 1;
-  }
-
-  &__unita {
-    margin-left: 0.25rem;
-    font-size: 1rem;
-    color: var(--bs-secondary-color);
-  }
-}
-
-// Misuratore del battistrada: la barra si colora in base allo stato
-.tc-battistrada {
-  height: 0.5rem;
-  background: var(--bs-tertiary-bg);
-  border-radius: $border-radius-pill;
-  overflow: hidden;
-
-  &__livello {
-    height: 100%;
-    border-radius: inherit;
-    transition: width 0.3s ease-out;
-  }
-
-  @each $stato, $_ in $tc-stati {
-    &--#{$stato} &__livello {
-      background: var(--tc-#{$stato});
-    }
-  }
+  padding-bottom: calc(#{$tc-bottomnav-h} + env(safe-area-inset-bottom, 0px) + 2.5rem);
 }

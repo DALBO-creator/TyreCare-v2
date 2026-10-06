@@ -1,63 +1,52 @@
 // Token del design system TyreCare (DOCS/DESIGN-SYSTEM.md).
 // Unica fonte dei colori: i componenti usano questi token o le variabili CSS che ne derivano,
-// mai valori esadecimali scritti a mano.
+// mai valori esadecimali scritti a mano. Interfaccia scura: nero + rosso.
 
-// --- Palette di base -----------------------------------------------------------------------
-$tc-navy-950: #0b1220;
-$tc-navy-900: #0f172a;
-$tc-navy-850: #131c2e;
-$tc-slate-700: #334155;
-$tc-slate-600: #475569;
-$tc-slate-400: #94a3b8;
-$tc-slate-200: #e2e8f0;
-$tc-slate-100: #f1f5f9;
-$tc-slate-50: #f8fafc;
-$tc-white: #ffffff;
+// --- Neri e grigi --------------------------------------------------------------------------
+$tc-nero: #0a0a0a; // sfondo pagina
+$tc-superficie: #161616; // card, barre
+$tc-superficie-alta: #1f1f1f; // elementi sopra le card (campi, voci attive)
+$tc-bordo: #2a2a2a; // separatori decorativi
+$tc-bordo-hover: #3f3f3f; // bordo delle card al passaggio del mouse
+$tc-bordo-campo: #737373; // bordi dei campi: almeno 3:1 sullo sfondo (WCAG 1.4.11)
+$tc-testo: #f5f5f5;
+$tc-testo-secondario: #a3a3a3;
+$tc-bianco: #ffffff;
+$tc-blu-targa: #1d4ed8; // bande laterali della targa italiana
 
-// Blu "azione": usato SOLO per pulsanti, link e selezione. Mai per comunicare uno stato.
-$tc-blu-700: #0369a1;
-$tc-blu-300: #7dd3fc;
+// --- Rosso del brand -----------------------------------------------------------------------
+// Solo per azioni (pulsanti, link, voce attiva) e accenti del marchio. Mai per comunicare uno stato.
+$tc-rosso: #e10600; // pulsanti: testo bianco a 4.97:1
+$tc-rosso-scuro: #b80500; // pulsanti al passaggio/pressione
+$tc-rosso-chiaro: #ff4d4d; // link, icone e testo rosso sul nero (6:1), anello di focus
 
 // --- Stato di salute dello pneumatico (StatoSalute in @tyrecare/shared) ---------------------
-// Ogni stato ha: colore pieno (barre, indicatori), sfondo tenue + testo scuro (badge).
+// Ogni stato ha: colore pieno (barre, indicatori), sfondo tenue + testo chiaro (badge).
 // Il colore non è mai l'unico segnale: si accompagna sempre a icona ed etichetta.
+// Il rosso di stato è corallo (#ff6b6b), diverso dal rosso pieno del brand, e ha sempre l'ottagono.
 $tc-stati: (
   'verde': (
-    'pieno': #15803d,
-    'tenue': #dcfce7,
-    'testo': #14532d,
-    'pieno-dark': #22c55e,
-    'tenue-dark': #052e16,
-    'testo-dark': #bbf7d0,
+    'pieno': #22c55e,
+    'tenue': #052e16,
+    'testo': #bbf7d0,
   ),
   'giallo': (
-    'pieno': #f59e0b,
-    'tenue': #fef3c7,
-    'testo': #78350f,
-    'pieno-dark': #fbbf24,
-    'tenue-dark': #451a03,
-    'testo-dark': #fde68a,
+    'pieno': #fbbf24,
+    'tenue': #422006,
+    'testo': #fde68a,
   ),
   'rosso': (
-    'pieno': #b91c1c,
-    'tenue': #fee2e2,
-    'testo': #7f1d1d,
-    'pieno-dark': #f87171,
-    'tenue-dark': #450a0a,
-    'testo-dark': #fecaca,
+    'pieno': #ff6b6b,
+    'tenue': #450a0a,
+    'testo': #fecaca,
   ),
 );
 
 // --- Tipografia ----------------------------------------------------------------------------
-$tc-font-titoli:
-  'Lexend Variable',
-  system-ui,
-  -apple-system,
-  'Segoe UI',
-  Roboto,
-  sans-serif;
-$tc-font-testo:
-  'Source Sans 3 Variable',
+// Un solo carattere grottesco, come nelle interfacce dei costruttori di lusso: la gerarchia nasce da
+// dimensioni e pesi (numeri grandi e sottili, etichette piccole in maiuscolo), non da font diversi.
+$tc-font:
+  'Inter Variable',
   system-ui,
   -apple-system,
   'Segoe UI',
@@ -67,4 +56,7 @@ $tc-font-testo:
 // --- Misure --------------------------------------------------------------------------------
 $tc-touch-min: 2.75rem; // 44px: area minima di tocco
 $tc-appbar-h: 3.5rem;
-$tc-bottomnav-h: 4rem;
+$tc-bottomnav-h: 4.25rem;
+$tc-raggio-card: 0.75rem;
+$tc-raggio-pulsante: 0.375rem; // angoli quasi vivi: più "sartoriale" di una pillola
+$tc-transizione: cubic-bezier(0.2, 0.8, 0.2, 1); // uscita morbida, usata per tutte le animazioni
