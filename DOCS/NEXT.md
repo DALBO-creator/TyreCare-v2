@@ -54,6 +54,21 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
 
+**⚠️ Per prima cosa — "Non riusciamo a caricare i tuoi dati" sul sito online (2026-10-07, aperto)**
+
+Dopo il `db push` il titolare vede l'errore di caricamento online. Verificato da Claude: migrazioni
+allineate, API cloud ok, profilo di `albodavide1@gmail.com` presente (CLIENTE, confermato), e simulando
+via SQL le query dell'app con quell'utente il profilo si legge. Quindi il problema è lato client:
+ipotesi principale **sessione salvata non più valida** (vari cambi/reimpostazioni di password) senza
+ritorno ad `/accedi`, oppure versione vecchia in cache del service worker.
+
+- [ ] Chiedere al titolare se "Esci" + nuovo accesso (o chiudere e riaprire l'app) ha risolto; se no,
+  farsi dare dove succede e gli errori della console (F12 dal PC)
+- [ ] Miglioramento in ogni caso: se Supabase risponde con token non valido/scaduto (401, `PGRST301`,
+  `bad_jwt`), `caricaDatiUtente` deve fare `esci()` e portare ad `/accedi` invece di mostrare l'errore
+  generico (`apps/web/src/pagine/{home,profilo}.ts`, `lib/profilo.ts`)
+- Controllo utile: `npx.cmd supabase db query --linked "<sql>"` interroga il cloud dalla CLI
+
 **0 — Pubblicare la migrazione sul cloud (titolare + Claude)**
 
 - [x] (2026-10-07) `npx.cmd supabase db push` (serve il token della CLI: `npx.cmd supabase login` se scaduto). Il seed
