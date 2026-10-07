@@ -56,7 +56,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 **0 — Pubblicare la migrazione sul cloud (titolare + Claude)**
 
-- [ ] `npx.cmd supabase db push` (serve il token della CLI: `npx.cmd supabase login` se scaduto). Il seed
+- [x] (2026-10-07) `npx.cmd supabase db push` (serve il token della CLI: `npx.cmd supabase login` se scaduto). Il seed
   **non** va sul cloud: lì i dati veri li inseriranno le officine
 
 **1 — Lato officina (Claude)**
@@ -137,7 +137,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
   `pneumatici`, `controlli`, `misure_pneumatico`, RLS e trigger; **decisione del titolare: veicoli per
   officina** (niente `veicoli_officina`, vedi PLAN P12); seed con seconda officina e titolare
   (`titolare2@tyrecare.test`); 20 nuovi test pgTAP (totale 37, verdi); tipi rigenerati; enum Zod
-  `PosizioneSchema` e `UsuraSchema` con test di allineamento al database. **Non ancora pubblicata sul cloud**
+  `PosizioneSchema` e `UsuraSchema` con test di allineamento al database. **Pubblicata sul cloud** con `db push` dal titolare
 
 **Note**
 
