@@ -61,7 +61,9 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 - [ ] Supabase → *Authentication → URL Configuration*: **Site URL** `https://tyre-care-v2.vercel.app`,
   **Redirect URLs** `https://tyre-care-v2.vercel.app/**` (da verificare se già fatto)
 - [ ] Supabase → *Authentication → Providers → Email*: lunghezza minima password **8** (come in locale)
-- [ ] **SMTP proprio**: scegliere il servizio (proposta: **Resend**, gratuito fino a 3.000 email/mese) e il
+- [ ] **SMTP proprio** — **deciso (2026-10-07): Resend**, prima in prova con l'email del titolare (Resend
+  senza dominio verificato invia solo da `onboarding@resend.dev` e solo all'email del proprio account), poi
+  con il dominio di LA SANTI GOMME (servono i record DNS SPF/DKIM sul loro dominio). Note originali: scegliere il servizio (proposta: **Resend**, gratuito fino a 3.000 email/mese) e il
   mittente (es. `noreply@<dominio>`; serve un dominio verificato — se non c'è ancora, decidere quale
   acquistare); configurarlo in *Project Settings → Authentication → SMTP Settings*; alzare il limite in
   *Authentication → Rate Limits*. Senza questo il servizio incluso manda ~2 email l'ora
