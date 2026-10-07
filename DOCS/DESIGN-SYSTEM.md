@@ -37,6 +37,7 @@ Tema **sempre scuro** (`data-bs-theme="dark"` fisso in `index.html`).
 | Testo | `#F5F5F5` (titoli e numeri `#FFFFFF`) | |
 | Testo secondario | `#A3A3A3` | descrizioni, unità, etichette |
 | **Rosso brand** (`primary`) | `#E10600`, al passaggio `#B80500` | pulsante principale (con alone rosso), "CARE" nel marchio, fanale dell'auto, pallino della voce attiva e delle notifiche. Variabile CSS `--tc-brand` (non `--tc-rosso`, che è il corallo di stato) |
+| Logo | `apps/web/public/logo.svg` | contagiri bianco con zona e lancetta in rosso brand, su nero `#0A0A0A` |
 | Rosso chiaro | `#FF4D4D` | link, anello di focus |
 | Blu targa | `#1D4ED8` | solo le bande laterali della targa |
 

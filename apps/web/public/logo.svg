@@ -1,11 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#0d6efd"/>
-  <circle cx="256" cy="256" r="168" fill="none" stroke="#fff" stroke-width="56"/>
-  <circle cx="256" cy="256" r="56" fill="#fff"/>
-  <g stroke="#fff" stroke-width="20" stroke-linecap="round">
-    <line x1="256" y1="140" x2="256" y2="180"/>
-    <line x1="256" y1="332" x2="256" y2="372"/>
-    <line x1="140" y1="256" x2="180" y2="256"/>
-    <line x1="332" y1="256" x2="372" y2="256"/>
-  </g>
+  <!-- TyreCare: contagiri del battistrada (arco bianco, zona rossa, lancetta rossa) -->
+  <rect width="512" height="512" rx="112" fill="#0a0a0a"/>
+  <path d="M140.0 392.0 A164 164 0 1 1 414.8 235.2" fill="none" stroke="#ffffff" stroke-width="22" stroke-linecap="round"/>
+  <path d="M419.7 265.7 A164 164 0 0 1 372.0 392.0" fill="none" stroke="#e10600" stroke-width="22" stroke-linecap="round"/>
+  <line x1="174.0" y1="358.0" x2="154.2" y2="377.8" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="142.2" y1="298.6" x2="114.8" y2="304.1" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="148.8" y1="231.6" x2="123.0" y2="220.9" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="191.6" y1="179.5" x2="176.0" y2="156.3" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="256.0" y1="160.0" x2="256.0" y2="132.0" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="320.4" y1="179.5" x2="336.0" y2="156.3" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="363.2" y1="231.6" x2="389.0" y2="220.9" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="369.8" y1="298.6" x2="397.2" y2="304.1" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="338.0" y1="358.0" x2="357.8" y2="377.8" stroke="#ffffff" stroke-width="14" stroke-linecap="round"/>
+  <line x1="256" y1="276" x2="354.7" y2="204.3" stroke="#e10600" stroke-width="20" stroke-linecap="round"/>
+  <circle cx="256" cy="276" r="30" fill="#e10600"/>
+  <circle cx="256" cy="276" r="11" fill="#0a0a0a"/>
 </svg>

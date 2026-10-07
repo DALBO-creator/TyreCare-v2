@@ -88,8 +88,8 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 - [x] (2026-10-07, approvato: rosso brand) Colore del marchio: in `_componenti.scss` `--tc-rosso` (rosso brand) è sovrascritta dal ciclo degli
   stati (= corallo `#ff6b6b`): "CARE", pallino della navigazione e fanali dell'auto escono corallo. Mostrare
   al titolare le due versioni (screenshot) e, se approva, rinominare la variabile del brand in `--tc-brand`
-- [ ] Logo definitivo nello stile del design v3 (`apps/web/public/logo.svg` è provvisorio) → rigenerare le
-  icone PWA (`npm run icons -w @tyrecare/web`)
+- [x] (2026-10-07) Logo definitivo: **contagiri** (variante C scelta tra 3), icone PWA rigenerate con
+  sfondo nero (`apps/web/pwa-assets.config.ts`)
 - [ ] (Facoltativo) rifinire il disegno dell'auto in `src/ui/auto.ts`
 
 **Chiusura Fase 1:** `npm run check` + `npm run db:test` verdi ✅, prova completa dal telefono ✅ (2026-10-07:
@@ -146,6 +146,8 @@ Fase 2:**
   4 template copiati nel cloud
 - **Colore del marchio (D):** nuova variabile `--tc-brand` (rosso `#e10600`) per marchio, fanali, pallini
   di navigazione e notifica; il corallo resta solo per stati ed errori. Approvato dal titolare
+- **Logo definitivo (D):** contagiri con zona rossa e lancetta rossa, scelto dal titolare tra 3 varianti;
+  icone PWA rigenerate con sfondo nero (prima il generatore aggiungeva un bordo bianco)
 - **Prova completa dal telefono sul sito Vercel superata** (commit `41ef3eb`, CI verde)
 
 

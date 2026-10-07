@@ -68,6 +68,12 @@ perché il pacchetto è un modulo ES (`"type": "module"`).
 `registerSW` in `main.ts` registra il service worker e, quando esce una nuova versione, chiede all'utente se
 ricaricare (`registerType: 'prompt'`): evita che l'app si aggiorni da sola mentre l'utente sta compilando un form.
 
+**Logo e icone:** il logo è `public/logo.svg` (contagiri: arco bianco con tacche, zona rossa, lancetta
+rossa, su quadrato nero arrotondato). `npm run icons -w @tyrecare/web` genera da lì favicon, icone PWA,
+maskable (Android) e apple-touch (iOS) secondo `pwa-assets.config.ts`: preset `minimal-2023`, ma con
+**sfondo nero** e margine del 10% per maskable e Apple (il predefinito è bianco, e il sistema ritaglia
+l'icona a cerchio o a quadrato arrotondato). Dopo aver cambiato il logo va rilanciato il comando.
+
 ### Codice complesso
 
 `apps/web/src/lib/supabase.ts` — il client viene creato **al primo utilizzo** e non all'avvio: finché il progetto
