@@ -325,3 +325,45 @@ errore, aggiorna 0 righe; chiedendo la riga aggiornata, 0 righe diventano un err
   immagine (spesso bloccate), link testuale sotto il pulsante.
 - `config.toml` vale **solo in locale** (prova su Mailpit http://127.0.0.1:54324). Nel cloud oggetto e
   corpo vanno copiati dalla dashboard: *Authentication → Emails*.
+
+## Database — dati di officina: clienti, veicoli, pneumatici, controlli (Fase 2)
+
+**File coinvolti:** `supabase/migrations/20261007120000_dati.sql`, `supabase/seed.sql`,
+`supabase/tests/database/dati.test.sql`, `packages/shared/src/pneumatici.ts` (enum Zod),
+`packages/shared/src/database.types.ts` (generato)
+
+**Come funziona:**
+
+- `clienti_officina` → `veicoli` → `pneumatici` (per posizione; `smontato_il` nullo = montato) e
+  `controlli` → `misure_pneumatico` (una per pneumatico misurato). Tutto è **dell'officina**: la stessa
+  targa in due officine sono due schede separate (decisione in PLAN P12).
+- **Chi vede cosa:** i membri dell'officina leggono e scrivono i dati della propria officina (eliminare
+  clienti e veicoli solo il TITOLARE); il cliente con l'account collegato legge i propri veicoli con
+  pneumatici, controlli e misure; anonimi e ADMIN non vedono nulla.
+- **Import idempotente (P8):** `clienti_officina.codice_gestionale` e `controlli.codice_documento` sono
+  unici per officina, `veicoli.targa` è unica per officina: reimportare lo stesso file aggiorna invece di
+  duplicare.
+- **Seed:** Gomme Rossi ha Giulia (account `cliente@tyrecare.test`) con la Panda AB123CD, 4 invernali e un
+  controllo con le stesse misure di `/anteprima`, più Franco (senza account) con una Golf. Pneus Express
+  (titolare `titolare2@tyrecare.test`) ha di nuovo Giulia con la stessa Panda.
+- **Test pgTAP** (20): isolamento tra officine, cliente in sola lettura, ADMIN escluso, coerenza delle
+  chiavi composte, targa normalizzata, un solo pneumatico montato per posizione, collegamento all'account
+  vietato alle officine, eliminazione solo del titolare.
+
+### Codice complesso
+
+Chiavi esterne composte, es. `foreign key (veicolo_id, officina_id) references veicoli (id, officina_id)` —
+richiedono `unique (id, officina_id)` sulla tabella di arrivo. Impediscono a un'officina di scrivere un
+controllo con il proprio `officina_id` ma il veicolo di un'altra (la RLS controlla solo `officina_id`). In
+`misure_pneumatico` le chiavi `(controllo_id, veicolo_id)` e `(pneumatico_id, veicolo_id)` obbligano
+controllo e pneumatico a essere dello stesso veicolo.
+
+`on delete set null (cliente_officina_id)` (PostgreSQL ≥ 15) — se si elimina il cliente, sul veicolo si
+azzera solo quella colonna: con una chiave composta un `set null` normale azzererebbe anche `officina_id`.
+
+`create unique index … where smontato_il is null` — indice unico **parziale**: vale solo per gli
+pneumatici montati, così lo storico può avere più pneumatici smontati nella stessa posizione.
+
+`normalizza_veicolo()` — trigger che porta targa e telaio in forma canonica ("ab 123-cd" → "AB123CD")
+prima del vincolo di unicità: così l'import trova i duplicati anche se il gestionale scrive la targa con
+spazi.

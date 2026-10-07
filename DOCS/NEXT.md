@@ -48,79 +48,62 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo della sessione 5: chiudere definitivamente la Fase 1**, poi (se avanza tempo) iniziare la
-> Fase 2. La Fase 1 è chiusa quando tutti i punti A–D sono spuntati, `npm run check` e la CI sono verdi e
-> registrazione + recupero password funzionano **dal telefono sul sito Vercel**, con email in italiano.
+> **Fase 1 chiusa il 2026-10-07. Obiettivo della sessione 6: Fase 2 (Dati) — schermate lato officina.**
+> Le tabelle ci sono già (migrazione `20261007120000_dati.sql`, vedi `NOTES.md`); ora serve usarle dall'app.
 
-**Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web` (e
-`npm run dev:api` se serve). In un terminale normale usare `npx.cmd`/`npm.cmd`.
+**Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
+`git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
 
-**A — Configurazione online (titolare, dalla dashboard; Claude guida passo passo)**
+**0 — Pubblicare la migrazione sul cloud (titolare + Claude)**
 
-- [x] Vercel: `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` del cloud — accesso dal sito funzionante
-- [x] Supabase → *Authentication → URL Configuration*: **Site URL** `https://tyre-care-v2.vercel.app`,
-  **Redirect URLs** `https://tyre-care-v2.vercel.app/**`
-- [x] Supabase → *Authentication → Providers → Email*: lunghezza minima password **8** (come in locale)
-- [x] **SMTP con Resend in prova** (2026-10-07): mittente `onboarding@resend.dev`, host `smtp.resend.com`
-  porta 465, utente `resend`; limite di invio alzato. In prova Resend consegna **solo** all'email del
-  titolare (`albodavide1@gmail.com`): gli altri utenti non ricevono email
-- [ ] **SMTP definitivo** con il dominio di LA SANTI GOMME: verificare il dominio su Resend (record DNS
-  SPF/DKIM, serve chi gestisce il loro dominio), mittente `noreply@<dominio>`, aggiornare *SMTP Settings*.
-  Poi controllare che le email **non finiscano in Spam** (con `onboarding@resend.dev` Gmail le metteva in
-  Spam e lì i link sono disattivati)
+- [ ] `npx.cmd supabase db push` (serve il token della CLI: `npx.cmd supabase login` se scaduto). Il seed
+  **non** va sul cloud: lì i dati veri li inseriranno le officine
 
-**B — Email in italiano (Claude)**
+**1 — Lato officina (Claude)**
 
-- [x] Template HTML in italiano, nello stile nero/rosso del design, per: conferma registrazione, recupero
-  password, cambio email **+ avviso "password cambiata"**. File in `supabase/templates/*.html`, collegati
-  in `supabase/config.toml` → provati in locale su Mailpit (sessione 5)
-- [x] Copiati nel cloud (*Authentication → Emails*), notifica "Password changed" attiva. Se si modificano i
-  file in `supabase/templates/`, vanno ricopiati a mano nella dashboard
+- [ ] Home officina: elenco dei veicoli dell'officina con ricerca per targa / cliente e stato a colpo d'occhio
+- [ ] Nuovo cliente e nuovo veicolo (moduli con schemi Zod in `packages/shared`)
+- [ ] Scheda veicolo: pneumatici montati (aggiungi / sostituisci), storico dei controlli
+- [ ] **Nuovo controllo** (P9): km, per ogni posizione battistrada minimo, pressione, usura, danni, note →
+  `controlli` + `misure_pneumatico` (insieme: se una misura fallisce non deve restare un controllo a metà →
+  funzione SQL `registra_controllo` o rotta Fastify)
+- [ ] Pensata per tablet/telefono in officina: campi numerici grandi, tastiera decimale (`inputmode`)
 
-**C — Profilo (Claude)**
+**2 — Lato cliente (Claude)**
 
-- [x] Modifica di nome, cognome e telefono dalla pagina Profilo (schema Zod in `packages/shared`, la RLS già
-  permette di modificare solo il proprio profilo e il trigger blocca il ruolo)
-- [x] Cambio password da utente già autenticato (chiede anche la password attuale)
+- [ ] Garage del cliente: i suoi veicoli **uniti per targa** tra le officine, con il cruscotto di
+  `/anteprima` (auto + contagiri) alimentato dall'ultimo controllo
 
-**D — Rifiniture del design (titolare decide, Claude esegue)**
+**3 — Poi**
 
-- [x] (2026-10-07, approvato: rosso brand) Colore del marchio: in `_componenti.scss` `--tc-rosso` (rosso brand) è sovrascritta dal ciclo degli
-  stati (= corallo `#ff6b6b`): "CARE", pallino della navigazione e fanali dell'auto escono corallo. Mostrare
-  al titolare le due versioni (screenshot) e, se approva, rinominare la variabile del brand in `--tc-brand`
-- [x] (2026-10-07) Logo definitivo: **contagiri** (variante C scelta tra 3), icone PWA rigenerate con
-  sfondo nero (`apps/web/pwa-assets.config.ts`)
-- [ ] (Facoltativo) rifinire il disegno dell'auto in `src/ui/auto.ts`
+- [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
+- [ ] Job CI con `supabase start` + `npm run db:test` (ora le migrazioni sono due e i test 37)
 
-**Chiusura Fase 1:** `npm run check` + `npm run db:test` verdi ✅, prova completa dal telefono ✅ (2026-10-07:
-registrazione → conferma → modifica profilo → cambio password → esci → recupero password, tutto ok).
-Mancano solo i punti D (e l'SMTP definitivo, che dipende dall'officina) → poi PLAN.md → Fase 1 ✅.
+**Rimandati:**
 
-**Rimandati (non bloccano la Fase 1):**
-
+- **SMTP definitivo** con il dominio di LA SANTI GOMME: verificare il dominio su Resend (record DNS SPF/DKIM,
+  serve chi gestisce il loro dominio), mittente `noreply@<dominio>`, aggiornare *SMTP Settings* in Supabase,
+  poi controllare che le email **non finiscano in Spam**. Fino ad allora Resend in prova consegna **solo** a
+  `albodavide1@gmail.com`
+- Rifinire il disegno dell'auto in `src/ui/auto.ts` (facoltativo)
 - Invito di un utente in un'officina (oggi un titolare può aggiungere un `profile_id` ma non ha modo di
-  trovarlo): flusso di invito via email/codice su Fastify → **Fase 2**, insieme ai clienti dell'officina
-- Job CI con `supabase start` + `npm run db:test` (oggi i test pgTAP girano solo in locale) → quando le
-  migrazioni aumentano (Fase 2)
-- Deploy di `apps/api` su un secondo progetto Vercel → quando servirà la prima rotta usata dal web (import
-  CSV in Fase 2); servirà anche CORS (`@fastify/cors`) e la variabile `SUPABASE_URL`
+  trovarlo): flusso di invito via email/codice su Fastify
+- "Rivendicazione" dei veicoli da parte del cliente (collega `clienti_officina.profile_id` al suo account:
+  codice invito dell'officina o targa + telefono) — oggi lo può fare solo ADMIN/service role
+- Deploy di `apps/api` su un secondo progetto Vercel → quando servirà la prima rotta usata dal web; servirà
+  anche CORS (`@fastify/cors`) e la variabile `SUPABASE_URL`
 
-**Da chiedere a LA SANTI GOMME (primo partner, gestionale GESTITYRE — vedi `PLAN.md` P8) prima della
-Fase 2:**
+**Da chiedere a LA SANTI GOMME (primo partner, gestionale GESTITYRE — vedi `PLAN.md` P8):**
 
 - [ ] Un **file `.xls` di esempio** esportato da GESTITYRE, se possibile con dati anonimizzati o finti
-  (nomi, telefoni, targhe): serve per progettare l'adattatore di import e le tabelle della Fase 2.
-  **Richiesto dal titolare il 2026-10-06**: lo comunicherà lui quando lo avrà ricevuto (non metterlo nel
-  repo se contiene dati reali di clienti)
+  (nomi, telefoni, targhe). **Richiesto il 2026-10-06, al 2026-10-07 non ancora arrivato**: il titolare lo
+  comunicherà quando lo avrà (non metterlo nel repo se contiene dati reali di clienti)
 - [ ] Quali **esportazioni** offre GESTITYRE (clienti, veicoli, pneumatici montati, deposito gomme,
   interventi/controlli con misure del battistrada?) e quali campi contengono
 - [ ] Ogni quanto riuscirebbero a esportare (giornaliero, settimanale…) e chi lo farebbe in officina
 - [ ] Nome/dati dell'officina per creare il suo profilo officina sul cloud (ragione sociale, P.IVA, indirizzo,
   orari) — e chi sarà il **TITOLARE** in TyreCare
-
-**Poi — Fase 2 (Dati):** migrazione `veicoli`, `veicoli_officina`, `clienti_officina`, `pneumatici`,
-`controlli`, `misure_pneumatico` (PLAN P12) con RLS e test pgTAP; inserimento di un controllo dall'app
-(lato officina); garage del cliente con il cruscotto dell'anteprima alimentato da dati veri.
+- [ ] Dominio email dell'officina e chi ne gestisce i DNS (per l'SMTP definitivo)
 
 **Ancora in sospeso dalla sessione 1:**
 
@@ -131,7 +114,7 @@ Fase 2:**
 
 ## Storico
 
-### Sessione 5 — 2026-10-07 (PC di casa) — in corso
+### Sessione 5 — 2026-10-07 (PC di casa)
 
 **Fatto**
 
@@ -149,6 +132,19 @@ Fase 2:**
 - **Logo definitivo (D):** contagiri con zona rossa e lancetta rossa, scelto dal titolare tra 3 varianti;
   icone PWA rigenerate con sfondo nero (prima il generatore aggiungeva un bordo bianco)
 - **Prova completa dal telefono sul sito Vercel superata** (commit `41ef3eb`, CI verde)
+- **Fase 1 chiusa** (PLAN.md aggiornato). Rimandati: SMTP col dominio dell'officina, rifinitura dell'auto
+- **Fase 2 iniziata — database:** migrazione `20261007120000_dati.sql` con `clienti_officina`, `veicoli`,
+  `pneumatici`, `controlli`, `misure_pneumatico`, RLS e trigger; **decisione del titolare: veicoli per
+  officina** (niente `veicoli_officina`, vedi PLAN P12); seed con seconda officina e titolare
+  (`titolare2@tyrecare.test`); 20 nuovi test pgTAP (totale 37, verdi); tipi rigenerati; enum Zod
+  `PosizioneSchema` e `UsuraSchema` con test di allineamento al database. **Non ancora pubblicata sul cloud**
+
+**Note**
+
+- Gmail mette in Spam le email da `onboarding@resend.dev` e lì disattiva i link: segnarle come "non spam".
+- Se l'app è installata sul telefono, la nuova icona compare solo dopo averla rimossa e aggiunta di nuovo.
+- `supabase start` dopo un riavvio di Docker può lasciare i container senza porte pubblicate:
+  `npx.cmd supabase stop` e poi di nuovo `start`.
 
 
 ### Sessione 4 — 2026-10-06 (PC di casa)

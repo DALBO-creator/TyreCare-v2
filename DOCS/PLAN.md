@@ -277,6 +277,23 @@ reminder        (id, veicolo_id, tipo, data_prevista, inviato_il, canale)
 import_log      (id, officina_id, file, righe_ok, righe_errore, eseguito_da, data)
 ```
 
+**Decisioni del 2026-10-07 (migrazione `20261007120000_dati.sql`):**
+
+- **Veicoli per officina** (scelta del titolare): niente `veicoli_officina`; ogni officina ha la sua scheda
+  del veicolo (`veicoli.officina_id`, targa unica per officina) e il suo storico. La stessa targa in due
+  officine sono due schede: il **garage del cliente le unisce per targa**. Motivi: nessuna officina vede i
+  dati delle altre, import più semplice, i dati restano dell'officina (GDPR).
+- `veicoli_officina` → sostituita da `veicoli.officina_id` + `veicoli.cliente_officina_id`.
+- Ogni tabella dei dati porta `officina_id`; chiavi esterne composte garantiscono che controllo, pneumatico
+  e misura siano dello stesso veicolo e della stessa officina.
+- Il **collegamento cliente ↔ account** (`clienti_officina.profile_id`) lo fanno solo ADMIN o il backend
+  (futuro flusso di "rivendicazione"): un'officina non può far comparire un veicolo nel garage di altri.
+- L'**ADMIN non vede** i dati dei clienti delle officine (TyreCare è responsabile del trattamento, P17);
+  per l'assistenza si usa il backend con la service role.
+- `misure_pneumatico`: `battistrada_mm` è la profondità **minima** misurata (decide lo stato), più
+  `pressione_bar`, `usura` (REGOLARE/INTERNA/ESTERNA/CENTRALE/BORDI) e `danni`. Le foto arriveranno con
+  Supabase Storage.
+
 Punto importante: **lo stesso cliente può essere cliente di più officine**. L'anagrafica che arriva dal gestionale
 (`clienti_officina`) è dell'officina; l'account TyreCare (`profiles`) è della persona. Il collegamento avviene
 quando il cliente si registra e "rivendica" i suoi veicoli (es. codice invito generato dall'officina, oppure
@@ -349,8 +366,8 @@ documento dedicato.
 | Fase | Contenuto | Stato |
 |------|-----------|-------|
 | 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | ✅ (resta solo il deploy di `apps/api`, rimandato) |
-| 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | 🟨 design system, ruoli/RLS, auth (web + API) fatti; restano email in italiano e modifica profilo |
-| 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | ⬜ |
+| 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | ✅ chiusa il 2026-10-07 (design system v3, ruoli/RLS, auth web + API, profilo, email in italiano, logo). Rimandati: SMTP col dominio di LA SANTI GOMME, rifinitura dell'auto |
+| 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07 |
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | ⬜ |
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | ⬜ |
 | 5 — Notifiche | Web Push, reminder schedulati, fallback email | ⬜ |

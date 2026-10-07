@@ -3,6 +3,14 @@ import { z } from 'zod';
 export const StagioneSchema = z.enum(['ESTIVO', 'INVERNALE', 'QUATTRO_STAGIONI']);
 export type Stagione = z.infer<typeof StagioneSchema>;
 
+/** Posizione dello pneumatico sul veicolo (enum `posizione_pneumatico` del database). */
+export const PosizioneSchema = z.enum(['ANT_SX', 'ANT_DX', 'POST_SX', 'POST_DX', 'SCORTA']);
+export type Posizione = z.infer<typeof PosizioneSchema>;
+
+/** Usura irregolare del battistrada (PLAN P10, enum `usura` del database). */
+export const UsuraSchema = z.enum(['REGOLARE', 'INTERNA', 'ESTERNA', 'CENTRALE', 'BORDI']);
+export type Usura = z.infer<typeof UsuraSchema>;
+
 /** Soglie di profondità del battistrada in mm (PLAN P10). */
 export const SOGLIE_BATTISTRADA_MM = {
   limiteLegale: 1.6,
