@@ -58,23 +58,24 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 **A — Configurazione online (titolare, dalla dashboard; Claude guida passo passo)**
 
 - [x] Vercel: `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` del cloud — accesso dal sito funzionante
-- [ ] Supabase → *Authentication → URL Configuration*: **Site URL** `https://tyre-care-v2.vercel.app`,
-  **Redirect URLs** `https://tyre-care-v2.vercel.app/**` (da verificare se già fatto)
-- [ ] Supabase → *Authentication → Providers → Email*: lunghezza minima password **8** (come in locale)
-- [ ] **SMTP proprio** — **deciso (2026-10-07): Resend**, prima in prova con l'email del titolare (Resend
-  senza dominio verificato invia solo da `onboarding@resend.dev` e solo all'email del proprio account), poi
-  con il dominio di LA SANTI GOMME (servono i record DNS SPF/DKIM sul loro dominio). Note originali: scegliere il servizio (proposta: **Resend**, gratuito fino a 3.000 email/mese) e il
-  mittente (es. `noreply@<dominio>`; serve un dominio verificato — se non c'è ancora, decidere quale
-  acquistare); configurarlo in *Project Settings → Authentication → SMTP Settings*; alzare il limite in
-  *Authentication → Rate Limits*. Senza questo il servizio incluso manda ~2 email l'ora
+- [x] Supabase → *Authentication → URL Configuration*: **Site URL** `https://tyre-care-v2.vercel.app`,
+  **Redirect URLs** `https://tyre-care-v2.vercel.app/**`
+- [x] Supabase → *Authentication → Providers → Email*: lunghezza minima password **8** (come in locale)
+- [x] **SMTP con Resend in prova** (2026-10-07): mittente `onboarding@resend.dev`, host `smtp.resend.com`
+  porta 465, utente `resend`; limite di invio alzato. In prova Resend consegna **solo** all'email del
+  titolare (`albodavide1@gmail.com`): gli altri utenti non ricevono email
+- [ ] **SMTP definitivo** con il dominio di LA SANTI GOMME: verificare il dominio su Resend (record DNS
+  SPF/DKIM, serve chi gestisce il loro dominio), mittente `noreply@<dominio>`, aggiornare *SMTP Settings*.
+  Poi controllare che le email **non finiscano in Spam** (con `onboarding@resend.dev` Gmail le metteva in
+  Spam e lì i link sono disattivati)
 
 **B — Email in italiano (Claude)**
 
 - [x] Template HTML in italiano, nello stile nero/rosso del design, per: conferma registrazione, recupero
   password, cambio email **+ avviso "password cambiata"**. File in `supabase/templates/*.html`, collegati
   in `supabase/config.toml` → provati in locale su Mailpit (sessione 5)
-- [ ] Copiarli nel cloud: dashboard → *Authentication → Emails* (oggetto + corpo; oggetti in
-  `supabase/config.toml`), e attivare la notifica "Password changed"
+- [x] Copiati nel cloud (*Authentication → Emails*), notifica "Password changed" attiva. Se si modificano i
+  file in `supabase/templates/`, vanno ricopiati a mano nella dashboard
 
 **C — Profilo (Claude)**
 
@@ -91,8 +92,9 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
   icone PWA (`npm run icons -w @tyrecare/web`)
 - [ ] (Facoltativo) rifinire il disegno dell'auto in `src/ui/auto.ts`
 
-**Chiusura Fase 1:** `npm run check` + `npm run db:test` verdi, prova completa dal telefono (registrazione
-con email reale → conferma → accesso → modifica profilo → esci → recupero password), PLAN.md → Fase 1 ✅.
+**Chiusura Fase 1:** `npm run check` + `npm run db:test` verdi ✅, prova completa dal telefono ✅ (2026-10-07:
+registrazione → conferma → modifica profilo → cambio password → esci → recupero password, tutto ok).
+Mancano solo i punti D (e l'SMTP definitivo, che dipende dall'officina) → poi PLAN.md → Fase 1 ✅.
 
 **Rimandati (non bloccano la Fase 1):**
 
@@ -140,6 +142,9 @@ Fase 2:**
 - **Email (B, parte locale):** 4 template in italiano nello stile del design, provati su Mailpit con
   screenshot
 - Risolto il blocco delle porte di Supabase su Windows (vedi Promemoria permanenti)
+- **Configurazione online (A):** Site URL e Redirect URLs, password minima 8, SMTP con Resend in prova,
+  4 template copiati nel cloud
+- **Prova completa dal telefono sul sito Vercel superata** (commit `41ef3eb`, CI verde)
 
 
 ### Sessione 4 — 2026-10-06 (PC di casa)
