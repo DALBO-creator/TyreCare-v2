@@ -7,10 +7,12 @@ import { icona } from './icone';
 interface Campo {
   nome: string;
   etichetta: string;
-  tipo: 'text' | 'email' | 'password';
+  tipo: 'text' | 'email' | 'password' | 'tel';
   /** Valore di `autocomplete`: permette a browser e password manager di compilare il campo. */
   autocomplete: string;
   aiuto?: string;
+  /** Valore iniziale (es. i dati attuali del profilo). */
+  valore?: string;
 }
 
 const id = (nome: string) => `campo-${nome}`;
@@ -19,11 +21,12 @@ const id = (nome: string) => `campo-${nome}`;
  * Campo con etichetta sempre visibile, testo di aiuto e spazio per l'errore, collegati all'input
  * con `aria-describedby`. Le password hanno il pulsante per mostrarle (incollare è sempre permesso).
  */
-export function campo({ nome, etichetta, tipo, autocomplete, aiuto }: Campo): string {
+export function campo({ nome, etichetta, tipo, autocomplete, aiuto, valore }: Campo): string {
   const descrizioni = [aiuto ? `${id(nome)}-aiuto` : '', `${id(nome)}-errore`].join(' ').trim();
   const input = `
     <input class="form-control form-control-lg" id="${id(nome)}" name="${nome}" type="${tipo}"
       autocomplete="${autocomplete}" aria-describedby="${descrizioni}"
+      ${valore ? `value="${esc(valore)}"` : ''}
       ${tipo === 'email' ? 'inputmode="email" autocapitalize="off" spellcheck="false"' : ''}
       ${tipo === 'text' ? 'autocapitalize="words"' : ''} />`;
 

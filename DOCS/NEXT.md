@@ -38,6 +38,14 @@ Altre particolarità del PC scolastico:
   (`msedge.exe --headless=new --screenshot=…`). Larghezza minima della finestra headless ~500 px.
 - GitHub CLI è in `%LOCALAPPDATA%\gh\bin\gh.exe` (versione portable).
 
+### 🏠 PC di casa → porte di Supabase riservate da Windows
+
+Se `supabase start` fallisce con *"ports are not available … bind: An attempt was made to access a socket
+in a way forbidden"*, Windows (Hyper-V/WinNAT) si è riservato le porte 54xxx. Il 2026-10-07 sono state
+riservate in modo permanente le porte **54320–54329** (`netsh … add excludedportrange`); se ricapita, in
+PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Docker Desktop è in
+`%LOCALAPPDATA%\Programs\DockerDesktop\Docker Desktop.exe`.
+
 ## Prossima sessione
 
 > **Obiettivo della sessione 5: chiudere definitivamente la Fase 1**, poi (se avanza tempo) iniziare la
@@ -60,16 +68,17 @@ Altre particolarità del PC scolastico:
 
 **B — Email in italiano (Claude)**
 
-- [ ] Template HTML in italiano, nello stile nero/rosso del design, per: conferma registrazione, recupero
-  password, cambio email. File in `supabase/templates/*.html`, collegati in `supabase/config.toml`
-  (`[auth.email.template.*]`) → provati in locale su Mailpit (http://127.0.0.1:54324)
-- [ ] Copiarli nel cloud: dashboard → *Authentication → Email Templates* (oggetto + corpo)
+- [x] Template HTML in italiano, nello stile nero/rosso del design, per: conferma registrazione, recupero
+  password, cambio email **+ avviso "password cambiata"**. File in `supabase/templates/*.html`, collegati
+  in `supabase/config.toml` → provati in locale su Mailpit (sessione 5)
+- [ ] Copiarli nel cloud: dashboard → *Authentication → Emails* (oggetto + corpo; oggetti in
+  `supabase/config.toml`), e attivare la notifica "Password changed"
 
 **C — Profilo (Claude)**
 
-- [ ] Modifica di nome, cognome e telefono dalla pagina Profilo (schema Zod in `packages/shared`, la RLS già
+- [x] Modifica di nome, cognome e telefono dalla pagina Profilo (schema Zod in `packages/shared`, la RLS già
   permette di modificare solo il proprio profilo e il trigger blocca il ruolo)
-- [ ] Cambio password da utente già autenticato (riusa `impostaNuovaPassword`)
+- [x] Cambio password da utente già autenticato (chiede anche la password attuale)
 
 **D — Rifiniture del design (titolare decide, Claude esegue)**
 
@@ -117,6 +126,19 @@ Fase 2:**
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 5 — 2026-10-07 (PC di casa) — in corso
+
+**Fatto**
+
+- **Profilo (C):** pagine `/profilo/dati` (nome, cognome, telefono) e `/profilo/password` (password attuale +
+  nuova), sezione "Account" nel Profilo, avviso verde dopo il salvataggio; schemi Zod
+  `ModificaProfiloSchema` e `CambioPasswordSchema` con test. Provato contro Supabase locale: salvataggio,
+  telefono non valido rifiutato, profilo altrui bloccato dalla RLS, password attuale errata riconosciuta
+- **Email (B, parte locale):** 4 template in italiano nello stile del design, provati su Mailpit con
+  screenshot
+- Risolto il blocco delle porte di Supabase su Windows (vedi Promemoria permanenti)
+
 
 ### Sessione 4 — 2026-10-06 (PC di casa)
 

@@ -32,6 +32,10 @@ const VOCI_NAV: { percorso: string; etichetta: string; icona: IconNode }[] = [
   { percorso: '/profilo', etichetta: 'Profilo', icona: UserRound },
 ];
 
+// La voce resta evidenziata anche nelle sottopagine (es. /profilo/password)
+const attiva = (percorso: string) =>
+  location.pathname === percorso || location.pathname.startsWith(`${percorso}/`);
+
 /** Guscio delle pagine con login: barra superiore, contenuto, navigazione inferiore. */
 export function paginaApp(corpo: string): string {
   return `
@@ -43,7 +47,7 @@ export function paginaApp(corpo: string): string {
       ${VOCI_NAV.map(
         (v) => `
         <a class="tc-bottomnav__voce" href="${v.percorso}"${
-          location.pathname === v.percorso ? ' aria-current="page"' : ''
+          attiva(v.percorso) ? ' aria-current="page"' : ''
         }>${icona(v.icona)}<span>${v.etichetta}</span></a>`,
       ).join('')}
     </nav>`;

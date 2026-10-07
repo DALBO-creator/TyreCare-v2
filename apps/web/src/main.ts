@@ -13,7 +13,9 @@ import {
   type Rotta,
 } from './lib/router';
 import { mostraAccedi } from './pagine/accedi';
+import { mostraCambiaPassword } from './pagine/cambia-password';
 import { mostraHome } from './pagine/home';
+import { mostraModificaProfilo } from './pagine/modifica-profilo';
 import { mostraNonTrovata } from './pagine/non-trovata';
 import { mostraNuovaPassword } from './pagine/nuova-password';
 import { mostraPasswordDimenticata } from './pagine/password-dimenticata';
@@ -23,6 +25,18 @@ import { mostraRegistrati } from './pagine/registrati';
 const ROTTE: Rotta[] = [
   { percorso: '/', accesso: 'utente', titolo: '', mostra: mostraHome },
   { percorso: '/profilo', accesso: 'utente', titolo: 'Profilo', mostra: mostraProfilo },
+  {
+    percorso: '/profilo/dati',
+    accesso: 'utente',
+    titolo: 'I tuoi dati',
+    mostra: mostraModificaProfilo,
+  },
+  {
+    percorso: '/profilo/password',
+    accesso: 'utente',
+    titolo: 'Cambia password',
+    mostra: mostraCambiaPassword,
+  },
   { percorso: '/accedi', accesso: 'ospite', titolo: 'Accedi', mostra: mostraAccedi },
   { percorso: '/registrati', accesso: 'ospite', titolo: 'Registrati', mostra: mostraRegistrati },
   {

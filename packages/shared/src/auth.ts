@@ -43,3 +43,35 @@ export type RecuperoPassword = z.infer<typeof RecuperoPasswordSchema>;
 
 export const NuovaPasswordSchema = z.object({ password: nuovaPassword });
 export type NuovaPassword = z.infer<typeof NuovaPasswordSchema>;
+
+/** Cambio password da utente già autenticato: si chiede anche quella attuale. */
+export const CambioPasswordSchema = z.object({
+  attuale: z.string().min(1, { error: 'Inserisci la password attuale' }),
+  password: nuovaPassword,
+});
+export type CambioPassword = z.infer<typeof CambioPasswordSchema>;
+
+// Stesso controllo del vincolo `check` su `profiles.telefono`
+const TELEFONO = /^\+?[0-9 ]{6,20}$/;
+
+/** Telefono facoltativo: trattini, punti e parentesi diventano spazi; vuoto → `null`. */
+const telefono = z
+  .string()
+  .transform((s) =>
+    s
+      .replace(/[-./()]/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim(),
+  )
+  .refine((s) => s === '' || TELEFONO.test(s), {
+    error:
+      'Controlla il numero: solo cifre e spazi, eventualmente con + davanti (es. +39 333 1234567)',
+  })
+  .transform((s) => s || null);
+
+export const ModificaProfiloSchema = z.object({
+  nome: nome('nome'),
+  cognome: nome('cognome'),
+  telefono,
+});
+export type ModificaProfilo = z.infer<typeof ModificaProfiloSchema>;

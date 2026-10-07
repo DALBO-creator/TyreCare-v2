@@ -271,3 +271,51 @@ altre funzioni di Supabase dentro quel callback può bloccare il client: si rima
 
 `pagine/password-dimenticata.ts` — il messaggio di conferma è lo stesso che l'email sia registrata o no: non
 si rivela a un estraneo chi ha un account.
+
+## Profilo — modifica dati e cambio password (Fase 1)
+
+**File coinvolti:** `packages/shared/src/auth.ts` (`ModificaProfiloSchema`, `CambioPasswordSchema`),
+`apps/web/src/lib/{profilo,auth}.ts` (`salvaProfilo`, `cambiaPassword`),
+`apps/web/src/pagine/{profilo,modifica-profilo,cambia-password}.ts`, `apps/web/src/ui/modulo.ts`
+
+**Come funziona:**
+
+- Dal Profilo, sezione **Account**: "Modifica i tuoi dati" → `/profilo/dati` (nome, cognome, telefono
+  facoltativo) e "Cambia password" → `/profilo/password` (password attuale + nuova). Email e ruolo non si
+  cambiano da qui.
+- Dopo il salvataggio si torna al Profilo con un avviso verde di conferma (`tornaAlProfilo`). La voce
+  "Profilo" della navigazione inferiore resta evidenziata anche nelle sottopagine.
+- **Telefono:** trattini, punti e parentesi diventano spazi, campo vuoto → `null`; poi lo stesso controllo
+  del vincolo `check` del database (`^\+?[0-9 ]{6,20}$`), così l'errore compare sotto il campo e non arriva
+  dal database.
+- La modifica passa direttamente da Supabase: la RLS permette di aggiornare solo il proprio profilo e il
+  trigger blocca ruolo e campi riservati.
+
+### Codice complesso
+
+`lib/auth.ts` → `cambiaPassword()` — Supabase permetterebbe di cambiare la password con la sola sessione
+aperta; prima si verifica quella attuale **rifacendo l'accesso** con `signInWithPassword` (Supabase limita i
+tentativi). Così chi trova il telefono sbloccato non può cambiarla. L'errore `invalid_credentials` viene
+ricodificato come `password_attuale_errata` per mostrare "La password attuale non è corretta" invece di
+"Email o password non corrette".
+
+`lib/profilo.ts` → `salvaProfilo()` usa `.select('id').single()` — un `update` bloccato dalla RLS non dà
+errore, aggiorna 0 righe; chiedendo la riga aggiornata, 0 righe diventano un errore (`PGRST116`).
+
+## Email in italiano (Fase 1)
+
+**File coinvolti:** `supabase/templates/{conferma,recupero,cambio-email,password-cambiata}.html`,
+`supabase/config.toml` (`[auth.email.template.*]`, `[auth.email.notification.password_changed]`)
+
+**Come funziona:**
+
+- Quattro email nello stile del design (nero, rosso `#e10600`, marchio TYRE**CARE**): conferma della
+  registrazione, recupero password, cambio email (va a entrambi gli indirizzi), **avviso di password
+  cambiata** (notifica di sicurezza).
+- Variabili di Supabase (template Go): `{{ .ConfirmationURL }}`, `{{ .Email }}`, `{{ .NewEmail }}`,
+  `{{ .SiteURL }}`, `{{ .Data.nome }}` (metadati salvati alla registrazione: "Ciao Giulia,", oppure "Ciao,"
+  se manca).
+- HTML per client email: tabelle e stili in linea (molti client ignorano `<style>` e flexbox), nessuna
+  immagine (spesso bloccate), link testuale sotto il pulsante.
+- `config.toml` vale **solo in locale** (prova su Mailpit http://127.0.0.1:54324). Nel cloud oggetto e
+  corpo vanno copiati dalla dashboard: *Authentication → Emails*.

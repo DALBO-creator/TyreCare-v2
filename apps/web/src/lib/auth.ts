@@ -1,5 +1,11 @@
-import { isAuthError, type AuthChangeEvent, type Session } from '@supabase/supabase-js';
-import type { Accesso, NuovaPassword, RecuperoPassword, Registrazione } from '@tyrecare/shared';
+import { AuthError, isAuthError, type AuthChangeEvent, type Session } from '@supabase/supabase-js';
+import type {
+  Accesso,
+  CambioPassword,
+  NuovaPassword,
+  RecuperoPassword,
+  Registrazione,
+} from '@tyrecare/shared';
 import { getSupabase } from './supabase';
 
 let sessione: Session | null = null;
@@ -56,6 +62,21 @@ export async function impostaNuovaPassword({ password }: NuovaPassword): Promise
   if (error) throw error;
 }
 
+/**
+ * Cambio password da utente autenticato. Prima si verifica quella attuale rifacendo l'accesso
+ * (Supabase limita i tentativi): così chi trova il telefono sbloccato non può cambiarla.
+ */
+export async function cambiaPassword({ attuale, password }: CambioPassword): Promise<void> {
+  const email = sessione?.user.email;
+  if (!email) throw new Error('Nessun utente autenticato');
+  const { error } = await getSupabase().auth.signInWithPassword({ email, password: attuale });
+  if (error?.code === 'invalid_credentials') {
+    throw new AuthError(error.message, error.status, 'password_attuale_errata');
+  }
+  if (error) throw error;
+  await impostaNuovaPassword({ password });
+}
+
 export async function esci(): Promise<void> {
   // `local`: esce da questo dispositivo, non da tutti
   const { error } = await getSupabase().auth.signOut({ scope: 'local' });
@@ -65,6 +86,7 @@ export async function esci(): Promise<void> {
 // Codici di errore di Supabase Auth → messaggi per l'utente
 const MESSAGGI: Record<string, string> = {
   invalid_credentials: 'Email o password non corrette.',
+  password_attuale_errata: 'La password attuale non è corretta.',
   email_not_confirmed:
     "Devi prima confermare l'email: apri il link che ti abbiamo inviato (controlla anche lo spam).",
   user_already_exists: 'Esiste già un account con questa email. Prova ad accedere.',

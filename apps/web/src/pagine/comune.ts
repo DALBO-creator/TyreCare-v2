@@ -34,3 +34,12 @@ export function erroreCaricamento(): string {
       <a class="btn btn-outline-light" href="${location.pathname}">Riprova</a>
     </div>`;
 }
+
+/** Intestazione delle sottopagine del profilo: etichetta "Profilo" e titolo. */
+export function intestazioneSottopagina(titolo: string): string {
+  return `
+    <section class="tc-hero">
+      <p class="tc-etichetta">Profilo</p>
+      <h1 class="tc-hero__modello tc-hero__modello--saluto" tabindex="-1">${titolo}</h1>
+    </section>`;
+}

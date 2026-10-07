@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { AccessoSchema, RegistrazioneSchema } from './auth';
+import {
+  AccessoSchema,
+  CambioPasswordSchema,
+  ModificaProfiloSchema,
+  RegistrazioneSchema,
+} from './auth';
 
 describe('RegistrazioneSchema', () => {
   const valida = {
@@ -38,5 +43,33 @@ describe('AccessoSchema', () => {
   it('chiede la password se manca', () => {
     const r = AccessoSchema.safeParse({ email: 'a@b.it', password: '' });
     expect(r.error?.issues[0]?.message).toBe('Inserisci la password');
+  });
+});
+
+describe('ModificaProfiloSchema', () => {
+  const base = { nome: 'Giulia', cognome: 'Verdi' };
+
+  it('trasforma il telefono vuoto in null', () => {
+    expect(ModificaProfiloSchema.parse({ ...base, telefono: '  ' }).telefono).toBeNull();
+  });
+
+  it('normalizza i separatori del telefono', () => {
+    expect(ModificaProfiloSchema.parse({ ...base, telefono: '+39 (333) 123-45.67' }).telefono).toBe(
+      '+39 333 123 45 67',
+    );
+  });
+
+  it('rifiuta un telefono con lettere o troppo corto', () => {
+    for (const telefono of ['333abc456', '12345']) {
+      const r = ModificaProfiloSchema.safeParse({ ...base, telefono });
+      expect(r.error?.issues[0]?.path).toEqual(['telefono']);
+    }
+  });
+});
+
+describe('CambioPasswordSchema', () => {
+  it('chiede la password attuale e una nuova abbastanza lunga', () => {
+    const r = CambioPasswordSchema.safeParse({ attuale: '', password: 'corta' });
+    expect(r.error?.issues.map((i) => i.path[0])).toEqual(['attuale', 'password']);
   });
 });

@@ -1,4 +1,4 @@
-import type { Tables } from '@tyrecare/shared';
+import type { ModificaProfilo, Tables } from '@tyrecare/shared';
 import { sessioneCorrente } from './auth';
 import { getSupabase } from './supabase';
 
@@ -35,4 +35,20 @@ export async function caricaDatiUtente(): Promise<DatiUtente> {
   if (officine.error) throw officine.error;
 
   return { email: utente.email ?? '', profilo: profilo.data, officine: officine.data };
+}
+
+/**
+ * Salva nome, cognome e telefono. La RLS permette di modificare solo il proprio profilo; senza
+ * `.single()` un aggiornamento bloccato passerebbe in silenzio (0 righe), così invece dà errore.
+ */
+export async function salvaProfilo(dati: ModificaProfilo): Promise<void> {
+  const utente = sessioneCorrente()?.user;
+  if (!utente) throw new Error('Nessun utente autenticato');
+  const { error } = await getSupabase()
+    .from('profiles')
+    .update(dati)
+    .eq('id', utente.id)
+    .select('id')
+    .single();
+  if (error) throw error;
 }
