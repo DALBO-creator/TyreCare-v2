@@ -5,7 +5,8 @@
 :root {
   --tc-superficie: #{$tc-superficie};
   --tc-superficie-alta: #{$tc-superficie-alta};
-  --tc-rosso: #{$tc-rosso};
+  // Rosso del marchio: nome distinto da --tc-rosso, che è il rosso "di stato" (corallo) del ciclo sotto
+  --tc-brand: #{$tc-rosso};
   --tc-rosso-chiaro: #{$tc-rosso-chiaro};
 
   @each $stato, $valori in $tc-stati {
@@ -67,7 +68,7 @@ h6 {
   color: $tc-bianco;
 
   span {
-    color: var(--tc-rosso);
+    color: var(--tc-brand);
   }
 }
 
@@ -168,7 +169,7 @@ h6 {
   right: 0.6875rem;
   width: 0.5rem;
   height: 0.5rem;
-  background: var(--tc-rosso);
+  background: var(--tc-brand);
   border: 2px solid $tc-nero;
   border-radius: 50%;
 }
@@ -272,7 +273,7 @@ h6 {
   }
 
   &__fanale {
-    stroke: var(--tc-rosso);
+    stroke: var(--tc-brand);
   }
 }
 
@@ -602,7 +603,7 @@ h6 {
         width: 0.25rem;
         height: 0.25rem;
         border-radius: 50%;
-        background: var(--tc-rosso);
+        background: var(--tc-brand);
       }
     }
 

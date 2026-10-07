@@ -85,7 +85,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 **D — Rifiniture del design (titolare decide, Claude esegue)**
 
-- [ ] Colore del marchio: in `_componenti.scss` `--tc-rosso` (rosso brand) è sovrascritta dal ciclo degli
+- [x] (2026-10-07, approvato: rosso brand) Colore del marchio: in `_componenti.scss` `--tc-rosso` (rosso brand) è sovrascritta dal ciclo degli
   stati (= corallo `#ff6b6b`): "CARE", pallino della navigazione e fanali dell'auto escono corallo. Mostrare
   al titolare le due versioni (screenshot) e, se approva, rinominare la variabile del brand in `--tc-brand`
 - [ ] Logo definitivo nello stile del design v3 (`apps/web/public/logo.svg` è provvisorio) → rigenerare le
@@ -144,6 +144,8 @@ Fase 2:**
 - Risolto il blocco delle porte di Supabase su Windows (vedi Promemoria permanenti)
 - **Configurazione online (A):** Site URL e Redirect URLs, password minima 8, SMTP con Resend in prova,
   4 template copiati nel cloud
+- **Colore del marchio (D):** nuova variabile `--tc-brand` (rosso `#e10600`) per marchio, fanali, pallini
+  di navigazione e notifica; il corallo resta solo per stati ed errori. Approvato dal titolare
 - **Prova completa dal telefono sul sito Vercel superata** (commit `41ef3eb`, CI verde)
 
 
