@@ -8,7 +8,7 @@ import {
   ETICHETTE_AREA,
   ETICHETTE_RUOLO_OFFICINA,
   ETICHETTE_STATO_OFFICINA,
-  erroreCaricamento,
+  gestisciErroreCaricamento,
 } from './comune';
 
 /** Home dopo l'accesso. I veicoli arriveranno in Fase 2: per ora saluto e officine dell'utente. */
@@ -19,8 +19,8 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
   let dati: DatiUtente;
   try {
     dati = await caricaDatiUtente();
-  } catch {
-    if (ancoraAttuale(n)) app.innerHTML = paginaApp(erroreCaricamento());
+  } catch (errore) {
+    await gestisciErroreCaricamento(app, n, errore);
     return;
   }
   if (!ancoraAttuale(n)) return;

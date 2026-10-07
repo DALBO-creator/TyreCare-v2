@@ -1,3 +1,4 @@
+import { isAuthError } from '@supabase/supabase-js';
 import type { ModificaProfilo, Tables } from '@tyrecare/shared';
 import { sessioneCorrente } from './auth';
 import { getSupabase } from './supabase';
@@ -35,6 +36,23 @@ export async function caricaDatiUtente(): Promise<DatiUtente> {
   if (officine.error) throw officine.error;
 
   return { email: utente.email ?? '', profilo: profilo.data, officine: officine.data };
+}
+
+// Errori che indicano una sessione salvata non più valida (token scaduto, revocato o firmato con
+// una chiave vecchia): riprovare non serve, bisogna rifare l'accesso
+const CODICI_SESSIONE_NON_VALIDA = new Set([
+  'PGRST301', // PostgREST: JWT non valido o scaduto
+  'PGRST303', // PostgREST: claim del JWT non validi
+  'PGRST116', // nessun profilo per questo utente (account eliminato con la sessione ancora salvata)
+]);
+const CODICI_AUTH_NON_VALIDA = new Set(['bad_jwt', 'session_not_found', 'refresh_token_not_found']);
+
+export function sessioneNonValida(errore: unknown): boolean {
+  if (isAuthError(errore)) {
+    return errore.status === 401 || (!!errore.code && CODICI_AUTH_NON_VALIDA.has(errore.code));
+  }
+  const codice = (errore as { code?: unknown } | null)?.code;
+  return typeof codice === 'string' && CODICI_SESSIONE_NON_VALIDA.has(codice);
 }
 
 /**

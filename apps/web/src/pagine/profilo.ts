@@ -15,7 +15,7 @@ import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
 import { ancoraAttuale, vaiA, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
-import { ETICHETTE_RUOLO, ETICHETTE_RUOLO_OFFICINA, erroreCaricamento } from './comune';
+import { ETICHETTE_RUOLO, ETICHETTE_RUOLO_OFFICINA, gestisciErroreCaricamento } from './comune';
 
 function riga(ic: Parameters<typeof icona>[0], etichetta: string, valore: string): string {
   return `
@@ -50,8 +50,8 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
   let dati: DatiUtente;
   try {
     dati = await caricaDatiUtente();
-  } catch {
-    if (ancoraAttuale(n)) app.innerHTML = paginaApp(erroreCaricamento());
+  } catch (errore) {
+    await gestisciErroreCaricamento(app, n, errore);
     return;
   }
   if (!ancoraAttuale(n)) return;

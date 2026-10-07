@@ -1,4 +1,8 @@
 import type { Enums } from '@tyrecare/shared';
+import { esci } from '../lib/auth';
+import { sessioneNonValida } from '../lib/profilo';
+import { ancoraAttuale } from '../lib/router';
+import { paginaApp } from '../ui/layout';
 
 export const ETICHETTE_RUOLO: Record<Enums<'ruolo'>, string> = {
   ADMIN: 'Amministratore',
@@ -33,6 +37,26 @@ export function erroreCaricamento(): string {
       </div>
       <a class="btn btn-outline-light" href="${location.pathname}">Riprova</a>
     </div>`;
+}
+
+/**
+ * Gestisce un errore di `caricaDatiUtente`. Con una sessione non più valida esce: main.ts riceve
+ * SIGNED_OUT e porta ad `/accedi`. Altrimenti mostra l'avviso con "Riprova".
+ */
+export async function gestisciErroreCaricamento(
+  app: HTMLElement,
+  n: number,
+  errore: unknown,
+): Promise<void> {
+  if (sessioneNonValida(errore)) {
+    try {
+      await esci();
+      return;
+    } catch {
+      // Uscita non riuscita (es. offline): si ricade sull'avviso generico
+    }
+  }
+  if (ancoraAttuale(n)) app.innerHTML = paginaApp(erroreCaricamento());
 }
 
 /** Intestazione delle sottopagine del profilo: etichetta "Profilo" e titolo. */
