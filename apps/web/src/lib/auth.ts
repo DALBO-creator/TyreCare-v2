@@ -6,6 +6,7 @@ import type {
   RecuperoPassword,
   Registrazione,
 } from '@tyrecare/shared';
+import { erroreDiRete } from './rete';
 import { getSupabase } from './supabase';
 
 let sessione: Session | null = null;
@@ -105,6 +106,9 @@ export function messaggioErrore(errore: unknown): string {
   }
   if (!navigator.onLine || (isAuthError(errore) && errore.status === 0)) {
     return 'Sembra che tu sia offline. Controlla la connessione e riprova.';
+  }
+  if (erroreDiRete(errore)) {
+    return 'La connessione non risponde. Controlla la rete e riprova.';
   }
   return 'Qualcosa è andato storto. Riprova tra poco.';
 }

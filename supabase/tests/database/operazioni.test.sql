@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(17);
+select plan(21);
 
 create function pg_temp.come(p_utente uuid) returns void language plpgsql as $$
 begin
@@ -142,6 +142,42 @@ select throws_ok(
     '2025-01-01')$$, :panda),
   '23514', null,
   'data di montaggio precedente a quella dello pneumatico attuale: errore'
+);
+
+-- ---------------------------------------------------------------- ripetizioni (errore di rete)
+-- Il web sceglie gli id in anticipo e, se la richiesta fallisce per la rete, la ripete: la seconda
+-- chiamata non deve creare doppioni
+select pg_temp.come('a0000000-0000-4000-8000-000000000003'); -- operatore di Gomme Rossi
+
+select is(
+  public.registra_controllo(:panda, '[{"posizione": "ANT_SX", "battistrada_mm": 7}]',
+    current_date, 60000, '', 'f0000000-0000-4000-8000-0000000000aa'),
+  'f0000000-0000-4000-8000-0000000000aa'::uuid,
+  'registra_controllo usa l''id indicato'
+);
+select is(
+  public.registra_controllo(:panda, '[{"posizione": "ANT_SX", "battistrada_mm": 7}]',
+    current_date, 60000, '', 'f0000000-0000-4000-8000-0000000000aa'),
+  'f0000000-0000-4000-8000-0000000000aa'::uuid,
+  'registra_controllo ripetuto restituisce lo stesso controllo'
+);
+select is(
+  (select count(*)::int from public.controlli where km = 60000),
+  1,
+  'la ripetizione non crea un secondo controllo'
+);
+
+select public.monta_pneumatici(:golf, '[
+  {"id": "e0000000-0000-4000-8000-0000000000aa", "posizione": "ANT_SX", "stagione": "ESTIVO"}
+]');
+select public.monta_pneumatici(:golf, '[
+  {"id": "e0000000-0000-4000-8000-0000000000aa", "posizione": "ANT_SX", "stagione": "ESTIVO"}
+]');
+select results_eq(
+  format($$select id, smontato_il from public.pneumatici
+    where veicolo_id = %L and posizione = 'ANT_SX' and stagione = 'ESTIVO'$$, :golf),
+  $$values ('e0000000-0000-4000-8000-0000000000aa'::uuid, null::date)$$,
+  'monta_pneumatici ripetuto: lo pneumatico resta montato e non si duplica'
 );
 
 select pg_temp.come('a0000000-0000-4000-8000-000000000004'); -- Giulia, cliente

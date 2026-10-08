@@ -1,6 +1,7 @@
 import { isAuthError } from '@supabase/supabase-js';
 import type { ModificaProfilo, Tables } from '@tyrecare/shared';
 import { sessioneCorrente } from './auth';
+import { conRiprova } from './rete';
 import { getSupabase } from './supabase';
 
 export type Profilo = Tables<'profiles'>;
@@ -62,11 +63,9 @@ export function sessioneNonValida(errore: unknown): boolean {
 export async function salvaProfilo(dati: ModificaProfilo): Promise<void> {
   const utente = sessioneCorrente()?.user;
   if (!utente) throw new Error('Nessun utente autenticato');
-  const { error } = await getSupabase()
-    .from('profiles')
-    .update(dati)
-    .eq('id', utente.id)
-    .select('id')
-    .single();
+  // Un update si può ripetere senza rischi: dopo un errore di rete si riprova una volta
+  const { error } = await conRiprova(() =>
+    getSupabase().from('profiles').update(dati).eq('id', utente.id).select('id').single(),
+  );
   if (error) throw error;
 }

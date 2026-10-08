@@ -457,6 +457,7 @@ export type Database = {
       registra_controllo: {
         Args: {
           p_eseguito_il?: string;
+          p_id?: string;
           p_km?: number;
           p_misure: Json;
           p_note?: string;

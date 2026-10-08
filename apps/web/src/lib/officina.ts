@@ -10,6 +10,7 @@ import {
 } from '@tyrecare/shared';
 import { codiceErrore, ErroreModulo } from './errori';
 import { caricaDatiUtente, type DatiUtente, type OfficinaUtente } from './profilo';
+import { conRiprova } from './rete';
 import { getSupabase } from './supabase';
 
 // Dati lato officina (Fase 2). Le letture passano direttamente da Supabase: la RLS mostra solo i dati
@@ -134,29 +135,38 @@ export async function caricaClienti(officinaId: string): Promise<ClienteInElenco
   return data.sort((a, b) => nominativo(a).localeCompare(nominativo(b), 'it'));
 }
 
+/**
+ * Vero se l'errore è la chiave primaria duplicata: dopo una ripetizione per errore di rete significa
+ * che il primo tentativo era arrivato e il record c'è già (l'id l'abbiamo scelto noi).
+ */
+const giaSalvato = (error: unknown, tabella: string) =>
+  codiceErrore(error) === '23505' && String((error as Error).message).includes(`${tabella}_pkey`);
+
 /** Crea un cliente e ne restituisce l'id. */
 export async function creaCliente(officinaId: string, cliente: Cliente): Promise<string> {
-  const { data, error } = await getSupabase()
-    .from('clienti_officina')
-    .insert({ ...cliente, officina_id: officinaId })
-    .select('id')
-    .single();
-  if (error) throw error;
-  return data.id;
+  const id = crypto.randomUUID();
+  const { error } = await conRiprova(() =>
+    getSupabase()
+      .from('clienti_officina')
+      .insert({ ...cliente, id, officina_id: officinaId }),
+  );
+  if (error && !giaSalvato(error, 'clienti_officina')) throw error;
+  return id;
 }
 
 /** Crea un veicolo e ne restituisce l'id. Una targa già presente diventa un errore sul campo. */
 export async function creaVeicolo(officinaId: string, veicolo: Veicolo): Promise<string> {
-  const { data, error } = await getSupabase()
-    .from('veicoli')
-    .insert({ ...veicolo, officina_id: officinaId })
-    .select('id')
-    .single();
+  const id = crypto.randomUUID();
+  const { error } = await conRiprova(() =>
+    getSupabase()
+      .from('veicoli')
+      .insert({ ...veicolo, id, officina_id: officinaId }),
+  );
+  if (!error || giaSalvato(error, 'veicoli')) return id;
   if (codiceErrore(error) === '23505') {
     throw new ErroreModulo('Questa targa è già registrata nella tua officina', 'targa');
   }
-  if (error) throw error;
-  return data.id;
+  throw error;
 }
 
 // ---------------------------------------------------------------------------------------------------
@@ -214,11 +224,19 @@ export async function caricaSchedaVeicolo(id: string): Promise<SchedaVeicolo | n
 
 export async function montaPneumatici(veicoloId: string, dati: MontaPneumatici): Promise<void> {
   const { posizioni, montato_il, ...pneumatico } = dati;
-  const { error } = await getSupabase().rpc('monta_pneumatici', {
-    p_veicolo_id: veicoloId,
-    p_montato_il: montato_il,
-    p_pneumatici: posizioni.map((posizione) => ({ ...pneumatico, posizione })),
-  });
+  // Id scelti qui: se la chiamata viene ripetuta, la funzione riconosce gli pneumatici già montati
+  const pneumatici = posizioni.map((posizione) => ({
+    ...pneumatico,
+    posizione,
+    id: crypto.randomUUID(),
+  }));
+  const { error } = await conRiprova(() =>
+    getSupabase().rpc('monta_pneumatici', {
+      p_veicolo_id: veicoloId,
+      p_montato_il: montato_il,
+      p_pneumatici: pneumatici,
+    }),
+  );
   // Vincolo smontato_il >= montato_il: la data è precedente al montaggio degli pneumatici attuali
   if (codiceErrore(error) === '23514') {
     throw new ErroreModulo(
@@ -230,7 +248,9 @@ export async function montaPneumatici(veicoloId: string, dati: MontaPneumatici):
 }
 
 export async function registraControllo(veicoloId: string, dati: NuovoControllo): Promise<void> {
-  const { error } = await getSupabase().rpc('registra_controllo', {
+  const argomenti = {
+    // Id scelto qui: se la chiamata viene ripetuta, la funzione trova il controllo e non lo duplica
+    p_id: crypto.randomUUID(),
     p_veicolo_id: veicoloId,
     p_eseguito_il: dati.eseguito_il,
     // Senza km il parametro si omette: la funzione SQL ha `null` come valore predefinito
@@ -238,6 +258,7 @@ export async function registraControllo(veicoloId: string, dati: NuovoControllo)
     p_note: dati.note,
     // Le misure sono un JSON: l'interfaccia di TypeScript va convertita in un oggetto semplice
     p_misure: dati.misure.map((m) => ({ ...m })),
-  });
+  };
+  const { error } = await conRiprova(() => getSupabase().rpc('registra_controllo', argomenti));
   if (error) throw error;
 }
