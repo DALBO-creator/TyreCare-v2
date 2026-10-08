@@ -117,6 +117,9 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Blocco ruota | `.tc-misura` in `.tc-misure-griglia` | un riquadro per ruota, due per riga da 36 rem (tablet); stato calcolato mentre si scrive |
 | Storico | `.tc-storico` (`<details>`) | riassunto con data, km e stato; misure e note all'apertura |
 | Avviso informativo | `.tc-avviso--info` | neutro: per spiegazioni, non per stati |
+| Dialogo di conferma | `chiediConferma(...)` / `collegaElimina(...)` → `.tc-dialogo` | `<dialog>` modale; titolo-domanda, cosa si perde, pulsante rosso pieno "Elimina …" sopra e "Annulla" sotto (focus iniziale); in basso sul telefono, centrato da 576 px |
+| Pulsante elimina | `pulsanteElimina(testo)` → `.tc-pulsante-elimina` | contorno e testo rosso chiaro, staccato in fondo alla pagina di modifica: non si confonde con "Salva" |
+| Intestazione con azione | `.tc-sezione-testa` | etichetta di sezione + collegamento "Modifica" a destra (area di tocco 44 px) |
 
 Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/anteprima.ts`).
 
@@ -129,6 +132,7 @@ Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/
 - Esadecimali nei componenti (eccetto l'illustrazione dell'auto): usare token Sass o variabili CSS.
 - Gradienti vistosi, bagliori neon diffusi, sfondi chiari.
 - Rimuovere l'anello di focus; elementi toccabili sotto i 44 px.
+- Eliminare senza dialogo di conferma; pulsante "Elimina" pieno accanto a "Salva".
 
 ## 7. Checklist prima di consegnare una schermata
 

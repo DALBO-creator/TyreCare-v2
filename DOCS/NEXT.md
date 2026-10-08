@@ -49,28 +49,27 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 ## Prossima sessione
 
 > **Obiettivo: Fase 2 (Dati) — completare il lato officina e iniziare il garage del cliente.**
-> Le schermate officina per inserire dati ci sono (sessione 7); mancano modifica/eliminazione e l'import.
+> Inserimento (sessione 7) e correzione/eliminazione (sessione 8) ci sono; mancano elenco clienti e import.
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
 
-**Per prima cosa:** controllare che la CI e il deploy Vercel del commit della sessione 7 siano verdi.
+**Per prima cosa:** controllare che la CI e il deploy Vercel del commit della sessione 8 siano verdi.
 
-**0 — Pubblicare la migrazione sul cloud (titolare + Claude)**
+**0 — Pubblicare la migrazione sul cloud (titolare)**
 
-- [x] (2026-10-08, dal titolare) `npx.cmd supabase db push` della migrazione
-  `20261008130000_scritture_ripetibili.sql`
-- [x] (2026-10-08, dal titolare) `npx.cmd supabase db push` della migrazione `20261008120000_operazioni_officina.sql` (funzioni
-  `registra_controllo` e `monta_pneumatici`). **Senza, sul sito online "Monta pneumatici" e "Nuovo
-  controllo" falliscono.** Token della CLI: `npx.cmd supabase login` se scaduto
-- [x] (2026-10-08) Prova dal telefono sul sito Vercel con l'officina di prova creata sul cloud: riuscita, a
-  parte il primo salvataggio che falliva (corretto, vedi storico)
+- [ ] `npx.cmd supabase db push` della migrazione `20261008150000_modifica_controllo.sql` (funzione
+  `modifica_controllo`). **Senza, sul sito online "Correggi controllo" fallisce** (le altre correzioni e le
+  eliminazioni funzionano già). Token della CLI: `npx.cmd supabase login` se scaduto
+- [ ] Prova dal telefono sul sito Vercel con l'officina di prova: correggere veicolo, cliente, pneumatici e
+  un controllo; eliminare un controllo, poi un cliente e un veicolo di prova (il dialogo di conferma)
 
 **1 — Lato officina (Claude)**
 
-- [ ] **Modifica** di cliente, veicolo, pneumatico e controllo (errori di battitura); **eliminazione** di
-  cliente e veicolo per il TITOLARE (la RLS c'è già), con conferma
-- [ ] Elenco e scheda dei clienti dell'officina (vedi `IMPLEMENTAZIONI.md`)
+- [x] (2026-10-08, sessione 8) **Modifica** di cliente, veicolo, pneumatici e controllo; **eliminazione**
+  di cliente e veicolo (TITOLARE) e di controllo (anche OPERATORE), con dialogo di conferma
+- [ ] Elenco e scheda dei clienti dell'officina (vedi `IMPLEMENTAZIONI.md`): da lì anche "Modifica
+  cliente" per i clienti senza veicolo, che oggi non si raggiungono
 - [ ] Smontare uno pneumatico senza sostituirlo (es. ruota di scorta rimossa)
 
 **2 — Lato cliente (Claude)**
@@ -82,7 +81,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 **3 — Poi**
 
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
-- [ ] Job CI con `supabase start` + `npm run db:test` (ora le migrazioni sono tre e i test pgTAP 54)
+- [ ] Job CI con `supabase start` + `npm run db:test` (ora le migrazioni sono sei e i test pgTAP 74)
 - [ ] Test end-to-end (Playwright, PLAN P7): in sessione 7 i flussi sono stati provati con uno script
   DevTools fatto al volo, da trasformare in test veri
 
@@ -120,6 +119,33 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 8 — 2026-10-08 (PC di casa)
+
+**Fatto**
+
+- CI e deploy Vercel della sessione 7 verdi; ambiente avviato (Docker, Supabase locale)
+- **Database:** migrazione `20261008150000_modifica_controllo.sql` con la funzione `modifica_controllo`
+  (data, km, note e misure per posizione in una transazione, ripetibile); 16 nuovi test pgTAP in
+  `modifiche.test.sql` (totale 74, verdi): correzione, errori senza modifiche a metà, permessi di altre
+  officine e del cliente, eliminazione di controllo e cliente; tipi rigenerati
+- **Correzioni (web)** dalla scheda del veicolo: modifica cliente (`/clienti/modifica`), modifica veicolo
+  (`/veicolo/modifica`, targa duplicata sotto il campo), correzione di un gruppo di pneumatici
+  (`/veicolo/pneumatici/modifica`, togliendo una posizione il gruppo si divide), correzione di un controllo
+  (`/controllo/modifica`, anche su pneumatici ora smontati). I moduli "nuovo" e "modifica" condividono i
+  campi (`campiCliente`, `campiVeicolo`, `campiPneumatico`, `campiControllo`)
+- **Eliminazioni** con dialogo di conferma (`ui/conferma.ts`, `<dialog>` nativo, skill `ui-ux-pro-max`):
+  cliente e veicolo solo per il TITOLARE, controllo anche per l'OPERATORE; il dialogo dice cosa si perde
+- Provato in Chrome headless (390 px) con uno script DevTools come titolare, operatore e cliente: 21
+  verifiche verdi. `npm run check` verde (46 test Vitest)
+- Aggiornati `NOTES.md`, `PLAN.md` (P2, roadmap), `DESIGN-SYSTEM.md` (dialogo, pulsante elimina),
+  `IMPLEMENTAZIONI.md`
+
+**Note**
+
+- La copia `Documents\GitHub\TyreCare-v2` del PC di casa ora è allineata (stesso commit di inizio
+  sessione), ma si lavora sempre in `C:\Users\albod\TyreCare-v2`.
+- Nessuna nuova libreria (`STRUCT.md` invariato).
 
 ### Sessione 7 — 2026-10-08 (PC di casa)
 

@@ -18,7 +18,7 @@
 | **Promemoria revisione / tagliando** | 🟠 | Se il dato è disponibile. |
 | **Recensioni officine** | 🟢 | Solo da clienti con prenotazione completata. |
 | **Multilingua** | 🟢 | |
-| **Modifica ed eliminazione** di clienti, veicoli, pneumatici e controlli (lato officina) | 🔴 | Emerso in sessione 7: oggi si può solo inserire. Eliminare clienti/veicoli è del TITOLARE (RLS già pronta). |
+| ~~**Modifica ed eliminazione** di clienti, veicoli, pneumatici e controlli (lato officina)~~ | ✅ | Fatto in sessione 8 (2026-10-08). Vedi `NOTES.md`. |
 | **Elenco e scheda clienti** dell'officina (con i loro veicoli) | 🟠 | Oggi un cliente si vede solo dal veicolo. |
 | **Pressione consigliata** per veicolo/misura e confronto con quella misurata | 🟠 | PLAN P10: "misurata vs consigliata". |
 | **DOT diverso per ruota** nel montaggio di un treno | 🟢 | Oggi un DOT per tutto il treno: se differiscono si monta una ruota alla volta. |

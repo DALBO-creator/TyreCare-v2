@@ -464,3 +464,55 @@ Provato simulando nel browser la caduta della connessione su ogni scrittura (Dev
 con lo stesso nome ma parametri diversi sono **due funzioni** (overload): aggiungere `p_id` con
 `create or replace` lascerebbe in giro anche la vecchia. Per `monta_pneumatici` la firma non cambia (l'id
 sta dentro il JSON), quindi basta `create or replace`.
+
+## Officina — correzioni ed eliminazioni (Fase 2)
+
+**File coinvolti:** `supabase/migrations/20261008150000_modifica_controllo.sql`,
+`supabase/tests/database/modifiche.test.sql`, `apps/web/src/lib/officina.ts`,
+`apps/web/src/pagine/{modifica-cliente,modifica-veicolo,modifica-pneumatici,modifica-controllo}.ts`,
+`apps/web/src/ui/conferma.ts`, `apps/web/src/styles/_officina.scss`
+
+**Come funziona:** tutto parte dalla scheda del veicolo.
+
+- **Cliente** — "Modifica" accanto al titolo "Cliente" → `/clienti/modifica?id=…&veicolo=…`: stesso
+  modulo del nuovo cliente, precompilato; al salvataggio si torna alla scheda.
+- **Veicolo** — "Modifica dati del veicolo" in fondo alla scheda → `/veicolo/modifica?id=…`: cliente,
+  targa (duplicata → errore sotto il campo), marca, modello, anno, telaio.
+- **Pneumatici** — ogni riga di "Pneumatici montati" (con la matita) → `/veicolo/pneumatici/modifica?id=…&p=…`:
+  corregge il **gruppo** della riga (es. le quattro ruote montate insieme). Togliendo la spunta a una
+  posizione, quella non cambia e il gruppo si divide. Per pneumatici diversi resta "Cambia pneumatici",
+  che conserva lo storico; la correzione invece riscrive i dati (era un errore di battitura).
+- **Controllo** — "Correggi o elimina" nel dettaglio di un controllo dello storico →
+  `/controllo/modifica?id=…`: data, km, note e le misure degli pneumatici **misurati quel giorno** (anche
+  se nel frattempo smontati). Svuotando il battistrada della scorta, la sua misura si toglie.
+- **Eliminazioni** — pulsante "Elimina …" in fondo alla pagina di modifica, poi un dialogo di conferma che
+  dice cosa si perde. Cliente e veicolo: **solo il TITOLARE** (all'OPERATORE il pulsante non compare, e
+  la RLS lo blocca comunque); il controllo: anche l'OPERATORE. Eliminando un cliente i suoi veicoli
+  restano, senza cliente; eliminando un veicolo spariscono pneumatici, controlli e misure (`on delete
+  cascade`).
+- Un cliente che apre questi URL per la propria auto vede "… non trovato", come per la scheda.
+
+Provato nel browser (Chrome headless, 390 px) con i dati di prova come titolare, operatore e cliente:
+precompilazione, errori sotto i campi, salvataggi, gruppo di pneumatici diviso, dialogo (focus su
+"Annulla", ritorno del focus), le tre eliminazioni e i pulsanti nascosti per operatore e cliente.
+
+### Codice complesso
+
+`modifica_controllo(p_id, p_misure, p_eseguito_il, p_km, p_note)` — come `registra_controllo`, una
+funzione `security invoker` (una chiamata = una transazione, con le RLS di chi chiama). Le misure si
+riconoscono per **posizione** tra quelle già presenti nel controllo (join con `pneumatici`): non si può
+aggiungere una misura nuova né spostarla su un altro pneumatico; una posizione assente da `p_misure` perde
+la misura. Imposta valori fissi, quindi rieseguirla dà lo stesso risultato: `conRiprova` la può ripetere
+senza id scelti in anticipo.
+
+`lib/officina.ts` → `elimina()` — con la RLS un `delete` non permesso **non dà errore**: elimina zero
+righe. Per questo si chiede `.select('id')` e, se non è tornato nulla, si controlla se il record esiste
+ancora: se c'è mancano i permessi (messaggio nel dialogo), se non c'è era già stato eliminato (per esempio
+dal primo tentativo, prima di un errore di rete) ed è un successo. Gli `update` usano `.single()` per lo
+stesso motivo: zero righe aggiornate diventano un errore.
+
+`ui/conferma.ts` → `chiediConferma()` — `<dialog>` nativo aperto con `showModal()`: il browser rende inerte
+il resto della pagina, tiene il focus dentro e chiude con Esc (`cancel`), bloccato mentre l'eliminazione è
+in corso. All'apertura il focus va su "Annulla"; chiudendo torna al pulsante d'origine, passato
+esplicitamente (`collegaElimina`) perché Safari non mette a fuoco i pulsanti toccati. Se l'azione
+fallisce, l'errore compare nel dialogo, che resta aperto.
