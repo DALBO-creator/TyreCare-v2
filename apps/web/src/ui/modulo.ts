@@ -13,7 +13,7 @@ interface Campo {
   autocomplete: string;
   aiuto?: string;
   /** Valore iniziale (es. i dati attuali del profilo). */
-  valore?: string;
+  valore?: string | undefined;
   /**
    * Attributi HTML aggiuntivi, scritti dal codice e mai con dati dell'utente
    * (es. `inputmode="decimal"` per avere la tastiera numerica col separatore decimale).
@@ -90,7 +90,7 @@ interface Scelta {
   nome: string;
   etichetta: string;
   opzioni: Opzioni;
-  valore?: string;
+  valore?: string | undefined;
   aiuto?: string;
 }
 
@@ -117,15 +117,16 @@ interface AreaTesto {
   etichetta: string;
   aiuto?: string;
   righe?: number;
+  valore?: string | undefined;
 }
 
 /** Testo su più righe (es. note). */
-export function areaTesto({ nome, etichetta, aiuto, righe = 3 }: AreaTesto): string {
+export function areaTesto({ nome, etichetta, aiuto, righe = 3, valore = '' }: AreaTesto): string {
   return `
     <div class="tc-campo">
       ${etichettaCampo(nome, etichetta)}
       <textarea class="form-control form-control-lg" id="${id(nome)}" name="${nome}" rows="${righe}"
-        aria-describedby="${descrizioni(nome, aiuto)}"></textarea>
+        aria-describedby="${descrizioni(nome, aiuto)}">${esc(valore)}</textarea>
       ${aiutoEErrore(nome, aiuto)}
     </div>`;
 }

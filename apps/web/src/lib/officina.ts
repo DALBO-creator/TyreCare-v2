@@ -45,6 +45,10 @@ export function scegliOfficina(id: string): void {
   }
 }
 
+/** Vero se l'utente è TITOLARE dell'officina indicata (può eliminare clienti e veicoli). */
+export const eTitolare = (officine: OfficinaUtente[], officinaId: string): boolean =>
+  officine.some((o) => o.officina.id === officinaId && o.ruolo === 'TITOLARE');
+
 /** Dati dell'utente e officina attiva; errore se l'utente non lavora in nessuna officina. */
 export async function caricaContestoOfficina(): Promise<DatiUtente & { attiva: OfficinaUtente }> {
   const dati = await caricaDatiUtente();
@@ -169,6 +173,70 @@ export async function creaVeicolo(officinaId: string, veicolo: Veicolo): Promise
   throw error;
 }
 
+export type SchedaCliente = Tables<'clienti_officina'> & { veicoli: { count: number }[] };
+
+/** Cliente con il numero dei suoi veicoli; `null` se non esiste o non è visibile all'utente. */
+export async function caricaCliente(id: string): Promise<SchedaCliente | null> {
+  const { data, error } = await getSupabase()
+    .from('clienti_officina')
+    .select('*, veicoli (count)')
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Le correzioni sono `update` con valori fissi: ripeterle dopo un errore di rete non cambia nulla.
+ * Con `.single()` un aggiornamento bloccato dalla RLS (0 righe) diventa un errore invece di passare
+ * in silenzio.
+ */
+export async function modificaCliente(id: string, cliente: Cliente): Promise<void> {
+  const { error } = await conRiprova(() =>
+    getSupabase().from('clienti_officina').update(cliente).eq('id', id).select('id').single(),
+  );
+  if (error) throw error;
+}
+
+export async function modificaVeicolo(id: string, veicolo: Veicolo): Promise<void> {
+  const { error } = await conRiprova(() =>
+    getSupabase().from('veicoli').update(veicolo).eq('id', id).select('id').single(),
+  );
+  if (codiceErrore(error) === '23505') {
+    throw new ErroreModulo('Questa targa è già registrata nella tua officina', 'targa');
+  }
+  if (error) throw error;
+}
+
+/**
+ * Elimina un record. La RLS non dà errore se l'utente non può eliminare: semplicemente non elimina
+ * nulla. In quel caso si controlla se il record c'è ancora: se non c'è, era già stato eliminato (es.
+ * dal primo tentativo, prima di un errore di rete) ed è un successo; se c'è, mancano i permessi.
+ */
+async function elimina(
+  tabella: 'clienti_officina' | 'veicoli' | 'controlli',
+  id: string,
+  vietato: string,
+): Promise<void> {
+  const supabase = getSupabase();
+  const { data, error } = await conRiprova(() =>
+    supabase.from(tabella).delete().eq('id', id).select('id'),
+  );
+  if (error) throw error;
+  if (data.length > 0) return;
+  const ancora = await supabase.from(tabella).select('id').eq('id', id).maybeSingle();
+  if (ancora.error) throw ancora.error;
+  if (ancora.data) throw new ErroreModulo(vietato);
+}
+
+/** Elimina un cliente (solo il TITOLARE): i suoi veicoli restano, senza cliente. */
+export const eliminaCliente = (id: string) =>
+  elimina('clienti_officina', id, "Solo il titolare dell'officina può eliminare un cliente.");
+
+/** Elimina un veicolo (solo il TITOLARE) con pneumatici, controlli e misure. */
+export const eliminaVeicolo = (id: string) =>
+  elimina('veicoli', id, "Solo il titolare dell'officina può eliminare un veicolo.");
+
 // ---------------------------------------------------------------------------------------------------
 // Scheda del veicolo
 // ---------------------------------------------------------------------------------------------------
@@ -262,3 +330,69 @@ export async function registraControllo(veicoloId: string, dati: NuovoControllo)
   const { error } = await conRiprova(() => getSupabase().rpc('registra_controllo', argomenti));
   if (error) throw error;
 }
+
+// ---------------------------------------------------------------------------------------------------
+// Correzioni di pneumatici e controlli
+// ---------------------------------------------------------------------------------------------------
+
+/**
+ * Corregge i dati di pneumatici montati (es. DOT o marca sbagliati), uguali per tutte le posizioni
+ * scelte. Una sola istruzione: o cambiano tutti o nessuno.
+ */
+export async function modificaPneumatici(
+  ids: string[],
+  dati: Omit<MontaPneumatici, 'posizioni'>,
+): Promise<void> {
+  const { data, error } = await conRiprova(() =>
+    getSupabase().from('pneumatici').update(dati).in('id', ids).select('id'),
+  );
+  // Vincolo smontato_il >= montato_il: succede solo con pneumatici già smontati
+  if (codiceErrore(error) === '23514') {
+    throw new ErroreModulo('La data di montaggio è successiva allo smontaggio', 'montato_il');
+  }
+  if (error) throw error;
+  if (data.length !== ids.length) {
+    throw new ErroreModulo('Non è stato possibile salvare: ricarica la pagina e riprova.');
+  }
+}
+
+export type MisuraDaCorreggere = Pick<
+  Tables<'misure_pneumatico'>,
+  'battistrada_mm' | 'pressione_bar' | 'usura' | 'danni'
+> & { pneumatico: Pneumatico };
+
+export type ControlloDaCorreggere = Pick<
+  Tables<'controlli'>,
+  'id' | 'veicolo_id' | 'officina_id' | 'eseguito_il' | 'km' | 'note'
+> & { veicolo: Pick<Tables<'veicoli'>, 'targa'>; misure: MisuraDaCorreggere[] };
+
+/** Un controllo con le misure e gli pneumatici misurati quel giorno (anche se ora smontati). */
+export async function caricaControllo(id: string): Promise<ControlloDaCorreggere | null> {
+  const { data, error } = await getSupabase()
+    .from('controlli')
+    .select(
+      `id, veicolo_id, officina_id, eseguito_il, km, note, veicolo:veicoli (targa),
+       misure:misure_pneumatico (battistrada_mm, pressione_bar, usura, danni, pneumatico:pneumatici (*))`,
+    )
+    .eq('id', id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function modificaControllo(id: string, dati: NuovoControllo): Promise<void> {
+  const { error } = await conRiprova(() =>
+    getSupabase().rpc('modifica_controllo', {
+      p_id: id,
+      p_eseguito_il: dati.eseguito_il,
+      ...(dati.km !== null && { p_km: dati.km }),
+      p_note: dati.note,
+      p_misure: dati.misure.map((m) => ({ ...m })),
+    }),
+  );
+  if (error) throw error;
+}
+
+/** Elimina un controllo con le sue misure (TITOLARE e OPERATORE). */
+export const eliminaControllo = (id: string) =>
+  elimina('controlli', id, 'Non hai i permessi per eliminare questo controllo.');

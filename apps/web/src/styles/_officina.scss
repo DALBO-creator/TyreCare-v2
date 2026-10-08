@@ -358,3 +358,107 @@
     }
   }
 }
+
+// --- Correzioni ed eliminazioni ----------------------------------------------------------------
+
+// Pulsante che apre il dialogo di eliminazione: in fondo alla pagina, staccato dal modulo e senza
+// riempimento, così non si confonde con "Salva". Il pulsante rosso pieno è solo nel dialogo.
+.tc-pulsante-elimina {
+  --bs-btn-color: #{$tc-rosso-chiaro};
+  --bs-btn-border-color: #{rgba($tc-rosso-chiaro, 0.4)};
+  --bs-btn-hover-color: #{$tc-rosso-chiaro};
+  --bs-btn-hover-bg: #{rgba($tc-rosso, 0.1)};
+  --bs-btn-hover-border-color: #{$tc-rosso-chiaro};
+  --bs-btn-active-color: #{$tc-rosso-chiaro};
+  --bs-btn-active-bg: #{rgba($tc-rosso, 0.16)};
+  --bs-btn-active-border-color: #{$tc-rosso-chiaro};
+  margin-top: 2.5rem;
+}
+
+// Dialogo di conferma: in basso sul telefono (vicino al pollice), centrato sugli schermi larghi
+.tc-dialogo {
+  width: min(100% - 2rem, 28rem);
+  margin: auto auto 1rem;
+  padding: 1.5rem 1.25rem 1.25rem;
+  color: var(--bs-body-color);
+  background: var(--tc-superficie);
+  border: 1px solid $tc-bordo-hover;
+  border-radius: $tc-raggio-card;
+  box-shadow: 0 1.5rem 3rem rgba(0, 0, 0, 0.6);
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  &[open] {
+    animation: tc-dialogo-entra 0.25s $tc-transizione;
+  }
+
+  @media (min-width: 576px) {
+    margin: auto;
+  }
+
+  &__titolo {
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  &__testo {
+    color: var(--bs-secondary-color);
+  }
+
+  .tc-avviso {
+    margin-bottom: 1rem;
+  }
+
+  // Uno sopra l'altro, a tutta larghezza: "Annulla" in basso, dove arriva il pollice
+  &__azioni {
+    display: grid;
+    gap: 0.75rem;
+  }
+}
+
+@keyframes tc-dialogo-entra {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tc-dialogo[open] {
+    animation: none;
+  }
+}
+
+// Collegamento "Modifica" accanto al titolo di una sezione
+.tc-sezione-testa {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    min-height: $tc-touch-min;
+    color: $tc-rosso-chiaro;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+}
+
+// "Correggi o elimina" in fondo al dettaglio di un controllo dello storico
+.tc-storico__correggi {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: $tc-touch-min;
+  margin-top: 0.5rem;
+  color: $tc-rosso-chiaro;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  text-decoration: none;
+}

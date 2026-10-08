@@ -2,6 +2,7 @@ import {
   ClipboardCheck,
   CloudSun,
   Mail,
+  Pencil,
   Phone,
   Plus,
   RefreshCw,
@@ -46,6 +47,7 @@ import {
   formattaDecimale,
   formattaKm,
   gestisciErroreCaricamento,
+  idValido,
   parametro,
 } from './comune';
 
@@ -103,6 +105,9 @@ export async function mostraVeicolo(app: HTMLElement): Promise<void> {
       ${sezioneCliente(scheda)}
       ${sezionePneumatici(scheda)}
       ${sezioneStorico(controlli)}
+      <a class="btn btn-outline-light btn-lg w-100" href="/veicolo/modifica?id=${veicolo.id}">
+        ${icona(Pencil)} Modifica dati del veicolo
+      </a>
     </div>`);
 }
 
@@ -119,8 +124,7 @@ export async function caricaSchedaDaUrl(
   const id = parametro('id') ?? '';
   let scheda: SchedaVeicolo | null = null;
   try {
-    // Un id non valido farebbe rispondere al database con un errore: è semplicemente "non trovato"
-    if (/^[0-9a-f-]{36}$/i.test(id)) {
+    if (idValido(id)) {
       const [s, utente] = await Promise.all([caricaSchedaVeicolo(id), caricaDatiUtente()]);
       if (s && utente.officine.some((o) => o.officina.id === s.veicolo.officina_id)) scheda = s;
     }
@@ -129,18 +133,19 @@ export async function caricaSchedaDaUrl(
     return null;
   }
   if (!ancoraAttuale(n)) return null;
-  if (!scheda) app.innerHTML = paginaApp(nonTrovato());
+  if (!scheda) app.innerHTML = paginaApp(nonTrovato('Veicolo non trovato', 'Il veicolo'));
   return scheda;
 }
 
-function nonTrovato(): string {
+/** Pagina "non trovato" per i dati dell'officina (es. `nonTrovato('Cliente non trovato', 'Il cliente')`). */
+export function nonTrovato(titolo: string, soggetto: string): string {
   return `
     <div class="tc-contenuto pt-4">
       <div class="tc-vuoto">
         <span class="tc-vuoto__icona">${icona(SearchX)}</span>
-        <h1 class="tc-vuoto__titolo" tabindex="-1">Veicolo non trovato</h1>
+        <h1 class="tc-vuoto__titolo" tabindex="-1">${esc(titolo)}</h1>
         <p class="tc-vuoto__testo">
-          Il veicolo non esiste più oppure appartiene a un'altra officina.
+          ${esc(soggetto)} non esiste più oppure appartiene a un'altra officina.
         </p>
         <a class="btn btn-outline-light mt-3" href="/">Torna all'elenco</a>
       </div>
@@ -184,19 +189,31 @@ function cruscotto(controllo: Controllo): string {
     </p>`;
 }
 
-function riga(ic: IconNode, testo: string, dettaglio = '', href = ''): string {
+/** Riga della lista; con `azione` (es. "correggi") il collegamento ha la matita in fondo. */
+function riga(ic: IconNode, testo: string, dettaglio = '', href = '', azione = ''): string {
   const contenuto = `
     <span class="tc-lista__icona">${icona(ic)}</span>
-    <span class="tc-lista__testo">${testo}${dettaglio ? `<small>${dettaglio}</small>` : ''}</span>`;
+    <span class="tc-lista__testo">${testo}${
+      azione ? `<span class="visually-hidden">, ${azione}</span>` : ''
+    }${dettaglio ? `<small>${dettaglio}</small>` : ''}</span>
+    ${azione ? icona(Pencil) : ''}`;
   return href
     ? `<a class="tc-lista__riga" href="${href}">${contenuto}</a>`
     : `<div class="tc-lista__riga">${contenuto}</div>`;
 }
 
-function sezioneCliente({ cliente }: SchedaVeicolo): string {
+function sezioneCliente({ veicolo, cliente }: SchedaVeicolo): string {
   return `
     <section aria-labelledby="tc-cliente">
-      <h2 id="tc-cliente" class="tc-etichetta">Cliente</h2>
+      <div class="tc-sezione-testa">
+        <h2 id="tc-cliente" class="tc-etichetta">Cliente</h2>
+        ${
+          veicolo.cliente_officina_id
+            ? `<a href="/clienti/modifica?id=${veicolo.cliente_officina_id}&veicolo=${veicolo.id}"
+                aria-label="Modifica i dati del cliente">Modifica</a>`
+            : ''
+        }
+      </div>
       <div class="tc-lista">
         ${
           cliente
@@ -231,14 +248,19 @@ function nomeGruppo(posizioni: Posizione[]): string {
   return posizioni.map((p) => POSIZIONI[p].nome).join(', ');
 }
 
+/**
+ * Pneumatici uguali (stesso modello, misura, DOT e data di montaggio) stanno in una sola riga: di
+ * solito un treno di quattro montato insieme. Questa è la chiave del gruppo.
+ */
+export const chiaveGruppo = (p: Pneumatico): string =>
+  [p.stagione, p.marca, p.modello, p.misura, p.dot, p.montato_il].join('|');
+
 function sezionePneumatici({ veicolo, pneumatici }: SchedaVeicolo): string {
-  // Pneumatici uguali (stesso modello, misura, DOT e data di montaggio) in una sola riga: di solito
-  // un treno di quattro montato insieme
   const gruppi = new Map<string, { p: Pneumatico; posizioni: Posizione[] }>();
   for (const posizione of ORDINE_POSIZIONI) {
     const p = pneumatici.find((x) => x.posizione === posizione);
     if (!p) continue;
-    const chiave = [p.stagione, p.marca, p.modello, p.misura, p.dot, p.montato_il].join('|');
+    const chiave = chiaveGruppo(p);
     const gruppo = gruppi.get(chiave);
     if (gruppo) gruppo.posizioni.push(posizione);
     else gruppi.set(chiave, { p, posizioni: [posizione] });
@@ -263,6 +285,8 @@ function sezionePneumatici({ veicolo, pneumatici }: SchedaVeicolo): string {
                     ICONE_STAGIONE[p.stagione],
                     nomeGruppo(posizioni),
                     esc(dettagli.join(' · ')),
+                    `/veicolo/pneumatici/modifica?id=${veicolo.id}&p=${p.id}`,
+                    'correggi',
                   );
                 })
                 .join('')}
@@ -309,6 +333,9 @@ function voceStorico(c: Controllo): string {
           ${misure.map(rigaMisura).join('')}
         </ul>
         ${c.note ? `<p class="tc-storico__note">${esc(c.note)}</p>` : ''}
+        <a class="tc-storico__correggi" href="/controllo/modifica?id=${c.id}">
+          ${icona(Pencil)} Correggi o elimina
+        </a>
       </div>
     </details>`;
 }

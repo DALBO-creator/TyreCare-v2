@@ -450,6 +450,16 @@ export type Database = {
       is_membro_officina: { Args: { p_officina_id: string }; Returns: boolean };
       is_titolare_officina: { Args: { p_officina_id: string }; Returns: boolean };
       is_veicolo_mio: { Args: { p_veicolo_id: string }; Returns: boolean };
+      modifica_controllo: {
+        Args: {
+          p_eseguito_il: string;
+          p_id: string;
+          p_km?: number;
+          p_misure: Json;
+          p_note?: string;
+        };
+        Returns: undefined;
+      };
       monta_pneumatici: {
         Args: { p_montato_il?: string; p_pneumatici: Json; p_veicolo_id: string };
         Returns: string[];

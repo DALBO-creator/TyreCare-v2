@@ -150,3 +150,10 @@ export function avvisoConferma(): string {
 /** Parametro `?nome=` dell'URL attuale. */
 export const parametro = (nome: string): string | null =>
   new URLSearchParams(location.search).get(nome);
+
+/**
+ * Vero se il testo ha la forma di un id (uuid). Con un id non valido il database risponderebbe con
+ * un errore: per le pagine è semplicemente "non trovato".
+ */
+export const idValido = (id: string | null): id is string =>
+  id !== null && /^[0-9a-f-]{36}$/i.test(id);

@@ -6,6 +6,7 @@ import {
   oggiISO,
   statoBattistrada,
   type Posizione,
+  type Tables,
 } from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import { registraControllo, type Pneumatico } from '../lib/officina';
@@ -25,6 +26,7 @@ import {
   ETICHETTE_USURA,
   ORDINE_POSIZIONI,
   POSIZIONI,
+  formattaDecimale,
   formattaKm,
   intestazioneSottopagina,
   vaiConConferma,
@@ -51,7 +53,6 @@ export async function mostraNuovoControllo(app: HTMLElement): Promise<void> {
   const montati = [...pneumatici].sort(
     (a, b) => ORDINE_POSIZIONI.indexOf(a.posizione) - ORDINE_POSIZIONI.indexOf(b.posizione),
   );
-  const oggi = oggiISO();
   const kmPrecedenti = controlli.find((c) => c.km !== null)?.km;
 
   app.innerHTML = paginaApp(`
@@ -59,34 +60,7 @@ export async function mostraNuovoControllo(app: HTMLElement): Promise<void> {
     <div class="tc-contenuto">
       <form class="tc-auth__modulo" novalidate>
         ${RIQUADRO_ERRORE}
-        <div class="tc-auth__coppia">
-          ${campo({
-            nome: 'eseguito_il',
-            etichetta: 'Data',
-            tipo: 'date',
-            autocomplete: 'off',
-            valore: oggi,
-            attributi: `max="${oggi}"`,
-          })}
-          ${campo({
-            nome: 'km',
-            etichetta: 'Km (facoltativi)',
-            tipo: 'text',
-            autocomplete: 'off',
-            ...(kmPrecedenti != null && { aiuto: `L'ultima volta: ${formattaKm(kmPrecedenti)}.` }),
-            attributi: 'inputmode="numeric" maxlength="9"',
-          })}
-        </div>
-
-        <div class="tc-misure-griglia">
-          ${montati.map(bloccoMisura).join('')}
-        </div>
-
-        ${areaTesto({
-          nome: 'note',
-          etichetta: 'Note (facoltative)',
-          aiuto: 'Le vede anche il cliente: es. "Consigliata la convergenza".',
-        })}
+        ${campiControllo(montati, { eseguito_il: oggiISO(), km: null, note: '' }, kmPrecedenti)}
         ${pulsanteInvio('Salva controllo', 'Salvataggio…')}
         <a class="btn btn-outline-light btn-lg w-100" href="/veicolo?id=${veicolo.id}">Annulla</a>
       </form>
@@ -100,8 +74,64 @@ export async function mostraNuovoControllo(app: HTMLElement): Promise<void> {
   });
 }
 
+/** Valori iniziali del modulo: vuoti per un controllo nuovo, quelli salvati per una correzione. */
+export interface ValoriControllo {
+  eseguito_il: string;
+  km: number | null;
+  note: string;
+  misure?: ReadonlyMap<Posizione, Misura>;
+}
+
+type Misura = Pick<
+  Tables<'misure_pneumatico'>,
+  'battistrada_mm' | 'pressione_bar' | 'usura' | 'danni'
+>;
+
+/**
+ * Campi del modulo di un controllo: data e km, un blocco per ogni pneumatico misurato, note.
+ * `kmPrecedenti` (se noti) compaiono come aiuto sotto i km.
+ */
+export function campiControllo(
+  pneumatici: Pneumatico[],
+  valori: ValoriControllo,
+  kmPrecedenti?: number | null,
+): string {
+  const oggi = oggiISO();
+  return `
+    <div class="tc-auth__coppia">
+      ${campo({
+        nome: 'eseguito_il',
+        etichetta: 'Data',
+        tipo: 'date',
+        autocomplete: 'off',
+        valore: valori.eseguito_il,
+        attributi: `max="${oggi}"`,
+      })}
+      ${campo({
+        nome: 'km',
+        etichetta: 'Km (facoltativi)',
+        tipo: 'text',
+        autocomplete: 'off',
+        valore: valori.km !== null ? String(valori.km) : '',
+        ...(kmPrecedenti != null && { aiuto: `L'ultima volta: ${formattaKm(kmPrecedenti)}.` }),
+        attributi: 'inputmode="numeric" maxlength="9"',
+      })}
+    </div>
+
+    <div class="tc-misure-griglia">
+      ${pneumatici.map((p) => bloccoMisura(p, valori.misure?.get(p.posizione))).join('')}
+    </div>
+
+    ${areaTesto({
+      nome: 'note',
+      etichetta: 'Note (facoltative)',
+      aiuto: 'Le vede anche il cliente: es. "Consigliata la convergenza".',
+      valore: valori.note,
+    })}`;
+}
+
 /** Blocco di una ruota: battistrada e pressione affiancati, poi usura e danni. */
-function bloccoMisura(p: Pneumatico): string {
+function bloccoMisura(p: Pneumatico, m?: Misura): string {
   const c = campiMisura(p.posizione);
   const scorta = p.posizione === 'SCORTA';
   const descrizione = [`${p.marca} ${p.modello}`.trim(), p.misura, ETICHETTE_STAGIONE[p.stagione]]
@@ -120,6 +150,7 @@ function bloccoMisura(p: Pneumatico): string {
           tipo: 'text',
           autocomplete: 'off',
           unita: 'mm',
+          valore: m ? formattaDecimale(m.battistrada_mm) : '',
           attributi: 'inputmode="decimal" maxlength="4" enterkeyhint="next"',
         })}
         ${campo({
@@ -128,10 +159,13 @@ function bloccoMisura(p: Pneumatico): string {
           tipo: 'text',
           autocomplete: 'off',
           unita: 'bar',
+          valore: m?.pressione_bar != null ? formattaDecimale(m.pressione_bar) : '',
           attributi: 'inputmode="decimal" maxlength="4" enterkeyhint="next"',
         })}
       </div>
-      <p class="tc-misura__stato" data-stato="${p.posizione}" aria-live="polite"></p>
+      <p class="tc-misura__stato" data-stato="${p.posizione}" aria-live="polite">${
+        m ? badgeStato(statoBattistrada(m.battistrada_mm, p.stagione)) : ''
+      }</p>
       ${scelta({
         nome: c.usura,
         etichetta: 'Usura',
@@ -139,8 +173,15 @@ function bloccoMisura(p: Pneumatico): string {
           ['', 'Non indicata'],
           ...UsuraSchema.options.map((u) => [u, ETICHETTE_USURA[u]] as const),
         ],
+        valore: m?.usura ?? '',
       })}
-      ${campo({ nome: c.danni, etichetta: 'Danni (facoltativo)', tipo: 'text', autocomplete: 'off' })}
+      ${campo({
+        nome: c.danni,
+        etichetta: 'Danni (facoltativo)',
+        tipo: 'text',
+        autocomplete: 'off',
+        valore: m?.danni,
+      })}
     </fieldset>`;
 }
 
@@ -148,7 +189,7 @@ function bloccoMisura(p: Pneumatico): string {
  * Mentre si scrive il battistrada mostra subito lo stato della ruota (verde/giallo/rosso, con la
  * soglia della sua stagione): chi misura vede al volo se c'è da proporre una sostituzione.
  */
-function collegaStatoInDiretta(form: HTMLFormElement, montati: Pneumatico[]): void {
+export function collegaStatoInDiretta(form: HTMLFormElement, montati: Pneumatico[]): void {
   const stagioni = new Map(montati.map((p) => [p.posizione, p.stagione]));
   form.addEventListener('input', (e) => {
     const input = e.target as HTMLInputElement;

@@ -15,7 +15,11 @@ import {
 import { mostraAccedi } from './pagine/accedi';
 import { mostraCambiaPassword } from './pagine/cambia-password';
 import { mostraHome } from './pagine/home';
+import { mostraModificaCliente } from './pagine/modifica-cliente';
+import { mostraModificaControllo } from './pagine/modifica-controllo';
+import { mostraModificaPneumatici } from './pagine/modifica-pneumatici';
 import { mostraModificaProfilo } from './pagine/modifica-profilo';
+import { mostraModificaVeicolo } from './pagine/modifica-veicolo';
 import { mostraMontaPneumatici } from './pagine/monta-pneumatici';
 import { mostraNonTrovata } from './pagine/non-trovata';
 import { mostraNuovaPassword } from './pagine/nuova-password';
@@ -55,7 +59,19 @@ const ROTTE: Rotta[] = [
     titolo: 'Nuovo cliente',
     mostra: mostraNuovoCliente,
   },
+  {
+    percorso: '/clienti/modifica',
+    accesso: 'utente',
+    titolo: 'Modifica cliente',
+    mostra: mostraModificaCliente,
+  },
   { percorso: '/veicolo', accesso: 'utente', titolo: 'Veicolo', mostra: mostraVeicolo },
+  {
+    percorso: '/veicolo/modifica',
+    accesso: 'utente',
+    titolo: 'Modifica veicolo',
+    mostra: mostraModificaVeicolo,
+  },
   {
     percorso: '/veicolo/pneumatici',
     accesso: 'utente',
@@ -63,10 +79,22 @@ const ROTTE: Rotta[] = [
     mostra: mostraMontaPneumatici,
   },
   {
+    percorso: '/veicolo/pneumatici/modifica',
+    accesso: 'utente',
+    titolo: 'Correggi pneumatici',
+    mostra: mostraModificaPneumatici,
+  },
+  {
     percorso: '/veicolo/controllo',
     accesso: 'utente',
     titolo: 'Nuovo controllo',
     mostra: mostraNuovoControllo,
+  },
+  {
+    percorso: '/controllo/modifica',
+    accesso: 'utente',
+    titolo: 'Correggi controllo',
+    mostra: mostraModificaControllo,
   },
   { percorso: '/accedi', accesso: 'ospite', titolo: 'Accedi', mostra: mostraAccedi },
   { percorso: '/registrati', accesso: 'ospite', titolo: 'Registrati', mostra: mostraRegistrati },
