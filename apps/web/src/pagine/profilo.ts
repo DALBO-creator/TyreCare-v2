@@ -1,21 +1,17 @@
-import {
-  ChevronRight,
-  CircleCheck,
-  KeyRound,
-  LogOut,
-  Mail,
-  Phone,
-  ShieldCheck,
-  UserPen,
-  Wrench,
-} from 'lucide';
+import { ChevronRight, KeyRound, LogOut, Mail, Phone, ShieldCheck, UserPen, Wrench } from 'lucide';
 import { esci, messaggioErrore } from '../lib/auth';
 import { esc } from '../lib/html';
 import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
-import { ancoraAttuale, vaiA, visualizzazioneCorrente } from '../lib/router';
+import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
-import { ETICHETTE_RUOLO, ETICHETTE_RUOLO_OFFICINA, gestisciErroreCaricamento } from './comune';
+import {
+  ETICHETTE_RUOLO,
+  ETICHETTE_RUOLO_OFFICINA,
+  avvisoConferma,
+  gestisciErroreCaricamento,
+  vaiConConferma,
+} from './comune';
 
 function riga(ic: Parameters<typeof icona>[0], etichetta: string, valore: string): string {
   return `
@@ -34,13 +30,9 @@ function link(ic: Parameters<typeof icona>[0], etichetta: string, href: string):
     </a>`;
 }
 
-// Conferma mostrata sul profilo dopo un salvataggio in una sottopagina (una sola volta)
-let conferma: string | undefined;
-
 /** Torna al profilo mostrando un messaggio di conferma (es. "Dati salvati"). */
 export function tornaAlProfilo(messaggio: string): void {
-  conferma = messaggio;
-  vaiA('/profilo');
+  vaiConConferma('/profilo', messaggio);
 }
 
 export async function mostraProfilo(app: HTMLElement): Promise<void> {
@@ -57,8 +49,6 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
   if (!ancoraAttuale(n)) return;
 
   const { email, profilo, officine } = dati;
-  const messaggio = conferma;
-  conferma = undefined;
   const nomeCompleto = `${profilo.nome} ${profilo.cognome}`.trim();
 
   app.innerHTML = paginaApp(`
@@ -70,13 +60,7 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
     </section>
 
     <div class="tc-contenuto">
-      ${
-        messaggio
-          ? `<div class="tc-avviso tc-avviso--verde" role="status">
-              ${icona(CircleCheck)}<p class="mb-0">${esc(messaggio)}</p>
-            </div>`
-          : ''
-      }
+      ${avvisoConferma()}
       <section aria-labelledby="tc-dati">
         <h2 id="tc-dati" class="tc-etichetta">I tuoi dati</h2>
         <div class="tc-lista">

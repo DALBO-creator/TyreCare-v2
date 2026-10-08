@@ -1,17 +1,13 @@
-import { Car, MapPin, Wrench } from 'lucide';
+import { Car } from 'lucide';
 import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
 import { esc } from '../lib/html';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
-import {
-  ETICHETTE_AREA,
-  ETICHETTE_RUOLO_OFFICINA,
-  ETICHETTE_STATO_OFFICINA,
-  gestisciErroreCaricamento,
-} from './comune';
+import { ETICHETTE_AREA, gestisciErroreCaricamento } from './comune';
+import { mostraHomeOfficina } from './home-officina';
 
-/** Home dopo l'accesso. I veicoli arriveranno in Fase 2: per ora saluto e officine dell'utente. */
+/** Home dopo l'accesso: per chi lavora in un'officina l'elenco dei veicoli, per il cliente il garage. */
 export async function mostraHome(app: HTMLElement): Promise<void> {
   const n = visualizzazioneCorrente();
   app.innerHTML = paginaApp(caricamento());
@@ -24,8 +20,9 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
     return;
   }
   if (!ancoraAttuale(n)) return;
+  if (dati.officine.length > 0) return mostraHomeOfficina(app, n, dati);
 
-  const { profilo, officine } = dati;
+  const { profilo } = dati;
   app.innerHTML = paginaApp(`
     <section class="tc-hero">
       <p class="tc-etichetta">${ETICHETTE_AREA[profilo.ruolo]}</p>
@@ -35,7 +32,7 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
     </section>
 
     <div class="tc-contenuto">
-      ${officine.length > 0 ? sezioneOfficine(dati) : sezioneVeicoli()}
+      ${sezioneVeicoli()}
     </div>`);
 }
 
@@ -50,32 +47,5 @@ function sezioneVeicoli(): string {
           Quando la tua officina registrerà un controllo, qui vedrai lo stato dei tuoi pneumatici.
         </p>
       </div>
-    </section>`;
-}
-
-function sezioneOfficine({ officine }: DatiUtente): string {
-  return `
-    <section aria-labelledby="tc-officine">
-      <h2 id="tc-officine" class="tc-etichetta">${officine.length > 1 ? 'Le tue officine' : 'La tua officina'}</h2>
-      <div class="tc-lista">
-        ${officine
-          .map(
-            ({ ruolo, officina }) => `
-          <div class="tc-lista__riga">
-            <span class="tc-lista__icona">${icona(Wrench)}</span>
-            <span class="tc-lista__testo">
-              ${esc(officina.ragione_sociale)}
-              <small>${icona(MapPin)} ${esc(officina.citta) || '—'} · ${ETICHETTE_RUOLO_OFFICINA[ruolo]}</small>
-            </span>
-            <span class="tc-stato-officina tc-stato-officina--${officina.stato_affiliazione.toLowerCase()}">
-              ${ETICHETTE_STATO_OFFICINA[officina.stato_affiliazione]}
-            </span>
-          </div>`,
-          )
-          .join('')}
-      </div>
-      <p class="text-body-secondary small mt-3 mb-0">
-        Garage dei clienti, controlli e prenotazioni arriveranno nelle prossime versioni.
-      </p>
     </section>`;
 }

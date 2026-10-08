@@ -16,11 +16,16 @@ import { mostraAccedi } from './pagine/accedi';
 import { mostraCambiaPassword } from './pagine/cambia-password';
 import { mostraHome } from './pagine/home';
 import { mostraModificaProfilo } from './pagine/modifica-profilo';
+import { mostraMontaPneumatici } from './pagine/monta-pneumatici';
 import { mostraNonTrovata } from './pagine/non-trovata';
 import { mostraNuovaPassword } from './pagine/nuova-password';
+import { mostraNuovoCliente } from './pagine/nuovo-cliente';
+import { mostraNuovoControllo } from './pagine/nuovo-controllo';
+import { mostraNuovoVeicolo } from './pagine/nuovo-veicolo';
 import { mostraPasswordDimenticata } from './pagine/password-dimenticata';
 import { mostraProfilo } from './pagine/profilo';
 import { mostraRegistrati } from './pagine/registrati';
+import { mostraVeicolo } from './pagine/veicolo';
 
 const ROTTE: Rotta[] = [
   { percorso: '/', accesso: 'utente', titolo: '', mostra: mostraHome },
@@ -36,6 +41,32 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: 'Cambia password',
     mostra: mostraCambiaPassword,
+  },
+  // Officina. L'accesso ai dati lo decide la RLS: un cliente su queste pagine non trova nulla
+  {
+    percorso: '/veicoli/nuovo',
+    accesso: 'utente',
+    titolo: 'Nuovo veicolo',
+    mostra: mostraNuovoVeicolo,
+  },
+  {
+    percorso: '/clienti/nuovo',
+    accesso: 'utente',
+    titolo: 'Nuovo cliente',
+    mostra: mostraNuovoCliente,
+  },
+  { percorso: '/veicolo', accesso: 'utente', titolo: 'Veicolo', mostra: mostraVeicolo },
+  {
+    percorso: '/veicolo/pneumatici',
+    accesso: 'utente',
+    titolo: 'Monta pneumatici',
+    mostra: mostraMontaPneumatici,
+  },
+  {
+    percorso: '/veicolo/controllo',
+    accesso: 'utente',
+    titolo: 'Nuovo controllo',
+    mostra: mostraNuovoControllo,
   },
   { percorso: '/accedi', accesso: 'ospite', titolo: 'Accedi', mostra: mostraAccedi },
   { percorso: '/registrati', accesso: 'ospite', titolo: 'Registrati', mostra: mostraRegistrati },

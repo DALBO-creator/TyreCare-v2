@@ -1,52 +1,167 @@
 import { Eye, EyeOff } from 'lucide';
 import type { z } from 'zod';
 import { messaggioErrore } from '../lib/auth';
+import { ErroreModulo } from '../lib/errori';
 import { esc } from '../lib/html';
 import { icona } from './icone';
 
 interface Campo {
   nome: string;
   etichetta: string;
-  tipo: 'text' | 'email' | 'password' | 'tel';
+  tipo: 'text' | 'email' | 'password' | 'tel' | 'date';
   /** Valore di `autocomplete`: permette a browser e password manager di compilare il campo. */
   autocomplete: string;
   aiuto?: string;
   /** Valore iniziale (es. i dati attuali del profilo). */
   valore?: string;
+  /**
+   * Attributi HTML aggiuntivi, scritti dal codice e mai con dati dell'utente
+   * (es. `inputmode="decimal"` per avere la tastiera numerica col separatore decimale).
+   */
+  attributi?: string;
+  /** Unità mostrata a destra del campo (es. "mm", "bar"). */
+  unita?: string;
 }
 
 const id = (nome: string) => `campo-${nome}`;
+
+const descrizioni = (nome: string, aiuto?: string) =>
+  [aiuto ? `${id(nome)}-aiuto` : '', `${id(nome)}-errore`].join(' ').trim();
+
+const etichettaCampo = (nome: string, etichetta: string) =>
+  `<label class="form-label" for="${id(nome)}">${esc(etichetta)}</label>`;
+
+const aiutoEErrore = (nome: string, aiuto?: string) => `
+  ${aiuto ? `<div id="${id(nome)}-aiuto" class="form-text">${esc(aiuto)}</div>` : ''}
+  <div id="${id(nome)}-errore" class="tc-campo__errore" hidden></div>`;
 
 /**
  * Campo con etichetta sempre visibile, testo di aiuto e spazio per l'errore, collegati all'input
  * con `aria-describedby`. Le password hanno il pulsante per mostrarle (incollare è sempre permesso).
  */
-export function campo({ nome, etichetta, tipo, autocomplete, aiuto, valore }: Campo): string {
-  const descrizioni = [aiuto ? `${id(nome)}-aiuto` : '', `${id(nome)}-errore`].join(' ').trim();
+export function campo({
+  nome,
+  etichetta,
+  tipo,
+  autocomplete,
+  aiuto,
+  valore,
+  attributi = '',
+  unita,
+}: Campo): string {
   const input = `
     <input class="form-control form-control-lg" id="${id(nome)}" name="${nome}" type="${tipo}"
-      autocomplete="${autocomplete}" aria-describedby="${descrizioni}"
+      autocomplete="${autocomplete}" aria-describedby="${descrizioni(nome, aiuto)}"
       ${valore ? `value="${esc(valore)}"` : ''}
       ${tipo === 'email' ? 'inputmode="email" autocapitalize="off" spellcheck="false"' : ''}
-      ${tipo === 'text' ? 'autocapitalize="words"' : ''} />`;
+      ${tipo === 'text' && !attributi.includes('autocapitalize') ? 'autocapitalize="words"' : ''}
+      ${attributi} />`;
+
+  let controllo = input;
+  if (tipo === 'password') {
+    controllo = `
+      <div class="input-group">
+        ${input}
+        <button type="button" class="btn tc-campo__mostra" data-mostra-password
+          aria-controls="${id(nome)}" aria-pressed="false" aria-label="Mostra password">
+          ${icona(Eye)}
+        </button>
+      </div>`;
+  } else if (unita) {
+    // L'unità va scritta anche nell'etichetta, per i lettori di schermo: qui è solo visiva
+    controllo = `
+      <div class="tc-campo__con-unita">
+        ${input}<span class="tc-campo__unita" aria-hidden="true">${esc(unita)}</span>
+      </div>`;
+  }
 
   return `
     <div class="tc-campo">
-      <label class="form-label" for="${id(nome)}">${esc(etichetta)}</label>
-      ${
-        tipo === 'password'
-          ? `<div class="input-group">
-              ${input}
-              <button type="button" class="btn tc-campo__mostra" data-mostra-password
-                aria-controls="${id(nome)}" aria-pressed="false" aria-label="Mostra password">
-                ${icona(Eye)}
-              </button>
-            </div>`
-          : input
-      }
-      ${aiuto ? `<div id="${id(nome)}-aiuto" class="form-text">${esc(aiuto)}</div>` : ''}
-      <div id="${id(nome)}-errore" class="tc-campo__errore" hidden></div>
+      ${etichettaCampo(nome, etichetta)}
+      ${controllo}
+      ${aiutoEErrore(nome, aiuto)}
     </div>`;
+}
+
+/** Coppie valore → testo per menu e caselle. Un valore vuoto è la scelta "nessuna". */
+export type Opzioni = readonly (readonly [string, string])[];
+
+interface Scelta {
+  nome: string;
+  etichetta: string;
+  opzioni: Opzioni;
+  valore?: string;
+  aiuto?: string;
+}
+
+/** Menu a tendina con etichetta, aiuto ed errore come `campo`. */
+export function scelta({ nome, etichetta, opzioni, valore = '', aiuto }: Scelta): string {
+  return `
+    <div class="tc-campo">
+      ${etichettaCampo(nome, etichetta)}
+      <select class="form-select form-select-lg" id="${id(nome)}" name="${nome}"
+        aria-describedby="${descrizioni(nome, aiuto)}">
+        ${opzioni
+          .map(
+            ([v, testo]) =>
+              `<option value="${esc(v)}"${v === valore ? ' selected' : ''}>${esc(testo)}</option>`,
+          )
+          .join('')}
+      </select>
+      ${aiutoEErrore(nome, aiuto)}
+    </div>`;
+}
+
+interface AreaTesto {
+  nome: string;
+  etichetta: string;
+  aiuto?: string;
+  righe?: number;
+}
+
+/** Testo su più righe (es. note). */
+export function areaTesto({ nome, etichetta, aiuto, righe = 3 }: AreaTesto): string {
+  return `
+    <div class="tc-campo">
+      ${etichettaCampo(nome, etichetta)}
+      <textarea class="form-control form-control-lg" id="${id(nome)}" name="${nome}" rows="${righe}"
+        aria-describedby="${descrizioni(nome, aiuto)}"></textarea>
+      ${aiutoEErrore(nome, aiuto)}
+    </div>`;
+}
+
+interface Caselle {
+  nome: string;
+  etichetta: string;
+  opzioni: Opzioni;
+  /** Valori spuntati all'apertura. */
+  selezionate?: readonly string[];
+  aiuto?: string;
+}
+
+/**
+ * Gruppo di caselle a scelta multipla (`fieldset` + `legend`), mostrate come pulsanti grandi.
+ * Il valore letto dal modulo è sempre un elenco, anche vuoto.
+ */
+export function caselle({ nome, etichetta, opzioni, selezionate = [], aiuto }: Caselle): string {
+  return `
+    <fieldset class="tc-campo tc-caselle" data-gruppo="${nome}"
+      aria-describedby="${descrizioni(nome, aiuto)}">
+      <legend class="form-label">${esc(etichetta)}</legend>
+      <div class="tc-caselle__elenco">
+        ${opzioni
+          .map(
+            ([v, testo]) => `
+          <label class="tc-caselle__voce">
+            <input class="form-check-input" type="checkbox" name="${nome}" value="${esc(v)}"
+              ${selezionate.includes(v) ? 'checked' : ''} />
+            <span>${esc(testo)}</span>
+          </label>`,
+          )
+          .join('')}
+      </div>
+      ${aiutoEErrore(nome, aiuto)}
+    </fieldset>`;
 }
 
 /** Pulsante di invio con lo stato "in corso" (spinner + testo). */
@@ -60,7 +175,13 @@ export function pulsanteInvio(testo: string, testoInCorso: string): string {
 export const RIQUADRO_ERRORE = `
   <div class="tc-avviso tc-avviso--rosso" data-errore-modulo role="alert" tabindex="-1" hidden></div>`;
 
-type Dati = Record<string, string>;
+type Dati = Record<string, string | string[]>;
+type Controllo = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+
+const eControllo = (el: unknown): el is Controllo =>
+  el instanceof HTMLInputElement ||
+  el instanceof HTMLSelectElement ||
+  el instanceof HTMLTextAreaElement;
 
 /**
  * Collega un modulo a uno schema Zod:
@@ -68,7 +189,8 @@ type Dati = Record<string, string>;
  *   sparisce appena il valore diventa valido;
  * - all'invio valida tutto: se ci sono errori li mostra e porta il focus sul primo campo errato,
  *   altrimenti chiama `invia` con i dati già puliti dallo schema (es. spazi tolti dall'email);
- * - se `invia` fallisce mostra il messaggio nel riquadro d'errore generale.
+ * - se `invia` fallisce mostra il messaggio sotto il campo (`ErroreModulo` con `campo`) o nel
+ *   riquadro d'errore generale.
  */
 export function collegaModulo<S extends z.ZodType>(
   form: HTMLFormElement,
@@ -76,8 +198,25 @@ export function collegaModulo<S extends z.ZodType>(
   invia: (dati: z.output<S>) => Promise<void>,
 ): void {
   const modificati = new Set<string>();
-  const leggi = (): Dati =>
-    Object.fromEntries([...new FormData(form)].map(([k, v]) => [k, String(v)]));
+  // Nomi dei campi nell'ordine della pagina (un gruppo di caselle conta una volta)
+  const nomi = (): string[] => [
+    ...new Set(
+      [...form.elements]
+        .filter(eControllo)
+        .map((el) => el.name)
+        .filter(Boolean),
+    ),
+  ];
+  const gruppi = new Set(
+    [...form.querySelectorAll<HTMLElement>('[data-gruppo]')].map((g) => g.dataset.gruppo!),
+  );
+  // Le caselle di un gruppo diventano l'elenco dei valori spuntati (vuoto se nessuno)
+  const leggi = (): Dati => {
+    const fd = new FormData(form);
+    return Object.fromEntries(
+      nomi().map((n) => [n, gruppi.has(n) ? fd.getAll(n).map(String) : String(fd.get(n) ?? '')]),
+    );
+  };
 
   const erroriPerCampo = (): Map<string, string> => {
     const errori = new Map<string, string>();
@@ -89,27 +228,34 @@ export function collegaModulo<S extends z.ZodType>(
   };
 
   const mostraErrore = (nome: string, messaggio: string | undefined) => {
-    const input = form.elements.namedItem(nome);
     const box = form.querySelector<HTMLElement>(`#${id(nome)}-errore`);
-    if (!(input instanceof HTMLInputElement) || !box) return;
-    input.classList.toggle('is-invalid', Boolean(messaggio));
-    input.setAttribute('aria-invalid', String(Boolean(messaggio)));
+    if (!box) return;
+    for (const el of form.querySelectorAll<Controllo>(`[name="${nome}"]`)) {
+      el.classList.toggle('is-invalid', Boolean(messaggio));
+      el.setAttribute('aria-invalid', String(Boolean(messaggio)));
+    }
     box.textContent = messaggio ?? '';
     box.hidden = !messaggio;
   };
 
+  const aggiornaSeErrato = (el: Controllo) => {
+    modificati.add(el.name);
+    if (el.classList.contains('is-invalid')) mostraErrore(el.name, erroriPerCampo().get(el.name));
+  };
   form.addEventListener('input', (e) => {
-    const input = e.target as HTMLInputElement;
-    modificati.add(input.name);
-    if (input.classList.contains('is-invalid')) {
-      mostraErrore(input.name, erroriPerCampo().get(input.name));
-    }
+    if (eControllo(e.target)) aggiornaSeErrato(e.target);
+  });
+  // Menu e caselle segnalano la scelta con `change`
+  form.addEventListener('change', (e) => {
+    if (eControllo(e.target)) aggiornaSeErrato(e.target);
   });
 
   form.addEventListener('focusout', (e) => {
-    const input = e.target;
-    if (input instanceof HTMLInputElement && modificati.has(input.name)) {
-      mostraErrore(input.name, erroriPerCampo().get(input.name));
+    const el = e.target;
+    // Per le caselle l'errore si aggiorna solo con `change`: passare da una casella all'altra
+    // del gruppo non deve far comparire "Scegli almeno…"
+    if (eControllo(el) && modificati.has(el.name) && !gruppi.has(el.name)) {
+      mostraErrore(el.name, erroriPerCampo().get(el.name));
     }
   });
 
@@ -138,10 +284,8 @@ export function collegaModulo<S extends z.ZodType>(
     const risultato = schema.safeParse(leggi());
     if (!risultato.success) {
       const errori = erroriPerCampo();
-      for (const input of form.querySelectorAll<HTMLInputElement>('input[name]')) {
-        mostraErrore(input.name, errori.get(input.name));
-      }
-      form.querySelector<HTMLInputElement>('.is-invalid')?.focus();
+      for (const nome of nomi()) mostraErrore(nome, errori.get(nome));
+      form.querySelector<HTMLElement>('.is-invalid')?.focus();
       return;
     }
 
@@ -149,8 +293,13 @@ export function collegaModulo<S extends z.ZodType>(
     try {
       await invia(risultato.data);
     } catch (errore) {
-      if (riquadro) {
-        riquadro.innerHTML = `<p class="mb-0">${esc(messaggioErrore(errore))}</p>`;
+      if (errore instanceof ErroreModulo && errore.campo) {
+        // Errore legato a un campo (es. targa già registrata): sotto il campo, come gli altri
+        mostraErrore(errore.campo, errore.message);
+        form.querySelector<HTMLElement>(`[name="${errore.campo}"]`)?.focus();
+      } else if (riquadro) {
+        const messaggio = errore instanceof ErroreModulo ? errore.message : messaggioErrore(errore);
+        riquadro.innerHTML = `<p class="mb-0">${esc(messaggio)}</p>`;
         riquadro.hidden = false;
         riquadro.focus();
       }

@@ -1,0 +1,360 @@
+// Schermate lato officina (Fase 2): elenco dei veicoli, scheda del veicolo, moduli di inserimento.
+
+// --- Campi: aggiunte per i moduli dell'officina ----------------------------------------------
+
+// Menu e caselle errati: stesso bordo corallo dei campi di testo
+.form-select.is-invalid,
+.form-check-input.is-invalid {
+  border-color: var(--tc-rosso);
+
+  &:focus {
+    border-color: var(--tc-rosso);
+    box-shadow: 0 0 0 0.25rem rgba(map-get(map-get($tc-stati, 'rosso'), 'pieno'), 0.25);
+  }
+}
+
+.form-select.is-invalid {
+  // Bootstrap aggiungerebbe una seconda icona accanto alla freccia del menu
+  --bs-form-select-bg-icon: none;
+  padding-right: $form-select-padding-x * 3;
+}
+
+// Campo numerico con l'unità a destra, dentro il bordo ("6,2 mm")
+.tc-campo__con-unita {
+  position: relative;
+
+  .form-control {
+    padding-right: 3.25rem;
+    font-size: 1.375rem;
+    font-weight: 300;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.tc-campo__unita {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  color: var(--bs-secondary-color);
+  font-size: 0.875rem;
+  pointer-events: none;
+}
+
+// Gruppo di caselle: ogni scelta è un pulsante grande, la casella resta visibile (non solo il colore)
+.tc-caselle {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  &__elenco {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  &__voce {
+    display: inline-flex;
+    flex: 1 1 10rem;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3rem;
+    padding: 0.5rem 1rem;
+    background: var(--tc-superficie);
+    border: 1px solid var(--bs-border-color);
+    border-radius: $border-radius;
+    cursor: pointer;
+    transition:
+      border-color 0.2s $tc-transizione,
+      background-color 0.2s $tc-transizione;
+
+    &:hover {
+      border-color: $tc-bordo-hover;
+    }
+
+    &:has(:checked) {
+      background: var(--tc-superficie-alta);
+      border-color: $tc-testo-secondario;
+    }
+
+    .form-check-input {
+      flex-shrink: 0;
+      width: 1.25rem;
+      height: 1.25rem;
+      margin: 0;
+    }
+  }
+}
+
+// Avviso informativo neutro (non è uno stato di salute)
+.tc-avviso--info {
+  background: var(--tc-superficie);
+  color: var(--bs-secondary-color);
+  box-shadow: inset 0 0 0 1px var(--bs-border-color);
+
+  .tc-icona {
+    color: $tc-testo;
+  }
+}
+
+// --- Home officina -----------------------------------------------------------------------------
+
+// Riepilogo: tre numeri grandi e sottili, che fanno anche da filtro dell'elenco
+.tc-riepilogo {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+
+  &__voce {
+    display: grid;
+    gap: 0.25rem;
+    align-content: start;
+    min-height: 5.5rem;
+    padding: 0.875rem 0.875rem 0.75rem;
+    color: var(--bs-body-color);
+    text-align: left;
+    background: var(--tc-superficie);
+    border: 1px solid var(--bs-border-color);
+    border-radius: $tc-raggio-card;
+    transition:
+      border-color 0.2s $tc-transizione,
+      background-color 0.2s $tc-transizione;
+
+    &:hover {
+      border-color: $tc-bordo-hover;
+    }
+
+    // Filtro attivo: bordo chiaro (non il rosso del brand, che qui sembrerebbe uno stato)
+    &[aria-pressed='true'] {
+      background: var(--tc-superficie-alta);
+      border-color: $tc-testo;
+    }
+
+    @each $stato in ('rosso', 'giallo') {
+      &--#{$stato} .tc-icona {
+        color: var(--tc-#{$stato});
+      }
+    }
+  }
+
+  &__numero {
+    color: $tc-bianco;
+    font-size: 2rem;
+    font-weight: 250;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__etichetta {
+    display: flex;
+    gap: 0.3125rem;
+    align-items: center;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+    line-height: 1.25;
+
+    .tc-icona {
+      flex-shrink: 0;
+      width: 0.9375rem;
+      height: 0.9375rem;
+    }
+  }
+}
+
+// Ricerca con la lente dentro il campo
+.tc-ricerca {
+  margin-bottom: 1rem;
+
+  .form-label {
+    margin-bottom: 0.375rem;
+  }
+
+  &__campo {
+    position: relative;
+
+    > .tc-icona {
+      position: absolute;
+      top: 50%;
+      left: 1rem;
+      transform: translateY(-50%);
+      color: var(--bs-secondary-color);
+      pointer-events: none;
+    }
+
+    .form-control {
+      padding-left: 3rem;
+    }
+  }
+}
+
+// Riga di un veicolo: targa + modello, cliente e data; lo stato a destra (sotto, sugli schermi stretti)
+.tc-veicolo-riga {
+  flex-wrap: wrap;
+  row-gap: 0.5rem;
+
+  .tc-lista__testo {
+    flex: 1 1 14rem;
+  }
+
+  &__titolo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+}
+
+// Veicolo senza controlli: neutro, con icona tratteggiata e testo
+.tc-stato--nessuno {
+  color: var(--bs-secondary-color);
+  box-shadow: inset 0 0 0 1px $tc-bordo-hover;
+}
+
+// --- Scheda del veicolo ---------------------------------------------------------------------------
+
+.tc-hero__nota {
+  margin: 1rem 0 0;
+  color: var(--bs-secondary-color);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+// Storico: ogni controllo si apre per mostrare le misure
+.tc-storico {
+  overflow: hidden;
+  background: var(--tc-superficie);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $tc-raggio-card;
+
+  &__voce + &__voce {
+    border-top: 1px solid var(--bs-border-color);
+  }
+
+  &__riassunto {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    min-height: 4.25rem;
+    padding: 0.75rem 1rem 0.75rem 1.125rem;
+    cursor: pointer;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    // Freccia che ruota all'apertura
+    &::after {
+      content: '';
+      width: 0.5rem;
+      height: 0.5rem;
+      margin-left: auto;
+      border-right: 1.5px solid var(--bs-secondary-color);
+      border-bottom: 1.5px solid var(--bs-secondary-color);
+      transform: rotate(45deg);
+      transition: transform 0.2s $tc-transizione;
+    }
+
+    &:hover {
+      background: var(--tc-superficie-alta);
+    }
+  }
+
+  &__voce[open] &__riassunto::after {
+    transform: rotate(-135deg);
+  }
+
+  &__dettaglio {
+    padding: 0 1rem 1rem 1.125rem;
+  }
+
+  &__note {
+    margin: 0.75rem 0 0;
+    padding: 0.75rem 1rem;
+    color: var(--bs-secondary-color);
+    background: var(--tc-superficie-alta);
+    border-radius: $border-radius;
+    font-size: 0.9375rem;
+    white-space: pre-line;
+  }
+}
+
+.tc-misure {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__riga {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    padding-block: 0.625rem;
+
+    & + & {
+      border-top: 1px solid var(--bs-border-color);
+    }
+
+    .tc-lista__testo {
+      flex: 1 1 12rem;
+    }
+  }
+}
+
+// --- Nuovo controllo -------------------------------------------------------------------------------
+
+// Un blocco per ruota; affiancati a due a due quando lo schermo lo permette (tablet)
+.tc-misure-griglia {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: 36rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.tc-misura {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  margin: 0;
+  padding: 1rem;
+  background: var(--tc-superficie);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $tc-raggio-card;
+
+  &__titolo {
+    display: grid;
+    float: left; // senza, la legend di un fieldset ignora il padding e la griglia
+    width: 100%;
+    margin: 0;
+    color: $tc-bianco;
+    font-size: 1.0625rem;
+    font-weight: 500;
+
+    small {
+      color: var(--bs-secondary-color);
+      font-size: 0.8125rem;
+      font-weight: 400;
+    }
+  }
+
+  // Battistrada e pressione sempre affiancati: sono i due numeri che si scrivono per primi
+  &__numeri {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+
+  &__stato {
+    min-height: 1.875rem;
+    margin: -0.5rem 0 0;
+
+    &:empty {
+      display: none;
+    }
+  }
+}

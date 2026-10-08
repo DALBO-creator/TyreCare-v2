@@ -31,3 +31,16 @@ export function statoBattistrada(profonditaMm: number, stagione: Stagione): Stat
   if (profonditaMm < SOGLIE_BATTISTRADA_MM.consigliato[stagione]) return 'GIALLO';
   return 'VERDE';
 }
+
+const GRAVITA: Record<StatoSalute, number> = { VERDE: 0, GIALLO: 1, ROSSO: 2 };
+
+/**
+ * Stato complessivo di un veicolo: il peggiore tra i suoi pneumatici (basta una gomma da sostituire
+ * perché il veicolo sia "da sostituire"). `null` se non ci sono misure.
+ */
+export function statoPeggiore(stati: readonly StatoSalute[]): StatoSalute | null {
+  return stati.reduce<StatoSalute | null>(
+    (peggiore, s) => (peggiore === null || GRAVITA[s] > GRAVITA[peggiore] ? s : peggiore),
+    null,
+  );
+}

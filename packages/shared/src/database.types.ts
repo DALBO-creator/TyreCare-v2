@@ -450,6 +450,20 @@ export type Database = {
       is_membro_officina: { Args: { p_officina_id: string }; Returns: boolean };
       is_titolare_officina: { Args: { p_officina_id: string }; Returns: boolean };
       is_veicolo_mio: { Args: { p_veicolo_id: string }; Returns: boolean };
+      monta_pneumatici: {
+        Args: { p_montato_il?: string; p_pneumatici: Json; p_veicolo_id: string };
+        Returns: string[];
+      };
+      registra_controllo: {
+        Args: {
+          p_eseguito_il?: string;
+          p_km?: number;
+          p_misure: Json;
+          p_note?: string;
+          p_veicolo_id: string;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       origine_dato: 'APP' | 'IMPORT';

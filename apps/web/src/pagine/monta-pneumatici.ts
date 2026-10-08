@@ -1,0 +1,110 @@
+import { MontaPneumaticiSchema, StagioneSchema, formattaTarga, oggiISO } from '@tyrecare/shared';
+import { Info } from 'lucide';
+import { montaPneumatici } from '../lib/officina';
+import { visualizzazioneCorrente } from '../lib/router';
+import { icona } from '../ui/icone';
+import { paginaApp } from '../ui/layout';
+import {
+  RIQUADRO_ERRORE,
+  caselle,
+  campo,
+  collegaModulo,
+  pulsanteInvio,
+  scelta,
+} from '../ui/modulo';
+import {
+  ETICHETTE_STAGIONE,
+  ORDINE_POSIZIONI,
+  POSIZIONI,
+  intestazioneSottopagina,
+  vaiConConferma,
+} from './comune';
+import { caricaSchedaDaUrl } from './veicolo';
+
+/**
+ * Montaggio di pneumatici nuovi o in sostituzione: `/veicolo/pneumatici?id=…`. Caso tipico il cambio
+ * stagionale: stesse caratteristiche per le quattro ruote, scelte tutte in una volta.
+ */
+export async function mostraMontaPneumatici(app: HTMLElement): Promise<void> {
+  const n = visualizzazioneCorrente();
+  const scheda = await caricaSchedaDaUrl(app, n);
+  if (!scheda) return;
+
+  const { veicolo, pneumatici } = scheda;
+  const oggi = oggiISO();
+
+  app.innerHTML = paginaApp(`
+    ${intestazioneSottopagina('Monta pneumatici', formattaTarga(veicolo.targa))}
+    <div class="tc-contenuto">
+      <form class="tc-auth__modulo" novalidate>
+        ${RIQUADRO_ERRORE}
+        ${caselle({
+          nome: 'posizioni',
+          etichetta: 'Posizioni',
+          opzioni: ORDINE_POSIZIONI.map((p) => [p, POSIZIONI[p].nome] as const),
+          selezionate: ['ANT_SX', 'ANT_DX', 'POST_SX', 'POST_DX'],
+        })}
+        ${
+          pneumatici.length > 0
+            ? `<div class="tc-avviso tc-avviso--info">
+                ${icona(Info)}
+                <p class="mb-0">
+                  Gli pneumatici montati ora nelle posizioni scelte vengono smontati e restano nello
+                  storico con i loro controlli.
+                </p>
+              </div>`
+            : ''
+        }
+        ${scelta({
+          nome: 'stagione',
+          etichetta: 'Stagione',
+          opzioni: [
+            ['', 'Scegli…'],
+            ...StagioneSchema.options.map((s) => [s, ETICHETTE_STAGIONE[s]] as const),
+          ],
+        })}
+        ${campo({
+          nome: 'misura',
+          etichetta: 'Misura',
+          tipo: 'text',
+          autocomplete: 'off',
+          aiuto: 'Come sul fianco dello pneumatico, es. 205/55 R16 91V.',
+          // Di solito la misura non cambia: si propone quella degli pneumatici attuali
+          valore: pneumatici[0]?.misura ?? '',
+          attributi: 'autocapitalize="characters" spellcheck="false"',
+        })}
+        <div class="tc-auth__coppia">
+          ${campo({ nome: 'marca', etichetta: 'Marca', tipo: 'text', autocomplete: 'off' })}
+          ${campo({ nome: 'modello', etichetta: 'Modello', tipo: 'text', autocomplete: 'off' })}
+        </div>
+        <div class="tc-auth__coppia">
+          ${campo({
+            nome: 'dot',
+            etichetta: 'DOT (facoltativo)',
+            tipo: 'text',
+            autocomplete: 'off',
+            aiuto: 'Ultime 4 cifre: settimana e anno (es. 3823).',
+            attributi: 'inputmode="numeric" maxlength="4"',
+          })}
+          ${campo({
+            nome: 'montato_il',
+            etichetta: 'Data di montaggio',
+            tipo: 'date',
+            autocomplete: 'off',
+            valore: oggi,
+            attributi: `max="${oggi}"`,
+          })}
+        </div>
+        ${pulsanteInvio('Monta pneumatici', 'Salvataggio…')}
+        <a class="btn btn-outline-light btn-lg w-100" href="/veicolo?id=${veicolo.id}">Annulla</a>
+      </form>
+    </div>`);
+
+  collegaModulo(app.querySelector('form')!, MontaPneumaticiSchema, async (dati) => {
+    await montaPneumatici(veicolo.id, dati);
+    vaiConConferma(
+      `/veicolo?id=${veicolo.id}`,
+      dati.posizioni.length === 1 ? 'Pneumatico montato.' : 'Pneumatici montati.',
+    );
+  });
+}

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { statoBattistrada } from './pneumatici';
+import { statoBattistrada, statoPeggiore } from './pneumatici';
 
 describe('statoBattistrada', () => {
   it('è ROSSO sotto il limite legale di 1,6 mm', () => {
@@ -14,5 +14,17 @@ describe('statoBattistrada', () => {
   it('è VERDE dalla soglia consigliata in su', () => {
     expect(statoBattistrada(3, 'ESTIVO')).toBe('VERDE');
     expect(statoBattistrada(4, 'INVERNALE')).toBe('VERDE');
+  });
+});
+
+describe('statoPeggiore', () => {
+  it('restituisce lo stato più grave', () => {
+    expect(statoPeggiore(['VERDE', 'ROSSO', 'GIALLO'])).toBe('ROSSO');
+    expect(statoPeggiore(['VERDE', 'GIALLO'])).toBe('GIALLO');
+    expect(statoPeggiore(['VERDE'])).toBe('VERDE');
+  });
+
+  it('è null senza misure', () => {
+    expect(statoPeggiore([])).toBeNull();
   });
 });

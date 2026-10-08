@@ -55,7 +55,7 @@ export type CambioPassword = z.infer<typeof CambioPasswordSchema>;
 const TELEFONO = /^\+?[0-9 ]{6,20}$/;
 
 /** Telefono facoltativo: trattini, punti e parentesi diventano spazi; vuoto → `null`. */
-const telefono = z
+export const TelefonoSchema = z
   .string()
   .transform((s) =>
     s
@@ -72,6 +72,6 @@ const telefono = z
 export const ModificaProfiloSchema = z.object({
   nome: nome('nome'),
   cognome: nome('cognome'),
-  telefono,
+  telefono: TelefonoSchema,
 });
 export type ModificaProfilo = z.infer<typeof ModificaProfiloSchema>;
