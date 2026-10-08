@@ -58,12 +58,13 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 **0 — Pubblicare la migrazione sul cloud (titolare + Claude)**
 
+- [x] (2026-10-08, dal titolare) `npx.cmd supabase db push` della migrazione
+  `20261008130000_scritture_ripetibili.sql`
 - [x] (2026-10-08, dal titolare) `npx.cmd supabase db push` della migrazione `20261008120000_operazioni_officina.sql` (funzioni
   `registra_controllo` e `monta_pneumatici`). **Senza, sul sito online "Monta pneumatici" e "Nuovo
   controllo" falliscono.** Token della CLI: `npx.cmd supabase login` se scaduto
-- [ ] Provare dal telefono sul sito Vercel con un account officina: serve un'officina sul cloud con un
-  TITOLARE (oggi c'è solo nei dati di prova locali) → crearla dalla dashboard (SQL Editor) o aspettare i
-  dati di LA SANTI GOMME
+- [x] (2026-10-08) Prova dal telefono sul sito Vercel con l'officina di prova creata sul cloud: riuscita, a
+  parte il primo salvataggio che falliva (corretto, vedi storico)
 
 **1 — Lato officina (Claude)**
 
@@ -144,6 +145,13 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
   ricerca vuota, filtro, cliente che apre la scheda officina ("non trovato"). `npm run check` verde
 - Aggiornati `NOTES.md`, `PLAN.md` (P2: funzioni SQL per le scritture su più tabelle), `DESIGN-SYSTEM.md`,
   `IMPLEMENTAZIONI.md`
+- Migrazione pubblicata sul cloud (titolare); creata sul cloud l'**officina di prova** "Officina di prova
+  TyreCare" (IN_ATTESA) con il titolare come TITOLARE; **prova dal telefono riuscita**
+- **Bug dal telefono:** il primo salvataggio dopo qualche minuto falliva ("Qualcosa è andato storto"), il
+  secondo funzionava. Causa: connessione chiusa durante la compilazione, e postgrest-js ripete da solo solo
+  le letture. Correzione: le scritture si ripetono una volta dopo un errore di rete, con id scelti dal web e
+  funzioni SQL che riconoscono una scrittura già arrivata (migrazione `20261008130000_scritture_ripetibili.sql`,
+  `lib/rete.ts`); 4 nuovi test pgTAP (58) e 5 Vitest (46). Vedi `NOTES.md`
 
 **Note**
 

@@ -431,3 +431,36 @@ l'errore sotto il campo che ha quel nome; la `transform` finale li ricompone in 
 
 `decimale()` → `Math.round(Number(`${s}e1`)) / 10` — arrotonda a un decimale come `numeric(3, 1)`.
 `1.45 * 10` in virgola mobile vale 14,4999… e darebbe 1,4; `Number('1.45e1')` è esattamente 14,5 → 1,5.
+
+## Scritture ripetibili dopo un errore di rete
+
+**File coinvolti:** `apps/web/src/lib/rete.ts` (+ test), `apps/web/src/lib/{officina,profilo,auth}.ts`,
+`supabase/migrations/20261008130000_scritture_ripetibili.sql`, `supabase/tests/database/operazioni.test.sql`
+
+**Il problema (trovato provando dal telefono il 2026-10-08):** il primo salvataggio dopo qualche minuto
+passato a compilare un modulo dava "Qualcosa è andato storto", il secondo funzionava. Nel frattempo la
+connessione verso Supabase si era chiusa (inattività sulla rete mobile) e il browser se ne accorge solo al
+primo invio. postgrest-js ripete da solo le richieste fallite per la rete, ma **solo GET/HEAD/OPTIONS**:
+per questo le letture non sbagliavano mai e le scritture sì.
+
+**Come funziona:** `conRiprova(() => richiesta)` esegue la scrittura e, se la risposta ha `status: 0`
+(nessuna risposta dal server), la ripete una volta dopo 400 ms. Ripetere una scrittura è sicuro solo se il
+database riconosce quella già arrivata, quindi **gli id li sceglie il web** (`crypto.randomUUID()`):
+
+- clienti e veicoli: l'id va nell'insert; se la ripetizione trova la chiave primaria già usata (`23505`
+  su `…_pkey`) il primo tentativo era arrivato, ed è un successo (`giaSalvato`). Una targa duplicata dà
+  invece `23505` sul vincolo della targa → errore sotto il campo, come prima;
+- `registra_controllo(…, p_id)`: se il controllo `p_id` esiste già, restituisce il suo id e non fa nulla;
+- `monta_pneumatici`: ogni pneumatico porta il suo `id`; se c'è già, lo salta senza smontare nulla;
+- profilo: un `update` si può ripetere così com'è.
+
+Se anche la ripetizione fallisce compare "La connessione non risponde. Controlla la rete e riprova."
+Provato simulando nel browser la caduta della connessione su ogni scrittura (DevTools,
+`Fetch.failRequest`): tutto salvato al primo tocco e nessun doppione.
+
+### Codice complesso
+
+`drop function public.registra_controllo(uuid, jsonb, date, integer, text)` — in PostgreSQL due funzioni
+con lo stesso nome ma parametri diversi sono **due funzioni** (overload): aggiungere `p_id` con
+`create or replace` lascerebbe in giro anche la vecchia. Per `monta_pneumatici` la firma non cambia (l'id
+sta dentro il JSON), quindi basta `create or replace`.
