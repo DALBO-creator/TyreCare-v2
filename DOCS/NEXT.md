@@ -54,7 +54,8 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
 
-**Per prima cosa:** controllare che la CI e il deploy Vercel del commit della sessione 8 siano verdi.
+**Per prima cosa:** CI e deploy Vercel della sessione 8 sono già verdi (controllati a fine sessione):
+partire dal punto 0, che senza il `db push` "Correggi controllo" online non funziona.
 
 **0 — Pubblicare la migrazione sul cloud (titolare)**
 
@@ -140,6 +141,9 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
   verifiche verdi. `npm run check` verde (46 test Vitest)
 - Aggiornati `NOTES.md`, `PLAN.md` (P2, roadmap), `DESIGN-SYSTEM.md` (dialogo, pulsante elimina),
   `IMPLEMENTAZIONI.md`
+- Commit `cf22e57` (codice) e `28c099d` (documenti) su `main`: **CI e deploy Vercel verdi**, le nuove
+  schermate sono online. **Non ancora fatto:** `db push` della migrazione sul cloud (punto 0 della
+  prossima sessione) e prova dal telefono
 
 **Note**
 
