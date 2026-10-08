@@ -109,6 +109,14 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Navigazione inferiore | `.tc-bottomnav`, `__voce` | max 5 voci; attiva = bianca, grassetto e pallino rosso |
 | Pulsanti | `btn-primary` (1 per schermata), `btn-outline-light` (secondari) | |
 | Icone | `icona(Nome)` da `src/ui/icone.ts` | Lucide, tratto 1.75, `aria-hidden` |
+| Riepilogo officina | `.tc-riepilogo`, `__voce` (`aria-pressed`) | tre numeri grandi e sottili che filtrano l'elenco; filtro attivo con bordo chiaro, non rosso |
+| Riga veicolo | `.tc-veicolo-riga` | targa + modello, cliente e data; stato a destra (sotto sugli schermi stretti); `.tc-stato--nessuno` neutro per i veicoli mai controllati |
+| Ricerca | `.tc-ricerca` | lente dentro il campo, etichetta visibile, conteggio annunciato (`aria-live`) |
+| Campo con unità | `campo({ unita: 'mm' })` → `.tc-campo__con-unita` | numeri grandi e sottili, `inputmode="decimal"`, unità anche nell'etichetta |
+| Caselle | `caselle(...)` → `.tc-caselle` | scelte multiple come pulsanti grandi (≥ 48 px), casella sempre visibile |
+| Blocco ruota | `.tc-misura` in `.tc-misure-griglia` | un riquadro per ruota, due per riga da 36 rem (tablet); stato calcolato mentre si scrive |
+| Storico | `.tc-storico` (`<details>`) | riassunto con data, km e stato; misure e note all'apertura |
+| Avviso informativo | `.tc-avviso--info` | neutro: per spiegazioni, non per stati |
 
 Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/anteprima.ts`).
 

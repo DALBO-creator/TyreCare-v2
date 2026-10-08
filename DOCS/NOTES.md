@@ -367,3 +367,67 @@ pneumatici montati, così lo storico può avere più pneumatici smontati nella s
 `normalizza_veicolo()` — trigger che porta targa e telaio in forma canonica ("ab 123-cd" → "AB123CD")
 prima del vincolo di unicità: così l'import trova i duplicati anche se il gestionale scrive la targa con
 spazi.
+
+## Officina — elenco veicoli, clienti, pneumatici e controlli (Fase 2)
+
+**File coinvolti:** `supabase/migrations/20261008120000_operazioni_officina.sql`,
+`supabase/tests/database/operazioni.test.sql`, `packages/shared/src/officina.ts` (+ test),
+`packages/shared/src/pneumatici.ts` (`statoPeggiore`), `apps/web/src/lib/{officina,errori}.ts`,
+`apps/web/src/pagine/{home-officina,nuovo-veicolo,nuovo-cliente,veicolo,monta-pneumatici,nuovo-controllo}.ts`,
+`apps/web/src/ui/modulo.ts`, `apps/web/src/styles/_officina.scss`
+
+**Come funziona:**
+
+- **Home officina** (`/`, per chi è in `officina_utenti`): tre numeri (veicoli, da sostituire, da
+  controllare) che fanno anche da filtro, pulsante "Nuovo veicolo", ricerca per targa, cliente o modello,
+  elenco ordinato per urgenza (rosso, giallo, verde, mai controllati). Lo stato di un veicolo è il
+  **peggiore** tra le misure del suo **ultimo** controllo. Con più officine compare un menu per scegliere
+  quella attiva (ricordata nel browser, chiave `tc-officina`).
+- **Nuovo veicolo** (`/veicoli/nuovo`) con il cliente scelto da un menu; "Cliente nuovo? Aggiungilo" porta a
+  **Nuovo cliente** (`/clienti/nuovo`), che al salvataggio torna al veicolo con il cliente già scelto.
+  Targa già registrata → errore sotto la targa.
+- **Scheda veicolo** (`/veicolo?id=…`): cruscotto dell'ultimo controllo (auto + quattro contagiri, come
+  `/anteprima`), cliente con Chiama/Scrivi, pneumatici montati (uguali raggruppati: "Tutte e quattro le
+  ruote"), storico dei controlli apribile.
+- **Monta pneumatici** (`/veicolo/pneumatici?id=…`): posizioni da spuntare (di default le quattro ruote),
+  stagione, misura (proposta quella attuale), marca, modello, DOT, data. Quelli montati nelle posizioni
+  scelte vengono smontati con quella data e restano nello storico.
+- **Nuovo controllo** (`/veicolo/controllo?id=…`): data, km, e per ogni ruota montata battistrada e
+  pressione (tastiera decimale, "6,2" o "6.2"), usura, danni; note. Mentre si scrive il battistrada
+  compare lo stato della ruota con la soglia della sua stagione.
+- Le pagine del veicolo si aprono solo ai membri della sua officina: un cliente che apre l'URL della
+  propria auto vede "Veicolo non trovato" (il suo garage arriverà con la Fase 3).
+
+### Codice complesso
+
+`registra_controllo` / `monta_pneumatici` — funzioni PL/pgSQL chiamate con `supabase.rpc(...)`. Una
+chiamata è **una transazione**: se una misura fallisce (posizione senza pneumatico, posizione ripetuta,
+valore fuori scala) PostgreSQL annulla anche il controllo già inserito, quindi non resta mai un controllo a
+metà. Sono `security invoker` (girano con i permessi di chi chiama): valgono le stesse policy RLS degli
+insert diretti, nessun privilegio in più. Il client manda la **posizione** e non l'id dello pneumatico: la
+funzione usa quello montato ora, così non si può misurare uno pneumatico smontato o di un altro veicolo.
+Scelte al posto di una rotta Fastify perché l'API non è ancora pubblicata (PLAN P2 aggiornato).
+
+`monta_pneumatici` → prima `update … set smontato_il`, poi `insert`: l'indice unico parziale "un montato
+per posizione" (vedi sopra) sarebbe violato facendo il contrario. Una data precedente al montaggio attuale
+viola il `check (smontato_il >= montato_il)` (codice `23514`), che il web mostra sotto il campo data.
+
+`lib/officina.ts` → `caricaVeicoli` — `.order(…, { referencedTable: 'controlli' })` e
+`.limit(1, { referencedTable: 'controlli' })` ordinano e limitano la tabella **incorporata**: per ogni
+veicolo arriva solo l'ultimo controllo con le sue misure, in una sola richiesta. In `caricaSchedaVeicolo`
+`.is('pneumatici.smontato_il', null)` filtra allo stesso modo gli pneumatici incorporati.
+
+`lib/errori.ts` → `ErroreModulo(messaggio, campo?)` — un errore che il salvataggio lancia e che
+`collegaModulo` mostra **sotto il campo** indicato, come un errore di validazione (es. targa duplicata,
+codice `23505`).
+
+`ui/modulo.ts` → caselle — `FormData` con più caselle dello stesso nome darebbe solo la prima con
+`Object.fromEntries`: per i gruppi (`data-gruppo`) si usa `getAll`, e una casella non spuntata non compare
+proprio in `FormData`, quindi il gruppo vale `[]` e lo schema Zod può dire "Scegli almeno una posizione".
+
+`packages/shared/src/officina.ts` → `creaControlloSchema(posizioni)` — lo schema dipende dalle ruote
+montate, perciò è creato da una funzione. I campi hanno nomi piatti (`mm_ANT_SX`) perché il modulo mostra
+l'errore sotto il campo che ha quel nome; la `transform` finale li ricompone in `{ misure: [...] }`.
+
+`decimale()` → `Math.round(Number(`${s}e1`)) / 10` — arrotonda a un decimale come `numeric(3, 1)`.
+`1.45 * 10` in virgola mobile vale 14,4999… e darebbe 1,4; `Number('1.45e1')` è esattamente 14,5 → 1,5.

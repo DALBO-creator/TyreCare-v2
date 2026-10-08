@@ -48,38 +48,42 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Fase 1 chiusa il 2026-10-07. Obiettivo della prossima sessione: Fase 2 (Dati) — schermate lato officina.**
-> Le tabelle ci sono già (migrazione `20261007120000_dati.sql`, vedi `NOTES.md`); ora serve usarle dall'app.
+> **Obiettivo: Fase 2 (Dati) — completare il lato officina e iniziare il garage del cliente.**
+> Le schermate officina per inserire dati ci sono (sessione 7); mancano modifica/eliminazione e l'import.
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
 
-**Per prima cosa:** controllare che la CI e il deploy Vercel del commit della sessione 6 siano verdi.
+**Per prima cosa:** controllare che la CI e il deploy Vercel del commit della sessione 7 siano verdi.
 
 **0 — Pubblicare la migrazione sul cloud (titolare + Claude)**
 
-- [x] (2026-10-07) `npx.cmd supabase db push` (serve il token della CLI: `npx.cmd supabase login` se scaduto). Il seed
-  **non** va sul cloud: lì i dati veri li inseriranno le officine
+- [x] (2026-10-08, dal titolare) `npx.cmd supabase db push` della migrazione `20261008120000_operazioni_officina.sql` (funzioni
+  `registra_controllo` e `monta_pneumatici`). **Senza, sul sito online "Monta pneumatici" e "Nuovo
+  controllo" falliscono.** Token della CLI: `npx.cmd supabase login` se scaduto
+- [ ] Provare dal telefono sul sito Vercel con un account officina: serve un'officina sul cloud con un
+  TITOLARE (oggi c'è solo nei dati di prova locali) → crearla dalla dashboard (SQL Editor) o aspettare i
+  dati di LA SANTI GOMME
 
 **1 — Lato officina (Claude)**
 
-- [ ] Home officina: elenco dei veicoli dell'officina con ricerca per targa / cliente e stato a colpo d'occhio
-- [ ] Nuovo cliente e nuovo veicolo (moduli con schemi Zod in `packages/shared`)
-- [ ] Scheda veicolo: pneumatici montati (aggiungi / sostituisci), storico dei controlli
-- [ ] **Nuovo controllo** (P9): km, per ogni posizione battistrada minimo, pressione, usura, danni, note →
-  `controlli` + `misure_pneumatico` (insieme: se una misura fallisce non deve restare un controllo a metà →
-  funzione SQL `registra_controllo` o rotta Fastify)
-- [ ] Pensata per tablet/telefono in officina: campi numerici grandi, tastiera decimale (`inputmode`)
+- [ ] **Modifica** di cliente, veicolo, pneumatico e controllo (errori di battitura); **eliminazione** di
+  cliente e veicolo per il TITOLARE (la RLS c'è già), con conferma
+- [ ] Elenco e scheda dei clienti dell'officina (vedi `IMPLEMENTAZIONI.md`)
+- [ ] Smontare uno pneumatico senza sostituirlo (es. ruota di scorta rimossa)
 
 **2 — Lato cliente (Claude)**
 
 - [ ] Garage del cliente: i suoi veicoli **uniti per targa** tra le officine, con il cruscotto di
-  `/anteprima` (auto + contagiri) alimentato dall'ultimo controllo
+  `/anteprima` (auto + contagiri) alimentato dall'ultimo controllo. Si possono riusare `cruscotto()` e lo
+  storico di `pagine/veicolo.ts` (spostandoli in `ui/`)
 
 **3 — Poi**
 
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
-- [ ] Job CI con `supabase start` + `npm run db:test` (ora le migrazioni sono due e i test 37)
+- [ ] Job CI con `supabase start` + `npm run db:test` (ora le migrazioni sono tre e i test pgTAP 54)
+- [ ] Test end-to-end (Playwright, PLAN P7): in sessione 7 i flussi sono stati provati con uno script
+  DevTools fatto al volo, da trasformare in test veri
 
 **Rimandati:**
 
@@ -115,6 +119,37 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 7 — 2026-10-08 (PC di casa)
+
+**Fatto**
+
+- CI e deploy Vercel della sessione 6 verdi; ambiente avviato (Docker, Supabase locale, `db:reset`)
+- **Database:** migrazione `20261008120000_operazioni_officina.sql` con le funzioni `registra_controllo`
+  (controllo + misure in una transazione, pneumatico ricavato dalla posizione) e `monta_pneumatici`
+  (smonta e monta, cambio stagionale in un colpo), `security invoker`; 17 nuovi test pgTAP (totale 54,
+  verdi); tipi rigenerati
+- **Schemi Zod** in `packages/shared/src/officina.ts`: cliente, veicolo (targa normalizzata), montaggio
+  pneumatici (DOT), controllo (decimali all'italiana, schema creato dalle ruote montate); `statoPeggiore`;
+  16 nuovi test Vitest (totale 41)
+- **Schermate officina** (skill `ui-ux-pro-max` per le regole di moduli, ricerca e stati vuoti): home con
+  riepilogo e filtro per stato, ricerca ed elenco per urgenza; nuovo veicolo; nuovo cliente; scheda veicolo
+  con cruscotto, cliente, pneumatici raggruppati e storico; monta pneumatici; nuovo controllo pensato per
+  tablet e telefono (campi grandi con unità, `inputmode="decimal"`, stato della ruota in diretta, due ruote
+  per riga sul tablet)
+- `ui/modulo.ts`: menu a tendina, area di testo, gruppi di caselle, unità nei campi, errori del salvataggio
+  sotto il campo (`ErroreModulo`); avviso di conferma comune (`vaiConConferma`)
+- Provate nel browser (Chrome headless a 390 e 820 px) con i dati di prova: errori di validazione e focus,
+  controllo salvato, cambio pneumatici con data incoerente, nuovo cliente → veicolo, targa duplicata,
+  ricerca vuota, filtro, cliente che apre la scheda officina ("non trovato"). `npm run check` verde
+- Aggiornati `NOTES.md`, `PLAN.md` (P2: funzioni SQL per le scritture su più tabelle), `DESIGN-SYSTEM.md`,
+  `IMPLEMENTAZIONI.md`
+
+**Note**
+
+- Sul PC di casa la copia aggiornata del repo è `C:\Users\albod\TyreCare-v2`; quella in
+  `Documents\GitHub\TyreCare-v2` è vecchia (14 commit indietro): non usarla, o allinearla con `git pull`.
+- Nessuna nuova dipendenza (`STRUCT.md` invariato).
 
 ### Sessione 6 — 2026-10-07 (PC di casa, breve)
 
