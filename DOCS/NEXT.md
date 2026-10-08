@@ -157,7 +157,10 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 - Sul PC di casa la copia aggiornata del repo è `C:\Users\albod\TyreCare-v2`; quella in
   `Documents\GitHub\TyreCare-v2` è vecchia (14 commit indietro): non usarla, o allinearla con `git pull`.
-- Nessuna nuova dipendenza (`STRUCT.md` invariato).
+- Nessuna nuova libreria (`STRUCT.md` invariato). `vitest` ora è dichiarato anche in `apps/web`: il primo
+  test del web (`lib/rete.test.ts`) aveva fatto fallire il deploy Vercel, perché la build del web controlla i
+  tipi di tutto `src/` e Vercel installa solo le dipendenze del workspace. **Regola:** ogni pacchetto usato
+  in un workspace va dichiarato nel suo `package.json`, anche se c'è già nella root.
 
 ### Sessione 6 — 2026-10-07 (PC di casa, breve)
 
