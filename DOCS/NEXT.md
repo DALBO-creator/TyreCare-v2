@@ -151,7 +151,8 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
   secondo funzionava. Causa: connessione chiusa durante la compilazione, e postgrest-js ripete da solo solo
   le letture. Correzione: le scritture si ripetono una volta dopo un errore di rete, con id scelti dal web e
   funzioni SQL che riconoscono una scrittura già arrivata (migrazione `20261008130000_scritture_ripetibili.sql`,
-  `lib/rete.ts`); 4 nuovi test pgTAP (58) e 5 Vitest (46). Vedi `NOTES.md`
+  `lib/rete.ts`); 4 nuovi test pgTAP (58) e 5 Vitest (46). Vedi `NOTES.md`. **Riprovato dal telefono dal
+  titolare: funziona** (commit `83e1aa3`, `151faa6`; CI e Vercel verdi)
 
 **Note**
 
