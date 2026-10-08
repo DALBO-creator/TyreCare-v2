@@ -54,14 +54,13 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
 
-**Per prima cosa:** CI e deploy Vercel della sessione 8 sono già verdi (controllati a fine sessione):
-partire dal punto 0, che senza il `db push` "Correggi controllo" online non funziona.
+**Per prima cosa:** CI e deploy Vercel della sessione 8 sono già verdi e la migrazione è sul cloud:
+partire dalla prova dal telefono (punto 0).
 
 **0 — Pubblicare la migrazione sul cloud (titolare)**
 
-- [ ] `npx.cmd supabase db push` della migrazione `20261008150000_modifica_controllo.sql` (funzione
-  `modifica_controllo`). **Senza, sul sito online "Correggi controllo" fallisce** (le altre correzioni e le
-  eliminazioni funzionano già). Token della CLI: `npx.cmd supabase login` se scaduto
+- [x] (2026-10-08, dal titolare) `npx.cmd supabase db push` della migrazione
+  `20261008150000_modifica_controllo.sql` (verificato con `supabase migration list`)
 - [ ] Prova dal telefono sul sito Vercel con l'officina di prova: correggere veicolo, cliente, pneumatici e
   un controllo; eliminare un controllo, poi un cliente e un veicolo di prova (il dialogo di conferma)
 
@@ -142,8 +141,8 @@ partire dal punto 0, che senza il `db push` "Correggi controllo" online non funz
 - Aggiornati `NOTES.md`, `PLAN.md` (P2, roadmap), `DESIGN-SYSTEM.md` (dialogo, pulsante elimina),
   `IMPLEMENTAZIONI.md`
 - Commit `cf22e57` (codice) e `28c099d` (documenti) su `main`: **CI e deploy Vercel verdi**, le nuove
-  schermate sono online. **Non ancora fatto:** `db push` della migrazione sul cloud (punto 0 della
-  prossima sessione) e prova dal telefono
+  schermate sono online. Migrazione pubblicata sul cloud dal titolare. **Non ancora fatta** la prova dal
+  telefono
 
 **Note**
 
