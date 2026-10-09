@@ -48,42 +48,40 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: Fase 2 (Dati) — completare il lato officina e iniziare il garage del cliente.**
-> Inserimento (sessione 7) e correzione/eliminazione (sessione 8) ci sono; mancano elenco clienti e import.
+> **Obiettivo: Fase 2 (Dati) quasi chiusa (manca solo l'import, in attesa del file di GESTITYRE) →
+> iniziare la Fase 3 con il garage del cliente.**
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
 
-**Per prima cosa:** CI e deploy Vercel della sessione 8 sono già verdi e la migrazione è sul cloud:
-partire dalla prova dal telefono (punto 0).
+**Per prima cosa:** controllare che CI e deploy Vercel della sessione 9 siano verdi (nessuna migrazione da
+pubblicare: la sessione 9 è solo web), poi la prova dal telefono (punto 0).
 
-**0 — Pubblicare la migrazione sul cloud (titolare)**
+**0 — Prova dal telefono (titolare)** sul sito Vercel con l'officina di prova
 
-- [x] (2026-10-08, dal titolare) `npx.cmd supabase db push` della migrazione
-  `20261008150000_modifica_controllo.sql` (verificato con `supabase migration list`)
-- [ ] Prova dal telefono sul sito Vercel con l'officina di prova: correggere veicolo, cliente, pneumatici e
-  un controllo; eliminare un controllo, poi un cliente e un veicolo di prova (il dialogo di conferma)
+- [ ] Sessione 8: correggere veicolo, cliente, pneumatici e un controllo; eliminare un controllo, poi un
+  cliente e un veicolo di prova (il dialogo di conferma)
+- [ ] Sessione 9: voce "Clienti" in basso, ricerca, scheda cliente (Chiama, Nuovo veicolo, Modifica),
+  "Nuovo cliente" dall'elenco; "Smonta" su un veicolo di prova
 
 **1 — Lato officina (Claude)**
 
-- [x] (2026-10-08, sessione 8) **Modifica** di cliente, veicolo, pneumatici e controllo; **eliminazione**
-  di cliente e veicolo (TITOLARE) e di controllo (anche OPERATORE), con dialogo di conferma
-- [ ] Elenco e scheda dei clienti dell'officina (vedi `IMPLEMENTAZIONI.md`): da lì anche "Modifica
-  cliente" per i clienti senza veicolo, che oggi non si raggiungono
-- [ ] Smontare uno pneumatico senza sostituirlo (es. ruota di scorta rimossa)
+- [x] (2026-10-09, sessione 9) Elenco e scheda dei clienti; smontaggio senza sostituzione
 
-**2 — Lato cliente (Claude)**
+**2 — Lato cliente (Claude) — Fase 3**
 
 - [ ] Garage del cliente: i suoi veicoli **uniti per targa** tra le officine, con il cruscotto di
   `/anteprima` (auto + contagiri) alimentato dall'ultimo controllo. Si possono riusare `cruscotto()` e lo
-  storico di `pagine/veicolo.ts` (spostandoli in `ui/`)
+  storico di `pagine/veicolo.ts` (spostandoli in `ui/`). Nel seed la Panda di Giulia (`cliente@tyrecare.test`)
+  è in entrambe le officine (`AB 123 CD` e `AB123CD`): caso di prova per l'unione
+- [ ] Report del singolo controllo per il cliente (PLAN §2.3)
 
 **3 — Poi**
 
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
-- [ ] Job CI con `supabase start` + `npm run db:test` (ora le migrazioni sono sei e i test pgTAP 74)
-- [ ] Test end-to-end (Playwright, PLAN P7): in sessione 7 i flussi sono stati provati con uno script
-  DevTools fatto al volo, da trasformare in test veri
+- [ ] Job CI con `supabase start` + `npm run db:test` (le migrazioni sono sei e i test pgTAP 74)
+- [ ] Test end-to-end (Playwright, PLAN P7): nelle sessioni 7–9 i flussi sono stati provati con script
+  DevTools fatti al volo (in sessione 9 un piccolo driver CDP senza librerie), da trasformare in test veri
 
 **Rimandati:**
 
@@ -119,6 +117,33 @@ partire dalla prova dal telefono (punto 0).
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 9 — 2026-10-09 (PC di casa)
+
+**Fatto**
+
+- Ambiente avviato (Docker, Supabase locale, `db:reset`); repo già allineato a `origin/main`
+- **Elenco clienti** `/clienti`: ordine alfabetico, targhe e telefono in ogni riga, ricerca per nome,
+  email, targa e telefono (solo cifre); "Nuovo cliente" che porta alla scheda del cliente creato
+- **Scheda cliente** `/cliente?id=…`: contatti (Chiama/Scrivi), note, "Usa l'app TyreCare" se collegato a
+  un account, veicoli con lo stato (stesse righe della home), "Nuovo veicolo" con il cliente già scelto,
+  "Modifica dati del cliente". Ora si raggiungono anche i clienti senza veicoli
+- **Navigazione:** voce "Clienti" nella barra in basso solo per chi lavora in officina; nella scheda del
+  veicolo il nome del cliente porta alla sua scheda; modifica/eliminazione del cliente tornano alla scheda
+  o all'elenco
+- **Smonta pneumatici** senza sostituirli (`/veicolo/pneumatici/smonta`, "Smonta" nella scheda del
+  veicolo): posizioni + data, errore sotto la data se precede il montaggio; schema
+  `SmontaPneumaticiSchema` con 2 test Vitest (totale 48). Nessuna migrazione (update diretto, P2)
+- Skill `ui-ux-pro-max` consultata per navigazione inferiore e righe della lista
+- Provato in Chrome headless (390 px) come titolare, operatore e cliente: **37 verifiche verdi**.
+  `npm run check` verde
+- Aggiornati `NOTES.md`, `PLAN.md` (roadmap), `DESIGN-SYSTEM.md`, `IMPLEMENTAZIONI.md`
+
+**Note**
+
+- Nessuna nuova libreria (`STRUCT.md` invariato).
+- Il driver di prova (`cdp.mjs`) usa Chrome headless via DevTools Protocol con il `WebSocket` di Node 24:
+  va avviato con un profilo Chrome vuoto, altrimenti la sessione salvata reindirizza `/accedi` alla home.
 
 ### Sessione 8 — 2026-10-08 (PC di casa)
 

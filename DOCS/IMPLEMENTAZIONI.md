@@ -19,7 +19,9 @@
 | **Recensioni officine** | 🟢 | Solo da clienti con prenotazione completata. |
 | **Multilingua** | 🟢 | |
 | ~~**Modifica ed eliminazione** di clienti, veicoli, pneumatici e controlli (lato officina)~~ | ✅ | Fatto in sessione 8 (2026-10-08). Vedi `NOTES.md`. |
-| **Elenco e scheda clienti** dell'officina (con i loro veicoli) | 🟠 | Oggi un cliente si vede solo dal veicolo. |
+| ~~**Elenco e scheda clienti** dell'officina (con i loro veicoli)~~ | ✅ | Fatto in sessione 9 (2026-10-09). Vedi `NOTES.md`. |
+| **Unire due anagrafiche** dello stesso cliente (doppioni) | 🟢 | Sposta i veicoli sull'anagrafica giusta ed elimina l'altra. Utile dopo l'import. |
+| **Annullare uno smontaggio** fatto per errore | 🟢 | Oggi si rimonta con "Cambia pneumatici" (nuovo record) oppure lo corregge un ADMIN. |
 | **Pressione consigliata** per veicolo/misura e confronto con quella misurata | 🟠 | PLAN P10: "misurata vs consigliata". |
 | **DOT diverso per ruota** nel montaggio di un treno | 🟢 | Oggi un DOT per tutto il treno: se differiscono si monta una ruota alla volta. |
 | **Filtri commerciali nel garage officina** (cambio stagionale da fare, nessun controllo da X mesi) | 🟠 | PLAN P13; per ora filtri per stato e ricerca. |

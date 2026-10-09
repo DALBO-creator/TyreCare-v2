@@ -374,7 +374,7 @@ documento dedicato.
 |------|-----------|-------|
 | 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | ✅ (resta solo il deploy di `apps/api`, rimandato) |
 | 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | ✅ chiusa il 2026-10-07 (design system v3, ruoli/RLS, auth web + API, profilo, email in italiano, logo). Rimandati: SMTP col dominio di LA SANTI GOMME, rifinitura dell'auto |
-| 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07; il 2026-10-08 fatte le schermate officina (elenco, cliente, veicolo, pneumatici, nuovo controllo). Il 2026-10-08 (sessione 8) anche correzione ed eliminazione. Restano elenco clienti e import CSV |
+| 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07; il 2026-10-08 fatte le schermate officina (elenco, cliente, veicolo, pneumatici, nuovo controllo). Il 2026-10-08 (sessione 8) anche correzione ed eliminazione. Il 2026-10-09 elenco e scheda clienti e smontaggio senza sostituzione. Resta l'import CSV |
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | ⬜ |
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | ⬜ |
 | 5 — Notifiche | Web Push, reminder schedulati, fallback email | ⬜ |

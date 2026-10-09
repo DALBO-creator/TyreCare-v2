@@ -516,3 +516,49 @@ il resto della pagina, tiene il focus dentro e chiude con Esc (`cancel`), blocca
 in corso. All'apertura il focus va su "Annulla"; chiudendo torna al pulsante d'origine, passato
 esplicitamente (`collegaElimina`) perché Safari non mette a fuoco i pulsanti toccati. Se l'azione
 fallisce, l'errore compare nel dialogo, che resta aperto.
+
+## Officina — elenco e scheda dei clienti, smontaggio senza sostituzione (Fase 2)
+
+**File coinvolti:** `apps/web/src/pagine/{clienti,cliente,smonta-pneumatici}.ts`,
+`apps/web/src/lib/officina.ts` (`caricaElencoClienti`, `caricaVeicoli`, `smontaPneumatici`),
+`apps/web/src/ui/layout.ts`, `apps/web/src/lib/profilo.ts` (`lavoraInOfficina`),
+`packages/shared/src/officina.ts` (`SmontaPneumaticiSchema`)
+
+**Come funziona:**
+
+- **Navigazione** — chi lavora in un'officina ha una terza voce "Clienti" nella barra in basso (Home ·
+  Clienti · Profilo); il cliente no.
+- **Elenco clienti** (`/clienti`) — clienti dell'officina attiva in ordine alfabetico, con le targhe dei
+  loro veicoli (al più due, poi "e altri N") e il telefono. Ricerca per nome, email, targa (spazi e
+  trattini non contano) e telefono (contano solo le cifre, da 3 in su). "Nuovo cliente" da qui porta
+  poi alla scheda del cliente creato (`/clienti/nuovo?da=clienti`).
+- **Scheda cliente** (`/cliente?id=…`) — nome (per un'azienda la ragione sociale, con il referente
+  sotto), "Usa l'app TyreCare" se l'anagrafica è collegata a un account, contatti (Chiama/Scrivi), note,
+  veicoli ordinati per urgenza con il loro stato, "Nuovo veicolo" con il cliente già scelto (Annulla
+  torna alla scheda) e "Modifica dati del cliente". Da qui si raggiungono anche i clienti **senza
+  veicoli**, che prima non avevano una pagina.
+- **Modifica cliente** — senza `&veicolo=…` torna alla scheda del cliente; dopo un'eliminazione va
+  all'elenco dei clienti. Nella scheda del veicolo il nome del cliente porta alla sua scheda.
+- **Smonta pneumatici** (`/veicolo/pneumatici/smonta?id=…`, "Smonta" accanto a "Pneumatici montati") —
+  per togliere pneumatici **senza montarne altri** (ruota di scorta tolta, gomme portate via): si scelgono
+  le posizioni e la data. Gli pneumatici restano nello storico con i loro controlli; il prossimo
+  controllo chiede solo le posizioni ancora montate. Una data precedente al montaggio dà errore sotto il
+  campo (vincolo `smontato_il >= montato_il`, codice `23514`).
+
+Provato nel browser (Chrome headless, 390 px) come titolare, operatore e cliente: 37 verifiche verdi
+(ricerche, ritorni, nuovo cliente → scheda, eliminazione → elenco, cliente di un'altra officina "non
+trovato", voce "Clienti" assente per il cliente, smontaggio con errori e nuovo controllo a tre ruote).
+
+### Codice complesso
+
+`ui/layout.ts` → `paginaApp()` è sincrona e non sa chi è l'utente: per decidere se mostrare "Clienti"
+legge `lavoraInOfficina()`, un valore che `caricaDatiUtente()` aggiorna a ogni caricamento. Ogni pagina con
+login carica i dati dell'utente e poi ridisegna il guscio, quindi la barra è giusta da quel momento; solo il
+primissimo indicatore di caricamento dopo l'apertura dell'app può mostrare la barra senza "Clienti".
+
+`lib/officina.ts` → `caricaVeicoli({ officinaId } | { clienteId })` — la stessa lettura (veicolo, cliente,
+ultimo controllo e stato peggiore) serve alla home dell'officina e alla scheda del cliente: cambia solo la
+colonna filtrata. Le righe sono le stesse (`rigaVeicolo`, senza il nome del cliente nella scheda).
+
+`smontaPneumatici()` è un `update` diretto (una sola tabella, come le altre correzioni di P2) con valori
+fissi, quindi ripetibile dopo un errore di rete; se tornano meno righe di quelle chieste (RLS) è un errore.

@@ -106,7 +106,7 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Lista | `.tc-lista`, `__riga`, `__icona`, `__testo` | icona in riquadro, titolo + dettaglio, freccia |
 | Officina | `.tc-officina`, `__nome`, `__indirizzo`, `__azioni` | due azioni affiancate (Chiama, Indicazioni) |
 | Badge di stato | `badgeStato(stato, dettaglio?)` → `.tc-stato--<stato>` | per elenchi e tabelle |
-| Navigazione inferiore | `.tc-bottomnav`, `__voce` | max 5 voci; attiva = bianca, grassetto e pallino rosso |
+| Navigazione inferiore | `.tc-bottomnav`, `__voce` | max 5 voci; attiva = bianca, grassetto e pallino rosso. Home · Clienti (solo chi lavora in officina) · Profilo; "Clienti" resta attiva anche sulla scheda `/cliente` |
 | Pulsanti | `btn-primary` (1 per schermata), `btn-outline-light` (secondari) | |
 | Icone | `icona(Nome)` da `src/ui/icone.ts` | Lucide, tratto 1.75, `aria-hidden` |
 | Riepilogo officina | `.tc-riepilogo`, `__voce` (`aria-pressed`) | tre numeri grandi e sottili che filtrano l'elenco; filtro attivo con bordo chiaro, non rosso |
@@ -119,7 +119,8 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Avviso informativo | `.tc-avviso--info` | neutro: per spiegazioni, non per stati |
 | Dialogo di conferma | `chiediConferma(...)` / `collegaElimina(...)` → `.tc-dialogo` | `<dialog>` modale; titolo-domanda, cosa si perde, pulsante rosso pieno "Elimina …" sopra e "Annulla" sotto (focus iniziale); in basso sul telefono, centrato da 576 px |
 | Pulsante elimina | `pulsanteElimina(testo)` → `.tc-pulsante-elimina` | contorno e testo rosso chiaro, staccato in fondo alla pagina di modifica: non si confonde con "Salva" |
-| Intestazione con azione | `.tc-sezione-testa` | etichetta di sezione + collegamento "Modifica" a destra (area di tocco 44 px) |
+| Intestazione con azione | `.tc-sezione-testa` | etichetta di sezione + collegamento "Modifica"/"Smonta" a destra (area di tocco 44 px) |
+| Note del cliente | `.tc-scheda-note` | riquadro con il testo libero sotto i contatti, a capo rispettati |
 
 Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/anteprima.ts`).
 
