@@ -146,6 +146,8 @@ poi la prova dal telefono (punto 0).
 - Provato in Chrome headless (390 px) come cliente, titolare e admin: **24 verifiche verdi**.
   `npm run check` verde
 - Aggiornati `NOTES.md`, `PLAN.md` (roadmap), `DESIGN-SYSTEM.md`, `IMPLEMENTAZIONI.md`
+- Commit `d4622f0` (codice) e `2a4e9a6` (documenti) su `main`: **CI e deploy Vercel verdi**. Migrazione
+  **non ancora pubblicata** sul cloud; prova dal telefono non ancora fatta
 
 **Note**
 
