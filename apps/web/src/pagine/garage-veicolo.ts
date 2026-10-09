@@ -1,21 +1,14 @@
 import { MapPin, Phone, SearchX } from 'lucide';
-import { formattaTarga, normalizzaTarga, type StatoSalute } from '@tyrecare/shared';
+import { formattaTarga, normalizzaTarga } from '@tyrecare/shared';
 import { caricaGarage, type OfficinaGarage, type VeicoloGarage } from '../lib/garage';
 import { esc } from '../lib/html';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
-import { ICONE_STAGIONE, cruscotto, statoMisura } from '../ui/cruscotto';
+import { avvisoPneumatici } from '../ui/avviso-pneumatici';
+import { ICONE_STAGIONE, cruscotto } from '../ui/cruscotto';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
-import { STATI } from '../ui/stato';
 import { sezioneStorico } from '../ui/storico';
-import {
-  ETICHETTE_STAGIONE,
-  ORDINE_POSIZIONI,
-  POSIZIONI,
-  formattaDecimale,
-  gestisciErroreCaricamento,
-  parametro,
-} from './comune';
+import { ETICHETTE_STAGIONE, gestisciErroreCaricamento, parametro } from './comune';
 import { descrizionePneumatico, gruppiPneumatici, nomeGruppo, riga } from './veicolo';
 
 /** Scheda di un veicolo del garage del cliente: `/garage/veicolo?targa=…` (tutte le officine). */
@@ -61,49 +54,11 @@ export async function mostraGarageVeicolo(app: HTMLElement): Promise<void> {
     </section>
 
     <div class="tc-contenuto">
-      ${avvisoStato(veicolo)}
+      ${avvisoPneumatici(ultimo?.misure ?? [])}
       ${sezionePneumatici(veicolo)}
       ${sezioneStorico(controlli)}
       ${sezioneOfficine(veicolo.officine)}
     </div>`);
-}
-
-/**
- * Se l'ultimo controllo ha trovato pneumatici da sostituire o da controllare, un avviso che dice quali
- * (dal più grave) e cosa fare. Il colore non basta: c'è l'icona e il testo dice lo stato.
- */
-function avvisoStato({ controlli, stato }: VeicoloGarage): string {
-  const ultimo = controlli[0];
-  if (!ultimo || !stato || stato === 'VERDE') return '';
-
-  const misure = ultimo.misure
-    .filter((m) => statoMisura(m) === stato)
-    .sort(
-      (a, b) =>
-        ORDINE_POSIZIONI.indexOf(a.pneumatico.posizione) -
-        ORDINE_POSIZIONI.indexOf(b.pneumatico.posizione),
-    );
-  const elenco = misure
-    .map(
-      (m) =>
-        `<strong>${POSIZIONI[m.pneumatico.posizione].nome}</strong> (${formattaDecimale(m.battistrada_mm)} mm)`,
-    )
-    .join(', ');
-  const uno = misure.length === 1;
-  const testi: Record<Exclude<StatoSalute, 'VERDE'>, string> = {
-    ROSSO: `${uno ? 'è da sostituire' : 'sono da sostituire'}: il battistrada è troppo basso per
-      viaggiare sicuri. Contatta la tua officina il prima possibile.`,
-    GIALLO: `${uno ? 'si sta consumando' : 'si stanno consumando'}: chiedi alla tua officina quando
-      conviene ${uno ? 'sostituirlo' : 'sostituirli'}.`,
-  };
-  const s = STATI[stato];
-  return `
-    <section class="tc-azione" aria-label="Intervento consigliato">
-      <div class="tc-avviso tc-avviso--${s.classe}" role="status">
-        ${icona(s.icona)}
-        <p class="mb-0">${elenco} ${testi[stato]}</p>
-      </div>
-    </section>`;
 }
 
 function sezionePneumatici({ pneumatici, officinaPneumatici, officine }: VeicoloGarage): string {
@@ -145,7 +100,8 @@ function sezioneOfficine(officine: OfficinaGarage[]): string {
     </section>`;
 }
 
-function cartaOfficina(o: OfficinaGarage): string {
+/** Carta di un'officina con Chiama e Indicazioni (garage e report del controllo). */
+export function cartaOfficina(o: OfficinaGarage): string {
   const indirizzo = [o.indirizzo, o.citta].filter(Boolean).join(', ');
   const mappa = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${o.ragione_sociale}, ${indirizzo}`,
@@ -154,6 +110,7 @@ function cartaOfficina(o: OfficinaGarage): string {
     <article class="tc-officina">
       <h3 class="tc-officina__nome">${esc(o.ragione_sociale)}</h3>
       ${indirizzo ? `<p class="tc-officina__indirizzo">${icona(MapPin)} ${esc(indirizzo)}</p>` : ''}
+      ${o.telefono ? `<p class="tc-officina__telefono">${icona(Phone)} ${esc(o.telefono)}</p>` : ''}
       <div class="tc-officina__azioni">
         ${
           o.telefono

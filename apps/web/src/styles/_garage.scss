@@ -1,4 +1,5 @@
-// Garage del cliente: carte dei veicoli in home e scheda del veicolo.
+// Garage del cliente: carte dei veicoli in home, scheda del veicolo e report del controllo (con la
+// sua versione stampata).
 
 // --- Carte dei veicoli ----------------------------------------------------------------------
 // Ogni carta è un solo collegamento (area di tocco grande). Lo stato dell'ultimo controllo colora la
@@ -97,4 +98,177 @@
 .tc-officine {
   display: grid;
   gap: 0.75rem;
+}
+
+// --- Report del controllo ---------------------------------------------------------------------
+// Una carta per ruota; due per riga quando lo schermo (o il foglio) lo permette
+.tc-ruote {
+  display: grid;
+  gap: 0.75rem;
+
+  @media (min-width: 36rem) {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.tc-ruota {
+  display: grid;
+  gap: 0.875rem;
+  align-content: start;
+  padding: 1rem 1.125rem;
+  background: var(--tc-superficie);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $tc-raggio-card;
+
+  &__testa {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.75rem;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__nome {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+
+  // Valori in colonna: nome piccolo sopra, valore grande sotto (come i dati di un cruscotto)
+  &__dati {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+    gap: 0.75rem 1rem;
+    margin: 0;
+
+    dt {
+      color: var(--bs-secondary-color);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    dd {
+      margin: 0.125rem 0 0;
+      font-size: 1.0625rem;
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  &__pneumatico {
+    margin: 0;
+    padding-top: 0.75rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.875rem;
+    border-top: 1px solid var(--bs-border-color);
+  }
+}
+
+.tc-report__azioni {
+  display: grid;
+  gap: 0.75rem;
+}
+
+// Data di stampa e telefono dell'officina (a video c'è "Chiama"): solo sul foglio
+.tc-report__piede,
+.tc-officina__telefono {
+  display: none;
+}
+
+// --- Stampa -----------------------------------------------------------------------------------
+// L'app è sempre scura: sulla carta diventa testo nero su bianco, senza sfondi (anche se nel browser
+// è attiva la stampa degli sfondi). Lo stato resta leggibile da icona ed etichetta; contagiri e auto
+// sono SVG e tengono i loro colori.
+@media print {
+  @page {
+    margin: 1.5cm;
+  }
+
+  :root,
+  [data-bs-theme] {
+    --bs-body-bg: #{$tc-bianco};
+    --bs-body-color: #{$tc-nero};
+    --bs-secondary-color: #{$tc-grigio-stampa};
+    --bs-border-color: #{$tc-grigio-stampa};
+  }
+
+  body {
+    background: $tc-bianco;
+  }
+
+  .tc-appbar,
+  .tc-bottomnav,
+  .tc-report__azioni,
+  .tc-officina__azioni {
+    display: none !important;
+  }
+
+  .tc-con-bottomnav {
+    padding-bottom: 0 !important;
+  }
+
+  .tc-pagina {
+    max-width: none;
+  }
+
+  .tc-pagina * {
+    color: $tc-nero !important;
+    background: transparent !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
+    animation: none !important;
+  }
+
+  .tc-pagina .tc-etichetta,
+  .tc-ruota dt,
+  .tc-ruota__pneumatico,
+  .tc-nota-sezione,
+  .tc-hero__dettagli {
+    color: $tc-grigio-stampa !important;
+  }
+
+  .tc-hero {
+    padding-inline: 0;
+    background: none;
+  }
+
+  .tc-contenuto {
+    gap: 1.5rem;
+    padding-inline: 0;
+  }
+
+  .tc-ruote {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  // Bordi al posto degli sfondi per avvisi e badge
+  .tc-avviso,
+  .tc-stato {
+    border: 1px solid $tc-grigio-stampa;
+  }
+
+  .tc-cruscotto,
+  .tc-ruota,
+  .tc-avviso,
+  .tc-officina,
+  .tc-scheda-note {
+    break-inside: avoid;
+  }
+
+  .tc-officina__indirizzo {
+    margin-bottom: 0.375rem;
+  }
+
+  .tc-officina__telefono {
+    display: block;
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  .tc-report__piede {
+    display: block;
+    margin: 0;
+    font-size: 0.8125rem;
+  }
 }

@@ -1,4 +1,4 @@
-import { Pencil } from 'lucide';
+import { FileText, Pencil } from 'lucide';
 import { statoPeggiore } from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import type { Controllo, Misura } from '../lib/officina';
@@ -32,7 +32,7 @@ export function sezioneStorico(controlli: VoceStorico[], { correggi = false } = 
     </section>`;
 }
 
-/** Un controllo: riassunto sempre visibile, misure e note aprendo la voce. */
+/** Un controllo: riassunto sempre visibile; aprendo la voce misure, note e il link al report. */
 function voceStorico(c: VoceStorico, correggi: boolean): string {
   const misure = [...c.misure].sort(
     (a, b) =>
@@ -55,13 +55,18 @@ function voceStorico(c: VoceStorico, correggi: boolean): string {
           ${misure.map(rigaMisura).join('')}
         </ul>
         ${c.note ? `<p class="tc-storico__note">${esc(c.note)}</p>` : ''}
-        ${
-          correggi
-            ? `<a class="tc-storico__correggi" href="/controllo/modifica?id=${c.id}">
-                ${icona(Pencil)} Correggi o elimina
-              </a>`
-            : ''
-        }
+        <div class="tc-storico__azioni">
+          <a class="tc-storico__link" href="/controllo?id=${c.id}">
+            ${icona(FileText)} Apri il report
+          </a>
+          ${
+            correggi
+              ? `<a class="tc-storico__link" href="/controllo/modifica?id=${c.id}">
+                  ${icona(Pencil)} Correggi o elimina
+                </a>`
+              : ''
+          }
+        </div>
       </div>
     </details>`;
 }

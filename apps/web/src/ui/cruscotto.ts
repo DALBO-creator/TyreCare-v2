@@ -29,9 +29,10 @@ export const statoMisura = (m: Misura): StatoSalute =>
 /**
  * Auto con i contagiri dell'ultimo controllo. Serve una misura per ognuna delle quattro ruote:
  * se ne manca qualcuna il cruscotto non si mostra (le misure restano nello storico).
- * `officina` (garage del cliente) si aggiunge alla nota sotto: "… · Gomme Rossi".
+ * `officina` (garage del cliente) si aggiunge alla nota sotto: "… · Gomme Rossi". Nel report del
+ * controllo la data è già nel titolo: con `ultimo: false` niente nota e un'etichetta diversa.
  */
-export function cruscotto(controllo: Controllo, officina = ''): string {
+export function cruscotto(controllo: Controllo, officina = '', { ultimo = true } = {}): string {
   const misura = (p: Posizione) => controllo.misure.find((m) => m.pneumatico.posizione === p);
   const angoli = Object.entries(ANGOLI).map(([angolo, p]) => ({ angolo, p, m: misura(p) }));
   if (angoli.some((a) => !a.m)) return '';
@@ -43,7 +44,8 @@ export function cruscotto(controllo: Controllo, officina = ''): string {
     officina,
   ].filter(Boolean);
   return `
-    <div class="tc-cruscotto" aria-label="Stato degli pneumatici all'ultimo controllo" role="group">
+    <div class="tc-cruscotto" role="group"
+      aria-label="Stato degli pneumatici ${ultimo ? "all'ultimo controllo" : 'a questo controllo'}">
       ${angoli
         .map(
           ({ angolo, p, m }) => `
@@ -62,5 +64,5 @@ export function cruscotto(controllo: Controllo, officina = ''): string {
         pd: stato('POST_DX'),
       })}</div>
     </div>
-    <p class="tc-hero__nota">Ultimo controllo: ${esc(nota.join(' · '))}</p>`;
+    ${ultimo ? `<p class="tc-hero__nota">Ultimo controllo: ${esc(nota.join(' · '))}</p>` : ''}`;
 }

@@ -450,13 +450,19 @@
   }
 }
 
-// "Correggi o elimina" in fondo al dettaglio di un controllo dello storico
-.tc-storico__correggi {
+// "Apri il report" e "Correggi o elimina" in fondo al dettaglio di un controllo dello storico
+.tc-storico__azioni {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.tc-storico__link {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   min-height: $tc-touch-min;
-  margin-top: 0.5rem;
   color: $tc-rosso-chiaro;
   font-size: 0.9375rem;
   font-weight: 500;

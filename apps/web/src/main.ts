@@ -32,6 +32,7 @@ import { mostraNuovoVeicolo } from './pagine/nuovo-veicolo';
 import { mostraPasswordDimenticata } from './pagine/password-dimenticata';
 import { mostraProfilo } from './pagine/profilo';
 import { mostraRegistrati } from './pagine/registrati';
+import { mostraReport } from './pagine/report';
 import { mostraSmontaPneumatici } from './pagine/smonta-pneumatici';
 import { mostraVeicolo } from './pagine/veicolo';
 
@@ -56,6 +57,13 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: 'Il tuo veicolo',
     mostra: mostraGarageVeicolo,
+  },
+  // Report di un controllo: per il cliente e per l'officina che l'ha eseguito (lo decide la RLS)
+  {
+    percorso: '/controllo',
+    accesso: 'utente',
+    titolo: 'Report del controllo',
+    mostra: mostraReport,
   },
   // Officina. L'accesso ai dati lo decide la RLS: un cliente su queste pagine non trova nulla
   {
