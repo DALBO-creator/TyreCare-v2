@@ -462,3 +462,17 @@
   font-weight: 500;
   text-decoration: none;
 }
+
+// --- Scheda del cliente ---------------------------------------------------------------------------
+
+// Note del cliente sotto i contatti
+.tc-scheda-note {
+  margin: 0.75rem 0 0;
+  padding: 0.75rem 1rem;
+  color: var(--bs-secondary-color);
+  background: var(--tc-superficie);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $tc-raggio-card;
+  font-size: 0.9375rem;
+  white-space: pre-line;
+}

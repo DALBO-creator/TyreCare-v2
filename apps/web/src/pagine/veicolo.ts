@@ -190,7 +190,7 @@ function cruscotto(controllo: Controllo): string {
 }
 
 /** Riga della lista; con `azione` (es. "correggi") il collegamento ha la matita in fondo. */
-function riga(ic: IconNode, testo: string, dettaglio = '', href = '', azione = ''): string {
+export function riga(ic: IconNode, testo: string, dettaglio = '', href = '', azione = ''): string {
   const contenuto = `
     <span class="tc-lista__icona">${icona(ic)}</span>
     <span class="tc-lista__testo">${testo}${
@@ -218,7 +218,12 @@ function sezioneCliente({ veicolo, cliente }: SchedaVeicolo): string {
         ${
           cliente
             ? [
-                riga(UserRound, esc(nominativo(cliente))),
+                riga(
+                  UserRound,
+                  esc(nominativo(cliente)),
+                  'Scheda del cliente',
+                  `/cliente?id=${veicolo.cliente_officina_id}`,
+                ),
                 cliente.telefono
                   ? riga(
                       Phone,
@@ -268,7 +273,15 @@ function sezionePneumatici({ veicolo, pneumatici }: SchedaVeicolo): string {
 
   return `
     <section aria-labelledby="tc-pneumatici">
-      <h2 id="tc-pneumatici" class="tc-etichetta">Pneumatici montati</h2>
+      <div class="tc-sezione-testa">
+        <h2 id="tc-pneumatici" class="tc-etichetta">Pneumatici montati</h2>
+        ${
+          gruppi.size > 0
+            ? `<a href="/veicolo/pneumatici/smonta?id=${veicolo.id}"
+                aria-label="Smonta pneumatici senza sostituirli">Smonta</a>`
+            : ''
+        }
+      </div>
       ${
         gruppi.size > 0
           ? `<div class="tc-lista">

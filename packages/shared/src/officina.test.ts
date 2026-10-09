@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   ClienteSchema,
   MontaPneumaticiSchema,
+  SmontaPneumaticiSchema,
   VeicoloSchema,
   creaControlloSchema,
   formattaTarga,
@@ -63,6 +64,22 @@ describe('formattaTarga', () => {
   it('spazia le targhe italiane e lascia le altre', () => {
     expect(formattaTarga('AB123CD')).toBe('AB 123 CD');
     expect(formattaTarga('M1234')).toBe('M1234');
+  });
+});
+
+describe('SmontaPneumaticiSchema', () => {
+  it('accetta posizioni e data di oggi', () => {
+    const dati = { posizioni: ['SCORTA'], smontato_il: oggiISO() };
+    expect(SmontaPneumaticiSchema.parse(dati)).toEqual(dati);
+  });
+
+  it('richiede almeno una posizione e rifiuta date future o vuote', () => {
+    expect(
+      errori(SmontaPneumaticiSchema.safeParse({ posizioni: [], smontato_il: '2999-01-01' })),
+    ).toEqual(['posizioni', 'smontato_il']);
+    expect(
+      errori(SmontaPneumaticiSchema.safeParse({ posizioni: ['SCORTA'], smontato_il: '' })),
+    ).toEqual(['smontato_il']);
   });
 });
 

@@ -133,12 +133,14 @@ export type Veicolo = z.infer<typeof VeicoloSchema>;
 // Stesso controllo del vincolo `check` su `pneumatici.dot`: settimana 01–53 + anno a due cifre
 const DOT = /^(0[1-9]|[1-4][0-9]|5[0-3])[0-9]{2}$/;
 
+// Caselle di scelta: arrivano come elenco (vuoto se non ne è spuntata nessuna)
+const posizioniScelte = z
+  .array(PosizioneSchema)
+  .min(1, { error: 'Scegli almeno una posizione' })
+  .refine((p) => new Set(p).size === p.length, { error: 'Posizioni ripetute' });
+
 export const MontaPneumaticiSchema = z.object({
-  // Caselle di scelta: arrivano come elenco (vuoto se non ne è spuntata nessuna)
-  posizioni: z
-    .array(PosizioneSchema)
-    .min(1, { error: 'Scegli almeno una posizione' })
-    .refine((p) => new Set(p).size === p.length, { error: 'Posizioni ripetute' }),
+  posizioni: posizioniScelte,
   stagione: z.enum(StagioneSchema.options, { error: 'Scegli la stagione' }),
   misura: z
     .string()
@@ -162,6 +164,13 @@ export const MontaPneumaticiSchema = z.object({
   montato_il: dataPassata('la data di montaggio'),
 });
 export type MontaPneumatici = z.infer<typeof MontaPneumaticiSchema>;
+
+/** Smontaggio senza sostituzione (es. ruota di scorta tolta): gli pneumatici restano nello storico. */
+export const SmontaPneumaticiSchema = z.object({
+  posizioni: posizioniScelte,
+  smontato_il: dataPassata('la data di smontaggio'),
+});
+export type SmontaPneumatici = z.infer<typeof SmontaPneumaticiSchema>;
 
 // ---------------------------------------------------------------------------------------------------
 // Nuovo controllo

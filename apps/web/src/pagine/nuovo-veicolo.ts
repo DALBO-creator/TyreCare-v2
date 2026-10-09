@@ -12,6 +12,7 @@ import { RIQUADRO_ERRORE, campo, collegaModulo, pulsanteInvio, scelta } from '..
 import {
   avvisoConferma,
   gestisciErroreCaricamento,
+  idValido,
   intestazioneSottopagina,
   parametro,
   vaiConConferma,
@@ -98,15 +99,20 @@ export async function mostraNuovoVeicolo(app: HTMLElement): Promise<void> {
   }
   if (!ancoraAttuale(n)) return;
 
+  // Dalla scheda del cliente "Annulla" torna lì
+  const cliente = parametro('cliente');
+  const indietro =
+    parametro('da') === 'cliente' && idValido(cliente) ? `/cliente?id=${cliente}` : '/';
+
   app.innerHTML = paginaApp(`
     ${intestazioneSottopagina('Nuovo veicolo', 'Area officina')}
     <div class="tc-contenuto">
       ${avvisoConferma()}
       <form class="tc-auth__modulo" novalidate>
         ${RIQUADRO_ERRORE}
-        ${campiVeicolo(clienti, { cliente_officina_id: parametro('cliente') }, true)}
+        ${campiVeicolo(clienti, { cliente_officina_id: cliente }, true)}
         ${pulsanteInvio('Salva veicolo', 'Salvataggio…')}
-        <a class="btn btn-outline-light btn-lg w-100" href="/">Annulla</a>
+        <a class="btn btn-outline-light btn-lg w-100" href="${indietro}">Annulla</a>
       </form>
     </div>`);
 

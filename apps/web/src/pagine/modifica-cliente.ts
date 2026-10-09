@@ -23,8 +23,9 @@ import { campiCliente } from './nuovo-cliente';
 import { nonTrovato } from './veicolo';
 
 /**
- * Correzione dei dati di un cliente: `/clienti/modifica?id=…&veicolo=…`. Si arriva dalla scheda del
- * veicolo e si torna lì. Il TITOLARE può anche eliminare il cliente: i suoi veicoli restano.
+ * Correzione dei dati di un cliente: `/clienti/modifica?id=…`. Si torna alla scheda del cliente,
+ * oppure a quella del veicolo da cui si è arrivati (`&veicolo=…`). Il TITOLARE può anche eliminare il
+ * cliente: i suoi veicoli restano.
  */
 export async function mostraModificaCliente(app: HTMLElement): Promise<void> {
   const n = visualizzazioneCorrente();
@@ -32,7 +33,8 @@ export async function mostraModificaCliente(app: HTMLElement): Promise<void> {
 
   const id = parametro('id');
   const veicolo = parametro('veicolo');
-  const indietro = idValido(veicolo) ? `/veicolo?id=${veicolo}` : '/';
+  const dalVeicolo = idValido(veicolo) ? `/veicolo?id=${veicolo}` : null;
+  const indietro = dalVeicolo ?? `/cliente?id=${id ?? ''}`;
 
   let cliente: SchedaCliente | null = null;
   let titolare = false;
@@ -86,7 +88,7 @@ export async function mostraModificaCliente(app: HTMLElement): Promise<void> {
     pulsante: 'Elimina cliente',
     azione: async () => {
       await eliminaCliente(clienteId);
-      vaiConConferma(indietro, 'Cliente eliminato.');
+      vaiConConferma(dalVeicolo ?? '/clienti', 'Cliente eliminato.');
     },
   });
 }

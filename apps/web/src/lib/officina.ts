@@ -82,10 +82,17 @@ export interface VeicoloInElenco {
 }
 
 /**
- * Veicoli dell'officina con il cliente e l'ultimo controllo. Si caricano tutti e si filtrano nel
- * browser: per un'officina sono qualche centinaio, e la ricerca risponde a ogni tasto anche offline.
+ * Veicoli dell'officina (o di un suo cliente) con il cliente e l'ultimo controllo. Si caricano tutti
+ * e si filtrano nel browser: per un'officina sono qualche centinaio, e la ricerca risponde a ogni
+ * tasto anche offline.
  */
-export async function caricaVeicoli(officinaId: string): Promise<VeicoloInElenco[]> {
+export async function caricaVeicoli(
+  filtro: { officinaId: string } | { clienteId: string },
+): Promise<VeicoloInElenco[]> {
+  const [colonna, valore] =
+    'officinaId' in filtro
+      ? (['officina_id', filtro.officinaId] as const)
+      : (['cliente_officina_id', filtro.clienteId] as const);
   const { data, error } = await getSupabase()
     .from('veicoli')
     .select(
@@ -93,7 +100,7 @@ export async function caricaVeicoli(officinaId: string): Promise<VeicoloInElenco
        cliente:clienti_officina (nome, cognome, ragione_sociale),
        controlli (eseguito_il, misure_pneumatico (battistrada_mm, pneumatico:pneumatici (stagione)))`,
     )
-    .eq('officina_id', officinaId)
+    .eq(colonna, valore)
     // Solo l'ultimo controllo di ogni veicolo
     .order('eseguito_il', { referencedTable: 'controlli', ascending: false })
     .order('created_at', { referencedTable: 'controlli', ascending: false })
@@ -135,6 +142,22 @@ export async function caricaClienti(officinaId: string): Promise<ClienteInElenco
     .from('clienti_officina')
     .select('id, nome, cognome, ragione_sociale')
     .eq('officina_id', officinaId);
+  if (error) throw error;
+  return data.sort((a, b) => nominativo(a).localeCompare(nominativo(b), 'it'));
+}
+
+export type ClienteConVeicoli = Pick<
+  Tables<'clienti_officina'>,
+  'id' | 'nome' | 'cognome' | 'ragione_sociale' | 'telefono' | 'email'
+> & { veicoli: Pick<Tables<'veicoli'>, 'targa'>[] };
+
+/** Clienti dell'officina con contatti e targhe, per l'elenco dei clienti (ordinati per nome). */
+export async function caricaElencoClienti(officinaId: string): Promise<ClienteConVeicoli[]> {
+  const { data, error } = await getSupabase()
+    .from('clienti_officina')
+    .select('id, nome, cognome, ragione_sociale, telefono, email, veicoli (targa)')
+    .eq('officina_id', officinaId)
+    .order('targa', { referencedTable: 'veicoli' });
   if (error) throw error;
   return data.sort((a, b) => nominativo(a).localeCompare(nominativo(b), 'it'));
 }
@@ -349,6 +372,27 @@ export async function modificaPneumatici(
   // Vincolo smontato_il >= montato_il: succede solo con pneumatici già smontati
   if (codiceErrore(error) === '23514') {
     throw new ErroreModulo('La data di montaggio è successiva allo smontaggio', 'montato_il');
+  }
+  if (error) throw error;
+  if (data.length !== ids.length) {
+    throw new ErroreModulo('Non è stato possibile salvare: ricarica la pagina e riprova.');
+  }
+}
+
+/**
+ * Smonta pneumatici senza montarne altri (es. ruota di scorta tolta). Un `update` con valori fissi:
+ * si può ripetere dopo un errore di rete. Gli pneumatici restano nello storico con i loro controlli.
+ */
+export async function smontaPneumatici(ids: string[], smontato_il: string): Promise<void> {
+  const { data, error } = await conRiprova(() =>
+    getSupabase().from('pneumatici').update({ smontato_il }).in('id', ids).select('id'),
+  );
+  // Vincolo smontato_il >= montato_il
+  if (codiceErrore(error) === '23514') {
+    throw new ErroreModulo(
+      'La data è precedente al montaggio di questi pneumatici: controllala',
+      'smontato_il',
+    );
   }
   if (error) throw error;
   if (data.length !== ids.length) {

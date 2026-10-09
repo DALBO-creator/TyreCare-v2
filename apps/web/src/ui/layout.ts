@@ -1,5 +1,6 @@
-import { House, UserRound, type IconNode } from 'lucide';
+import { House, UserRound, Users, type IconNode } from 'lucide';
 import { esc } from '../lib/html';
+import { lavoraInOfficina } from '../lib/profilo';
 import { icona } from './icone';
 
 const MARCHIO = '<span class="tc-marchio">Tyre<span>Care</span></span>';
@@ -27,14 +28,32 @@ export function paginaAuth({ titolo, sottotitolo, corpo, piede }: PaginaAuth): s
     </main>`;
 }
 
-const VOCI_NAV: { percorso: string; etichetta: string; icona: IconNode }[] = [
+interface VoceNav {
+  percorso: string;
+  etichetta: string;
+  icona: IconNode;
+  /** Altre pagine in cui la voce resta evidenziata (es. la scheda `/cliente` per "Clienti"). */
+  anche?: string[];
+  soloOfficina?: boolean;
+}
+
+const VOCI_NAV: VoceNav[] = [
   { percorso: '/', etichetta: 'Home', icona: House },
+  {
+    percorso: '/clienti',
+    etichetta: 'Clienti',
+    icona: Users,
+    anche: ['/cliente'],
+    soloOfficina: true,
+  },
   { percorso: '/profilo', etichetta: 'Profilo', icona: UserRound },
 ];
 
 // La voce resta evidenziata anche nelle sottopagine (es. /profilo/password)
-const attiva = (percorso: string) =>
-  location.pathname === percorso || location.pathname.startsWith(`${percorso}/`);
+const attiva = ({ percorso, anche = [] }: VoceNav) =>
+  [percorso, ...anche].some(
+    (p) => location.pathname === p || location.pathname.startsWith(`${p}/`),
+  );
 
 /** Guscio delle pagine con login: barra superiore, contenuto, navigazione inferiore. */
 export function paginaApp(corpo: string): string {
@@ -44,12 +63,14 @@ export function paginaApp(corpo: string): string {
     </header>
     <main class="tc-pagina tc-con-bottomnav">${corpo}</main>
     <nav class="tc-bottomnav" aria-label="Navigazione principale">
-      ${VOCI_NAV.map(
-        (v) => `
+      ${VOCI_NAV.filter((v) => !v.soloOfficina || lavoraInOfficina())
+        .map(
+          (v) => `
         <a class="tc-bottomnav__voce" href="${v.percorso}"${
-          attiva(v.percorso) ? ' aria-current="page"' : ''
+          attiva(v) ? ' aria-current="page"' : ''
         }>${icona(v.icona)}<span>${v.etichetta}</span></a>`,
-      ).join('')}
+        )
+        .join('')}
     </nav>`;
 }
 

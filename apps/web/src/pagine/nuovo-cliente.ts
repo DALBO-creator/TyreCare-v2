@@ -3,7 +3,12 @@ import { caricaContestoOfficina, creaCliente } from '../lib/officina';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { caricamento, paginaApp } from '../ui/layout';
 import { RIQUADRO_ERRORE, areaTesto, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
-import { gestisciErroreCaricamento, intestazioneSottopagina, vaiConConferma } from './comune';
+import {
+  gestisciErroreCaricamento,
+  intestazioneSottopagina,
+  parametro,
+  vaiConConferma,
+} from './comune';
 
 type ValoriCliente = Pick<
   Tables<'clienti_officina'>,
@@ -49,8 +54,8 @@ export function campiCliente(c?: ValoriCliente): string {
 }
 
 /**
- * Nuovo cliente dell'officina. Si arriva da "Nuovo veicolo" e si torna lì con il cliente già scelto:
- * un cliente serve sempre per registrarne il veicolo.
+ * Nuovo cliente dell'officina. Da "Nuovo veicolo" si torna lì con il cliente già scelto; dall'elenco
+ * dei clienti (`?da=clienti`) si va alla scheda del cliente appena creato.
  */
 export async function mostraNuovoCliente(app: HTMLElement): Promise<void> {
   const n = visualizzazioneCorrente();
@@ -64,6 +69,7 @@ export async function mostraNuovoCliente(app: HTMLElement): Promise<void> {
     return;
   }
   if (!ancoraAttuale(n)) return;
+  const daClienti = parametro('da') === 'clienti';
 
   app.innerHTML = paginaApp(`
     ${intestazioneSottopagina('Nuovo cliente', 'Area officina')}
@@ -72,12 +78,15 @@ export async function mostraNuovoCliente(app: HTMLElement): Promise<void> {
         ${RIQUADRO_ERRORE}
         ${campiCliente()}
         ${pulsanteInvio('Salva cliente', 'Salvataggio…')}
-        <a class="btn btn-outline-light btn-lg w-100" href="/veicoli/nuovo">Annulla</a>
+        <a class="btn btn-outline-light btn-lg w-100" href="${daClienti ? '/clienti' : '/veicoli/nuovo'}">
+          Annulla
+        </a>
       </form>
     </div>`);
 
   collegaModulo(app.querySelector('form')!, ClienteSchema, async (cliente) => {
     const id = await creaCliente(officinaId, cliente);
+    if (daClienti) return vaiConConferma(`/cliente?id=${id}`, 'Cliente salvato.');
     vaiConConferma(`/veicoli/nuovo?cliente=${id}`, 'Cliente salvato: ora registra il suo veicolo.');
   });
 }

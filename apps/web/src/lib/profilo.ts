@@ -17,6 +17,12 @@ export interface DatiUtente {
   officine: OfficinaUtente[];
 }
 
+// Vero se l'ultimo utente caricato lavora in un'officina: la navigazione mostra anche "Clienti"
+let membroOfficina = false;
+
+/** Vero se l'utente (all'ultimo caricamento dei suoi dati) lavora in almeno un'officina. */
+export const lavoraInOfficina = (): boolean => membroOfficina;
+
 /**
  * Profilo dell'utente autenticato e officine in cui lavora. Le policy RLS garantiscono che si
  * leggano solo i propri dati: il filtro su `profile_id` serve a non includere i colleghi.
@@ -36,6 +42,7 @@ export async function caricaDatiUtente(): Promise<DatiUtente> {
   if (profilo.error) throw profilo.error;
   if (officine.error) throw officine.error;
 
+  membroOfficina = officine.data.length > 0;
   return { email: utente.email ?? '', profilo: profilo.data, officine: officine.data };
 }
 

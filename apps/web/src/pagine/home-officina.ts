@@ -29,6 +29,14 @@ const URGENZA: Record<StatoSalute | 'NESSUNO', number> = {
   NESSUNO: 3,
 };
 
+/** Ordina i veicoli per urgenza e poi per targa (modifica l'array). */
+export const ordinaPerUrgenza = (veicoli: VeicoloInElenco[]): VeicoloInElenco[] =>
+  veicoli.sort(
+    (a, b) =>
+      URGENZA[a.stato ?? 'NESSUNO'] - URGENZA[b.stato ?? 'NESSUNO'] ||
+      a.targa.localeCompare(b.targa),
+  );
+
 /** Home di chi lavora in un'officina: riepilogo per stato, ricerca ed elenco dei veicoli. */
 export async function mostraHomeOfficina(
   app: HTMLElement,
@@ -40,18 +48,14 @@ export async function mostraHomeOfficina(
 
   let veicoli: VeicoloInElenco[];
   try {
-    veicoli = await caricaVeicoli(attiva.officina.id);
+    veicoli = await caricaVeicoli({ officinaId: attiva.officina.id });
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
     return;
   }
   if (!ancoraAttuale(n)) return;
 
-  veicoli.sort(
-    (a, b) =>
-      URGENZA[a.stato ?? 'NESSUNO'] - URGENZA[b.stato ?? 'NESSUNO'] ||
-      a.targa.localeCompare(b.targa),
-  );
+  ordinaPerUrgenza(veicoli);
   const conta = (s: StatoSalute) => veicoli.filter((v) => v.stato === s).length;
 
   app.innerHTML = paginaApp(`
@@ -166,7 +170,7 @@ function collegaElenco(app: HTMLElement, veicoli: VeicoloInElenco[]): void {
       trovati.length === 1 ? '1 veicolo trovato' : `${trovati.length} veicoli trovati`;
     elenco.innerHTML =
       trovati.length > 0
-        ? `<div class="tc-lista">${trovati.map(rigaVeicolo).join('')}</div>`
+        ? `<div class="tc-lista">${trovati.map((v) => rigaVeicolo(v)).join('')}</div>`
         : nessunRisultato(testo);
   };
 
@@ -192,10 +196,11 @@ function collegaElenco(app: HTMLElement, veicoli: VeicoloInElenco[]): void {
   disegna();
 }
 
-function rigaVeicolo(v: VeicoloInElenco): string {
+/** Riga di un veicolo nell'elenco; `senzaCliente` per la scheda del cliente, dove il nome è già sopra. */
+export function rigaVeicolo(v: VeicoloInElenco, senzaCliente = false): string {
   const veicolo = `${v.marca} ${v.modello}`.trim();
   const dettagli = [
-    v.cliente || 'Nessun cliente',
+    senzaCliente ? '' : v.cliente || 'Nessun cliente',
     v.ultimoControllo ? `controllo ${conData('del', v.ultimoControllo)}` : '',
   ].filter(Boolean);
   return `
