@@ -58,8 +58,8 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 Dopo uno **standby** del PC il container `supabase_vector` (solo log di Studio) può restare in loop di
 riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavviando Docker Desktop.
 
-**Per prima cosa:** controllare che CI e deploy Vercel della sessione 11 siano verdi (nessuna migrazione da
-pubblicare), poi la prova dal telefono (punto 0).
+**Per prima cosa:** CI e deploy Vercel della sessione 11 sono già verdi (nessuna migrazione da pubblicare):
+si parte dalla prova dal telefono (punto 0).
 
 **0 — Prova dal telefono (titolare)** sul sito Vercel con l'officina di prova
 
@@ -150,6 +150,8 @@ pubblicare), poi la prova dal telefono (punto 0).
 - Provato in Chrome headless (390 px e stampa emulata) come cliente, titolare, operatore e titolare di
   un'altra officina: **25 verifiche verdi**. `npm run check` verde (52 Vitest), `db:test` 80/80
 - Aggiornati `NOTES.md`, `PLAN.md` (roadmap), `DESIGN-SYSTEM.md`, `IMPLEMENTAZIONI.md`
+- Commit `9d11bf4` (codice) e `34821f5` (documenti) su `main`: **CI e deploy Vercel verdi**. Prova dal
+  telefono non ancora fatta
 
 **Note**
 
