@@ -24,3 +24,24 @@ jobs:
       - run: npm run typecheck
       - run: npm run test
       - run: npm run build
+
+  # Database: migrazioni + seed su un Postgres di Supabase (solo il database, senza gli altri servizi),
+  # poi i test pgTAP e il controllo che i tipi TypeScript generati siano allineati alle migrazioni
+  database:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx supabase db start
+      - run: npm run db:test
+      - name: Tipi del database allineati alle migrazioni
+        run: |
+          npm run db:types
+          git diff --exit-code packages/shared/src/database.types.ts || {
+            echo "::error::database.types.ts non è aggiornato: eseguire npm run db:types e fare commit"
+            exit 1
+          }
