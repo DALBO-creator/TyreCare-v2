@@ -59,8 +59,7 @@ pubblicare: la sessione 9 è solo web), poi la prova dal telefono (punto 0).
 
 **0 — Prova dal telefono (titolare)** sul sito Vercel con l'officina di prova
 
-- [ ] Sessione 8: correggere veicolo, cliente, pneumatici e un controllo; eliminare un controllo, poi un
-  cliente e un veicolo di prova (il dialogo di conferma)
+- [x] (2026-10-09, dal titolare) Sessione 8: correzioni ed eliminazioni provate dal telefono, funzionano
 - [ ] Sessione 9: voce "Clienti" in basso, ricerca, scheda cliente (Chiama, Nuovo veicolo, Modifica),
   "Nuovo cliente" dall'elenco; "Smonta" su un veicolo di prova
 
