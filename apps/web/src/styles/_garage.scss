@@ -1,0 +1,100 @@
+// Garage del cliente: carte dei veicoli in home e scheda del veicolo.
+
+// --- Carte dei veicoli ----------------------------------------------------------------------
+// Ogni carta è un solo collegamento (area di tocco grande). Lo stato dell'ultimo controllo colora la
+// barra a sinistra, ma è sempre detto anche dal badge (icona + testo).
+.tc-garage {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__carta {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'testa freccia'
+      'piede freccia';
+    gap: 1rem 0.75rem;
+    align-items: center;
+    padding: 1.25rem 1rem 1.25rem 1.5rem;
+    overflow: hidden;
+    color: var(--bs-body-color);
+    text-decoration: none;
+    background: linear-gradient(160deg, var(--tc-superficie-alta), var(--tc-superficie) 60%);
+    border: 1px solid var(--bs-border-color);
+    border-radius: $tc-raggio-card;
+    transition: border-color 0.2s $tc-transizione;
+
+    &::before {
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 0.25rem;
+      background: $tc-bordo-hover;
+      content: '';
+    }
+
+    @each $nome, $colori in $tc-stati {
+      &--#{$nome}::before {
+        background: map-get($colori, 'pieno');
+      }
+    }
+
+    &:hover {
+      color: var(--bs-body-color);
+      border-color: $tc-bordo-hover;
+    }
+
+    > .tc-icona {
+      grid-area: freccia;
+      color: var(--bs-secondary-color);
+    }
+  }
+
+  &__testa {
+    display: flex;
+    flex-wrap: wrap;
+    grid-area: testa;
+    gap: 0.25rem 0.75rem;
+    align-items: baseline;
+
+    .tc-etichetta {
+      flex-basis: 100%;
+      margin: 0;
+    }
+  }
+
+  &__modello {
+    font-size: 1.75rem;
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+
+  &__piede {
+    display: flex;
+    flex-wrap: wrap;
+    grid-area: piede;
+    gap: 0.5rem 0.75rem;
+    align-items: center;
+
+    small {
+      color: var(--bs-secondary-color);
+      font-size: 0.875rem;
+    }
+  }
+}
+
+// --- Scheda del veicolo -----------------------------------------------------------------------
+.tc-nota-sezione {
+  margin: 0.75rem 0 0;
+  color: var(--bs-secondary-color);
+  font-size: 0.875rem;
+}
+
+.tc-officine {
+  display: grid;
+  gap: 0.75rem;
+}

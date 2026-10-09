@@ -1,67 +1,38 @@
 import {
   ClipboardCheck,
-  CloudSun,
   Mail,
   Pencil,
   Phone,
   Plus,
   RefreshCw,
   SearchX,
-  Snowflake,
-  Sun,
   UserRound,
   type IconNode,
 } from 'lucide';
-import {
-  formattaTarga,
-  statoBattistrada,
-  statoPeggiore,
-  type Posizione,
-  type Stagione,
-  type StatoSalute,
-} from '@tyrecare/shared';
+import { formattaTarga, type Posizione } from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import {
   caricaSchedaVeicolo,
   nominativo,
-  type Controllo,
-  type Misura,
   type Pneumatico,
   type SchedaVeicolo,
 } from '../lib/officina';
 import { caricaDatiUtente } from '../lib/profilo';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
-import { autoDallAlto } from '../ui/auto';
+import { ICONE_STAGIONE, cruscotto } from '../ui/cruscotto';
 import { icona } from '../ui/icone';
-import { indicatoreBattistrada } from '../ui/indicatore';
 import { caricamento, paginaApp } from '../ui/layout';
-import { badgeStato } from '../ui/stato';
+import { sezioneStorico } from '../ui/storico';
 import {
   ETICHETTE_STAGIONE,
-  ETICHETTE_USURA,
   ORDINE_POSIZIONI,
   POSIZIONI,
   avvisoConferma,
   conData,
-  formattaData,
-  formattaDecimale,
-  formattaKm,
   gestisciErroreCaricamento,
   idValido,
   parametro,
 } from './comune';
-
-const ICONE_STAGIONE: Record<Stagione, IconNode> = {
-  ESTIVO: Sun,
-  INVERNALE: Snowflake,
-  QUATTRO_STAGIONI: CloudSun,
-};
-
-// Angoli del cruscotto (vedi `.tc-cruscotto`) → posizione dello pneumatico
-const ANGOLI = { as: 'ANT_SX', ad: 'ANT_DX', ps: 'POST_SX', pd: 'POST_DX' } as const;
-
-const statoMisura = (m: Misura): StatoSalute =>
-  statoBattistrada(m.battistrada_mm, m.pneumatico.stagione);
 
 /** Scheda di un veicolo per l'officina: `/veicolo?id=…`. */
 export async function mostraVeicolo(app: HTMLElement): Promise<void> {
@@ -104,7 +75,7 @@ export async function mostraVeicolo(app: HTMLElement): Promise<void> {
       </section>
       ${sezioneCliente(scheda)}
       ${sezionePneumatici(scheda)}
-      ${sezioneStorico(controlli)}
+      ${sezioneStorico(controlli, { correggi: true })}
       <a class="btn btn-outline-light btn-lg w-100" href="/veicolo/modifica?id=${veicolo.id}">
         ${icona(Pencil)} Modifica dati del veicolo
       </a>
@@ -150,43 +121,6 @@ export function nonTrovato(titolo: string, soggetto: string): string {
         <a class="btn btn-outline-light mt-3" href="/">Torna all'elenco</a>
       </div>
     </div>`;
-}
-
-/**
- * Auto con i contagiri dell'ultimo controllo. Serve una misura per ognuna delle quattro ruote:
- * se ne manca qualcuna il cruscotto non si mostra (le misure restano nello storico).
- */
-function cruscotto(controllo: Controllo): string {
-  const misura = (p: Posizione) => controllo.misure.find((m) => m.pneumatico.posizione === p);
-  const angoli = Object.entries(ANGOLI).map(([angolo, p]) => ({ angolo, p, m: misura(p) }));
-  if (angoli.some((a) => !a.m)) return '';
-
-  const stato = (p: Posizione) => statoMisura(misura(p)!);
-  return `
-    <div class="tc-cruscotto" aria-label="Stato degli pneumatici all'ultimo controllo" role="group">
-      ${angoli
-        .map(
-          ({ angolo, p, m }) => `
-        <div class="tc-cruscotto__${angolo}">${indicatoreBattistrada({
-          posizione: POSIZIONI[p].nome,
-          sigla: POSIZIONI[p].sigla,
-          mm: m!.battistrada_mm,
-          stato: statoMisura(m!),
-        })}</div>`,
-        )
-        .join('')}
-      <div class="tc-cruscotto__veicolo">${autoDallAlto({
-        as: stato('ANT_SX'),
-        ad: stato('ANT_DX'),
-        ps: stato('POST_SX'),
-        pd: stato('POST_DX'),
-      })}</div>
-    </div>
-    <p class="tc-hero__nota">
-      Ultimo controllo: ${formattaData(controllo.eseguito_il)}${
-        controllo.km !== null ? ` · ${formattaKm(controllo.km)}` : ''
-      }
-    </p>`;
 }
 
 /** Riga della lista; con `azione` (es. "correggi") il collegamento ha la matita in fondo. */
@@ -243,7 +177,7 @@ function sezioneCliente({ veicolo, cliente }: SchedaVeicolo): string {
 }
 
 /** "Anteriore sinistro e destro", "Tutte e quattro le ruote"…: titolo di un gruppo di pneumatici. */
-function nomeGruppo(posizioni: Posizione[]): string {
+export function nomeGruppo(posizioni: Posizione[]): string {
   const ruote = posizioni.filter((p) => p !== 'SCORTA');
   if (ruote.length === 4) {
     return posizioni.includes('SCORTA') ? 'Tutte le ruote e la scorta' : 'Tutte e quattro le ruote';
@@ -260,8 +194,14 @@ function nomeGruppo(posizioni: Posizione[]): string {
 export const chiaveGruppo = (p: Pneumatico): string =>
   [p.stagione, p.marca, p.modello, p.misura, p.dot, p.montato_il].join('|');
 
-function sezionePneumatici({ veicolo, pneumatici }: SchedaVeicolo): string {
-  const gruppi = new Map<string, { p: Pneumatico; posizioni: Posizione[] }>();
+export interface GruppoPneumatici {
+  p: Pneumatico;
+  posizioni: Posizione[];
+}
+
+/** Pneumatici montati raggruppati (vedi `chiaveGruppo`), nell'ordine delle posizioni. */
+export function gruppiPneumatici(pneumatici: Pneumatico[]): GruppoPneumatici[] {
+  const gruppi = new Map<string, GruppoPneumatici>();
   for (const posizione of ORDINE_POSIZIONI) {
     const p = pneumatici.find((x) => x.posizione === posizione);
     if (!p) continue;
@@ -270,38 +210,49 @@ function sezionePneumatici({ veicolo, pneumatici }: SchedaVeicolo): string {
     if (gruppo) gruppo.posizioni.push(posizione);
     else gruppi.set(chiave, { p, posizioni: [posizione] });
   }
+  return [...gruppi.values()];
+}
+
+/** "Michelin Alpin 6 · 175/65 R14 82T · Invernali · DOT 3823 · dal 10 novembre 2025". */
+export function descrizionePneumatico(p: Pneumatico): string {
+  return [
+    `${p.marca} ${p.modello}`.trim(),
+    p.misura,
+    ETICHETTE_STAGIONE[p.stagione],
+    p.dot ? `DOT ${p.dot}` : '',
+    conData('dal', p.montato_il),
+  ]
+    .filter(Boolean)
+    .join(' · ');
+}
+
+function sezionePneumatici({ veicolo, pneumatici }: SchedaVeicolo): string {
+  const gruppi = gruppiPneumatici(pneumatici);
 
   return `
     <section aria-labelledby="tc-pneumatici">
       <div class="tc-sezione-testa">
         <h2 id="tc-pneumatici" class="tc-etichetta">Pneumatici montati</h2>
         ${
-          gruppi.size > 0
+          gruppi.length > 0
             ? `<a href="/veicolo/pneumatici/smonta?id=${veicolo.id}"
                 aria-label="Smonta pneumatici senza sostituirli">Smonta</a>`
             : ''
         }
       </div>
       ${
-        gruppi.size > 0
+        gruppi.length > 0
           ? `<div class="tc-lista">
-              ${[...gruppi.values()]
-                .map(({ p, posizioni }) => {
-                  const dettagli = [
-                    `${p.marca} ${p.modello}`.trim(),
-                    p.misura,
-                    ETICHETTE_STAGIONE[p.stagione],
-                    p.dot ? `DOT ${p.dot}` : '',
-                    conData('dal', p.montato_il),
-                  ].filter(Boolean);
-                  return riga(
+              ${gruppi
+                .map(({ p, posizioni }) =>
+                  riga(
                     ICONE_STAGIONE[p.stagione],
                     nomeGruppo(posizioni),
-                    esc(dettagli.join(' · ')),
+                    esc(descrizionePneumatico(p)),
                     `/veicolo/pneumatici/modifica?id=${veicolo.id}&p=${p.id}`,
                     'correggi',
-                  );
-                })
+                  ),
+                )
                 .join('')}
             </div>
             <a class="btn btn-outline-light btn-lg w-100 mt-3" href="/veicolo/pneumatici?id=${veicolo.id}">
@@ -310,62 +261,4 @@ function sezionePneumatici({ veicolo, pneumatici }: SchedaVeicolo): string {
           : `<p class="text-body-secondary mb-0">Nessuno pneumatico registrato su questo veicolo.</p>`
       }
     </section>`;
-}
-
-function sezioneStorico(controlli: Controllo[]): string {
-  return `
-    <section aria-labelledby="tc-storico">
-      <h2 id="tc-storico" class="tc-etichetta">Storico dei controlli</h2>
-      ${
-        controlli.length > 0
-          ? `<div class="tc-storico">${controlli.map(voceStorico).join('')}</div>`
-          : `<p class="text-body-secondary mb-0">Nessun controllo registrato.</p>`
-      }
-    </section>`;
-}
-
-/** Un controllo: riassunto sempre visibile, misure e note aprendo la voce. */
-function voceStorico(c: Controllo): string {
-  const misure = [...c.misure].sort(
-    (a, b) =>
-      ORDINE_POSIZIONI.indexOf(a.pneumatico.posizione) -
-      ORDINE_POSIZIONI.indexOf(b.pneumatico.posizione),
-  );
-  const stato = statoPeggiore(misure.map(statoMisura));
-  return `
-    <details class="tc-storico__voce">
-      <summary class="tc-storico__riassunto">
-        <span class="tc-lista__testo">
-          ${formattaData(c.eseguito_il)}
-          <small>${c.km !== null ? formattaKm(c.km) : 'Km non indicati'}</small>
-        </span>
-        ${stato ? badgeStato(stato) : ''}
-      </summary>
-      <div class="tc-storico__dettaglio">
-        <ul class="tc-misure">
-          ${misure.map(rigaMisura).join('')}
-        </ul>
-        ${c.note ? `<p class="tc-storico__note">${esc(c.note)}</p>` : ''}
-        <a class="tc-storico__correggi" href="/controllo/modifica?id=${c.id}">
-          ${icona(Pencil)} Correggi o elimina
-        </a>
-      </div>
-    </details>`;
-}
-
-function rigaMisura(m: Misura): string {
-  const valori = [
-    `${formattaDecimale(m.battistrada_mm)} mm`,
-    m.pressione_bar !== null ? `${formattaDecimale(m.pressione_bar)} bar` : '',
-    m.usura && m.usura !== 'REGOLARE' ? `usura ${ETICHETTE_USURA[m.usura].toLowerCase()}` : '',
-    m.danni,
-  ].filter(Boolean);
-  return `
-    <li class="tc-misure__riga">
-      <span class="tc-lista__testo">
-        ${POSIZIONI[m.pneumatico.posizione].nome}
-        <small>${esc(valori.join(' · '))}</small>
-      </span>
-      ${badgeStato(statoMisura(m))}
-    </li>`;
 }

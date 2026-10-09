@@ -38,7 +38,7 @@ interface VoceNav {
 }
 
 const VOCI_NAV: VoceNav[] = [
-  { percorso: '/', etichetta: 'Home', icona: House },
+  { percorso: '/', etichetta: 'Home', icona: House, anche: ['/garage'] },
   {
     percorso: '/clienti',
     etichetta: 'Clienti',

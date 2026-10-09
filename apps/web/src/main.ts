@@ -16,6 +16,7 @@ import { mostraAccedi } from './pagine/accedi';
 import { mostraCambiaPassword } from './pagine/cambia-password';
 import { mostraCliente } from './pagine/cliente';
 import { mostraClienti } from './pagine/clienti';
+import { mostraGarageVeicolo } from './pagine/garage-veicolo';
 import { mostraHome } from './pagine/home';
 import { mostraModificaCliente } from './pagine/modifica-cliente';
 import { mostraModificaControllo } from './pagine/modifica-controllo';
@@ -48,6 +49,13 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: 'Cambia password',
     mostra: mostraCambiaPassword,
+  },
+  // Garage del cliente: i suoi veicoli uniti per targa tra le officine
+  {
+    percorso: '/garage/veicolo',
+    accesso: 'utente',
+    titolo: 'Il tuo veicolo',
+    mostra: mostraGarageVeicolo,
   },
   // Officina. L'accesso ai dati lo decide la RLS: un cliente su queste pagine non trova nulla
   {

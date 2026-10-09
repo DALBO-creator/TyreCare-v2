@@ -446,6 +446,7 @@ export type Database = {
     };
     Functions: {
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      is_cliente_officina: { Args: { p_officina_id: string }; Returns: boolean };
       is_collega: { Args: { p_profile_id: string }; Returns: boolean };
       is_membro_officina: { Args: { p_officina_id: string }; Returns: boolean };
       is_titolare_officina: { Args: { p_officina_id: string }; Returns: boolean };

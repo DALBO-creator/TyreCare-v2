@@ -1,10 +1,13 @@
-import { Car } from 'lucide';
+import { Car, ChevronRight, CircleDashed } from 'lucide';
+import { formattaTarga } from '@tyrecare/shared';
+import { caricaGarage, type VeicoloGarage } from '../lib/garage';
 import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
 import { esc } from '../lib/html';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
-import { ETICHETTE_AREA, gestisciErroreCaricamento } from './comune';
+import { STATI, badgeStato } from '../ui/stato';
+import { ETICHETTE_AREA, conData, gestisciErroreCaricamento } from './comune';
 import { mostraHomeOfficina } from './home-officina';
 
 /** Home dopo l'accesso: per chi lavora in un'officina l'elenco dei veicoli, per il cliente il garage. */
@@ -12,9 +15,11 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
   const n = visualizzazioneCorrente();
   app.innerHTML = paginaApp(caricamento());
 
+  // Il garage si carica insieme ai dati dell'utente: per chi lavora in officina resta inutilizzato
   let dati: DatiUtente;
+  let garage: VeicoloGarage[];
   try {
-    dati = await caricaDatiUtente();
+    [dati, garage] = await Promise.all([caricaDatiUtente(), caricaGarage()]);
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
     return;
@@ -32,20 +37,53 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
     </section>
 
     <div class="tc-contenuto">
-      ${sezioneVeicoli()}
+      ${sezioneVeicoli(garage)}
     </div>`);
 }
 
-function sezioneVeicoli(): string {
+function sezioneVeicoli(garage: VeicoloGarage[]): string {
   return `
     <section aria-labelledby="tc-veicoli">
       <h2 id="tc-veicoli" class="tc-etichetta">I tuoi veicoli</h2>
-      <div class="tc-vuoto">
-        <span class="tc-vuoto__icona">${icona(Car)}</span>
-        <p class="tc-vuoto__titolo">Ancora nessun veicolo</p>
-        <p class="tc-vuoto__testo">
-          Quando la tua officina registrerà un controllo, qui vedrai lo stato dei tuoi pneumatici.
-        </p>
-      </div>
+      ${
+        garage.length > 0
+          ? `<ul class="tc-garage">${garage.map((v) => `<li>${cartaVeicolo(v)}</li>`).join('')}</ul>`
+          : `<div class="tc-vuoto">
+              <span class="tc-vuoto__icona">${icona(Car)}</span>
+              <p class="tc-vuoto__titolo">Ancora nessun veicolo</p>
+              <p class="tc-vuoto__testo">
+                Quando la tua officina registrerà un controllo, qui vedrai lo stato dei tuoi pneumatici.
+              </p>
+            </div>`
+      }
     </section>`;
+}
+
+/** Un veicolo del garage: tutta la carta è un solo collegamento alla sua scheda. */
+function cartaVeicolo(v: VeicoloGarage): string {
+  const ultimo = v.controlli[0];
+  const classe = v.stato ? ` tc-garage__carta--${STATI[v.stato].classe}` : '';
+  return `
+    <a class="tc-garage__carta${classe}" href="/garage/veicolo?targa=${encodeURIComponent(v.targa)}">
+      <span class="tc-garage__testa">
+        <span class="tc-etichetta">${esc(v.marca) || 'Veicolo'}</span>
+        <span class="tc-garage__modello">${esc(v.modello || formattaTarga(v.targa))}</span>
+        <span class="tc-targa">${esc(formattaTarga(v.targa))}</span>
+      </span>
+      <span class="tc-garage__piede">
+        ${
+          v.stato
+            ? badgeStato(v.stato)
+            : `<span class="tc-stato tc-stato--nessuno">${icona(CircleDashed)}Nessun controllo</span>`
+        }
+        ${
+          ultimo
+            ? `<small>Controllo ${esc(conData('del', ultimo.eseguito_il))}${
+                ultimo.officina ? ` · ${esc(ultimo.officina)}` : ''
+              }</small>`
+            : ''
+        }
+      </span>
+      ${icona(ChevronRight)}
+    </a>`;
 }
