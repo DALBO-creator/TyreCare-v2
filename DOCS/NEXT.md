@@ -207,6 +207,8 @@ E. **Controlli veloci dal PC** (non serve il telefono)
 - Provato in Chrome headless (390 px) con un secondo controllo aggiunto a mano al DB locale: **22 verifiche
   verdi**. `npm run check` verde, `db:test` 80/80
 - Scritto in cima a questo file l'elenco completo delle prove del titolare (punto 0)
+- Commit `c3b6692` (codice) e `c906c02` (documenti) su `main`: **CI (`check` e `database`) e deploy Vercel
+  verdi**
 
 **Note**
 
