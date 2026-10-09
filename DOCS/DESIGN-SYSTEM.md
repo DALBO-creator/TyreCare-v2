@@ -126,6 +126,9 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Officine del veicolo | `.tc-officine` | elenco di carte `.tc-officina` nella scheda del garage |
 | Carta della ruota | `.tc-ruota`, `__testa`, `__nome`, `__dati` (`<dl>`), `__pneumatico` | report del controllo: posizione e badge, valori con nome piccolo maiuscolo sopra e numero sotto, pneumatico in fondo dopo un separatore; in `.tc-ruote`, due per riga da 36 rem |
 | Link dello storico | `.tc-storico__azioni`, `.tc-storico__link` | "Apri il report" e "Correggi o elimina" in fondo alla voce aperta (44 px, rosso chiaro) |
+| Contagiri toccabile | `.tc-cruscotto__link` | ogni contagiri del cruscotto apre lo stato di salute dello pneumatico; `aria-label` con posizione, mm e stato |
+| Grafico del battistrada | `graficoBattistrada(punti, stagione)` → `.tc-grafico` | SVG a una serie: linea neutra 2 px, punti 10 px del colore dello stato con anello, griglia recessiva, ultimo valore etichettato; soglie tratteggiate spiegate nella legenda `.tc-grafico__legenda` sotto. Solo da 2 misure |
+| Stato di salute | `.tc-salute`, `__testo`, `__andamento` | contagiri dell'ultima misura con data e km accanto; frase del consumo sotto il grafico |
 | Stampa | `@media print` in `_garage.scss` | nero su bianco senza sfondi, senza barre e pulsanti; carte con bordo grigio non spezzate tra due pagine |
 
 Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/anteprima.ts`).

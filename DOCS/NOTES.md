@@ -658,3 +658,50 @@ accessibile "a questo controllo". `cartaOfficina()` è esportata da `pagine/gara
 Stampa: `.tc-pagina *` riceve `color` nero e `background: transparent` con `!important`, perché molti
 componenti hanno colori chiari scritti nei token (es. il modello dell'auto in `$tc-bianco`); le variabili
 di Bootstrap (`--bs-secondary-color`, `--bs-border-color`) passano al nuovo token `$tc-grigio-stampa`.
+
+## Cliente — stato di salute del singolo pneumatico (Fase 3)
+
+**File coinvolti:** `apps/web/src/lib/salute.ts` (+ `salute.test.ts`), `apps/web/src/pagine/pneumatico.ts`,
+`apps/web/src/ui/grafico-battistrada.ts`, `apps/web/src/ui/cruscotto.ts`, `apps/web/src/pagine/report.ts`,
+`apps/web/src/lib/{garage,officina}.ts`, `apps/web/src/styles/_garage.scss`
+
+**Come funziona:**
+
+- **Pagina** `/pneumatico?id=…`: posizione, marca e modello, targa, stagione e misura; contagiri
+  dell'ultima misura con data e km; **grafico** dell'andamento del battistrada (da due misure in su) con
+  le soglie della stagione; frase sul **consumo** ("cala di circa 0,3 mm al mese (3,1 mm ogni 10.000 km)")
+  e **stima** di quando arriverà alla soglia consigliata e al limite di legge, presentata come stima;
+  dati (montato il, DOT, **età dal DOT**, smontato il) con un avviso oltre i 5 anni; elenco delle misure
+  dalla più recente, ognuna collegata al report del controllo. Uno pneumatico smontato mostra un avviso.
+- **Da dove si apre** — i quattro **contagiri del cruscotto** sono collegamenti (garage del cliente, scheda
+  del veicolo dell'officina, report del controllo); nel report anche "Stato di salute" in fondo alla carta
+  di ogni ruota (non stampato).
+- **Chi la vede** — la decide la RLS come per il report: cliente collegato e officina dello pneumatico.
+  "Torna al veicolo" porta al garage o alla scheda dell'officina.
+- **CI** — nuovo job `database` in `.github/workflows/ci.yml`: `supabase db start` (solo Postgres, senza
+  gli altri servizi), `npm run db:test` e controllo che `database.types.ts` sia uguale a quello generato
+  dalle migrazioni (`npm run db:types` + `git diff --exit-code`). Circa 2 minuti.
+
+Provato nel browser (Chrome headless, 390 px) come cliente, titolare e titolare di un'altra officina, con un
+secondo controllo aggiunto a mano al database locale (il seed ne ha uno solo): 22 verifiche verdi.
+
+### Codice complesso
+
+`lib/salute.ts` — funzioni pure provate con 8 test Vitest:
+
+- `mesiDalDot(dot, oggi)`: il DOT `SSAA` è settimana e anno di produzione; la settimana si conta dal 1°
+  gennaio (approssimazione di pochi giorni). Un DOT nel futuro dà `null`.
+- `tendenza(punti)`: pendenza della **retta dei minimi quadrati** di mm rispetto ai giorni (e, se ci sono
+  almeno due km diversi, rispetto ai km). Con tutte le misure si attenua l'errore di una singola lettura.
+  Se il battistrada non cala (`pendenza >= 0`) non si stima nulla: di solito è un errore di misura o uno
+  pneumatico rimontato.
+- `dataSoglia(punti, soglia)`: dall'ultima misura, al ritmo della tendenza; `null` se è già sotto.
+
+`ui/grafico-battistrada.ts` — SVG senza librerie, seguendo la skill `dataviz`: una serie (niente legenda
+della serie), linea neutra di 2 px, punti di 10 px del colore dello stato con anello della superficie,
+griglia recessiva, solo l'ultimo valore etichettato. Le soglie sono tratteggiate e spiegate in una legenda
+sotto il grafico: dentro il grafico le loro etichette si sovrapponevano ai punti vicini alla soglia. Ogni
+punto ha un `<title>`; l'elenco delle misure sotto fa da tabella. Con meno di due misure il grafico non c'è.
+
+Le misure caricate da garage e scheda officina includono ora l'`id` dello pneumatico (tipo `Misura`), che
+serve ai collegamenti del cruscotto.

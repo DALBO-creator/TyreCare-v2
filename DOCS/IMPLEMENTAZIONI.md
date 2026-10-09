@@ -26,7 +26,9 @@
 | **DOT diverso per ruota** nel montaggio di un treno | 🟢 | Oggi un DOT per tutto il treno: se differiscono si monta una ruota alla volta. |
 | **Garage anche per chi lavora in officina** (titolare con la sua auto cliente di un'altra officina) | 🟢 | Oggi la home di un membro di officina è sempre l'elenco dell'officina: servirebbe una voce "Il mio garage". `caricaGarage()` è già pronto (filtra per account). |
 | **Prenota dalla scheda del garage** quando un pneumatico è da sostituire | 🔴 | Fase 4: oggi l'avviso dice di contattare l'officina e c'è "Chiama". |
-| **Età degli pneumatici dal DOT** nel garage ("3 anni") e avviso oltre i 5–6 anni | 🟠 | Come nella pagina `/anteprima`. |
+| **Età degli pneumatici dal DOT** anche nella carta del garage e nella scheda officina | 🟢 | Già nella pagina dello pneumatico (sessione 11), con avviso oltre i 5 anni. |
+| **Seed con più controlli** per la Panda (per vedere il grafico in locale) | 🟢 | Oggi il seed ha un solo controllo; aggiungerne uno cambia i conteggi di `dati.test.sql`. |
+| **Promemoria dalla stima del consumo** ("tra circa 2 mesi arrivi a 3 mm") | 🟠 | Fase 5: la stima c'è già in `lib/salute.ts`. |
 | **Link pubblico del report** di un controllo (da mandare a chi non ha l'app, es. un familiare) | 🟠 | Oggi c'è "Stampa o salva in PDF". Servirebbe un token casuale e revocabile per controllo, letto da una rotta Fastify o da una funzione `security definer` (mai una policy RLS aperta), con scadenza. |
 | **Invio del report al cliente** (email/WhatsApp) quando l'officina salva il controllo | 🟠 | Dopo il link pubblico; per i clienti senza account. |
 | **Logo dell'officina** nel report stampato | 🟢 | Serve il caricamento del logo (Storage). |
