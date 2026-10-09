@@ -24,6 +24,9 @@
 | **Annullare uno smontaggio** fatto per errore | 🟢 | Oggi si rimonta con "Cambia pneumatici" (nuovo record) oppure lo corregge un ADMIN. |
 | **Pressione consigliata** per veicolo/misura e confronto con quella misurata | 🟠 | PLAN P10: "misurata vs consigliata". |
 | **DOT diverso per ruota** nel montaggio di un treno | 🟢 | Oggi un DOT per tutto il treno: se differiscono si monta una ruota alla volta. |
+| **Garage anche per chi lavora in officina** (titolare con la sua auto cliente di un'altra officina) | 🟢 | Oggi la home di un membro di officina è sempre l'elenco dell'officina: servirebbe una voce "Il mio garage". `caricaGarage()` è già pronto (filtra per account). |
+| **Prenota dalla scheda del garage** quando un pneumatico è da sostituire | 🔴 | Fase 4: oggi l'avviso dice di contattare l'officina e c'è "Chiama". |
+| **Età degli pneumatici dal DOT** nel garage ("3 anni") e avviso oltre i 5–6 anni | 🟠 | Come nella pagina `/anteprima`. |
 | **Filtri commerciali nel garage officina** (cambio stagionale da fare, nessun controllo da X mesi) | 🟠 | PLAN P13; per ora filtri per stato e ricerca. |
 
 ## Tecnica

@@ -48,20 +48,30 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: Fase 2 (Dati) quasi chiusa (manca solo l'import, in attesa del file di GESTITYRE) →
-> iniziare la Fase 3 con il garage del cliente.**
+> **Obiettivo: Fase 3 (Cliente) iniziata con il garage → pubblicare la migrazione, provarlo dal telefono
+> come cliente, poi il report del singolo controllo.** La Fase 2 aspetta solo il file di GESTITYRE.
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
+**`npm run db:test` gira sui dati attuali del DB locale:** dopo prove nel browser che modificano il seed
+(es. "Smonta" sulla Panda) i test pgTAP falliscono → `npm run db:reset` prima di `db:test`.
+Dopo uno **standby** del PC il container `supabase_vector` (solo log di Studio) può restare in loop di
+riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavviando Docker Desktop.
 
-**Per prima cosa:** controllare che CI e deploy Vercel della sessione 9 siano verdi (nessuna migrazione da
-pubblicare: la sessione 9 è solo web), poi la prova dal telefono (punto 0).
+**Per prima cosa:** controllare che CI e deploy Vercel della sessione 10 siano verdi e che la migrazione
+`20261009120000_garage_cliente.sql` sia stata pubblicata sul cloud dal titolare (`npx.cmd supabase db push`),
+poi la prova dal telefono (punto 0).
 
 **0 — Prova dal telefono (titolare)** sul sito Vercel con l'officina di prova
 
 - [x] (2026-10-09, dal titolare) Sessione 8: correzioni ed eliminazioni provate dal telefono, funzionano
 - [ ] Sessione 9: voce "Clienti" in basso, ricerca, scheda cliente (Chiama, Nuovo veicolo, Modifica),
   "Nuovo cliente" dall'elenco; "Smonta" su un veicolo di prova
+- [ ] Sessione 10 (dopo il `db push`): **garage del cliente**. Serve un account cliente collegato a un
+  cliente dell'officina di prova: oggi il collegamento (`clienti_officina.profile_id`) lo fa solo il
+  service role, dal SQL Editor (`update public.clienti_officina set profile_id = '<id account>' where
+  id = '<id cliente>'`). Controllare: carta del veicolo in home, scheda con cruscotto, avviso, storico,
+  officina con Chiama e Indicazioni
 
 **1 — Lato officina (Claude)**
 
@@ -69,16 +79,15 @@ pubblicare: la sessione 9 è solo web), poi la prova dal telefono (punto 0).
 
 **2 — Lato cliente (Claude) — Fase 3**
 
-- [ ] Garage del cliente: i suoi veicoli **uniti per targa** tra le officine, con il cruscotto di
-  `/anteprima` (auto + contagiri) alimentato dall'ultimo controllo. Si possono riusare `cruscotto()` e lo
-  storico di `pagine/veicolo.ts` (spostandoli in `ui/`). Nel seed la Panda di Giulia (`cliente@tyrecare.test`)
-  è in entrambe le officine (`AB 123 CD` e `AB123CD`): caso di prova per l'unione
-- [ ] Report del singolo controllo per il cliente (PLAN §2.3)
+- [x] (2026-10-09, sessione 10) Garage del cliente con i veicoli uniti per targa (vedi storico)
+- [ ] Report del singolo controllo per il cliente (PLAN §2.3): pagina di un controllo (data, km,
+  officina, misure per ruota con stato, usura, danni, note), raggiungibile dallo storico del garage;
+  valutare se stamparlo/condividerlo (PDF o pagina pubblica con link)
 
 **3 — Poi**
 
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
-- [ ] Job CI con `supabase start` + `npm run db:test` (le migrazioni sono sei e i test pgTAP 74)
+- [ ] Job CI con `supabase start` + `npm run db:test` (le migrazioni sono sei e i test pgTAP 80)
 - [ ] Test end-to-end (Playwright, PLAN P7): nelle sessioni 7–9 i flussi sono stati provati con script
   DevTools fatti al volo (in sessione 9 un piccolo driver CDP senza librerie), da trasformare in test veri
 
@@ -116,6 +125,33 @@ pubblicare: la sessione 9 è solo web), poi la prova dal telefono (punto 0).
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 10 — 2026-10-09 (PC di casa)
+
+**Fatto**
+
+- **Controllo dopo lo standby:** repo pulito e allineato, CI e Vercel della sessione 9 verdi,
+  `npm run check` verde. Un test pgTAP falliva per i dati lasciati dalle prove della sessione 9 ("Smonta"
+  sulla Panda) → `db:reset`, 74/74 verdi. `supabase_vector` in loop di riavvio dopo lo standby (solo log,
+  non tocca l'app). Allineata con `git pull` anche la copia `Documents\GitHub\TyreCare-v2`
+- **Database:** migrazione `20261009120000_garage_cliente.sql` — il cliente collegato legge anche le
+  officine non attive di cui è cliente (`is_cliente_officina` + policy); 6 test pgTAP in
+  `garage.test.sql` (totale 80, verdi); tipi rigenerati. **Da pubblicare sul cloud** (titolare)
+- **Garage del cliente** (Fase 3): home con una carta per veicolo (stato, ultimo controllo e officina),
+  veicoli **uniti per targa** tra le officine (`lib/garage.ts`, `unisciPerTarga` con 4 test Vitest, totale
+  52); scheda `/garage/veicolo?targa=…` in sola lettura con cruscotto, avviso sulle ruote da sostituire,
+  pneumatici montati, storico di tutte le officine e carte delle officine (Chiama, Indicazioni)
+- `cruscotto()` e storico spostati in `ui/cruscotto.ts` e `ui/storico.ts`, usati da entrambe le schede
+- Skill `ui-ux-pro-max` consultata (carte cliccabili, stato non solo col colore, stato vuoto)
+- Provato in Chrome headless (390 px) come cliente, titolare e admin: **24 verifiche verdi**.
+  `npm run check` verde
+- Aggiornati `NOTES.md`, `PLAN.md` (roadmap), `DESIGN-SYSTEM.md`, `IMPLEMENTAZIONI.md`
+
+**Note**
+
+- Nessuna nuova libreria (`STRUCT.md` invariato).
+- Chi lavora in un'officina vede sempre la home dell'officina, anche se è cliente di un'altra: il suo
+  garage non è ancora raggiungibile (idea in `IMPLEMENTAZIONI.md`).
 
 ### Sessione 9 — 2026-10-09 (PC di casa)
 

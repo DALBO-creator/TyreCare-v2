@@ -562,3 +562,51 @@ colonna filtrata. Le righe sono le stesse (`rigaVeicolo`, senza il nome del clie
 
 `smontaPneumatici()` è un `update` diretto (una sola tabella, come le altre correzioni di P2) con valori
 fissi, quindi ripetibile dopo un errore di rete; se tornano meno righe di quelle chieste (RLS) è un errore.
+
+## Cliente — garage con i veicoli uniti per targa (Fase 3)
+
+**File coinvolti:** `supabase/migrations/20261009120000_garage_cliente.sql`,
+`supabase/tests/database/garage.test.sql`, `apps/web/src/lib/garage.ts` (+ `garage.test.ts`),
+`apps/web/src/pagine/{home,garage-veicolo}.ts`, `apps/web/src/ui/{cruscotto,storico}.ts`,
+`apps/web/src/styles/_garage.scss`
+
+**Come funziona:**
+
+- **Home del cliente** (`/`) — "I tuoi veicoli": una carta per veicolo, in ordine di urgenza (prima i
+  veicoli da sostituire). Ogni carta è un unico collegamento con marca, modello, targa, stato dell'ultimo
+  controllo (badge e barra colorata a sinistra) e "Controllo del … · officina". Senza veicoli resta il
+  messaggio "Ancora nessun veicolo".
+- **Unione per targa** — ogni officina ha la sua scheda del veicolo (PLAN P12): la Panda di Giulia
+  registrata da due officine diventa **un solo veicolo** nel garage. Lo storico contiene i controlli di
+  tutte le officine, ognuno con il nome di chi l'ha eseguito. Marca, modello, anno e pneumatici montati
+  vengono dalla scheda dell'officina che ha visto il veicolo **più di recente** (ultimo controllo, ultimo
+  montaggio o creazione della scheda): i dati vecchi di un'altra officina possono non essere più veri.
+  Un campo vuoto non copre quello di un'altra officina.
+- **Scheda nel garage** (`/garage/veicolo?targa=AB123CD`) — come la scheda dell'officina ma in sola
+  lettura: cruscotto dell'ultimo controllo (con l'officina nella nota), **avviso** con le ruote da
+  sostituire o da tenere d'occhio e cosa fare, pneumatici montati ("Registrati da …" se le officine sono
+  più di una), storico senza "Correggi", e le **officine** del veicolo con "Chiama" e "Indicazioni"
+  (Google Maps). Una targa non nel garage mostra "Veicolo non trovato" con l'invito a chiedere
+  all'officina di collegarla all'account.
+- **Database** — prima il cliente vedeva solo le officine `ATTIVA`: per un'officina in attesa (come
+  l'officina di prova sul cloud) il garage non avrebbe saputo dire chi ha fatto il controllo. La nuova
+  policy `officine: lettura dei propri clienti` (funzione `is_cliente_officina`, `security definer`) lascia
+  leggere al cliente le officine di cui è cliente collegato, in qualunque stato, senza poterle modificare.
+  6 test pgTAP (totale 80).
+
+Provato nel browser (Chrome headless, 390 px) come cliente, titolare e admin senza veicoli: 24 verifiche
+verdi (unione della Panda, stato e avviso, officine, Golf di un altro cliente e scheda officina "non
+trovato", scheda officina invariata dopo lo spostamento del cruscotto e dello storico).
+
+### Codice complesso
+
+`lib/garage.ts` → `caricaGarage()` legge le schede con `clienti_officina!inner (profile_id)` e
+`.eq('cliente.profile_id', utente)`: l'`!inner` trasforma il filtro sul cliente in un filtro sui veicoli.
+Senza, chi lavora in un'officina ed è anche cliente vedrebbe nel garage tutti i veicoli della sua officina
+(la RLS glieli mostra). `unisciPerTarga()` è una funzione pura, provata con 4 test Vitest: le targhe
+arrivano già normalizzate dal trigger del database, quindi basta raggrupparle.
+
+`ui/cruscotto.ts` e `ui/storico.ts` — spostati da `pagine/veicolo.ts` per usarli in entrambe le schede.
+`cruscotto(controllo, officina?)` aggiunge l'officina alla nota; `sezioneStorico(controlli, { correggi })`
+mostra "Correggi o elimina" solo all'officina e il nome dell'officina se la voce ce l'ha.
+`gruppiPneumatici()` e `descrizionePneumatico()` restano in `pagine/veicolo.ts`, esportate.

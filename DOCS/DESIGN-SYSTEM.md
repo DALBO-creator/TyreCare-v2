@@ -106,7 +106,7 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Lista | `.tc-lista`, `__riga`, `__icona`, `__testo` | icona in riquadro, titolo + dettaglio, freccia |
 | Officina | `.tc-officina`, `__nome`, `__indirizzo`, `__azioni` | due azioni affiancate (Chiama, Indicazioni) |
 | Badge di stato | `badgeStato(stato, dettaglio?)` → `.tc-stato--<stato>` | per elenchi e tabelle |
-| Navigazione inferiore | `.tc-bottomnav`, `__voce` | max 5 voci; attiva = bianca, grassetto e pallino rosso. Home · Clienti (solo chi lavora in officina) · Profilo; "Clienti" resta attiva anche sulla scheda `/cliente` |
+| Navigazione inferiore | `.tc-bottomnav`, `__voce` | max 5 voci; attiva = bianca, grassetto e pallino rosso. Home · Clienti (solo chi lavora in officina) · Profilo; "Clienti" resta attiva anche sulla scheda `/cliente`, "Home" anche su `/garage/…` |
 | Pulsanti | `btn-primary` (1 per schermata), `btn-outline-light` (secondari) | |
 | Icone | `icona(Nome)` da `src/ui/icone.ts` | Lucide, tratto 1.75, `aria-hidden` |
 | Riepilogo officina | `.tc-riepilogo`, `__voce` (`aria-pressed`) | tre numeri grandi e sottili che filtrano l'elenco; filtro attivo con bordo chiaro, non rosso |
@@ -121,6 +121,8 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Pulsante elimina | `pulsanteElimina(testo)` → `.tc-pulsante-elimina` | contorno e testo rosso chiaro, staccato in fondo alla pagina di modifica: non si confonde con "Salva" |
 | Intestazione con azione | `.tc-sezione-testa` | etichetta di sezione + collegamento "Modifica"/"Smonta" a destra (area di tocco 44 px) |
 | Note del cliente | `.tc-scheda-note` | riquadro con il testo libero sotto i contatti, a capo rispettati |
+| Carta del garage | `.tc-garage`, `__carta--<stato>`, `__modello`, `__piede` | un solo collegamento per veicolo (cliente): marca, modello grande e sottile, targa; badge di stato e ultimo controllo sotto; barra di 4 px a sinistra del colore dello stato (grigia senza controlli); carte a 12 px di distanza |
+| Officine del veicolo | `.tc-officine` | elenco di carte `.tc-officina` nella scheda del garage |
 
 Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/anteprima.ts`).
 
