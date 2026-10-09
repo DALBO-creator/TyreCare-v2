@@ -268,7 +268,7 @@ export type Pneumatico = Tables<'pneumatici'>;
 export type Misura = Pick<
   Tables<'misure_pneumatico'>,
   'battistrada_mm' | 'pressione_bar' | 'usura' | 'danni'
-> & { pneumatico: Pick<Pneumatico, 'posizione' | 'stagione'> };
+> & { pneumatico: Pick<Pneumatico, 'id' | 'posizione' | 'stagione'> };
 export type Controllo = Pick<Tables<'controlli'>, 'id' | 'eseguito_il' | 'km' | 'note'> & {
   misure: Misura[];
 };
@@ -295,7 +295,7 @@ export async function caricaSchedaVeicolo(id: string): Promise<SchedaVeicolo | n
        pneumatici (*),
        controlli (id, eseguito_il, km, note, created_at,
          misure:misure_pneumatico (battistrada_mm, pressione_bar, usura, danni,
-           pneumatico:pneumatici (posizione, stagione)))`,
+           pneumatico:pneumatici (id, posizione, stagione)))`,
     )
     .eq('id', id)
     .is('pneumatici.smontato_il', null)

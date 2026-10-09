@@ -176,6 +176,177 @@
   display: none;
 }
 
+// Descrizione dello pneumatico come collegamento al suo stato di salute
+.tc-ruota__salute {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $tc-touch-min;
+  text-decoration: none;
+
+  &:hover .tc-ruota__azione {
+    text-decoration: underline;
+  }
+}
+
+.tc-ruota__azione {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: $tc-rosso-chiaro;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+// --- Stato di salute dello pneumatico ----------------------------------------------------------
+// Ogni contagiri del cruscotto apre lo stato di salute del suo pneumatico
+.tc-cruscotto__link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  border-radius: $tc-raggio-card;
+  transition: background-color 0.2s $tc-transizione;
+
+  &:hover {
+    color: inherit;
+    background: rgba($tc-bianco, 0.04);
+  }
+}
+
+// Contagiri dell'ultima misura accanto alla data
+.tc-salute {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  margin-top: 1.5rem;
+
+  &__testo {
+    margin: 0;
+    color: var(--bs-secondary-color);
+    font-size: 0.9375rem;
+  }
+
+  &__andamento {
+    margin: 0.75rem 0 0;
+    font-size: 0.9375rem;
+  }
+}
+
+// Grafico del battistrada: griglia e assi recessivi, linea neutra, soglie tratteggiate
+.tc-grafico {
+  margin: 0;
+  padding: 0.75rem 0.5rem 0.25rem;
+  background: var(--tc-superficie);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $tc-raggio-card;
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  &__griglia {
+    stroke: $tc-bordo;
+    stroke-width: 1;
+  }
+
+  &__asse {
+    fill: var(--bs-secondary-color);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__soglia {
+    stroke-width: 1.5;
+    stroke-dasharray: 5 4;
+
+    &--giallo {
+      stroke: var(--tc-giallo);
+    }
+
+    &--rosso {
+      stroke: var(--tc-rosso);
+    }
+  }
+
+  // Legenda delle soglie: tratteggio del colore della soglia + testo
+  &__legenda {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    padding: 0.5rem 0.5rem 0.25rem;
+    color: var(--bs-secondary-color);
+    font-size: 0.8125rem;
+
+    > span {
+      display: inline-flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+  }
+
+  &__campione {
+    width: 1.25rem;
+    border-top: 2px dashed;
+
+    &--giallo {
+      border-color: var(--tc-giallo);
+    }
+
+    &--rosso {
+      border-color: var(--tc-rosso);
+    }
+  }
+
+  &__linea {
+    fill: none;
+    stroke: var(--bs-body-color);
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+
+  &__punto {
+    stroke: var(--tc-superficie);
+    stroke-width: 2;
+
+    @each $stato, $_ in $tc-stati {
+      &--#{$stato} {
+        fill: var(--tc-#{$stato});
+      }
+    }
+  }
+
+  &__valore {
+    fill: var(--bs-body-color);
+    font-size: 13px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Righe delle misure che aprono il report del controllo
+.tc-misure__riga--link {
+  color: var(--bs-body-color);
+  text-decoration: none;
+
+  &:hover {
+    color: var(--bs-body-color);
+
+    .tc-lista__testo {
+      text-decoration: underline;
+    }
+  }
+
+  > .tc-icona {
+    color: var(--bs-secondary-color);
+  }
+}
+
 // --- Stampa -----------------------------------------------------------------------------------
 // L'app è sempre scura: sulla carta diventa testo nero su bianco, senza sfondi (anche se nel browser
 // è attiva la stampa degli sfondi). Lo stato resta leggibile da icona ed etichetta; contagiri e auto
@@ -200,6 +371,7 @@
   .tc-appbar,
   .tc-bottomnav,
   .tc-report__azioni,
+  .tc-ruota__azione,
   .tc-officina__azioni {
     display: none !important;
   }

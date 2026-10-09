@@ -66,6 +66,13 @@ const FORMATO_DATA = new Intl.DateTimeFormat('it-IT', {
 export const formattaData = (iso: string): string =>
   FORMATO_DATA.format(new Date(`${iso}T12:00:00Z`));
 
+/** Data di oggi (`AAAA-MM-GG`) nel fuso orario del dispositivo. */
+export function oggi(): string {
+  const d = new Date();
+  const due = (n: number) => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${due(d.getMonth() + 1)}-${due(d.getDate())}`;
+}
+
 /** Preposizione + data: "dal 14 settembre 2026", ma "dall'8 ottobre 2026" (e "dell'11…"). */
 export function conData(preposizione: 'dal' | 'del', iso: string): string {
   const data = formattaData(iso);

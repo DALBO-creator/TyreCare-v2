@@ -7,9 +7,10 @@ import {
 } from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import type { Controllo, Misura } from '../lib/officina';
-import { POSIZIONI, formattaData, formattaKm } from '../pagine/comune';
+import { POSIZIONI, formattaData, formattaDecimale, formattaKm } from '../pagine/comune';
 import { autoDallAlto } from './auto';
 import { indicatoreBattistrada } from './indicatore';
+import { STATI } from './stato';
 
 // Cruscotto del veicolo (auto + contagiri dell'ultimo controllo), usato dalla scheda dell'officina e
 // dal garage del cliente.
@@ -31,6 +32,7 @@ export const statoMisura = (m: Misura): StatoSalute =>
  * se ne manca qualcuna il cruscotto non si mostra (le misure restano nello storico).
  * `officina` (garage del cliente) si aggiunge alla nota sotto: "… · Gomme Rossi". Nel report del
  * controllo la data è già nel titolo: con `ultimo: false` niente nota e un'etichetta diversa.
+ * Ogni contagiri è un collegamento allo stato di salute del suo pneumatico (`/pneumatico?id=…`).
  */
 export function cruscotto(controllo: Controllo, officina = '', { ultimo = true } = {}): string {
   const misura = (p: Posizione) => controllo.misure.find((m) => m.pneumatico.posizione === p);
@@ -49,12 +51,19 @@ export function cruscotto(controllo: Controllo, officina = '', { ultimo = true }
       ${angoli
         .map(
           ({ angolo, p, m }) => `
-        <div class="tc-cruscotto__${angolo}">${indicatoreBattistrada({
-          posizione: POSIZIONI[p].nome,
-          sigla: POSIZIONI[p].sigla,
-          mm: m!.battistrada_mm,
-          stato: statoMisura(m!),
-        })}</div>`,
+        <div class="tc-cruscotto__${angolo}">
+          <a class="tc-cruscotto__link" href="/pneumatico?id=${m!.pneumatico.id}"
+            aria-label="${POSIZIONI[p].nome}: ${formattaDecimale(m!.battistrada_mm)} mm, ${STATI[
+              statoMisura(m!)
+            ].etichetta.toLowerCase()}. Stato di salute dello pneumatico">
+            ${indicatoreBattistrada({
+              posizione: POSIZIONI[p].nome,
+              sigla: POSIZIONI[p].sigla,
+              mm: m!.battistrada_mm,
+              stato: statoMisura(m!),
+            })}
+          </a>
+        </div>`,
         )
         .join('')}
       <div class="tc-cruscotto__veicolo">${autoDallAlto({

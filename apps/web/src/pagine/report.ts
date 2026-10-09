@@ -1,4 +1,4 @@
-import { ArrowLeft, Pencil, Printer, SearchX } from 'lucide';
+import { ArrowLeft, ChevronRight, Pencil, Printer, SearchX } from 'lucide';
 import { SOGLIE_BATTISTRADA_MM, formattaTarga } from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import { caricaDatiUtente } from '../lib/profilo';
@@ -18,6 +18,7 @@ import {
   formattaKm,
   gestisciErroreCaricamento,
   idValido,
+  oggi,
   parametro,
 } from './comune';
 import { cartaOfficina } from './garage-veicolo';
@@ -116,12 +117,6 @@ export async function mostraReport(app: HTMLElement): Promise<void> {
   app.querySelector('[data-stampa]')?.addEventListener('click', () => window.print());
 }
 
-/** Data di oggi (`AAAA-MM-GG`) nel fuso orario del dispositivo. */
-function oggi(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
-
 function sezioneMisure(misure: MisuraReport[]): string {
   const { limiteLegale, consigliato } = SOGLIE_BATTISTRADA_MM;
   return `
@@ -160,7 +155,10 @@ function cartaRuota(m: MisuraReport): string {
           .map(([nome, valore]) => `<div><dt>${nome}</dt><dd>${valore}</dd></div>`)
           .join('')}
       </dl>
-      <p class="tc-ruota__pneumatico">${esc(descrizionePneumatico(m.pneumatico))}</p>
+      <a class="tc-ruota__pneumatico tc-ruota__salute" href="/pneumatico?id=${m.pneumatico.id}">
+        <span>${esc(descrizionePneumatico(m.pneumatico))}</span>
+        <span class="tc-ruota__azione">Stato di salute ${icona(ChevronRight)}</span>
+      </a>
     </article>`;
 }
 

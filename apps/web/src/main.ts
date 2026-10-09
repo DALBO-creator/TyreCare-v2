@@ -30,6 +30,7 @@ import { mostraNuovoCliente } from './pagine/nuovo-cliente';
 import { mostraNuovoControllo } from './pagine/nuovo-controllo';
 import { mostraNuovoVeicolo } from './pagine/nuovo-veicolo';
 import { mostraPasswordDimenticata } from './pagine/password-dimenticata';
+import { mostraPneumatico } from './pagine/pneumatico';
 import { mostraProfilo } from './pagine/profilo';
 import { mostraRegistrati } from './pagine/registrati';
 import { mostraReport } from './pagine/report';
@@ -64,6 +65,13 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: 'Report del controllo',
     mostra: mostraReport,
+  },
+  // Stato di salute di uno pneumatico: misure nel tempo, età e stima del consumo
+  {
+    percorso: '/pneumatico',
+    accesso: 'utente',
+    titolo: 'Stato di salute dello pneumatico',
+    mostra: mostraPneumatico,
   },
   // Officina. L'accesso ai dati lo decide la RLS: un cliente su queste pagine non trova nulla
   {

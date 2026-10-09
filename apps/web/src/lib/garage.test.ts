@@ -33,7 +33,7 @@ const controllo = (id: string, eseguito_il: string, mm: number): ControlloScheda
       pressione_bar: null,
       usura: null,
       danni: '',
-      pneumatico: { posizione: 'ANT_SX', stagione: 'ESTIVO' },
+      pneumatico: { id: 'p1', posizione: 'ANT_SX', stagione: 'ESTIVO' },
     },
   ],
 });

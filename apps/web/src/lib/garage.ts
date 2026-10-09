@@ -139,7 +139,7 @@ export async function caricaGarage(): Promise<VeicoloGarage[]> {
        pneumatici (*),
        controlli (id, eseguito_il, km, note, created_at,
          misure:misure_pneumatico (battistrada_mm, pressione_bar, usura, danni,
-           pneumatico:pneumatici (posizione, stagione)))`,
+           pneumatico:pneumatici (id, posizione, stagione)))`,
     )
     .eq('cliente.profile_id', utente.id)
     .is('pneumatici.smontato_il', null);
