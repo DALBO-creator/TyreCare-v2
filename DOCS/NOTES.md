@@ -610,3 +610,51 @@ arrivano già normalizzate dal trigger del database, quindi basta raggrupparle.
 `cruscotto(controllo, officina?)` aggiunge l'officina alla nota; `sezioneStorico(controlli, { correggi })`
 mostra "Correggi o elimina" solo all'officina e il nome dell'officina se la voce ce l'ha.
 `gruppiPneumatici()` e `descrizionePneumatico()` restano in `pagine/veicolo.ts`, esportate.
+
+## Cliente — report del singolo controllo (Fase 3)
+
+**File coinvolti:** `apps/web/src/lib/report.ts`, `apps/web/src/pagine/report.ts`,
+`apps/web/src/ui/{avviso-pneumatici,cruscotto,storico}.ts`, `apps/web/src/pagine/garage-veicolo.ts`,
+`apps/web/src/main.ts`, `apps/web/src/styles/{_garage,_officina,_tokens}.scss`
+
+**Come funziona:**
+
+- **Pagina** `/controllo?id=…` ("Report del controllo"): data del controllo come titolo, targa, auto, anno
+  e km; cruscotto di **quel** controllo (non dell'ultimo); avviso sull'esito, che qui compare anche quando
+  va tutto bene ("Tutti gli pneumatici misurati sono in buono stato"); una **carta per ruota** misurata
+  (scorta compresa) con stato, battistrada, pressione, usura, danni e lo pneumatico misurato quel giorno
+  (anche se ora smontato); spiegazione delle soglie; note dell'officina; "Eseguito da" con la carta
+  dell'officina (Chiama, Indicazioni).
+- **Chi la vede** — una sola lettura da Supabase, la decide la RLS: il cliente collegato al veicolo e chi
+  lavora nell'officina che ha eseguito il controllo. Un'altra officina che ha la stessa auto (stessa targa)
+  non la vede. Id non valido o non visibile → "Controllo non trovato".
+- **Da dove si apre** — "Apri il report" nel dettaglio di ogni voce dello storico, sia nel garage del
+  cliente sia nella scheda del veicolo dell'officina. "Torna al veicolo" porta il cliente al garage e chi
+  lavora nell'officina alla scheda dell'officina; solo questi ultimi vedono anche "Correggi o elimina".
+- **Stampa o salva in PDF** — `window.print()`: dal menu di stampa del telefono o del computer si sceglie
+  la stampante oppure "Salva come PDF". Il titolo della pagina (`Controllo AB 123 CD 2026-09-14 · TyreCare`)
+  diventa il nome del file. Il foglio di stile di stampa (`@media print` in `_garage.scss`) rende la
+  pagina nero su bianco senza sfondi, toglie barre e pulsanti, mette le ruote due per riga, stampa il
+  telefono dell'officina al posto di "Chiama" e aggiunge in fondo "Report di TyreCare · stampato il …".
+  Lo stato resta leggibile da icona ed etichetta; contagiri e auto (SVG) tengono i loro colori.
+- **Condivisione con link pubblico: rimandata** (vedi `IMPLEMENTAZIONI.md`): oggi il report si apre solo
+  con l'accesso. Il PDF si può già mandare via WhatsApp o email.
+
+Provato nel browser (Chrome headless, 390 px e stampa A4 emulata) come cliente, titolare, operatore e
+titolare di un'altra officina: 25 verifiche verdi; screenshot a video e in stampa controllati.
+
+### Codice complesso
+
+`lib/report.ts` → `caricaReport()`: `controlli` non ha una chiave esterna verso `officine` (solo la coppia
+`veicolo_id, officina_id` verso `veicoli`), quindi l'officina si legge passando dal veicolo:
+`veicolo:veicoli (…, officina:officine (…))`. Gli pneumatici si leggono interi (`pneumatici (*)`) per la
+descrizione nella carta della ruota.
+
+`ui/avviso-pneumatici.ts` → `avvisoPneumatici(misure, { ancheVerde })`: è l'avviso che prima stava solo
+nella scheda del garage (`avvisoStato`), ora riceve le misure di un controllo qualsiasi. `cruscotto()` ha
+l'opzione `{ ultimo: false }`: niente nota "Ultimo controllo: …" (la data è già nel titolo) ed etichetta
+accessibile "a questo controllo". `cartaOfficina()` è esportata da `pagine/garage-veicolo.ts`.
+
+Stampa: `.tc-pagina *` riceve `color` nero e `background: transparent` con `!important`, perché molti
+componenti hanno colori chiari scritti nei token (es. il modello dell'auto in `$tc-bianco`); le variabili
+di Bootstrap (`--bs-secondary-color`, `--bs-border-color`) passano al nuovo token `$tc-grigio-stampa`.

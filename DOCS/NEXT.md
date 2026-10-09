@@ -48,8 +48,8 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: Fase 3 (Cliente) iniziata con il garage → pubblicare la migrazione, provarlo dal telefono
-> come cliente, poi il report del singolo controllo.** La Fase 2 aspetta solo il file di GESTITYRE.
+> **Obiettivo: provare il report del controllo dal telefono, poi lo stato di salute del singolo pneumatico
+> (ultimo pezzo della Fase 3).** La Fase 2 aspetta solo il file di GESTITYRE.
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -58,20 +58,19 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 Dopo uno **standby** del PC il container `supabase_vector` (solo log di Studio) può restare in loop di
 riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavviando Docker Desktop.
 
-**Per prima cosa:** controllare che CI e deploy Vercel della sessione 10 siano verdi e che la migrazione
-`20261009120000_garage_cliente.sql` sia stata pubblicata sul cloud dal titolare (`npx.cmd supabase db push`),
-poi la prova dal telefono (punto 0).
+**Per prima cosa:** controllare che CI e deploy Vercel della sessione 11 siano verdi (nessuna migrazione da
+pubblicare), poi la prova dal telefono (punto 0).
 
 **0 — Prova dal telefono (titolare)** sul sito Vercel con l'officina di prova
 
-- [x] (2026-10-09, dal titolare) Sessione 8: correzioni ed eliminazioni provate dal telefono, funzionano
-- [ ] Sessione 9: voce "Clienti" in basso, ricerca, scheda cliente (Chiama, Nuovo veicolo, Modifica),
-  "Nuovo cliente" dall'elenco; "Smonta" su un veicolo di prova
-- [ ] Sessione 10 (dopo il `db push`): **garage del cliente**. Serve un account cliente collegato a un
-  cliente dell'officina di prova: oggi il collegamento (`clienti_officina.profile_id`) lo fa solo il
-  service role, dal SQL Editor (`update public.clienti_officina set profile_id = '<id account>' where
-  id = '<id cliente>'`). Controllare: carta del veicolo in home, scheda con cruscotto, avviso, storico,
-  officina con Chiama e Indicazioni
+- [x] (2026-10-09, dal titolare) Sessione 8: correzioni ed eliminazioni
+- [x] (2026-10-09, dal titolare) Sessione 9: Clienti, ricerca, scheda cliente, "Smonta"
+- [x] (2026-10-09, dal titolare) Sessione 10: garage del cliente, con un account cliente collegato dal SQL
+  Editor a un cliente dell'officina di prova
+- [ ] Sessione 11: **report del controllo**. Come cliente: storico del garage → apri un controllo →
+  "Apri il report"; controllare carte delle ruote, note, officina, "Torna al veicolo"; "Stampa o salva in
+  PDF" dal telefono (il PDF deve essere bianco con testo nero e chiamarsi `Controllo <targa> <data>`).
+  Come titolare: "Apri il report" dalla scheda del veicolo, con "Correggi o elimina"
 
 **1 — Lato officina (Claude)**
 
@@ -80,9 +79,12 @@ poi la prova dal telefono (punto 0).
 **2 — Lato cliente (Claude) — Fase 3**
 
 - [x] (2026-10-09, sessione 10) Garage del cliente con i veicoli uniti per targa (vedi storico)
-- [ ] Report del singolo controllo per il cliente (PLAN §2.3): pagina di un controllo (data, km,
-  officina, misure per ruota con stato, usura, danni, note), raggiungibile dallo storico del garage;
-  valutare se stamparlo/condividerlo (PDF o pagina pubblica con link)
+- [x] (2026-10-09, sessione 11) Report del singolo controllo con stampa/PDF (vedi storico)
+- [ ] **Stato di salute del singolo pneumatico** (PLAN §2.4 e §3.4): dalla carta di un pneumatico
+  montato, una pagina con l'andamento del battistrada nei controlli (grafico mm/data con le soglie),
+  età dal DOT, km percorsi da quando è montato, usura irregolare ricorrente. Valutare una stima di
+  quando arriverà alla soglia (solo con almeno 2–3 misure)
+- [ ] Decidere con il titolare se serve il **link pubblico del report** (idea in `IMPLEMENTAZIONI.md`)
 
 **3 — Poi**
 
@@ -125,6 +127,35 @@ poi la prova dal telefono (punto 0).
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 11 — 2026-10-09 (PC di casa)
+
+**Fatto**
+
+- Migrazione `garage_cliente` già pubblicata sul cloud dal titolare. Prove dal telefono delle sessioni 9 e
+  10 **riuscite** (titolare). Spiegato come collegare un account cliente a un cliente dell'officina dal SQL
+  Editor (query con email dell'account e nome del cliente, senza copiare gli UUID)
+- **Report del controllo** `/controllo?id=…` (Fase 3, PLAN §2.3): data, targa, auto e km; cruscotto di quel
+  controllo; avviso sull'esito (anche "tutto in buono stato"); una carta per ruota con stato, battistrada,
+  pressione, usura, danni e pneumatico; soglie spiegate; note; officina con Chiama e Indicazioni. Lo vedono
+  il cliente e chi lavora nell'officina che l'ha eseguito (RLS); un'altra officina con la stessa targa no
+- "Apri il report" nello storico del garage e della scheda officina; "Correggi o elimina" anche nel
+  report per l'officina; "Torna al veicolo" verso il garage o la scheda dell'officina
+- **Stampa o salva in PDF** con foglio di stile di stampa (nero su bianco, senza barre e pulsanti, telefono
+  dell'officina, data di stampa); il titolo della pagina dà il nome al PDF. Nuovo token `$tc-grigio-stampa`
+- Avviso delle ruote spostato in `ui/avviso-pneumatici.ts` (garage e report); `cruscotto()` con
+  `{ ultimo: false }`; `cartaOfficina()` esportata
+- Skill `ui-ux-pro-max` consultata (navigazione indietro prevedibile, carte invece di tabelle sul
+  telefono; nessuna regola sulla stampa nel suo database: usate regole generali)
+- Provato in Chrome headless (390 px e stampa emulata) come cliente, titolare, operatore e titolare di
+  un'altra officina: **25 verifiche verdi**. `npm run check` verde (52 Vitest), `db:test` 80/80
+- Aggiornati `NOTES.md`, `PLAN.md` (roadmap), `DESIGN-SYSTEM.md`, `IMPLEMENTAZIONI.md`
+
+**Note**
+
+- Nessuna nuova libreria (`STRUCT.md` invariato), nessuna migrazione.
+- Il link pubblico del report è rimandato: richiede un token revocabile letto lato server, non una policy
+  RLS aperta (vedi `IMPLEMENTAZIONI.md`).
 
 ### Sessione 10 — 2026-10-09 (PC di casa)
 

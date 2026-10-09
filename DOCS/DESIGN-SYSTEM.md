@@ -40,6 +40,7 @@ Tema **sempre scuro** (`data-bs-theme="dark"` fisso in `index.html`).
 | Logo | `apps/web/public/logo.svg` | contagiri bianco con zona e lancetta in rosso brand, su nero `#0A0A0A` |
 | Rosso chiaro | `#FF4D4D` | link, anello di focus |
 | Blu targa | `#1D4ED8` | solo le bande laterali della targa |
+| Grigio di stampa | `#525252` | solo in stampa: testo secondario e bordi sulla carta bianca (7.8:1) |
 
 L'illustrazione dell'auto (`src/ui/auto.ts`) ha i suoi grigi metallizzati scritti nell'SVG: è un disegno, non
 un componente d'interfaccia.
@@ -123,6 +124,9 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Note del cliente | `.tc-scheda-note` | riquadro con il testo libero sotto i contatti, a capo rispettati |
 | Carta del garage | `.tc-garage`, `__carta--<stato>`, `__modello`, `__piede` | un solo collegamento per veicolo (cliente): marca, modello grande e sottile, targa; badge di stato e ultimo controllo sotto; barra di 4 px a sinistra del colore dello stato (grigia senza controlli); carte a 12 px di distanza |
 | Officine del veicolo | `.tc-officine` | elenco di carte `.tc-officina` nella scheda del garage |
+| Carta della ruota | `.tc-ruota`, `__testa`, `__nome`, `__dati` (`<dl>`), `__pneumatico` | report del controllo: posizione e badge, valori con nome piccolo maiuscolo sopra e numero sotto, pneumatico in fondo dopo un separatore; in `.tc-ruote`, due per riga da 36 rem |
+| Link dello storico | `.tc-storico__azioni`, `.tc-storico__link` | "Apri il report" e "Correggi o elimina" in fondo alla voce aperta (44 px, rosso chiaro) |
+| Stampa | `@media print` in `_garage.scss` | nero su bianco senza sfondi, senza barre e pulsanti; carte con bordo grigio non spezzate tra due pagine |
 
 Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/anteprima.ts`).
 
@@ -147,6 +151,7 @@ Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/
 - [ ] Provata a 375, 768, 1024 px senza scorrimento orizzontale
 - [ ] Contenuto non coperto da barre o notch
 - [ ] Animazioni assenti con `prefers-reduced-motion`
+- [ ] Se si può stampare: provata con l'emulazione di stampa (testo nero, niente sfondi scuri)
 
 ## Storico delle versioni
 
