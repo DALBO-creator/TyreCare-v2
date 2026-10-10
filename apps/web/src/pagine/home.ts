@@ -7,7 +7,7 @@ import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import { STATI, badgeStato } from '../ui/stato';
-import { ETICHETTE_AREA, conData, gestisciErroreCaricamento } from './comune';
+import { ETICHETTE_AREA, avvisoConferma, conData, gestisciErroreCaricamento } from './comune';
 import { mostraHomeOfficina } from './home-officina';
 
 /** Home dopo l'accesso: per chi lavora in un'officina l'elenco dei veicoli, per il cliente il garage. */
@@ -37,6 +37,7 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
     </section>
 
     <div class="tc-contenuto">
+      ${avvisoConferma()}
       ${sezioneVeicoli(garage)}
     </div>`);
 }
@@ -52,7 +53,8 @@ function sezioneVeicoli(garage: VeicoloGarage[]): string {
               <span class="tc-vuoto__icona">${icona(Car)}</span>
               <p class="tc-vuoto__titolo">Ancora nessun veicolo</p>
               <p class="tc-vuoto__testo">
-                Quando la tua officina registrerà un controllo, qui vedrai lo stato dei tuoi pneumatici.
+                Chiedi alla tua officina di invitarti: dal link che ti manda per email colleghi i
+                tuoi veicoli e qui vedrai lo stato dei tuoi pneumatici.
               </p>
             </div>`
       }

@@ -75,6 +75,20 @@ export const ClienteSchema = z
   });
 export type Cliente = z.infer<typeof ClienteSchema>;
 
+/** Invito del cliente nell'app: l'email a cui mandarlo, in minuscolo come la salva il database. */
+export const InvitoSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, { error: "Inserisci l'email del cliente" })
+    .max(254, { error: "L'email è troppo lunga" })
+    .refine((s) => EMAIL.test(s), {
+      error: "Controlla l'email: sembra incompleta (es. nome@esempio.it)",
+    })
+    .transform((s) => s.toLowerCase()),
+});
+export type Invito = z.infer<typeof InvitoSchema>;
+
 // ---------------------------------------------------------------------------------------------------
 // Veicolo
 // ---------------------------------------------------------------------------------------------------

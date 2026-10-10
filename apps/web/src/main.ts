@@ -18,6 +18,8 @@ import { mostraCliente } from './pagine/cliente';
 import { mostraClienti } from './pagine/clienti';
 import { mostraGarageVeicolo } from './pagine/garage-veicolo';
 import { mostraHome } from './pagine/home';
+import { mostraInvitaCliente } from './pagine/invita-cliente';
+import { mostraInvito } from './pagine/invito';
 import { mostraModificaCliente } from './pagine/modifica-cliente';
 import { mostraModificaControllo } from './pagine/modifica-controllo';
 import { mostraModificaPneumatici } from './pagine/modifica-pneumatici';
@@ -83,6 +85,12 @@ const ROTTE: Rotta[] = [
   { percorso: '/clienti', accesso: 'utente', titolo: 'Clienti', mostra: mostraClienti },
   { percorso: '/cliente', accesso: 'utente', titolo: 'Cliente', mostra: mostraCliente },
   {
+    percorso: '/cliente/invito',
+    accesso: 'utente',
+    titolo: "Invita nell'app",
+    mostra: mostraInvitaCliente,
+  },
+  {
     percorso: '/clienti/nuovo',
     accesso: 'utente',
     titolo: 'Nuovo cliente',
@@ -145,6 +153,8 @@ const ROTTE: Rotta[] = [
     titolo: 'Nuova password',
     mostra: mostraNuovaPassword,
   },
+  // Invito dell'officina al cliente: si apre dal link dell'email, anche senza accesso
+  { percorso: '/invito', accesso: 'pubblica', titolo: 'Invito', mostra: mostraInvito },
   // Pagina di riferimento del design system, con dati finti
   { percorso: '/anteprima', accesso: 'pubblica', titolo: 'Anteprima', mostra: mostraAnteprima },
 ];

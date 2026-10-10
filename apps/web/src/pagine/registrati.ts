@@ -5,6 +5,7 @@ import { esc } from '../lib/html';
 import { icona } from '../ui/icone';
 import { paginaAuth } from '../ui/layout';
 import { RIQUADRO_ERRORE, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
+import { parametro } from './comune';
 
 export function mostraRegistrati(app: HTMLElement): void {
   app.innerHTML = paginaAuth({
@@ -17,7 +18,13 @@ export function mostraRegistrati(app: HTMLElement): void {
           ${campo({ nome: 'nome', etichetta: 'Nome', tipo: 'text', autocomplete: 'given-name' })}
           ${campo({ nome: 'cognome', etichetta: 'Cognome', tipo: 'text', autocomplete: 'family-name' })}
         </div>
-        ${campo({ nome: 'email', etichetta: 'Email', tipo: 'email', autocomplete: 'email' })}
+        ${campo({
+          nome: 'email',
+          etichetta: 'Email',
+          tipo: 'email',
+          autocomplete: 'email',
+          valore: parametro('email') ?? '',
+        })}
         ${campo({
           nome: 'password',
           etichetta: 'Password',
@@ -27,7 +34,8 @@ export function mostraRegistrati(app: HTMLElement): void {
         })}
         ${pulsanteInvio('Crea account', 'Creazione in corso…')}
       </form>`,
-    piede: 'Hai già un account? <a href="/accedi">Accedi</a>',
+    // Il passaggio tra accesso e registrazione conserva `?dopo=` ed `?email=` (es. dall'invito)
+    piede: `Hai già un account? <a href="/accedi${esc(location.search)}">Accedi</a>`,
   });
 
   collegaModulo(app.querySelector('form')!, RegistrazioneSchema, async (dati) => {

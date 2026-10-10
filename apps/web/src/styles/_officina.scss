@@ -482,3 +482,16 @@
   font-size: 0.9375rem;
   white-space: pre-line;
 }
+
+// Due pulsanti affiancati sotto una riga (es. "Nuovo invito" e "Annulla invito")
+.tc-coppia-pulsanti {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+// Errore di un'azione nella sezione (es. annullare l'invito offline)
+[data-errore-invito] {
+  margin-top: 0.75rem;
+}

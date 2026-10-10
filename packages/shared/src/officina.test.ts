@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   ClienteSchema,
+  InvitoSchema,
   MontaPneumaticiSchema,
   SmontaPneumaticiSchema,
   VeicoloSchema,
@@ -34,6 +35,19 @@ describe('ClienteSchema', () => {
     expect(errori(ClienteSchema.safeParse({ ...base, nome: 'A', email: 'franco@' }))).toEqual([
       'email',
     ]);
+  });
+});
+
+describe('InvitoSchema', () => {
+  it("pulisce l'email e la porta in minuscolo", () => {
+    expect(InvitoSchema.parse({ email: ' Franco.Gialli@Esempio.IT ' })).toEqual({
+      email: 'franco.gialli@esempio.it',
+    });
+  });
+
+  it("rifiuta un'email vuota o incompleta", () => {
+    expect(InvitoSchema.safeParse({ email: '' }).success).toBe(false);
+    expect(InvitoSchema.safeParse({ email: 'franco@esempio' }).success).toBe(false);
   });
 });
 

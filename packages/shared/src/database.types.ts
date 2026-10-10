@@ -146,6 +146,70 @@ export type Database = {
           },
         ];
       };
+      inviti_cliente: {
+        Row: {
+          annullato_il: string | null;
+          cliente_officina_id: string;
+          codice_hash: string;
+          created_at: string;
+          creato_da: string | null;
+          email: string;
+          id: string;
+          officina_id: string;
+          scade_il: string;
+          usato_da: string | null;
+          usato_il: string | null;
+        };
+        Insert: {
+          annullato_il?: string | null;
+          cliente_officina_id: string;
+          codice_hash: string;
+          created_at?: string;
+          creato_da?: string | null;
+          email: string;
+          id?: string;
+          officina_id: string;
+          scade_il: string;
+          usato_da?: string | null;
+          usato_il?: string | null;
+        };
+        Update: {
+          annullato_il?: string | null;
+          cliente_officina_id?: string;
+          codice_hash?: string;
+          created_at?: string;
+          creato_da?: string | null;
+          email?: string;
+          id?: string;
+          officina_id?: string;
+          scade_il?: string;
+          usato_da?: string | null;
+          usato_il?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'inviti_cliente_cliente_officina_id_officina_id_fkey';
+            columns: ['cliente_officina_id', 'officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'clienti_officina';
+            referencedColumns: ['id', 'officina_id'];
+          },
+          {
+            foreignKeyName: 'inviti_cliente_creato_da_fkey';
+            columns: ['creato_da'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'inviti_cliente_usato_da_fkey';
+            columns: ['usato_da'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       misure_pneumatico: {
         Row: {
           battistrada_mm: number;
@@ -445,6 +509,26 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      accetta_invito: { Args: { p_codice: string }; Returns: string };
+      annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
+      crea_invito_cliente: {
+        Args: { p_cliente_id: string; p_email: string };
+        Returns: {
+          codice: string;
+          scade_il: string;
+        }[];
+      };
+      impronta_codice: { Args: { p_codice: string }; Returns: string };
+      info_invito: {
+        Args: { p_codice: string };
+        Returns: {
+          email: string;
+          officina: string;
+          scade_il: string;
+          stato: string;
+          usato_da_te: boolean;
+        }[];
+      };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_cliente_officina: { Args: { p_officina_id: string }; Returns: boolean };
       is_collega: { Args: { p_profile_id: string }; Returns: boolean };

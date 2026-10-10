@@ -7,6 +7,7 @@ import type {
   Registrazione,
 } from '@tyrecare/shared';
 import { erroreDiRete } from './rete';
+import { destinazioneDopoAccesso } from './router';
 import { getSupabase } from './supabase';
 
 let sessione: Session | null = null;
@@ -39,13 +40,17 @@ export async function accedi({ email, password }: Accesso): Promise<void> {
 
 /**
  * Crea l'account. Nome e cognome vanno nei metadati: il trigger del database li copia nel profilo.
+ * Il link di conferma riporta alla pagina richiesta (`?dopo=`, es. l'invito dell'officina).
  * Restituisce `true` se l'utente è già dentro, `false` se deve prima confermare l'email.
  */
 export async function registrati({ nome, cognome, email, password }: Registrazione) {
   const { data, error } = await getSupabase().auth.signUp({
     email,
     password,
-    options: { data: { nome, cognome }, emailRedirectTo: `${location.origin}/` },
+    options: {
+      data: { nome, cognome },
+      emailRedirectTo: `${location.origin}${destinazioneDopoAccesso()}`,
+    },
   });
   if (error) throw error;
   return data.session !== null;
