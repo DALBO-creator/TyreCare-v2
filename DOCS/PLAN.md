@@ -295,6 +295,11 @@ import_log      (id, officina_id, file, righe_ok, righe_errore, eseguito_da, dat
   e misura siano dello stesso veicolo e della stessa officina.
 - Il **collegamento cliente ↔ account** (`clienti_officina.profile_id`) lo fanno solo ADMIN o il backend
   (futuro flusso di "rivendicazione"): un'officina non può far comparire un veicolo nel garage di altri.
+  → **Decisione del 2026-10-10:** rivendicazione con **invito via email dall'officina** (migrazione
+  `20261010120000_inviti_cliente.sql`). L'officina crea l'invito per l'email del cliente; il cliente lo
+  accetta solo con un account che ha **la stessa email, confermata**. Scartati il codice stampato (si
+  inoltra facilmente) e "targa + telefono" (chiunque li conosca vedrebbe i dati). L'email per ora parte
+  dal programma di posta dell'officina (`mailto:`), finché non c'è l'SMTP definitivo.
 - L'**ADMIN non vede** i dati dei clienti delle officine (TyreCare è responsabile del trattamento, P17);
   per l'assistenza si usa il backend con la service role.
 - `misure_pneumatico`: `battistrada_mm` è la profondità **minima** misurata (decide lo stato), più
@@ -375,7 +380,7 @@ documento dedicato.
 | 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | ✅ (resta solo il deploy di `apps/api`, rimandato) |
 | 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | ✅ chiusa il 2026-10-07 (design system v3, ruoli/RLS, auth web + API, profilo, email in italiano, logo). Rimandati: SMTP col dominio di LA SANTI GOMME, rifinitura dell'auto |
 | 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07; il 2026-10-08 fatte le schermate officina (elenco, cliente, veicolo, pneumatici, nuovo controllo). Il 2026-10-08 (sessione 8) anche correzione ed eliminazione. Il 2026-10-09 elenco e scheda clienti e smontaggio senza sostituzione. Resta l'import CSV |
-| 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | 🟨 iniziata il 2026-10-09: garage con i veicoli uniti per targa tra le officine, scheda in sola lettura con cruscotto, avviso, storico e officine; il cliente vede anche le officine non attive di cui è cliente. Il 2026-10-09 (sessione 11) report del singolo controllo con stampa/PDF (link pubblico rimandato) e stato di salute del singolo pneumatico (grafico, consumo, stima, età dal DOT). Resta la rivendicazione dei veicoli da parte del cliente (oggi il collegamento lo fa solo il service role) |
+| 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | 🟨 iniziata il 2026-10-09: garage con i veicoli uniti per targa tra le officine, scheda in sola lettura con cruscotto, avviso, storico e officine; il cliente vede anche le officine non attive di cui è cliente. Il 2026-10-09 (sessione 11) report del singolo controllo con stampa/PDF (link pubblico rimandato) e stato di salute del singolo pneumatico (grafico, consumo, stima, età dal DOT). Il 2026-10-10 (sessione 12) **rivendicazione dei veicoli con l'invito via email dall'officina** (decisione del titolare). Resta il link pubblico del report, rimandato |
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | ⬜ |
 | 5 — Notifiche | Web Push, reminder schedulati, fallback email | ⬜ |
 | 6 — Pilota | 2–3 gommisti reali, feedback, Lighthouse, privacy/legale | ⬜ |
@@ -387,7 +392,8 @@ documento dedicato.
   → **in parte risolta:** il primo partner LA SANTI GOMME usa **GESTITYRE**, export **Excel `.xls`** (vedi
   P8). Restano da capire **campi** (serve un file di esempio) e **frequenza** dell'export (manuale? ogni
   quanto?)
-- Il cliente si registra da solo o solo su invito dell'officina?
+- ~~Il cliente si registra da solo o solo su invito dell'officina?~~ → si registra da solo, ma vede i
+  veicoli solo dopo aver accettato l'invito dell'officina (2026-10-10)
 - Le officine devono poter vedere i veicoli dei clienti di altre officine? (proposta: **no**)
 - Prezzi mostrati nell'app (indicativi) o solo su preventivo?
 - Lingue: solo italiano all'inizio?

@@ -31,6 +31,10 @@
 | **Promemoria dalla stima del consumo** ("tra circa 2 mesi arrivi a 3 mm") | 🟠 | Fase 5: la stima c'è già in `lib/salute.ts`. |
 | **Link pubblico del report** di un controllo (da mandare a chi non ha l'app, es. un familiare) | 🟠 | Oggi c'è "Stampa o salva in PDF". Servirebbe un token casuale e revocabile per controllo, letto da una rotta Fastify o da una funzione `security definer` (mai una policy RLS aperta), con scadenza. |
 | **Invio del report al cliente** (email/WhatsApp) quando l'officina salva il controllo | 🟠 | Dopo il link pubblico; per i clienti senza account. |
+| **Invio automatico dell'invito** da TyreCare (oggi parte dal programma di posta dell'officina) | 🟠 | Con l'SMTP definitivo: Edge Function o rotta Fastify che manda l'email con il template in italiano; stessa tabella `inviti_cliente`. |
+| **Scollegare un cliente** dall'account (officina o cliente stesso) | 🟢 | Oggi solo ADMIN/service role. Utile se l'invito è finito all'email sbagliata ed è stato accettato. |
+| **Invito anche da "Nuovo cliente"** (casella "Invita nell'app" al salvataggio) | 🟢 | Un passaggio in meno per l'officina. |
+| **Clienti senza app** nell'elenco clienti (filtro "da invitare") | 🟢 | Per far crescere l'uso dell'app; i dati ci sono (`profile_id`, inviti in corso). |
 | **Logo dell'officina** nel report stampato | 🟢 | Serve il caricamento del logo (Storage). |
 | **Filtri commerciali nel garage officina** (cambio stagionale da fare, nessun controllo da X mesi) | 🟠 | PLAN P13; per ora filtri per stato e ricerca. |
 

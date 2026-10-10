@@ -705,3 +705,66 @@ punto ha un `<title>`; l'elenco delle misure sotto fa da tabella. Con meno di du
 
 Le misure caricate da garage e scheda officina includono ora l'`id` dello pneumatico (tipo `Misura`), che
 serve ai collegamenti del cruscotto.
+
+## Cliente — rivendicazione dei veicoli con l'invito dell'officina (Fase 3)
+
+**Decisione del titolare (2026-10-10):** il cliente collega il suo account con un **invito via email
+dall'officina** (scartati il codice stampato e "targa + telefono").
+
+**File coinvolti:** `supabase/migrations/20261010120000_inviti_cliente.sql`,
+`supabase/tests/database/inviti.test.sql`, `apps/web/src/lib/inviti.ts` (+ `inviti.test.ts`),
+`apps/web/src/pagine/{invita-cliente,invito,cliente,home,accedi,registrati}.ts`, `apps/web/src/lib/auth.ts`,
+`apps/web/src/main.ts`, `packages/shared/src/officina.ts` (`InvitoSchema`), `apps/web/src/styles/_officina.scss`
+
+**Come funziona:**
+
+- **Officina** — nella scheda del cliente la sezione "App TyreCare" mostra lo stato: collegato ("Usa l'app
+  TyreCare"), invito in corso (email, data, scadenza, "Nuovo invito" e "Annulla invito") oppure "Invita
+  nell'app". La pagina `/cliente/invito?id=…` chiede l'email (già scritta se il cliente ce l'ha), crea
+  l'invito e mostra **"Scrivi l'email"** (link `mailto:` con destinatario, oggetto e testo pronti: l'email
+  parte dal programma di posta dell'officina), "Condividi il link" (menu del telefono: WhatsApp…, solo se
+  il browser lo supporta) e "Copia il link". Il link si vede solo in quel momento.
+- **Cliente** — il link porta a `/invito?codice=…` (pagina pubblica). Senza accesso: officina, email da
+  usare, "Crea account" e "Ho già un account" con l'email già scritta; dopo la registrazione il link di
+  conferma riporta all'invito (`emailRedirectTo` usa `?dopo=`). Con l'accesso giusto: "Collega i miei
+  veicoli" → garage con l'avviso "Fatto! I veicoli registrati da … sono nel tuo garage." Con un'altra email:
+  spiegazione ed "Esci e cambia account". Invito annullato, scaduto, già usato o inesistente: un messaggio
+  chiaro.
+- **Regole (tutte nel database):** invita qualunque membro dell'officina (titolare o operatore), solo un
+  cliente non ancora collegato; l'invito vale **14 giorni**; un nuovo invito annulla i precedenti; si
+  accetta solo con un account che ha **la stessa email, confermata** (maiuscole ignorate). Accettare due
+  volte lo stesso invito con lo stesso account non è un errore (scritture ripetibili).
+- Garage vuoto: il testo ora dice di chiedere l'invito all'officina.
+
+Provato nel browser (Chrome headless, 390 px) contro Supabase locale, con la vera email di conferma letta da
+Mailpit: invito, registrazione dal link, collegamento, invito annullato, email diversa, codice non valido.
+**22 verifiche verdi.**
+
+### Codice complesso
+
+**Il codice non si salva.** `crea_invito_cliente` genera 16 byte casuali (`extensions.gen_random_bytes`,
+32 caratteri esadecimali) e salva solo `sha256` (`impronta_codice`); il codice in chiaro esce una volta
+sola, come risultato della chiamata. Chi legge la tabella (i membri dell'officina) non può ricostruire i
+link.
+
+**Perché una funzione può scrivere `profile_id`.** Il trigger `proteggi_collegamento_cliente` vietava a
+tutti gli utenti di cambiare `clienti_officina.profile_id`. Ora lo permette anche quando
+`current_user` non è `authenticated`/`anon`: succede solo dentro una funzione `security definer`, che gira
+come il suo proprietario. Le richieste dell'app girano sempre come `authenticated` o `anon`, quindi un
+titolare continua a non poter collegare un cliente a un account a caso.
+
+**`info_invito` è leggibile anche senza accesso** (serve per la pagina prima del login): chi ha il codice è
+il destinatario e può sapere officina, email dell'invito e stato. Senza il codice (128 bit) non si
+indovina nulla.
+
+**Errori attesi** — le funzioni usano `raise exception 'CHIAVE'` (codice `P0001`): `lib/inviti.ts` traduce
+la chiave in un messaggio (`ErroreModulo`), `EMAIL_NON_VALIDA` va sotto il campo email.
+
+**`mailto:`** — `encodeURIComponent` per oggetto e testo (i programmi di posta non leggono `+` come spazio),
+ma la `@` dell'indirizzo resta scritta così. Le funzioni del testo (`testoInvito`, `mailtoInvito`,
+`linkInvito`) sono pure e provate con Vitest.
+
+**Perché `mailto:` e non un'email mandata da TyreCare.** Fino all'SMTP definitivo Resend in prova consegna
+solo all'indirizzo del titolare; e un'email dall'indirizzo dell'officina, che il cliente conosce, finisce
+meno nello spam. Quando ci sarà l'SMTP col dominio si potrà aggiungere l'invio automatico (Edge Function o
+rotta Fastify) riusando la stessa tabella e le stesse funzioni (vedi `IMPLEMENTAZIONI.md`).

@@ -48,9 +48,10 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: per prima cosa le prove del titolare qui sotto (punto 0), tutte sul sito Vercel dal
-> telefono, poi le decisioni (punto 1).** Il codice della sessione 11 è online, CI e deploy verdi, nessuna
-> migrazione da pubblicare. La Fase 2 aspetta solo il file di GESTITYRE.
+> **Obiettivo: pubblicare la migrazione degli inviti sul cloud (punto 0), poi le prove del titolare
+> (punto 1).** Il codice della sessione 12 è committato ma **non ancora su GitHub**: la scheda del cliente
+> legge la nuova tabella `inviti_cliente`, quindi va pubblicata **prima** la migrazione, poi il `git push`
+> (altrimenti la scheda del cliente sul sito darebbe errore).
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -59,69 +60,40 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 Dopo uno **standby** del PC il container `supabase_vector` (solo log di Studio) può restare in loop di
 riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavviando Docker Desktop.
 
-**0 — Prove del titolare** (sito https://tyre-care-v2.vercel.app dal telefono, officina di prova e
-l'account cliente collegato nella sessione 11). Segnare qui l'esito e dire a Claude cosa non va.
+**0 — Pubblicazione (titolare + Claude)**
 
-*Preparazione (dal telefono, come titolare):* sul veicolo del cliente collegato servono **almeno due
-controlli in date diverse**, con il battistrada che cala, per vedere il grafico. Se ce n'è uno solo:
-scheda del veicolo → "Nuovo controllo" con una data diversa da quella del controllo esistente e misure
-un po' più basse (es. 0,5–1 mm in meno su ogni ruota).
+- [ ] Supabase (cloud) → *SQL Editor* → incollare tutto `supabase/migrations/20261010120000_inviti_cliente.sql`
+  → *Run*. Deve finire senza errori
+- [ ] Supabase → *Authentication → URL Configuration → Redirect URLs*: deve esserci
+  `https://tyre-care-v2.vercel.app/**` (serve perché il link di conferma della registrazione riporti
+  all'invito; senza, si arriva alla home e basta riaprire il link dell'invito)
+- [ ] Poi Claude fa `git push`: controllare CI (`check` e `database`) e deploy Vercel verdi
 
-A. **Report del controllo — come cliente**
+**1 — Prove del titolare** (sito https://tyre-care-v2.vercel.app dal telefono). Fino all'SMTP definitivo
+Resend consegna le email **solo** a `albodavide1@gmail.com`: per provare la registrazione di un cliente
+nuovo usare quell'indirizzo (o un alias Gmail, es. `albodavide1+cliente@gmail.com`, se Resend lo accetta).
 
-- [ ] Garage → veicolo → "Storico dei controlli": aprire una voce, c'è "Apri il report" (e **non**
-  "Correggi o elimina")
-- [ ] Il report mostra: data come titolo, targa, auto, km; cruscotto di quel controllo; avviso sull'esito
-  (verde "Tutti gli pneumatici… in buono stato" se va tutto bene); una carta per ruota con stato,
-  battistrada, pressione, usura, eventuali danni e pneumatico; spiegazione delle soglie; note; officina
-  con "Chiama" e "Indicazioni" funzionanti
-- [ ] "Torna al veicolo" riporta alla scheda del garage
-- [ ] "Stampa o salva in PDF": si apre il menu di stampa del telefono; salvare il PDF e aprirlo. Deve
-  essere **bianco con testo nero**, senza barre né pulsanti, con il telefono dell'officina e "stampato il
-  …" in fondo; nome del file `Controllo <targa> <data>` (su iPhone: Condividi → Salva su File)
-- [ ] Inviare il PDF a se stessi su WhatsApp o email e controllare che si apra
+A. **Invito — come titolare**
 
-B. **Report del controllo — come titolare**
+- [ ] Clienti → un cliente **senza** app → sezione "App TyreCare" → "Invita nell'app"
+- [ ] L'email del cliente è già scritta (se c'è); "Prepara invito" → "Invito pronto"
+- [ ] "Scrivi l'email": si apre l'app di posta con destinatario, oggetto e testo con il link. Mandarla
+- [ ] "Condividi il link" apre il menu del telefono (WhatsApp…); "Copia il link" copia
+- [ ] Tornando alla scheda: "Invito per … vale fino al …", con "Nuovo invito" e "Annulla invito"
 
-- [ ] Scheda del veicolo → storico → "Apri il report" e "Correggi o elimina" affiancati
-- [ ] Nel report c'è "Correggi o elimina"; "Torna al veicolo" riporta alla scheda dell'**officina**
-- [ ] Correggere un valore dal report e controllare che il report lo mostri aggiornato
+B. **Invito — come cliente** (dall'email ricevuta, meglio da un altro browser o in navigazione privata)
 
-C. **Stato di salute dello pneumatico — come cliente**
+- [ ] Il link apre "<officina> ti invita su TyreCare" con l'email da usare
+- [ ] "Crea account": email già scritta; dopo la registrazione arriva l'email di conferma; il link di
+  conferma riporta alla pagina dell'invito
+- [ ] "Collega i miei veicoli" → garage con l'avviso verde e i veicoli del cliente
+- [ ] Riaprendo il link: "Veicoli già collegati"
+- [ ] Nella scheda dell'officina il cliente ora risulta "Usa l'app TyreCare"
 
-- [ ] Nella scheda del garage, **toccare un contagiri** del cruscotto: si apre la pagina dello pneumatico
-  (posizione, marca e modello, targa, stagione, misura)
-- [ ] Contagiri "Ultima" con data e km dell'ultima misura
-- [ ] **Grafico** con i punti delle misure (colore dello stato), linea, tratteggi giallo e rosso spiegati
-  nella legenda sotto; nessuna scritta sovrapposta
-- [ ] Frase del consumo ("cala di circa … mm al mese…") e stima ("verso <mese anno>") sensate rispetto ai
-  dati inseriti; con un solo controllo deve dire che si vedrà dal prossimo controllo
-- [ ] Dati: montato il, DOT, **età** (dal DOT: es. DOT 3823 → 3 anni)
-- [ ] Elenco "Misure" dalla più recente; toccando una riga si apre il report di quel controllo
-- [ ] Nel report, sotto ogni ruota, "Stato di salute" apre la stessa pagina
-- [ ] "Torna al veicolo" riporta al garage
+C. **Casi di errore**
 
-D. **Stato di salute — come titolare**
-
-- [ ] Nella scheda del veicolo dell'officina i contagiri sono toccabili e aprono la pagina; "Torna al
-  veicolo" riporta alla scheda dell'officina
-- [ ] Facoltativo: "Smonta" una ruota di prova e riaprire la sua pagina (dal report di un vecchio
-  controllo → "Stato di salute"): deve dire "Smontato: non è più sul veicolo dal …"
-
-E. **Controlli veloci dal PC** (non serve il telefono)
-
-- [ ] GitHub → Actions: l'ultimo run di "CI" ha **due** job verdi, `check` e `database` (nuovo: test
-  pgTAP e tipi del database)
-- [ ] Vercel: ultimo deploy di `main` riuscito
-
-**1 — Decisioni del titolare**
-
-- [ ] **Link pubblico del report** (mandarlo a chi non ha l'app): serve? Oggi c'è il PDF. Idea in
-  `IMPLEMENTAZIONI.md`
-- [ ] **Rivendicazione dei veicoli** da parte del cliente (ultimo pezzo della Fase 3): come collega il
-  cliente il suo account? (a) **codice** che l'officina gli dà (stampato sul report o mandato per SMS),
-  (b) **targa + numero di telefono** registrato dall'officina, (c) **invito via email** dall'officina.
-  Claude consiglia (a) o (c): con (b) chiunque conosca targa e telefono vedrebbe i dati
+- [ ] Aprire un invito con un account di **un'altra email**: avviso giallo ed "Esci e cambia account"
+- [ ] "Annulla invito" dalla scheda e poi aprire quel link: "Invito annullato"
 
 **2 — Lavoro di Claude (dopo le prove)**
 
@@ -129,14 +101,18 @@ E. **Controlli veloci dal PC** (non serve il telefono)
 - [x] (2026-10-09, sessione 11) Report del singolo controllo con stampa/PDF
 - [x] (2026-10-09, sessione 11) Stato di salute del singolo pneumatico (grafico, consumo, stima, età)
 - [x] (2026-10-09, sessione 11) Job CI `database` con `supabase db start` + `db:test` + tipi allineati
-- [ ] Correzioni dalle prove del punto 0
-- [ ] Rivendicazione dei veicoli, secondo la decisione del punto 1 (chiude la Fase 3)
-- [ ] Test end-to-end (Playwright, PLAN P7): nelle sessioni 7–11 i flussi sono stati provati con un
-  driver CDP fatto al volo, da trasformare in test veri
+- [x] (2026-10-10, sessione 12) Rivendicazione dei veicoli con l'invito via email (chiude la Fase 3, a parte
+  il link pubblico del report rimandato)
+- [ ] Correzioni dalle prove del punto 1
+- [ ] Test end-to-end (Playwright, PLAN P7): nelle sessioni 7–12 i flussi sono stati provati con un
+  driver CDP fatto al volo, da trasformare in test veri (il flusso degli inviti con Mailpit è un buon primo
+  caso)
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
+- [ ] Inizio Fase 4 (prenotazioni), se il titolare è d'accordo
 
 **Rimandati:**
 
+- **Link pubblico del report**: per ora basta il PDF (decisione del titolare, 2026-10-10)
 - **SMTP definitivo** con il dominio di LA SANTI GOMME: verificare il dominio su Resend (record DNS SPF/DKIM,
   serve chi gestisce il loro dominio), mittente `noreply@<dominio>`, aggiornare *SMTP Settings* in Supabase,
   poi controllare che le email **non finiscano in Spam**. Fino ad allora Resend in prova consegna **solo** a
@@ -144,8 +120,6 @@ E. **Controlli veloci dal PC** (non serve il telefono)
 - Rifinire il disegno dell'auto in `src/ui/auto.ts` (facoltativo)
 - Invito di un utente in un'officina (oggi un titolare può aggiungere un `profile_id` ma non ha modo di
   trovarlo): flusso di invito via email/codice su Fastify
-- "Rivendicazione" dei veicoli da parte del cliente (collega `clienti_officina.profile_id` al suo account:
-  codice invito dell'officina o targa + telefono) — oggi lo può fare solo ADMIN/service role
 - Deploy di `apps/api` su un secondo progetto Vercel → quando servirà la prima rotta usata dal web; servirà
   anche CORS (`@fastify/cors`) e la variabile `SUPABASE_URL`
 
@@ -169,6 +143,39 @@ E. **Controlli veloci dal PC** (non serve il telefono)
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 12 — 2026-10-10 (PC di casa)
+
+**Fatto**
+
+- **Prove dal telefono della sessione 11 riuscite** (titolare): report del controllo, PDF, stato di salute
+  dello pneumatico. Controllati da Claude CI (`check` e `database`) e deploy Vercel di `81245ec`: verdi
+- **Decisioni del titolare:** link pubblico del report **non serve per ora** (basta il PDF);
+  rivendicazione dei veicoli con **invito via email dall'officina**
+- **Migrazione `20261010120000_inviti_cliente.sql`:** tabella `inviti_cliente` (solo lettura per i membri,
+  si scrive dalle funzioni), `crea_invito_cliente`, `annulla_invito_cliente`, `info_invito` (anche senza
+  accesso), `accetta_invito`. Codice casuale di 128 bit salvato solo come SHA-256, scadenza 14 giorni, un
+  nuovo invito annulla i precedenti, si accetta solo con **la stessa email confermata**. Il trigger
+  `proteggi_collegamento_cliente` ora lascia scrivere `profile_id` a una funzione `security definer`
+- `inviti.test.sql`: 27 test pgTAP (totale **107**)
+- **App:** sezione "App TyreCare" nella scheda del cliente; pagina `/cliente/invito` (email, "Scrivi
+  l'email" con `mailto:`, "Condividi il link", "Copia il link"); pagina pubblica `/invito?codice=…` per il
+  cliente (crea account / accedi con l'email già scritta, collega, email diversa, annullato, scaduto, già
+  usato, non valido); il link di conferma della registrazione riporta alla pagina richiesta; avviso verde
+  nel garage dopo il collegamento; testo nuovo del garage vuoto. `InvitoSchema` e `lib/inviti.ts` con test
+  (Vitest **66**)
+- Provato in Chrome headless (390 px) contro Supabase locale, con l'email di conferma vera letta da Mailpit:
+  **22 verifiche verdi**. `npm run check` verde, `db:test` 107/107
+- Aggiornati `NOTES.md`, `PLAN.md` (decisione e roadmap), `IMPLEMENTAZIONI.md` (invio automatico,
+  scollegare, invito da "Nuovo cliente", filtro "da invitare")
+
+**Note**
+
+- Nessuna nuova libreria (`STRUCT.md` invariato).
+- L'email d'invito parte dal programma di posta dell'officina (`mailto:`), non da TyreCare: con Resend in
+  prova le email automatiche arriverebbero solo al titolare. Con l'SMTP definitivo si potrà aggiungere
+  l'invio automatico.
+- **Ordine di pubblicazione:** prima la migrazione sul cloud, poi il push del codice.
 
 ### Sessione 11 — 2026-10-09 (PC di casa)
 
