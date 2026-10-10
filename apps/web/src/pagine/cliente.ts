@@ -39,7 +39,9 @@ export async function mostraCliente(app: HTMLElement): Promise<void> {
         caricaCliente(id),
         caricaVeicoli({ clienteId: id }),
         caricaDatiUtente(),
-        caricaInvitoInCorso(id),
+        // L'invito è un'informazione secondaria: se non si legge (es. migrazione degli inviti non
+        // ancora pubblicata) la scheda si mostra lo stesso, senza invito in corso
+        caricaInvitoInCorso(id).catch(() => null),
       ]);
       invito = i;
       // Il cliente con un account vede la propria anagrafica, ma non è un membro dell'officina

@@ -49,9 +49,10 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 ## Prossima sessione
 
 > **Obiettivo: pubblicare la migrazione degli inviti sul cloud (punto 0), poi le prove del titolare
-> (punto 1).** Il codice della sessione 12 è committato ma **non ancora su GitHub**: la scheda del cliente
-> legge la nuova tabella `inviti_cliente`, quindi va pubblicata **prima** la migrazione, poi il `git push`
-> (altrimenti la scheda del cliente sul sito darebbe errore).
+> (punto 1).** Il codice della sessione 12 è **già su GitHub e su Vercel**, ma la migrazione
+> `20261010120000_inviti_cliente.sql` **non è ancora sul cloud**: finché non la si pubblica, sul sito la
+> scheda del cliente si apre (senza invito in corso), ma "Invita nell'app" → "Prepara invito" dà errore e
+> la pagina `/invito` non funziona. Quindi: **prima il punto 0, poi le prove.**
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -67,7 +68,8 @@ riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavvia
 - [ ] Supabase → *Authentication → URL Configuration → Redirect URLs*: deve esserci
   `https://tyre-care-v2.vercel.app/**` (serve perché il link di conferma della registrazione riporti
   all'invito; senza, si arriva alla home e basta riaprire il link dell'invito)
-- [ ] Poi Claude fa `git push`: controllare CI (`check` e `database`) e deploy Vercel verdi
+- [ ] Claude controlla CI (`check` e `database`) e deploy Vercel del push della sessione 12 (fatto il
+  2026-10-10 a fine sessione), poi si passa alle prove
 
 **1 — Prove del titolare** (sito https://tyre-care-v2.vercel.app dal telefono). Fino all'SMTP definitivo
 Resend consegna le email **solo** a `albodavide1@gmail.com`: per provare la registrazione di un cliente
@@ -175,7 +177,10 @@ C. **Casi di errore**
 - L'email d'invito parte dal programma di posta dell'officina (`mailto:`), non da TyreCare: con Resend in
   prova le email automatiche arriverebbero solo al titolare. Con l'SMTP definitivo si potrà aggiungere
   l'invio automatico.
-- **Ordine di pubblicazione:** prima la migrazione sul cloud, poi il push del codice.
+- Il push è stato fatto **prima** della migrazione sul cloud (scelta del titolare, per fare tutto nella
+  prossima sessione). Per non rompere la scheda del cliente nel frattempo, il caricamento dell'invito in
+  corso ignora gli errori (`caricaInvitoInCorso(id).catch(() => null)` in `pagine/cliente.ts`).
+- Commit `020a8bb` (codice), `49443f6` (documenti) e quello finale con questa nota.
 
 ### Sessione 11 — 2026-10-09 (PC di casa)
 
