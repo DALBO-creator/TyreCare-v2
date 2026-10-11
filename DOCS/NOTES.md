@@ -244,6 +244,9 @@ database (`Constants.public.Enums`): se una migrazione cambia un enum e lo schem
   sempre visibili, errore sotto il campo all'uscita dal campo, focus sul primo errore all'invio, errore
   generale annunciato (`role="alert"`), pulsante con spinner, mostra/nascondi password, incolla permesso,
   `autocomplete` corretto per i password manager. Messaggi d'errore di Supabase tradotti per codice.
+  Fa eccezione l'email non inviata (es. Resend in prova che rifiuta il destinatario): Supabase risponde
+  500 con codice generico `unexpected_failure` e testo `Error sending … email`, riconosciuto dal testo in
+  `messaggioErrore` ("Non riusciamo a inviarti l'email…", test in `lib/auth.test.ts`).
 - **API:** le rotte registrate nel plugin "protette" di `app.ts` richiedono `Authorization: Bearer <token>`
   (il token di Supabase dell'utente). `GET /me` restituisce `{ id, email }`. Senza token valido: 401.
 

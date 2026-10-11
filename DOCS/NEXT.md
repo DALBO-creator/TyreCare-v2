@@ -48,11 +48,10 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: pubblicare la migrazione degli inviti sul cloud (punto 0), poi le prove del titolare
-> (punto 1).** Il codice della sessione 12 è **già su GitHub e su Vercel**, ma la migrazione
-> `20261010120000_inviti_cliente.sql` **non è ancora sul cloud**: finché non la si pubblica, sul sito la
-> scheda del cliente si apre (senza invito in corso), ma "Invita nell'app" → "Prepara invito" dà errore e
-> la pagina `/invito` non funziona. Quindi: **prima il punto 0, poi le prove.**
+> **Obiettivo: test end-to-end con Playwright (punto 1), poi CSV/import o Fase 4 secondo il titolare.**
+> Fase 3 chiusa e provata dal telefono (sessione 13): inviti pubblicati sul cloud, prove A/B/C riuscite.
+> **Prima di tutto** controllare CI e deploy Vercel del push di fine sessione 13 e chiedere al titolare
+> se è arrivato il file `.xls` di GESTITYRE (cambia la priorità tra P8 e Fase 4).
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -61,43 +60,15 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 Dopo uno **standby** del PC il container `supabase_vector` (solo log di Studio) può restare in loop di
 riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavviando Docker Desktop.
 
-**0 — Pubblicazione (titolare + Claude)**
+**1 — Lavoro di Claude**
 
-- [ ] Supabase (cloud) → *SQL Editor* → incollare tutto `supabase/migrations/20261010120000_inviti_cliente.sql`
-  → *Run*. Deve finire senza errori
-- [ ] Supabase → *Authentication → URL Configuration → Redirect URLs*: deve esserci
-  `https://tyre-care-v2.vercel.app/**` (serve perché il link di conferma della registrazione riporti
-  all'invito; senza, si arriva alla home e basta riaprire il link dell'invito)
-- [ ] Claude controlla CI (`check` e `database`) e deploy Vercel del push della sessione 12 (fatto il
-  2026-10-10 a fine sessione), poi si passa alle prove
+- [ ] Test end-to-end (Playwright, PLAN P7): nelle sessioni 7–12 i flussi sono stati provati con un
+  driver CDP fatto al volo, da trasformare in test veri. Primo caso: il flusso degli inviti con Mailpit
+  (officina → invito → registrazione → conferma → collega), poi email diversa e invito annullato
+- [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
+- [ ] Inizio Fase 4 (prenotazioni), se il titolare è d'accordo
 
-**1 — Prove del titolare** (sito https://tyre-care-v2.vercel.app dal telefono). Fino all'SMTP definitivo
-Resend consegna le email **solo** a `albodavide1@gmail.com`: per provare la registrazione di un cliente
-nuovo usare quell'indirizzo (o un alias Gmail, es. `albodavide1+cliente@gmail.com`, se Resend lo accetta).
-
-A. **Invito — come titolare**
-
-- [ ] Clienti → un cliente **senza** app → sezione "App TyreCare" → "Invita nell'app"
-- [ ] L'email del cliente è già scritta (se c'è); "Prepara invito" → "Invito pronto"
-- [ ] "Scrivi l'email": si apre l'app di posta con destinatario, oggetto e testo con il link. Mandarla
-- [ ] "Condividi il link" apre il menu del telefono (WhatsApp…); "Copia il link" copia
-- [ ] Tornando alla scheda: "Invito per … vale fino al …", con "Nuovo invito" e "Annulla invito"
-
-B. **Invito — come cliente** (dall'email ricevuta, meglio da un altro browser o in navigazione privata)
-
-- [ ] Il link apre "<officina> ti invita su TyreCare" con l'email da usare
-- [ ] "Crea account": email già scritta; dopo la registrazione arriva l'email di conferma; il link di
-  conferma riporta alla pagina dell'invito
-- [ ] "Collega i miei veicoli" → garage con l'avviso verde e i veicoli del cliente
-- [ ] Riaprendo il link: "Veicoli già collegati"
-- [ ] Nella scheda dell'officina il cliente ora risulta "Usa l'app TyreCare"
-
-C. **Casi di errore**
-
-- [ ] Aprire un invito con un account di **un'altra email**: avviso giallo ed "Esci e cambia account"
-- [ ] "Annulla invito" dalla scheda e poi aprire quel link: "Invito annullato"
-
-**2 — Lavoro di Claude (dopo le prove)**
+**Fatto in passato (riferimento):**
 
 - [x] (2026-10-09, sessione 10) Garage del cliente con i veicoli uniti per targa
 - [x] (2026-10-09, sessione 11) Report del singolo controllo con stampa/PDF
@@ -105,12 +76,8 @@ C. **Casi di errore**
 - [x] (2026-10-09, sessione 11) Job CI `database` con `supabase db start` + `db:test` + tipi allineati
 - [x] (2026-10-10, sessione 12) Rivendicazione dei veicoli con l'invito via email (chiude la Fase 3, a parte
   il link pubblico del report rimandato)
-- [ ] Correzioni dalle prove del punto 1
-- [ ] Test end-to-end (Playwright, PLAN P7): nelle sessioni 7–12 i flussi sono stati provati con un
-  driver CDP fatto al volo, da trasformare in test veri (il flusso degli inviti con Mailpit è un buon primo
-  caso)
-- [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
-- [ ] Inizio Fase 4 (prenotazioni), se il titolare è d'accordo
+- [x] (2026-10-11, sessione 13) Inviti pubblicati sul cloud e provati dal telefono; messaggio chiaro quando
+  l'email di conferma non parte
 
 **Rimandati:**
 
@@ -145,6 +112,33 @@ C. **Casi di errore**
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 13 — 2026-10-11 (PC di casa)
+
+**Fatto**
+
+- CI (`check` e `database`) e deploy Vercel di `7d04c0c` (fine sessione 12): verdi
+- **Migrazione `20261010120000_inviti_cliente.sql` pubblicata sul cloud da Claude** con `npx supabase db
+  push` (con l'ok del titolare; prima un `--dry-run`). Ora tutte e 7 le migrazioni risultano anche sul
+  cloud; `info_invito` chiamata senza accesso con un codice inventato risponde `[]`. Redirect URLs già a
+  posto (titolare)
+- **Prove dal telefono del titolare:** A (invito come titolare), B (come cliente) e C (email diversa,
+  invito annullato) **riuscite**. C3 ("Invito già usato") saltata su richiesta del titolare
+- **Problema trovato nella B:** "Crea account" con un'email diversa da `albodavide1@gmail.com` →
+  "Qualcosa è andato storto". Causa: Resend in prova rifiuta il destinatario, Supabase risponde 500
+  `unexpected_failure` "Error sending confirmation email". Non è un bug dell'app; la B è stata completata
+  creando l'account dalla dashboard con "Auto Confirm User" e poi "Accedi" dal link dell'invito
+- **Correzione:** `messaggioErrore` riconosce l'email non inviata e mostra "Non riusciamo a inviarti
+  l'email in questo momento…"; 2 test in `lib/auth.test.ts` (Vitest **68**). `npm run check` verde
+- Aggiornati `NOTES.md` (Auth) e questo file
+
+**Note**
+
+- Pubblicare le migrazioni con `npx supabase db push` (CLI già autenticata sul PC di casa) invece del SQL
+  Editor: così finiscono nello storico del cloud e un `db push` futuro non prova a rieseguirle.
+- Claude non può leggere i log di Supabase dal PC (servirebbe estrarre il token della CLI dal Gestore
+  credenziali, bloccato): per errori sul cloud chiedere al titolare *Logs → Auth* dalla dashboard.
+- Non verificato se Resend in prova accetta gli alias Gmail con `+`.
 
 ### Sessione 12 — 2026-10-10 (PC di casa)
 
