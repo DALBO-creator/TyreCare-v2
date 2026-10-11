@@ -109,6 +109,11 @@ export function messaggioErrore(errore: unknown): string {
   if (isAuthError(errore) && errore.code && MESSAGGI[errore.code]) {
     return MESSAGGI[errore.code]!;
   }
+  // Il server di posta ha rifiutato l'invio (es. "Error sending confirmation email"): Supabase lo
+  // segnala solo con il testo, con codice generico `unexpected_failure`
+  if (isAuthError(errore) && /error sending .*email/i.test(errore.message)) {
+    return "Non riusciamo a inviarti l'email in questo momento. Riprova più tardi o contatta l'officina.";
+  }
   if (!navigator.onLine || (isAuthError(errore) && errore.status === 0)) {
     return 'Sembra che tu sia offline. Controlla la connessione e riprova.';
   }
