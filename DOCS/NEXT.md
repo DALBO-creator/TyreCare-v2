@@ -50,7 +50,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 > **Obiettivo: test end-to-end con Playwright (punto 1), poi CSV/import o Fase 4 secondo il titolare.**
 > Fase 3 chiusa e provata dal telefono (sessione 13): inviti pubblicati sul cloud, prove A/B/C riuscite.
-> **Prima di tutto** controllare CI e deploy Vercel del push di fine sessione 13 e chiedere al titolare
+> CI e deploy Vercel di fine sessione 13 (`a9c4c63`) già verdi. **Prima di tutto** chiedere al titolare
 > se è arrivato il file `.xls` di GESTITYRE (cambia la priorità tra P8 e Fase 4).
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
