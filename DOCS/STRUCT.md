@@ -12,6 +12,7 @@ TyreCare-v2/
 │   └── api/          # Backend (@tyrecare/api): Fastify + TypeScript
 ├── packages/
 │   └── shared/       # @tyrecare/shared: schemi Zod, tipi, regole condivise
+├── e2e/              # @tyrecare/e2e: test end-to-end con Playwright
 ├── supabase/         # Supabase CLI: config.toml, migrations/, seed.sql, tests/database/ (pgTAP)
 ├── .github/workflows # CI GitHub Actions
 └── DOCS/
@@ -28,6 +29,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | `npm run dev:api` | Avvia l'API in sviluppo con riavvio automatico (http://127.0.0.1:3000) |
 | `npm run check` | Esegue tutto ciò che fa la CI: formattazione, lint, tipi, test, build |
 | `npm run test` / `npm run test:watch` | Test una volta / in modalità watch |
+| `npm run test:e2e` | Test end-to-end con Playwright (serve Supabase locale avviato; il server Vite parte da solo) |
 | `npm run format` | Formatta il codice con Prettier |
 | `npm run icons -w @tyrecare/web` | Rigenera le icone PWA da `apps/web/public/logo.svg` |
 | `npm run db:start` | Avvia Supabase locale (serve Docker Desktop acceso) |
@@ -87,10 +89,11 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | Tecnologia | Versione | Stato | Uso in TyreCare |
 |------------|----------|-------|-----------------|
 | **Git + GitHub** | — | ✅ | Repo privato `DALBO-creator/TyreCare-v2`. |
-| **GitHub Actions** | — | ✅ | `.github/workflows/ci.yml`: ad ogni push su `main` e ad ogni PR esegue formattazione, lint, tipi, test e build. |
+| **GitHub Actions** | — | ✅ | `.github/workflows/ci.yml`: ad ogni push su `main` e ad ogni PR esegue formattazione, lint, tipi, test e build (job `check`), i test pgTAP con i tipi del database (`database`) e i test end-to-end (`e2e`). |
 | **ESLint** | 10.12 | ✅ | Configurazione "flat" in `eslint.config.js` con `typescript-eslint`; `eslint-config-prettier` disattiva le regole di stile gestite da Prettier; `globals` definisce le variabili di browser e Node. |
 | **Prettier** | 3.9 | ✅ | Formattazione (`.prettierrc.json`: apici singoli, 100 colonne, fine riga LF). `DOCS/` è esclusa. |
 | **Vitest** | 5.0 | ✅ | Test di tutto il monorepo con un solo comando: un "project" per workspace in `vitest.config.ts`. |
+| **Playwright** (`@playwright/test`) | 1.64 | ✅ | Test end-to-end nel browser (Chromium, schermo da telefono) contro Supabase locale, workspace `e2e/`. Le email di conferma si leggono dall'API di **Mailpit**. Browser da scaricare una volta: `npx playwright install chromium`. In CI nel job `e2e`. |
 | **Lighthouse** | — | 🟡 | Audit PWA/performance/accessibilità (manuale, poi in CI). |
 | **EditorConfig** | — | ✅ | `.editorconfig`: UTF-8, 2 spazi, LF per tutti gli editor. |
 

@@ -195,7 +195,8 @@ piazzale senza rete). Lo spostiamo in `IMPLEMENTAZIONI.md`.
 ### P7 — Strumenti di qualità aggiuntivi ✅
 
 - **GitHub Actions**: lint + test + build ad ogni push/PR.
-- **Playwright** (in futuro) per test end-to-end dei flussi critici (prenotazione).
+- **Playwright** per test end-to-end dei flussi critici: **in uso dal 2026-10-12** (workspace `e2e/`, job CI `e2e`),
+  primo flusso gli inviti del cliente; da estendere alla prenotazione in Fase 4.
 - Lighthouse anche in CI (`@lhci/cli`) per non regredire su punteggi PWA/performance.
 - **Sentry** (piano gratuito) per errori in produzione.
 

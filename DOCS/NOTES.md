@@ -771,3 +771,54 @@ ma la `@` dell'indirizzo resta scritta così. Le funzioni del testo (`testoInvit
 solo all'indirizzo del titolare; e un'email dall'indirizzo dell'officina, che il cliente conosce, finisce
 meno nello spam. Quando ci sarà l'SMTP col dominio si potrà aggiungere l'invio automatico (Edge Function o
 rotta Fastify) riusando la stessa tabella e le stesse funzioni (vedi `IMPLEMENTAZIONI.md`).
+
+## Test end-to-end con Playwright (PLAN P7)
+
+**File coinvolti:** `e2e/playwright.config.ts`, `e2e/tests/aiuti.ts`, `e2e/tests/inviti.spec.ts`,
+`.github/workflows/ci.yml` (job `e2e`), `supabase/tests/database/dati.test.sql`.
+
+**Come funziona:** `npm run test:e2e` avvia (o riusa, in locale) il server Vite su `localhost:5173` e apre
+Chromium con lo schermo di un telefono (Pixel 7) contro **Supabase locale**, che deve essere già avviato
+(`npm run db:start`). Ogni test usa più "browser" separati (`browser.newContext()`): uno per l'officina e
+uno per il cliente, come due telefoni diversi.
+
+Primo gruppo di test, il flusso degli inviti (sessione 12):
+
+1. **invito completo:** il titolare crea un cliente e un veicolo, prepara l'invito; il cliente apre il link,
+   crea l'account con l'email già scritta, apre il link di conferma letto da Mailpit, collega i veicoli e
+   li trova nel garage; la scheda del cliente in officina dice "Usa l'app TyreCare"; lo stesso link aperto
+   da un altro dice "Invito già usato";
+2. **email diversa:** Giulia (seed) apre l'invito di un altro → avviso, nessun pulsante per collegare,
+   "Esci e cambia account" riporta alla scelta "Crea account / Ho già un account";
+3. **invito annullato** dalla scheda del cliente → "Invito annullato";
+4. **codice inventato** → "Invito non valido".
+
+In locale i 4 test durano circa un minuto. Prima esecuzione su un PC nuovo: `npx playwright install
+chromium` (scarica il browser di Playwright).
+
+### Codice complesso
+
+**Dati unici, niente `db:reset`.** I test creano clienti, email (`e2e-…@tyrecare.test`) e targhe con un
+suffisso diverso a ogni esecuzione (`unico()`), quindi si possono ripetere sullo stesso database. Per lo
+stesso motivo il test pgTAP "l'operatore vede solo i veicoli della propria officina" non conta più i veicoli
+(erano 2 nel seed): controlla che siano tutti di Gomme Rossi.
+
+**Il link dell'invito** si legge dal `mailto:` del pulsante "Scrivi l'email" (`preparaInvito`), cioè dal
+testo che l'officina manderebbe davvero, senza dipendere dagli appunti del browser.
+
+**Email di conferma da Mailpit.** `linkConferma()` chiede all'API di Mailpit
+(`http://127.0.0.1:54324/api/v1/search?query=to:"…"`) l'ultima email arrivata all'indirizzo, riprovando per
+qualche secondo (`expect.poll`), poi prende dall'HTML il link `…/auth/v1/verify…` (con `&amp;` → `&`).
+Aprendolo, Supabase conferma l'account e rimanda a `redirect_to`, cioè alla pagina dell'invito.
+
+**Service worker bloccato** (`serviceWorkers: 'block'`): in sviluppo vite-plugin-pwa lo attiva e potrebbe
+servire pagine in cache. Nel terminale compare l'avviso "Service Worker registration blocked by Playwright":
+è voluto.
+
+**Tempi.** 60 s per test e 10 s per ogni attesa: Vite in sviluppo e Supabase in Docker su Windows rispondono
+più lentamente del sito pubblicato (con i 5 s predefiniti l'accesso a volte non finiva in tempo).
+
+**In CI** (job `e2e`) si avvia Supabase senza i servizi che non servono (Studio, Storage, Realtime…), si
+scrive `apps/web/.env` con l'URL locale e la chiave pubblica "demo" letta da `supabase status`, e si
+lanciano i test. Se falliscono, il report HTML di Playwright (con tracce e screenshot) si scarica dagli
+artifact dell'esecuzione (`playwright-report`).

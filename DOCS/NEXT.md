@@ -48,10 +48,8 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: test end-to-end con Playwright (punto 1), poi CSV/import o Fase 4 secondo il titolare.**
-> Fase 3 chiusa e provata dal telefono (sessione 13): inviti pubblicati sul cloud, prove A/B/C riuscite.
-> CI e deploy Vercel di fine sessione 13 (`a9c4c63`) già verdi. **Prima di tutto** chiedere al titolare
-> se è arrivato il file `.xls` di GESTITYRE (cambia la priorità tra P8 e Fase 4).
+> **Obiettivo: Fase 4 (prenotazioni), decisa dal titolare il 2026-10-12. Test end-to-end fatti in sessione 14.**
+> Il file `.xls` di GESTITYRE arriverà a breve: quando c'è, si riprende P8 (formato CSV + adattatore).
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -59,14 +57,13 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 (es. "Smonta" sulla Panda) i test pgTAP falliscono → `npm run db:reset` prima di `db:test`.
 Dopo uno **standby** del PC il container `supabase_vector` (solo log di Studio) può restare in loop di
 riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavviando Docker Desktop.
+**Test end-to-end:** `npm run test:e2e` con Supabase locale avviato (il server Vite parte da solo). Non
+serve `db:reset`: i test creano dati con nomi unici.
 
 **1 — Lavoro di Claude**
 
-- [ ] Test end-to-end (Playwright, PLAN P7): nelle sessioni 7–12 i flussi sono stati provati con un
-  driver CDP fatto al volo, da trasformare in test veri. Primo caso: il flusso degli inviti con Mailpit
-  (officina → invito → registrazione → conferma → collega), poi email diversa e invito annullato
+- [ ] **Fase 4 (prenotazioni)** — il titolare è d'accordo (2026-10-12)
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
-- [ ] Inizio Fase 4 (prenotazioni), se il titolare è d'accordo
 
 **Fatto in passato (riferimento):**
 
@@ -78,6 +75,7 @@ riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavvia
   il link pubblico del report rimandato)
 - [x] (2026-10-11, sessione 13) Inviti pubblicati sul cloud e provati dal telefono; messaggio chiaro quando
   l'email di conferma non parte
+- [x] (2026-10-12, sessione 14) Test end-to-end con Playwright sul flusso degli inviti, job CI `e2e`
 
 **Rimandati:**
 
@@ -112,6 +110,22 @@ riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavvia
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 14 — 2026-10-12 (PC di casa)
+
+**Fatto**
+
+- Il file `.xls` di GESTITYRE **non è ancora arrivato** (arriverà a breve): il titolare ha scelto di passare
+  alla **Fase 4** dopo i test end-to-end
+- **Test end-to-end con Playwright** (PLAN P7): nuovo workspace `e2e/` (`@playwright/test` 1.64, Chromium
+  con schermo da telefono), `npm run test:e2e`. Primi 4 test sul flusso degli inviti: invito completo con la
+  vera email di conferma letta da Mailpit (registrazione → conferma → collega → garage → "Usa l'app" →
+  "Invito già usato" per un altro), email diversa, invito annullato, codice inventato. **4/4 verdi** in
+  ~1 minuto, anche ripetuti senza `db:reset` (dati con nomi unici)
+- Nuovo job CI `e2e` (Supabase senza i servizi inutili, report di Playwright tra gli artifact se fallisce)
+- Test pgTAP "l'operatore vede solo i veicoli della propria officina" reso indipendente dal numero di
+  veicoli (gli e2e ne aggiungono): `db:test` 107/107 anche dopo gli e2e. `npm run check` verde
+- Aggiornati `STRUCT.md` (Playwright), `NOTES.md`, `PLAN.md` (P7)
 
 ### Sessione 13 — 2026-10-11 (PC di casa)
 
