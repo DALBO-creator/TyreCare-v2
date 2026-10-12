@@ -37,6 +37,14 @@
 | **Clienti senza app** nell'elenco clienti (filtro "da invitare") | 🟢 | Per far crescere l'uso dell'app; i dati ci sono (`profile_id`, inviti in corso). |
 | **Logo dell'officina** nel report stampato | 🟢 | Serve il caricamento del logo (Storage). |
 | **Filtri commerciali nel garage officina** (cambio stagionale da fare, nessun controllo da X mesi) | 🟠 | PLAN P13; per ora filtri per stato e ricerca. |
+| **Editor degli orari dell'officina** (titolare) | 🔴 | Oggi gli orari si cambiano solo dal database: serve prima del pilota con LA SANTI GOMME. Con chiusure straordinarie (ferie, festivi) che `fasce_aperte` dovrà considerare. Validare il formato `HH:MM` (oggi un orario scritto male dà errore nella funzione). |
+| **Notifiche delle prenotazioni** (nuova richiesta all'officina, conferma/proposta/rifiuto al cliente) | 🔴 | Fase 5 (Web Push + email). Per ora le novità si vedono aprendo l'app; l'officina ha l'avviso in home. |
+| **Prenota dal garage**: pulsante "Prenota" nella carta dell'officina del veicolo, con targa già scelta | 🟢 | `cartaOfficina()` è condivisa tra garage e report. |
+| **Officine vicine** (distanza dalla posizione del telefono) | 🟠 | Le officine hanno già latitudine e longitudine; PLAN P14. |
+| **Capienza e slot automatici** (ponti/operatori, appuntamenti già presi) | 🟠 | P14 fase successiva; oggi l'officina decide l'ora a mano. |
+| **Collegare la prenotazione al cliente dell'officina** (crea il cliente e il veicolo dalla richiesta, o invita) | 🟢 | Oggi il dettaglio apre la scheda del veicolo se la targa è già registrata. |
+| **Chi lavora in officina prenota altrove** | 🟢 | Per lui "Appuntamenti" mostra quelli dell'officina e "Officine" non è nella barra (la pagina `/officine` funziona comunque). |
+| **Calendario dell'officina** (vista giorno/settimana degli appuntamenti confermati) | 🟠 | Oggi c'è l'elenco per giorno. |
 
 ## Tecnica
 
@@ -45,7 +53,7 @@
 | **PowerSync** per scrittura offline | 🟢 | Vedi PLAN P6. |
 | **Stripe Billing** per abbonamenti | 🔴 | Necessario in fase commerciale. |
 | **Email/SMS/WhatsApp** come canali reminder | 🔴 | Fallback per iOS senza PWA installata (PLAN P5). |
-| **Playwright** test end-to-end | 🟠 | |
+| ~~**Playwright** test end-to-end~~ | ✅ | Fatto nella sessione 14 (inviti e prenotazioni, job CI `e2e`). |
 | **Lighthouse CI** in GitHub Actions | 🟠 | |
 | **Sentry** monitoraggio errori | 🟠 | |
 | **Dashboard ADMIN** con metriche (officine attive, prenotazioni, churn) | 🟠 | |

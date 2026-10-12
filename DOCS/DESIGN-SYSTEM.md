@@ -130,6 +130,14 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Grafico del battistrada | `graficoBattistrada(punti, stagione)` → `.tc-grafico` | SVG a una serie: linea neutra 2 px, punti 10 px del colore dello stato con anello, griglia recessiva, ultimo valore etichettato; soglie tratteggiate spiegate nella legenda `.tc-grafico__legenda` sotto. Solo da 2 misure |
 | Stato di salute | `.tc-salute`, `__testo`, `__andamento` | contagiri dell'ultima misura con data e km accanto; frase del consumo sotto il grafico |
 | Stampa | `@media print` in `_garage.scss` | nero su bianco senza sfondi, senza barre e pulsanti; carte con bordo grigio non spezzate tra due pagine |
+| Badge dell'appuntamento | `badgePrenotazione(stato, perOfficina?)` in `ui/prenotazione.ts` → `.tc-stato--<colore>` | stessi colori dei badge di stato ma icone del calendario/clessidra: giallo = in attesa (clessidra) o nuovo orario (calendario con orologio), verde = confermato, corallo = non accettato, neutro = annullato / completato / non presentato. Per l'officina "Da confermare" e "In attesa del cliente" |
+| Riga appuntamento | `.tc-appuntamento-riga`, `__quando` | quando (in grassetto: "Martedì 13 ottobre, ore 9:30" o la fascia), servizio, chi (officina o cliente e targa); badge a destra, sotto sugli schermi stretti |
+| Scelta unica | `sceltaUnica()` in `ui/modulo.ts` → `.tc-caselle` con radio | come le caselle (pulsanti grandi), un solo valore; le opzioni non disponibili restano visibili ma spente (`:disabled`, opacità 0,45) |
+| Orari | `.tc-orari` (`<dl>`), `.tc-orari-dettagli` (`<details>`) | giorno a sinistra, intervalli a destra, "Chiuso"; richiudibili sotto il modulo "Prenota" |
+| Scorciatoie | `.tc-scorciatoie` | pulsanti piccoli (44 px) con i veicoli del garage: un tocco compila targa e modello |
+| Azione in riga | `.tc-lista__azione` | testo rosso chiaro in fondo a una riga toccabile (es. "Prenota") |
+| Avviso con collegamento | `.tc-avviso--link` | avviso che porta a una pagina, con la freccia (es. "2 richieste di appuntamento da confermare" nella home dell'officina) |
+| Azioni dell'appuntamento | `.tc-azioni-appuntamento` | colonna di pulsanti con passo 12 px; "Rifiuta"/"Annulla" (`.tc-pulsante-elimina`) senza il margine grande delle pagine di modifica |
 
 Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/anteprima.ts`).
 

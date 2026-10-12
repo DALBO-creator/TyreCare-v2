@@ -48,7 +48,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: Fase 4 (prenotazioni), decisa dal titolare il 2026-10-12. Test end-to-end fatti in sessione 14.**
+> **Obiettivo: pubblicare e provare dal telefono la Fase 4 (prenotazioni), poi l'editor degli orari.**
 > Il file `.xls` di GESTITYRE arriverà a breve: quando c'è, si riprende P8 (formato CSV + adattatore).
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
@@ -60,9 +60,19 @@ riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavvia
 **Test end-to-end:** `npm run test:e2e` con Supabase locale avviato (il server Vite parte da solo). Non
 serve `db:reset`: i test creano dati con nomi unici.
 
+**0 — Pubblicazione e prove (titolare + Claude)**
+
+- [ ] Sul cloud l'**officina di prova** è `IN_ATTESA`: per provare le prenotazioni dal telefono va messa
+  `ATTIVA` (ADMIN, SQL Editor) con orari e almeno un servizio prenotabile
+- [ ] Prova dal telefono: titolare (catalogo, conferma, proposta, rifiuto) e cliente (richiesta, accetta,
+  annulla), con due account
+
 **1 — Lavoro di Claude**
 
-- [ ] **Fase 4 (prenotazioni)** — il titolare è d'accordo (2026-10-12)
+- [ ] **Editor degli orari dell'officina** (titolare): orari settimanali e chiusure straordinarie,
+  validazione `HH:MM` (vedi `IMPLEMENTAZIONI.md`)
+- [ ] Fase 4, passi successivi: "Prenota" dalla carta dell'officina nel garage; creare cliente/veicolo
+  dalla richiesta; officine vicine; calendario dell'officina
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
 
 **Fatto in passato (riferimento):**
@@ -76,6 +86,8 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [x] (2026-10-11, sessione 13) Inviti pubblicati sul cloud e provati dal telefono; messaggio chiaro quando
   l'email di conferma non parte
 - [x] (2026-10-12, sessione 14) Test end-to-end con Playwright sul flusso degli inviti, job CI `e2e`
+- [x] (2026-10-12, sessione 14) Fase 4: catalogo dei servizi, richiesta con giorno e fascia, risposte
+  dell'officina, appuntamenti di cliente e officina
 
 **Rimandati:**
 
@@ -125,7 +137,34 @@ serve `db:reset`: i test creano dati con nomi unici.
 - Nuovo job CI `e2e` (Supabase senza i servizi inutili, report di Playwright tra gli artifact se fallisce)
 - Test pgTAP "l'operatore vede solo i veicoli della propria officina" reso indipendente dal numero di
   veicoli (gli e2e ne aggiungono): `db:test` 107/107 anche dopo gli e2e. `npm run check` verde
-- Aggiornati `STRUCT.md` (Playwright), `NOTES.md`, `PLAN.md` (P7)
+- Aggiornati `STRUCT.md` (Playwright), `NOTES.md`, `PLAN.md` (P7). Commit `d1780c1` e `b9a459c`: **CI verde,
+  anche il nuovo job `e2e`** (3 min 26 s)
+- **Fase 4 — decisioni del titolare:** prenotazioni da **tutte le officine attive**, **giorno + fascia**
+  (l'officina conferma con l'ora), **prezzo indicativo facoltativo** nel catalogo
+- **Database:** migrazione `20261012120000_prenotazioni.sql` — `servizi_officina` (catalogo, lo modifica il
+  TITOLARE), `prenotazioni` (scrittura solo dalle funzioni `richiedi_prenotazione`,
+  `rispondi_prenotazione`, `rispondi_proposta`, `annulla_prenotazione`), `fasce_aperte`, `oggi_in_italia`.
+  Seed: 4 servizi di Gomme Rossi e una richiesta di Giulia. `prenotazioni.test.sql`: **50 test pgTAP**
+  (totale **157**); tipi rigenerati. **Pubblicata sul cloud da Claude** con `db push` (ok del titolare,
+  prima `--dry-run`): 8 migrazioni allineate
+- **Shared:** `prenotazioni.ts` (fasce, date italiane con ora legale, schemi di servizio, richiesta,
+  conferma, proposta, rifiuto), 19 nuovi Vitest (totale **87**)
+- **Web:** catalogo `/servizi` (Profilo → "Servizi e prezzi"); per il cliente voce "Officine" → scheda
+  dell'officina con servizi e orari → `/prenota` (veicoli del garage come scorciatoie, fascia chiusa
+  spenta); voce "Appuntamenti" per tutti con elenco e dettaglio (conferma con l'ora, proponi un altro
+  orario, rifiuta/annulla con motivo, completato/non presentato; il cliente accetta la proposta o annulla);
+  avviso "richieste da confermare" nella home dell'officina. Skill `ui-ux-pro-max` consultata (date per
+  esteso, stato con icona e testo, conferma prima di annullare)
+- **E2e:** 4 test sulle prenotazioni (cliente nuovo per ogni test, creato dall'API di Auth): **8/8 verdi**.
+  Screenshot a 390 px controllati (corretti spazio sopra "Rifiuta" e suggerimento sul giorno chiuso).
+  Test pgTAP resi indipendenti dai dati lasciati dagli e2e. `npm run check` verde
+- Aggiornati `NOTES.md`, `PLAN.md` (P14, roadmap, §7 prezzi), `DESIGN-SYSTEM.md`, `IMPLEMENTAZIONI.md`
+
+**Note**
+
+- Nessuna nuova libreria per la Fase 4 (`STRUCT.md` invariato).
+- Niente notifiche ancora (Fase 5): le novità si vedono aprendo l'app.
+- Gli orari dell'officina per ora si cambiano solo dal database: l'editor serve prima del pilota.
 
 ### Sessione 13 — 2026-10-11 (PC di casa)
 

@@ -822,3 +822,82 @@ più lentamente del sito pubblicato (con i 5 s predefiniti l'accesso a volte non
 scrive `apps/web/.env` con l'URL locale e la chiave pubblica "demo" letta da `supabase status`, e si
 lanciano i test. Se falliscono, il report HTML di Playwright (con tracce e screenshot) si scarica dagli
 artifact dell'esecuzione (`playwright-report`).
+
+## Prenotazioni — catalogo dei servizi e richieste di appuntamento (Fase 4)
+
+**Decisioni del titolare (2026-10-12):** il cliente può chiedere un appuntamento a **tutte le officine
+attive**; sceglie **giorno e fascia** (mattina/pomeriggio) e l'officina conferma con l'ora precisa, propone
+un altro orario o rifiuta; nel catalogo il **prezzo indicativo è facoltativo** ("da 40 €", vuoto = su
+preventivo).
+
+**File coinvolti:** `supabase/migrations/20261012120000_prenotazioni.sql`, `supabase/seed.sql`,
+`supabase/tests/database/prenotazioni.test.sql`, `packages/shared/src/prenotazioni.ts`,
+`apps/web/src/lib/prenotazioni.ts`, `apps/web/src/pagine/servizi.ts`, `pagine/officine.ts`,
+`pagine/appuntamenti.ts`, `ui/prenotazione.ts`, `ui/modulo.ts` (`sceltaUnica`, campo `time`),
+`ui/conferma.ts`, `ui/layout.ts`, `pagine/home-officina.ts`, `pagine/profilo.ts`,
+`styles/_prenotazioni.scss`, `e2e/tests/prenotazioni.spec.ts`.
+
+**Come funziona:**
+
+- **Catalogo** (`servizi_officina`): nome, descrizione, durata e prezzo indicativi, "prenotabile dall'app".
+  Lo vede chi lavora in officina (`/servizi`, anche da Profilo → "Servizi e prezzi" e dagli Appuntamenti),
+  lo modifica solo il **TITOLARE** (`/servizi/nuovo`, `/servizi/modifica`). I servizi prenotabili delle
+  officine attive sono pubblici come le officine.
+- **Cliente:** voce "Officine" nella barra in basso (solo per chi non lavora in officina) → elenco con
+  ricerca per nome/città → scheda `/officina?id=…` con Chiama/Indicazioni, servizi ("Prenota") e orari →
+  modulo `/prenota`: servizio, targa (già compilata con i veicoli del garage, un tocco per cambiarli),
+  giorno, fascia, telefono (dal profilo), note. Dopo l'invio si apre il dettaglio dell'appuntamento.
+- **Appuntamenti** (`/appuntamenti`, voce nella barra per tutti): il cliente vede "In programma" e
+  "Passati e annullati"; l'officina vede "Da confermare", "Prossimi appuntamenti" e "Passati: com'è
+  andata?" (ultimo mese). Nella home dell'officina un avviso giallo porta alle richieste da confermare.
+- **Dettaglio** `/appuntamento?id=…`: per l'officina conferma con l'ora (nel giorno chiesto), "Proponi un
+  altro orario" (`/appuntamento/proponi`, anche per spostare un appuntamento confermato), "Rifiuta"/"Annulla
+  l'appuntamento" con motivo (`/appuntamento/rifiuta`), dopo il giorno "Completato"/"Non presentato"; se la
+  targa è già registrata in officina c'è il collegamento alla scheda del veicolo. Per il cliente: accetta o
+  rifiuta l'orario proposto, annulla (con dialogo di conferma), chiama l'officina.
+- Stati: `RICHIESTA → CONFERMATA → COMPLETATA / NON_PRESENTATO`, `RICHIESTA/CONFERMATA → PROPOSTA →
+  CONFERMATA` (il cliente accetta), `RIFIUTATA` (officina), `ANNULLATA` (cliente).
+- **Niente notifiche per ora** (Fase 5): cliente e officina vedono le novità aprendo l'app.
+
+Provato: **50 test pgTAP** (totale 157), **19 Vitest** nuovi in `shared` (totale 87), **4 test e2e**
+(richiesta → conferma con l'ora → annullamento; proposta accettata; rifiuto con messaggio; catalogo
+con servizio non prenotabile ed eliminazione) e screenshot a 390 px.
+
+### Codice complesso
+
+**Le prenotazioni si scrivono solo dalle funzioni** `richiedi_prenotazione`, `rispondi_prenotazione`,
+`rispondi_proposta`, `annulla_prenotazione` (`security definer`, nessuna policy di scrittura): così le
+regole sugli stati valgono per tutti e un cliente non può confermarsi da solo. Ogni funzione controlla chi
+chiama (cliente della prenotazione o membro dell'officina, altrimenti `42501` come la RLS) e lo stato di
+partenza (`STATO_NON_VALIDO`). Sono **ripetibili**: la richiesta usa un id scelto dal web (`p_id`) e una
+risposta uguale a quella già registrata non dà errore, come per le altre scritture dopo un errore di rete.
+
+**Nome e telefono copiati nella prenotazione.** Il cliente non è ancora un `clienti_officina` e l'officina
+non può leggere i `profiles` dei clienti: `richiedi_prenotazione` copia il nome dal profilo e il telefono
+dal modulo. Allo stesso modo il nome del servizio resta anche se il servizio viene eliminato
+(`on delete set null (servizio_id)`).
+
+**Fasce di apertura, stessa regola in SQL e TypeScript.** `fasce_aperte(orari, giorno)` e `fasceAperte()`:
+mattina = un intervallo che inizia prima delle 13, pomeriggio = uno che finisce dopo le 13 (un orario
+continuato le ha entrambe). Il giorno della settimana si calcola da `AAAA-MM-GG` a mezzogiorno UTC, così
+non cambia con il fuso. Il modulo spegne la fascia chiusa e la sceglie da sola se ne resta una; il
+controllo vero è nello schema Zod e nel database (`OFFICINA_CHIUSA`).
+
+**Date italiane.** "Oggi" è `oggi_in_italia()` / `oggiInItalia()` (fuso `Europe/Rome`), non UTC né il fuso
+del telefono. L'ora scelta dall'officina diventa un istante con `istanteItaliano(giorno, ora)`, che ricava
+lo scarto da UTC con `Intl.DateTimeFormat` (+1 h d'inverno, +2 h d'estate, provato con Vitest);
+`inItalia()` fa il contrario per mostrarla. La conferma deve cadere nel giorno chiesto (altrimenti si
+propone un altro orario); quando il cliente accetta una proposta, giorno e fascia si aggiornano all'orario
+proposto.
+
+**Contro gli abusi:** al massimo 3 richieste in attesa (`RICHIESTA`/`PROPOSTA`) per cliente e officina
+(`TROPPE_RICHIESTE`), giorni prenotabili da domani a 60 giorni (`giorni_prenotabili()`).
+
+**Veicoli del cliente nel modulo.** `caricaMieiVeicoli()` legge i veicoli collegati all'account con un join
+`clienti_officina!inner (profile_id)` filtrato sull'utente: chi lavora in un'officina altrimenti vedrebbe
+tutti i veicoli della sua officina.
+
+**Test indipendenti dai dati.** Gli e2e creano un **cliente nuovo** per ogni test (`nuovoAccountCliente`:
+registrazione dall'API di Auth e conferma letta da Mailpit, senza browser), così il limite delle 3
+richieste non blocca le esecuzioni ripetute; i test pgTAP delle prenotazioni verificano le regole senza
+contare le righe.
