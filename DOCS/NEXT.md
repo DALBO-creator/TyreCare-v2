@@ -48,8 +48,10 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: provare dal telefono la Fase 4 (prenotazioni, calendario, orari e chiusure).**
-> Il file `.xls` di GESTITYRE arriverà a breve: quando c'è, si riprende P8 (formato CSV + adattatore).
+> **Obiettivo: scegliere con il titolare il prossimo passo della Fase 4 (o P8 se è arrivato il file).**
+> Fase 4 provata dal telefono il 2026-10-12 (sessione 14): prenotazioni, calendario, orari e chiusure
+> funzionano. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE: se c'è, si riprende
+> P8 (formato CSV + adattatore).
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -60,16 +62,12 @@ riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavvia
 **Test end-to-end:** `npm run test:e2e` con Supabase locale avviato (il server Vite parte da solo). Non
 serve `db:reset`: i test creano dati con nomi unici.
 
-**0 — Pubblicazione e prove (titolare + Claude)**
-
-- [ ] Prova dal telefono (l'officina di prova sul cloud è già `ATTIVA` con orari e un servizio): titolare
-  (catalogo, calendario, conferma, proposta, rifiuto, orari, chiusura) e cliente (richiesta, accetta,
-  annulla), con due account
-
 **1 — Lavoro di Claude**
 
 - [ ] Fase 4, passi successivi (scegliere con il titolare): "Prenota" dalla carta dell'officina nel
   garage; creare cliente/veicolo dalla richiesta; officine vicine; capienza/slot
+- [ ] Fase 5 (notifiche): avvisare officina e cliente dei cambi di stato delle prenotazioni (Web Push +
+  email), oggi visibili solo aprendo l'app
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
 
 **Fatto in passato (riferimento):**
@@ -84,7 +82,8 @@ serve `db:reset`: i test creano dati con nomi unici.
   l'email di conferma non parte
 - [x] (2026-10-12, sessione 14) Test end-to-end con Playwright sul flusso degli inviti, job CI `e2e`
 - [x] (2026-10-12, sessione 14) Fase 4: catalogo dei servizi, richiesta con giorno e fascia, risposte
-  dell'officina, appuntamenti di cliente e officina, calendario, orari e chiusure straordinarie
+  dell'officina, appuntamenti di cliente e officina, calendario, orari e chiusure straordinarie (provata
+  dal telefono)
 
 **Rimandati:**
 
@@ -173,6 +172,8 @@ serve `db:reset`: i test creano dati con nomi unici.
   sul cloud da Claude** (ok del titolare): 9 migrazioni allineate, orari dell'officina di prova validi
 - 2 nuovi e2e (orari, chiusura) + controllo del calendario nel test della conferma: **10/10 verdi**;
   Vitest **97**; `npm run check` verde. Screenshot controllati (campi ora affiancati: pagina lunga la metà)
+- Commit `03d4600` (codice) e `ff71f61` (documenti): **CI e deploy Vercel verdi**
+- **Prova dal telefono del titolare: funziona tutto** (prenotazioni, calendario, orari e chiusure)
 
 **Note**
 
