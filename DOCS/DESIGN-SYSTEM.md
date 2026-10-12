@@ -138,6 +138,11 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Azione in riga | `.tc-lista__azione` | testo rosso chiaro in fondo a una riga toccabile (es. "Prenota") |
 | Avviso con collegamento | `.tc-avviso--link` | avviso che porta a una pagina, con la freccia (es. "2 richieste di appuntamento da confermare" nella home dell'officina) |
 | Azioni dell'appuntamento | `.tc-azioni-appuntamento` | colonna di pulsanti con passo 12 px; "Rifiuta"/"Annulla" (`.tc-pulsante-elimina`) senza il margine grande delle pagine di modifica |
+| Selettore di vista | `selettoreVista()` → `.tc-vista`, `__voce` | due metà uguali (Calendario / Elenco), la vista attiva con sfondo più chiaro e `aria-current="page"` |
+| Settimana | `.tc-settimana`, `__giorni`, `__giorno--oggi`, `__giorno--chiuso`, `__conta` | 7 colonne uguali (stanno anche a 320 px); giorno scelto con bordo chiaro e `aria-pressed`; oggi con numero rosso chiaro **sottolineato**; giorni chiusi senza sfondo e grigi; numero degli appuntamenti in un tondo rosso brand; frecce da 44 px |
+| Agenda del giorno | `.tc-agenda`, `__riga`, `__ora`, `__ora--da-fissare` | titolo del giorno, orari di apertura o "Chiuso" con la luna; per fascia l'ora in colonna (cifre tabulari) poi servizio e cliente, badge a destra |
+| Giorno degli orari | `.tc-orari-giorno` (`fieldset`) | riquadro per giorno, nome in grassetto, due turni con i campi ora **sempre affiancati** |
+| Elimina in riga | `.tc-lista__elimina` | pulsante con il solo cestino (44 px, bordo rosso chiaro) e `aria-label` che dice cosa elimina |
 
 Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/anteprima.ts`).
 

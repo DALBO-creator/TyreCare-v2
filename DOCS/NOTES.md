@@ -901,3 +901,55 @@ tutti i veicoli della sua officina.
 registrazione dall'API di Auth e conferma letta da Mailpit, senza browser), così il limite delle 3
 richieste non blocca le esecuzioni ripetute; i test pgTAP delle prenotazioni verificano le regole senza
 contare le righe.
+
+## Officina — calendario degli appuntamenti e orari con chiusure (Fase 4)
+
+**Richiesta del titolare (2026-10-12):** un "simil calendario" per gestire gli appuntamenti dell'officina,
+poi l'editor degli orari.
+
+**File coinvolti:** `apps/web/src/lib/calendario.ts` (+ test), `pagine/calendario.ts`, `lib/orari.ts`,
+`pagine/orari.ts`, `pagine/appuntamenti.ts` (selettore Calendario/Elenco), `pagine/officine.ts`,
+`styles/_prenotazioni.scss`, `supabase/migrations/20261012150000_orari_chiusure.sql`,
+`supabase/tests/database/orari.test.sql`, `packages/shared/src/prenotazioni.ts`,
+`e2e/tests/orari.spec.ts`.
+
+**Come funziona:**
+
+- **Calendario** `/appuntamenti/calendario?giorno=AAAA-MM-GG` (da Appuntamenti → "Calendario"): in alto la
+  settimana (frecce, "Torna a oggi"), un pulsante per giorno con il numero di appuntamenti, i giorni chiusi
+  attenuati, oggi sottolineato in rosso. Sotto, l'agenda del giorno scelto: orari di apertura (o "Chiuso",
+  con il motivo della chiusura), poi **Mattina** e **Pomeriggio** con gli appuntamenti in ordine di ora e,
+  in fondo a ogni fascia, le richieste ancora "da fissare". Ogni riga apre il dettaglio.
+- **Orari e chiusure** `/officina/orari` (Profilo → "Orari e chiusure", solo TITOLARE): per ogni giorno
+  primo turno e secondo turno facoltativo (campi ora affiancati), "Copia il lunedì da martedì a venerdì",
+  "Salva orari". Sotto, le **chiusure straordinarie** in programma con elimina (dialogo di conferma) e
+  "Aggiungi una chiusura" (`/officina/chiusura`: dal, al compreso, motivo facoltativo).
+- Le chiusure valgono ovunque: il modulo "Prenota" non propone quei giorni (sotto il giorno: "…: l'officina
+  è chiusa (ferie)"), la scheda dell'officina le elenca in "Chiusure in programma", il calendario le
+  mostra come giorni chiusi, `richiedi_prenotazione` le rifiuta (`OFFICINA_CHIUSA`).
+
+### Codice complesso
+
+**Una proposta sta nel giorno proposto.** `posizioneInAgenda()` usa l'ora fissata (`appuntamento`, in ora
+italiana) quando c'è, altrimenti giorno e fascia chiesti dal cliente. Per questo `caricaSettimana()` legge
+con un `or` le prenotazioni chieste per quei giorni **oppure** con l'ora in quei giorni (l'intervallo delle
+ore è largo un giorno per lato, il filtro esatto lo fa `posizioneInAgenda`). Annullate e rifiutate non sono
+in agenda.
+
+**Cambiare giorno non ricarica.** Nella stessa settimana la pagina si ridisegna con i dati già caricati;
+l'indirizzo si aggiorna con `history.replaceState`, così "indietro" non ripercorre ogni giorno toccato.
+Cambiando settimana si caricano prenotazioni e chiusure di quella settimana.
+
+**Orari validati nel database.** `orari_validi(jsonb)` è un vincolo `check` su `officine.orari`: chiavi
+lun … dom, al massimo 3 turni al giorno, ore `HH:MM` a due cifre, apertura prima della chiusura, turni in
+ordine senza sovrapposizioni. È scritta come una `case` con i controlli in ordine, perché in SQL le
+condizioni di un `or` non si fermano alla prima vera: `jsonb_array_length` su un valore che non è un
+elenco darebbe errore. Lo schema `creaOrariSchema()` ha le stesse regole e mette l'errore sotto il campo
+giusto (es. "Deve venire dopo l'apertura"); accetta anche "8.30" scritto a mano.
+
+**Campi con nome e aria-label.** Ogni ora ha l'etichetta breve visibile ("Apre", "Chiude") e un
+`aria-label` completo ("Lunedì, primo turno: chiude") per i lettori di schermo e per i test.
+
+**Test e2e e dati rimasti.** Il test delle chiusure usa un giorno a più di 4 settimane (lontano dagli altri
+test e dalla chiusura del seed, tra 20 e 22 giorni) e controlla il suggerimento senza il motivo esatto: una
+chiusura rimasta da un'esecuzione interrotta non lo fa fallire.

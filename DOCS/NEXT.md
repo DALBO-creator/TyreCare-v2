@@ -48,7 +48,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: pubblicare e provare dal telefono la Fase 4 (prenotazioni), poi l'editor degli orari.**
+> **Obiettivo: provare dal telefono la Fase 4 (prenotazioni, calendario, orari e chiusure).**
 > Il file `.xls` di GESTITYRE arriverà a breve: quando c'è, si riprende P8 (formato CSV + adattatore).
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
@@ -62,17 +62,14 @@ serve `db:reset`: i test creano dati con nomi unici.
 
 **0 — Pubblicazione e prove (titolare + Claude)**
 
-- [ ] Sul cloud l'**officina di prova** è `IN_ATTESA`: per provare le prenotazioni dal telefono va messa
-  `ATTIVA` (ADMIN, SQL Editor) con orari e almeno un servizio prenotabile
-- [ ] Prova dal telefono: titolare (catalogo, conferma, proposta, rifiuto) e cliente (richiesta, accetta,
+- [ ] Prova dal telefono (l'officina di prova sul cloud è già `ATTIVA` con orari e un servizio): titolare
+  (catalogo, calendario, conferma, proposta, rifiuto, orari, chiusura) e cliente (richiesta, accetta,
   annulla), con due account
 
 **1 — Lavoro di Claude**
 
-- [ ] **Editor degli orari dell'officina** (titolare): orari settimanali e chiusure straordinarie,
-  validazione `HH:MM` (vedi `IMPLEMENTAZIONI.md`)
-- [ ] Fase 4, passi successivi: "Prenota" dalla carta dell'officina nel garage; creare cliente/veicolo
-  dalla richiesta; officine vicine; calendario dell'officina
+- [ ] Fase 4, passi successivi (scegliere con il titolare): "Prenota" dalla carta dell'officina nel
+  garage; creare cliente/veicolo dalla richiesta; officine vicine; capienza/slot
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
 
 **Fatto in passato (riferimento):**
@@ -87,7 +84,7 @@ serve `db:reset`: i test creano dati con nomi unici.
   l'email di conferma non parte
 - [x] (2026-10-12, sessione 14) Test end-to-end con Playwright sul flusso degli inviti, job CI `e2e`
 - [x] (2026-10-12, sessione 14) Fase 4: catalogo dei servizi, richiesta con giorno e fascia, risposte
-  dell'officina, appuntamenti di cliente e officina
+  dell'officina, appuntamenti di cliente e officina, calendario, orari e chiusure straordinarie
 
 **Rimandati:**
 
@@ -160,11 +157,29 @@ serve `db:reset`: i test creano dati con nomi unici.
   Test pgTAP resi indipendenti dai dati lasciati dagli e2e. `npm run check` verde
 - Aggiornati `NOTES.md`, `PLAN.md` (P14, roadmap, §7 prezzi), `DESIGN-SYSTEM.md`, `IMPLEMENTAZIONI.md`
 
+- CI (`check`, `database`, `e2e`) e deploy Vercel di `86eff70`: **verdi**
+- **Officina di prova sul cloud resa prenotabile da Claude** (richiesta del titolare) con
+  `npx supabase db query --linked`: `ATTIVA`, orari lun–ven 8:30–12:30 e 14:30–19:00, sabato mattina. Il
+  servizio "Controllo di routine" (da 75 €) c'era già. Verificato come utente anonimo che officina e
+  servizio sono visibili
+- **Calendario dell'officina** (richiesta del titolare) `/appuntamenti/calendario`: settimana con il numero
+  di appuntamenti per giorno, agenda del giorno per mattina/pomeriggio (ore in ordine, richieste "da
+  fissare"), proposte nel giorno proposto; selettore Calendario/Elenco. `lib/calendario.ts` con 5 Vitest
+- **Orari e chiusure** (titolare, Profilo → "Orari e chiusure"): editor degli orari (due turni al giorno,
+  copia del lunedì), chiusure straordinarie (dal/al/motivo). Migrazione `20261012150000_orari_chiusure.sql`:
+  vincolo `orari_validi`, tabella `chiusure_officina`, `richiedi_prenotazione` rifiuta i giorni di
+  chiusura; seed con una chiusura "Inventario" tra 20 e 22 giorni. `orari.test.sql`: 19 pgTAP (totale
+  **176**). Chiusure nel modulo "Prenota", nella scheda dell'officina e nel calendario. **Migrazione pubblicata
+  sul cloud da Claude** (ok del titolare): 9 migrazioni allineate, orari dell'officina di prova validi
+- 2 nuovi e2e (orari, chiusura) + controllo del calendario nel test della conferma: **10/10 verdi**;
+  Vitest **97**; `npm run check` verde. Screenshot controllati (campi ora affiancati: pagina lunga la metà)
+
 **Note**
 
 - Nessuna nuova libreria per la Fase 4 (`STRUCT.md` invariato).
+- Claude può interrogare il database cloud con `npx supabase db query --linked "…"` (CLI autenticata sul
+  PC di casa): utile per controlli e piccole correzioni di dati, sempre con l'ok del titolare.
 - Niente notifiche ancora (Fase 5): le novità si vedono aprendo l'app.
-- Gli orari dell'officina per ora si cambiano solo dal database: l'editor serve prima del pilota.
 
 ### Sessione 13 — 2026-10-11 (PC di casa)
 
