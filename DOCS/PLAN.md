@@ -13,7 +13,7 @@
 | [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) | Colori, tipografia, componenti e regole di accessibilità | Quando cambia l'aspetto |
 | [`NOTES.md`](NOTES.md) | Spiegazione del codice più complesso e del funzionamento delle funzionalità | Ad ogni funzionalità implementata |
 | [`STRUCT.md`](STRUCT.md) | Linguaggi, framework e librerie con spiegazione d'uso | Ad ogni nuova dipendenza |
-| [`PRODUZIONE-MARKETING.md`](PRODUZIONE-MARKETING.md) | Costi, modello di ricavo, BEP, go-to-market | Quando cambiano costi/prezzi |
+| [`PRODUZIONE-MARKETING.md`](PRODUZIONE-MARKETING.md) | Costi, modello di ricavo, BEP, go-to-market, valutazione in caso di cessione | Quando cambiano costi/prezzi |
 | [`IMPLEMENTAZIONI.md`](IMPLEMENTAZIONI.md) | Idee e implementazioni future | Man mano che emergono |
 | [`LICENSE.md`](LICENSE.md) | Licenza proprietaria | Raramente |
 | [`first-prompt.md`](first-prompt.md) | Prompt originale del progetto | Mai (archivio) |

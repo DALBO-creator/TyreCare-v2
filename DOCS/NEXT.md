@@ -119,6 +119,16 @@ serve `db:reset`: i test creano dati con nomi unici.
 
 ## Storico
 
+### Sessione 15 — 2026-10-12 (cloud, breve)
+
+**Fatto**
+
+- Solo documentazione, nessuna modifica al codice: **valutazione dell'app in caso di cessione** dei diritti
+  (domanda del titolare, vendita non in programma) → nuova sezione § 7 in `PRODUZIONE-MARKETING.md` (costo di
+  rifacimento, multiplo dei ricavi, acquirente strategico, fattori di valore, sintesi per scenario). Aggiornata
+  la descrizione del file nell'indice di `PLAN.md`
+- La "Prossima sessione" resta invariata
+
 ### Sessione 14 — 2026-10-12 (PC di casa)
 
 **Fatto**
