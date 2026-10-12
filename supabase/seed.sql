@@ -132,3 +132,38 @@ from (values
   ('e0000000-0000-4000-8000-000000000003'::uuid, 1.4, 'INTERNA'),
   ('e0000000-0000-4000-8000-000000000004'::uuid, 5.8, 'REGOLARE')
 ) as m (pneumatico_id, mm, usura);
+
+-- ---------------------------------------------------------------------------------------------------
+-- Fase 4 — catalogo dei servizi e prenotazioni
+-- ---------------------------------------------------------------------------------------------------
+-- Gomme Rossi: quattro servizi (uno non prenotabile dall'app). Giulia ha chiesto un cambio gomme per la
+-- Panda il primo giorno di apertura dopo oggi, di mattina (la data cambia a ogni `db reset`).
+
+insert into public.servizi_officina (id, officina_id, nome, descrizione, durata_minuti, prezzo_da, prenotabile)
+values
+  ('a1000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000001',
+   'Cambio gomme stagionale', 'Smontaggio, montaggio ed equilibratura di 4 pneumatici.', 45, 40.00, true),
+  ('a1000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001',
+   'Controllo pneumatici', 'Battistrada, pressione e usura di tutte le ruote, con report nell''app.', 20, null, true),
+  ('a1000000-0000-4000-8000-000000000003', 'b0000000-0000-4000-8000-000000000001',
+   'Convergenza', 'Controllo e regolazione dell''assetto.', 60, 50.00, true),
+  ('a1000000-0000-4000-8000-000000000004', 'b0000000-0000-4000-8000-000000000001',
+   'Deposito gomme', 'Custodia delle gomme della stagione successiva.', null, 30.00, false);
+
+insert into public.prenotazioni (
+  id, officina_id, servizio_id, servizio, cliente_id, nome_cliente, telefono_cliente, targa, veicolo,
+  giorno, fascia, note
+)
+select
+  'a2000000-0000-4000-8000-000000000001', o.id, 'a1000000-0000-4000-8000-000000000001',
+  'Cambio gomme stagionale', 'a0000000-0000-4000-8000-000000000004', 'Giulia Verdi', '+39 347 1112223',
+  'AB123CD', 'Fiat Panda', g.giorno, 'MATTINA', 'Ho già le gomme estive in deposito da voi.'
+from public.officine o
+cross join lateral (
+  select d::date as giorno
+  from generate_series(public.oggi_in_italia() + 1, public.oggi_in_italia() + 14, interval '1 day') as d
+  where 'MATTINA' = any (public.fasce_aperte(o.orari, d::date))
+  order by d
+  limit 1
+) as g
+where o.id = 'b0000000-0000-4000-8000-000000000001';

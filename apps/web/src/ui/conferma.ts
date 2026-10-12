@@ -1,4 +1,4 @@
-import { Trash2 } from 'lucide';
+import { Trash2, type IconNode } from 'lucide';
 import { messaggioErrore } from '../lib/auth';
 import { ErroreModulo } from '../lib/errori';
 import { esc } from '../lib/html';
@@ -12,6 +12,10 @@ interface Conferma {
   pulsante: string;
   /** Azione da eseguire: se fallisce, l'errore compare nel dialogo, che resta aperto. */
   azione: () => Promise<void>;
+  /** Icona del pulsante di conferma (predefinita: il cestino). */
+  iconaPulsante?: IconNode;
+  /** Testo del pulsante mentre l'azione è in corso (predefinito: "Eliminazione…"). */
+  inCorso?: string;
   /**
    * Pulsante che ha aperto il dialogo: riprende il focus se si annulla. Va passato esplicitamente,
    * perché Safari non mette a fuoco i pulsanti toccati.
@@ -24,7 +28,15 @@ interface Conferma {
  * modale nativo: il focus resta dentro, Esc chiude, il resto della pagina è inerte. All'apertura il
  * focus va su "Annulla", così un Invio di troppo non elimina nulla.
  */
-export function chiediConferma({ titolo, testo, pulsante, azione, origine }: Conferma): void {
+export function chiediConferma({
+  titolo,
+  testo,
+  pulsante,
+  azione,
+  origine,
+  iconaPulsante = Trash2,
+  inCorso = 'Eliminazione…',
+}: Conferma): void {
   const dialogo = document.createElement('dialog');
   dialogo.className = 'tc-dialogo';
   dialogo.setAttribute('aria-labelledby', 'tc-dialogo-titolo');
@@ -35,7 +47,7 @@ export function chiediConferma({ titolo, testo, pulsante, azione, origine }: Con
     <div class="tc-avviso tc-avviso--rosso" role="alert" hidden></div>
     <div class="tc-dialogo__azioni">
       <button type="button" class="btn btn-primary btn-lg" data-conferma>
-        ${icona(Trash2)} ${esc(pulsante)}
+        ${icona(iconaPulsante)} ${esc(pulsante)}
       </button>
       <button type="button" class="btn btn-outline-light btn-lg" data-annulla>Annulla</button>
     </div>`;
@@ -66,7 +78,7 @@ export function chiediConferma({ titolo, testo, pulsante, azione, origine }: Con
     conferma.disabled = annulla.disabled = true;
     conferma.setAttribute('aria-busy', 'true');
     conferma.innerHTML = `<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
-      Eliminazione…`;
+      ${esc(inCorso)}`;
     try {
       await azione();
       // L'azione di solito cambia pagina: il dialogo si chiude senza restituire il focus

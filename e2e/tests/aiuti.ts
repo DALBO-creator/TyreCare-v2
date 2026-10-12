@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import path from 'node:path';
 import { expect, type Page } from '@playwright/test';
 
 // Funzioni comuni ai test: accesso, dati unici, operazioni dell'officina ed email lette da Mailpit.
@@ -96,4 +98,47 @@ export async function linkConferma(email: string): Promise<string> {
   const href = HTML.match(/href="([^"]*\/auth\/v1\/verify[^"]*)"/)?.[1];
   expect(href, "il link di conferma è nell'email").toBeDefined();
   return href!.replaceAll('&amp;', '&');
+}
+
+/** URL e chiave pubblica di Supabase locale, dallo stesso `.env` usato dal web. */
+function supabaseLocale(): { url: string; chiave: string } {
+  const env = Object.fromEntries(
+    readFileSync(path.join(import.meta.dirname, '../../apps/web/.env'), 'utf8')
+      .split(/\r?\n/)
+      .map((r) => r.match(/^\s*([A-Z_]+)\s*=\s*"?([^"]*)"?\s*$/))
+      .filter((m) => m !== null)
+      .map((m) => [m[1], m[2]]),
+  );
+  return { url: env.VITE_SUPABASE_URL!, chiave: env.VITE_SUPABASE_ANON_KEY! };
+}
+
+/**
+ * Crea e conferma un account cliente nuovo senza passare dal browser (registrazione dall'API di Auth,
+ * link di conferma da Mailpit): per i test che partono da un cliente già registrato.
+ */
+export async function nuovoAccountCliente(nome = 'Cliente'): Promise<string> {
+  const email = emailNuova();
+  const { url, chiave } = supabaseLocale();
+  const risposta = await fetch(`${url}/auth/v1/signup`, {
+    method: 'POST',
+    headers: { apikey: chiave, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: PASSWORD, data: { nome, cognome: 'Prova' } }),
+  });
+  expect(risposta.ok, 'registrazione dall’API di Auth').toBe(true);
+  // Aprire il link conferma l'email (poi Auth rimanda al sito: il rimando non serve)
+  await fetch(await linkConferma(email), { redirect: 'manual' });
+  return email;
+}
+
+/** Prossimo giorno feriale (lunedì–venerdì) dopo oggi, `AAAA-MM-GG`, saltandone `salta`. */
+export function prossimoFeriale(salta = 0): string {
+  // Da oggi in Italia (come il database), non dal giorno UTC
+  const oggi = new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Rome' }).format(new Date());
+  const d = new Date(`${oggi}T12:00:00Z`);
+  let trovati = -1;
+  while (trovati < salta) {
+    d.setUTCDate(d.getUTCDate() + 1);
+    if (d.getUTCDay() >= 1 && d.getUTCDay() <= 5) trovati++;
+  }
+  return d.toISOString().slice(0, 10);
 }

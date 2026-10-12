@@ -137,10 +137,17 @@ export function intestazioneSottopagina(titolo: string, etichetta = 'Profilo'): 
 // Conferma da mostrare sulla prossima pagina dopo un salvataggio (una sola volta)
 let conferma: string | undefined;
 
-/** Va alla pagina indicata mostrando lì un avviso di conferma (es. "Veicolo salvato"). */
-export function vaiConConferma(percorso: string, messaggio: string): void {
+/**
+ * Va alla pagina indicata mostrando lì un avviso di conferma (es. "Veicolo salvato"). Con
+ * `sostituisci` non aggiunge un passo alla cronologia (es. la stessa pagina ridisegnata dopo un'azione).
+ */
+export function vaiConConferma(
+  percorso: string,
+  messaggio: string,
+  opzioni = { sostituisci: false },
+): void {
   conferma = messaggio;
-  vaiA(percorso);
+  vaiA(percorso, opzioni);
 }
 
 /** Avviso verde con la conferma in attesa, se c'è (poi viene dimenticata). */

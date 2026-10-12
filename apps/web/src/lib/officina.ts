@@ -166,7 +166,7 @@ export async function caricaElencoClienti(officinaId: string): Promise<ClienteCo
  * Vero se l'errore è la chiave primaria duplicata: dopo una ripetizione per errore di rete significa
  * che il primo tentativo era arrivato e il record c'è già (l'id l'abbiamo scelto noi).
  */
-const giaSalvato = (error: unknown, tabella: string) =>
+export const giaSalvato = (error: unknown, tabella: string) =>
   codiceErrore(error) === '23505' && String((error as Error).message).includes(`${tabella}_pkey`);
 
 /** Crea un cliente e ne restituisce l'id. */
@@ -236,8 +236,8 @@ export async function modificaVeicolo(id: string, veicolo: Veicolo): Promise<voi
  * nulla. In quel caso si controlla se il record c'è ancora: se non c'è, era già stato eliminato (es.
  * dal primo tentativo, prima di un errore di rete) ed è un successo; se c'è, mancano i permessi.
  */
-async function elimina(
-  tabella: 'clienti_officina' | 'veicoli' | 'controlli',
+export async function elimina(
+  tabella: 'clienti_officina' | 'veicoli' | 'controlli' | 'servizi_officina',
   id: string,
   vietato: string,
 ): Promise<void> {

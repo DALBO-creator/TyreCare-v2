@@ -417,6 +417,98 @@ export type Database = {
           },
         ];
       };
+      prenotazioni: {
+        Row: {
+          appuntamento: string | null;
+          cliente_id: string;
+          created_at: string;
+          fascia: Database['public']['Enums']['fascia_oraria'];
+          gestita_da: string | null;
+          giorno: string;
+          id: string;
+          messaggio_officina: string;
+          nome_cliente: string;
+          note: string;
+          officina_id: string;
+          servizio: string;
+          servizio_id: string | null;
+          stato: Database['public']['Enums']['stato_prenotazione'];
+          targa: string;
+          telefono_cliente: string;
+          updated_at: string;
+          veicolo: string;
+        };
+        Insert: {
+          appuntamento?: string | null;
+          cliente_id: string;
+          created_at?: string;
+          fascia: Database['public']['Enums']['fascia_oraria'];
+          gestita_da?: string | null;
+          giorno: string;
+          id?: string;
+          messaggio_officina?: string;
+          nome_cliente: string;
+          note?: string;
+          officina_id: string;
+          servizio: string;
+          servizio_id?: string | null;
+          stato?: Database['public']['Enums']['stato_prenotazione'];
+          targa: string;
+          telefono_cliente: string;
+          updated_at?: string;
+          veicolo?: string;
+        };
+        Update: {
+          appuntamento?: string | null;
+          cliente_id?: string;
+          created_at?: string;
+          fascia?: Database['public']['Enums']['fascia_oraria'];
+          gestita_da?: string | null;
+          giorno?: string;
+          id?: string;
+          messaggio_officina?: string;
+          nome_cliente?: string;
+          note?: string;
+          officina_id?: string;
+          servizio?: string;
+          servizio_id?: string | null;
+          stato?: Database['public']['Enums']['stato_prenotazione'];
+          targa?: string;
+          telefono_cliente?: string;
+          updated_at?: string;
+          veicolo?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'prenotazioni_cliente_id_fkey';
+            columns: ['cliente_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'prenotazioni_gestita_da_fkey';
+            columns: ['gestita_da'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'prenotazioni_officina_id_fkey';
+            columns: ['officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'officine';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'prenotazioni_servizio_id_officina_id_fkey';
+            columns: ['servizio_id', 'officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'servizi_officina';
+            referencedColumns: ['id', 'officina_id'];
+          },
+        ];
+      };
       profiles: {
         Row: {
           cognome: string;
@@ -446,6 +538,50 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [];
+      };
+      servizi_officina: {
+        Row: {
+          created_at: string;
+          descrizione: string;
+          durata_minuti: number | null;
+          id: string;
+          nome: string;
+          officina_id: string;
+          prenotabile: boolean;
+          prezzo_da: number | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          descrizione?: string;
+          durata_minuti?: number | null;
+          id?: string;
+          nome: string;
+          officina_id: string;
+          prenotabile?: boolean;
+          prezzo_da?: number | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          descrizione?: string;
+          durata_minuti?: number | null;
+          id?: string;
+          nome?: string;
+          officina_id?: string;
+          prenotabile?: boolean;
+          prezzo_da?: number | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'servizi_officina_officina_id_fkey';
+            columns: ['officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'officine';
+            referencedColumns: ['id'];
+          },
+        ];
       };
       veicoli: {
         Row: {
@@ -511,6 +647,7 @@ export type Database = {
     Functions: {
       accetta_invito: { Args: { p_codice: string }; Returns: string };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
+      annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
       crea_invito_cliente: {
         Args: { p_cliente_id: string; p_email: string };
         Returns: {
@@ -518,6 +655,11 @@ export type Database = {
           scade_il: string;
         }[];
       };
+      fasce_aperte: {
+        Args: { p_giorno: string; p_orari: Json };
+        Returns: Database['public']['Enums']['fascia_oraria'][];
+      };
+      giorni_prenotabili: { Args: Record<PropertyKey, never>; Returns: number };
       impronta_codice: { Args: { p_codice: string }; Returns: string };
       info_invito: {
         Args: { p_codice: string };
@@ -549,6 +691,7 @@ export type Database = {
         Args: { p_montato_il?: string; p_pneumatici: Json; p_veicolo_id: string };
         Returns: string[];
       };
+      oggi_in_italia: { Args: Record<PropertyKey, never>; Returns: string };
       registra_controllo: {
         Args: {
           p_eseguito_il?: string;
@@ -560,14 +703,42 @@ export type Database = {
         };
         Returns: string;
       };
+      richiedi_prenotazione: {
+        Args: {
+          p_fascia: Database['public']['Enums']['fascia_oraria'];
+          p_giorno: string;
+          p_id?: string;
+          p_note?: string;
+          p_officina_id: string;
+          p_servizio_id: string;
+          p_targa: string;
+          p_telefono: string;
+          p_veicolo: string;
+        };
+        Returns: string;
+      };
+      rispondi_prenotazione: {
+        Args: { p_appuntamento?: string; p_azione: string; p_id: string; p_messaggio?: string };
+        Returns: undefined;
+      };
+      rispondi_proposta: { Args: { p_accetta: boolean; p_id: string }; Returns: undefined };
     };
     Enums: {
+      fascia_oraria: 'MATTINA' | 'POMERIGGIO';
       origine_dato: 'APP' | 'IMPORT';
       posizione_pneumatico: 'ANT_SX' | 'ANT_DX' | 'POST_SX' | 'POST_DX' | 'SCORTA';
       ruolo: 'ADMIN' | 'OFFICINA' | 'CLIENTE';
       ruolo_officina: 'TITOLARE' | 'OPERATORE';
       stagione: 'ESTIVO' | 'INVERNALE' | 'QUATTRO_STAGIONI';
       stato_affiliazione: 'IN_ATTESA' | 'ATTIVA' | 'SOSPESA';
+      stato_prenotazione:
+        | 'RICHIESTA'
+        | 'PROPOSTA'
+        | 'CONFERMATA'
+        | 'RIFIUTATA'
+        | 'ANNULLATA'
+        | 'COMPLETATA'
+        | 'NON_PRESENTATO';
       usura: 'REGOLARE' | 'INTERNA' | 'ESTERNA' | 'CENTRALE' | 'BORDI';
     };
     CompositeTypes: {
@@ -683,12 +854,22 @@ export const Constants = {
   },
   public: {
     Enums: {
+      fascia_oraria: ['MATTINA', 'POMERIGGIO'],
       origine_dato: ['APP', 'IMPORT'],
       posizione_pneumatico: ['ANT_SX', 'ANT_DX', 'POST_SX', 'POST_DX', 'SCORTA'],
       ruolo: ['ADMIN', 'OFFICINA', 'CLIENTE'],
       ruolo_officina: ['TITOLARE', 'OPERATORE'],
       stagione: ['ESTIVO', 'INVERNALE', 'QUATTRO_STAGIONI'],
       stato_affiliazione: ['IN_ATTESA', 'ATTIVA', 'SOSPESA'],
+      stato_prenotazione: [
+        'RICHIESTA',
+        'PROPOSTA',
+        'CONFERMATA',
+        'RIFIUTATA',
+        'ANNULLATA',
+        'COMPLETATA',
+        'NON_PRESENTATO',
+      ],
       usura: ['REGOLARE', 'INTERNA', 'ESTERNA', 'CENTRALE', 'BORDI'],
     },
   },

@@ -1,4 +1,14 @@
-import { ChevronRight, KeyRound, LogOut, Mail, Phone, ShieldCheck, UserPen, Wrench } from 'lucide';
+import {
+  ChevronRight,
+  ClipboardList,
+  KeyRound,
+  LogOut,
+  Mail,
+  Phone,
+  ShieldCheck,
+  UserPen,
+  Wrench,
+} from 'lucide';
 import { esci, messaggioErrore } from '../lib/auth';
 import { esc } from '../lib/html';
 import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
@@ -74,6 +84,17 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
             .join('')}
         </div>
       </section>
+
+      ${
+        officine.length
+          ? `<section aria-labelledby="tc-officina">
+              <h2 id="tc-officina" class="tc-etichetta">Officina</h2>
+              <nav class="tc-lista" aria-labelledby="tc-officina">
+                ${link(ClipboardList, 'Servizi e prezzi', '/servizi')}
+              </nav>
+            </section>`
+          : ''
+      }
 
       <section aria-labelledby="tc-account">
         <h2 id="tc-account" class="tc-etichetta">Account</h2>

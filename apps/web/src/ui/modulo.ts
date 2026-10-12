@@ -8,7 +8,7 @@ import { icona } from './icone';
 interface Campo {
   nome: string;
   etichetta: string;
-  tipo: 'text' | 'email' | 'password' | 'tel' | 'date';
+  tipo: 'text' | 'email' | 'password' | 'tel' | 'date' | 'time';
   /** Valore di `autocomplete`: permette a browser e password manager di compilare il campo. */
   autocomplete: string;
   aiuto?: string;
@@ -156,6 +156,38 @@ export function caselle({ nome, etichetta, opzioni, selezionate = [], aiuto }: C
           <label class="tc-caselle__voce">
             <input class="form-check-input" type="checkbox" name="${nome}" value="${esc(v)}"
               ${selezionate.includes(v) ? 'checked' : ''} />
+            <span>${esc(testo)}</span>
+          </label>`,
+          )
+          .join('')}
+      </div>
+      ${aiutoEErrore(nome, aiuto)}
+    </fieldset>`;
+}
+
+interface SceltaUnica {
+  nome: string;
+  etichetta: string;
+  opzioni: Opzioni;
+  valore?: string | undefined;
+  aiuto?: string;
+}
+
+/**
+ * Scelta tra poche opzioni (`fieldset` + pulsanti radio), mostrate come pulsanti grandi come le
+ * caselle. Il valore letto dal modulo è una stringa (vuota se non è scelto nulla).
+ */
+export function sceltaUnica({ nome, etichetta, opzioni, valore = '', aiuto }: SceltaUnica): string {
+  return `
+    <fieldset class="tc-campo tc-caselle" aria-describedby="${descrizioni(nome, aiuto)}">
+      <legend class="form-label">${esc(etichetta)}</legend>
+      <div class="tc-caselle__elenco">
+        ${opzioni
+          .map(
+            ([v, testo]) => `
+          <label class="tc-caselle__voce">
+            <input class="form-check-input" type="radio" name="${nome}" value="${esc(v)}"
+              ${v === valore ? 'checked' : ''} />
             <span>${esc(testo)}</span>
           </label>`,
           )

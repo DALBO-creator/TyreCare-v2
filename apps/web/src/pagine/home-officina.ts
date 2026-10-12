@@ -1,5 +1,5 @@
-import { CircleDashed, Plus, Search } from 'lucide';
-import { formattaTarga, normalizzaTarga, type StatoSalute } from '@tyrecare/shared';
+import { CalendarClock, ChevronRight, CircleDashed, Plus, Search } from 'lucide';
+import { formattaTarga, normalizzaTarga, oggiInItalia, type StatoSalute } from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import {
   caricaVeicoli,
@@ -7,6 +7,7 @@ import {
   scegliOfficina,
   type VeicoloInElenco,
 } from '../lib/officina';
+import { contaRichiesteDaConfermare } from '../lib/prenotazioni';
 import type { DatiUtente } from '../lib/profilo';
 import { ancoraAttuale, mostraPagina } from '../lib/router';
 import { icona } from '../ui/icone';
@@ -47,8 +48,13 @@ export async function mostraHomeOfficina(
   app.innerHTML = paginaApp(caricamento());
 
   let veicoli: VeicoloInElenco[];
+  let richieste: number;
   try {
-    veicoli = await caricaVeicoli({ officinaId: attiva.officina.id });
+    [veicoli, richieste] = await Promise.all([
+      caricaVeicoli({ officinaId: attiva.officina.id }),
+      // Solo un avviso: se non si legge, la home si mostra lo stesso
+      contaRichiesteDaConfermare(attiva.officina.id, oggiInItalia()).catch(() => 0),
+    ]);
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
     return;
@@ -78,6 +84,18 @@ export async function mostraHomeOfficina(
     <div class="tc-contenuto">
       ${avvisoConferma()}
       ${dati.officine.length > 1 ? sceltaOfficina(dati, attiva.officina.id) : ''}
+      ${
+        richieste
+          ? `<a class="tc-avviso tc-avviso--giallo tc-avviso--link" href="/appuntamenti">
+              ${icona(CalendarClock)}
+              <p class="mb-0">
+                <strong>${richieste === 1 ? '1 richiesta' : `${richieste} richieste`} di appuntamento</strong>
+                da confermare
+              </p>
+              ${icona(ChevronRight)}
+            </a>`
+          : ''
+      }
 
       <div class="tc-riepilogo" role="group" aria-label="Filtra i veicoli per stato">
         ${voceRiepilogo('TUTTI', veicoli.length, 'Veicoli')}

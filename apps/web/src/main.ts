@@ -13,6 +13,12 @@ import {
   type Rotta,
 } from './lib/router';
 import { mostraAccedi } from './pagine/accedi';
+import {
+  mostraAppuntamenti,
+  mostraAppuntamento,
+  mostraProponi,
+  mostraRifiuta,
+} from './pagine/appuntamenti';
 import { mostraCambiaPassword } from './pagine/cambia-password';
 import { mostraCliente } from './pagine/cliente';
 import { mostraClienti } from './pagine/clienti';
@@ -31,11 +37,13 @@ import { mostraNuovaPassword } from './pagine/nuova-password';
 import { mostraNuovoCliente } from './pagine/nuovo-cliente';
 import { mostraNuovoControllo } from './pagine/nuovo-controllo';
 import { mostraNuovoVeicolo } from './pagine/nuovo-veicolo';
+import { mostraOfficina, mostraOfficine, mostraPrenota } from './pagine/officine';
 import { mostraPasswordDimenticata } from './pagine/password-dimenticata';
 import { mostraPneumatico } from './pagine/pneumatico';
 import { mostraProfilo } from './pagine/profilo';
 import { mostraRegistrati } from './pagine/registrati';
 import { mostraReport } from './pagine/report';
+import { mostraModificaServizio, mostraNuovoServizio, mostraServizi } from './pagine/servizi';
 import { mostraSmontaPneumatici } from './pagine/smonta-pneumatici';
 import { mostraVeicolo } from './pagine/veicolo';
 
@@ -74,6 +82,52 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: 'Stato di salute dello pneumatico',
     mostra: mostraPneumatico,
+  },
+  // Prenotazioni (Fase 4): officine e richiesta per il cliente, appuntamenti per tutti
+  { percorso: '/officine', accesso: 'utente', titolo: 'Officine', mostra: mostraOfficine },
+  { percorso: '/officina', accesso: 'utente', titolo: 'Officina', mostra: mostraOfficina },
+  {
+    percorso: '/prenota',
+    accesso: 'utente',
+    titolo: 'Chiedi un appuntamento',
+    mostra: mostraPrenota,
+  },
+  {
+    percorso: '/appuntamenti',
+    accesso: 'utente',
+    titolo: 'Appuntamenti',
+    mostra: mostraAppuntamenti,
+  },
+  {
+    percorso: '/appuntamento',
+    accesso: 'utente',
+    titolo: 'Appuntamento',
+    mostra: mostraAppuntamento,
+  },
+  {
+    percorso: '/appuntamento/proponi',
+    accesso: 'utente',
+    titolo: 'Proponi un altro orario',
+    mostra: mostraProponi,
+  },
+  {
+    percorso: '/appuntamento/rifiuta',
+    accesso: 'utente',
+    titolo: 'Rifiuta o annulla',
+    mostra: mostraRifiuta,
+  },
+  { percorso: '/servizi', accesso: 'utente', titolo: 'Servizi', mostra: mostraServizi },
+  {
+    percorso: '/servizi/nuovo',
+    accesso: 'utente',
+    titolo: 'Nuovo servizio',
+    mostra: mostraNuovoServizio,
+  },
+  {
+    percorso: '/servizi/modifica',
+    accesso: 'utente',
+    titolo: 'Modifica servizio',
+    mostra: mostraModificaServizio,
   },
   // Officina. L'accesso ai dati lo decide la RLS: un cliente su queste pagine non trova nulla
   {

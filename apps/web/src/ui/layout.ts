@@ -1,4 +1,4 @@
-import { House, UserRound, Users, type IconNode } from 'lucide';
+import { CalendarDays, House, Store, UserRound, Users, type IconNode } from 'lucide';
 import { esc } from '../lib/html';
 import { lavoraInOfficina } from '../lib/profilo';
 import { icona } from './icone';
@@ -35,6 +35,8 @@ interface VoceNav {
   /** Altre pagine in cui la voce resta evidenziata (es. la scheda `/cliente` per "Clienti"). */
   anche?: string[];
   soloOfficina?: boolean;
+  /** Solo per chi non lavora in un'officina (es. "Officine", per prenotare). */
+  soloCliente?: boolean;
 }
 
 const VOCI_NAV: VoceNav[] = [
@@ -45,6 +47,19 @@ const VOCI_NAV: VoceNav[] = [
     icona: Users,
     anche: ['/cliente'],
     soloOfficina: true,
+  },
+  {
+    percorso: '/officine',
+    etichetta: 'Officine',
+    icona: Store,
+    anche: ['/officina', '/prenota'],
+    soloCliente: true,
+  },
+  {
+    percorso: '/appuntamenti',
+    etichetta: 'Appuntamenti',
+    icona: CalendarDays,
+    anche: ['/appuntamento', '/servizi'],
   },
   { percorso: '/profilo', etichetta: 'Profilo', icona: UserRound },
 ];
@@ -63,7 +78,7 @@ export function paginaApp(corpo: string): string {
     </header>
     <main class="tc-pagina tc-con-bottomnav">${corpo}</main>
     <nav class="tc-bottomnav" aria-label="Navigazione principale">
-      ${VOCI_NAV.filter((v) => !v.soloOfficina || lavoraInOfficina())
+      ${VOCI_NAV.filter((v) => (lavoraInOfficina() ? !v.soloCliente : !v.soloOfficina))
         .map(
           (v) => `
         <a class="tc-bottomnav__voce" href="${v.percorso}"${
