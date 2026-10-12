@@ -1,6 +1,7 @@
 import {
   ChevronRight,
   ClipboardList,
+  Clock,
   KeyRound,
   LogOut,
   Mail,
@@ -91,6 +92,11 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
               <h2 id="tc-officina" class="tc-etichetta">Officina</h2>
               <nav class="tc-lista" aria-labelledby="tc-officina">
                 ${link(ClipboardList, 'Servizi e prezzi', '/servizi')}
+                ${
+                  officine.some((o) => o.ruolo === 'TITOLARE')
+                    ? link(Clock, 'Orari e chiusure', '/officina/orari')
+                    : ''
+                }
               </nav>
             </section>`
           : ''

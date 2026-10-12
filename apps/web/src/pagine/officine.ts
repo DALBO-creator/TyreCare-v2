@@ -2,6 +2,7 @@ import { CalendarPlus, ChevronRight, Search, Store } from 'lucide';
 import {
   GIORNI_PRENOTABILI,
   aggiungiGiorni,
+  chiusuraIl,
   creaRichiestaSchema,
   formattaTarga,
   giorniPrenotabili,
@@ -39,6 +40,7 @@ import {
   vaiConConferma,
 } from './comune';
 import { cartaOfficina } from './garage-veicolo';
+import { periodoChiusura } from './orari';
 import { dettagliServizio } from './servizi';
 
 // Officine per il cliente (Fase 4): elenco delle officine affiliate, scheda con servizi e orari,
@@ -194,6 +196,19 @@ export async function mostraOfficina(app: HTMLElement): Promise<void> {
             .map(([g, t]) => `<div><dt>${g}</dt><dd>${esc(t)}</dd></div>`)
             .join('')}
         </dl>
+        ${
+          officina.chiusure.length
+            ? `<h3 class="tc-etichetta mt-3">Chiusure in programma</h3>
+              <ul class="tc-chiusure">
+                ${officina.chiusure
+                  .map(
+                    (c) =>
+                      `<li>${esc(periodoChiusura(c))}${c.motivo ? ` · ${esc(c.motivo)}` : ''}</li>`,
+                  )
+                  .join('')}
+              </ul>`
+            : ''
+        }
       </section>
     </div>`);
 }
@@ -224,7 +239,7 @@ export async function mostraPrenota(app: HTMLElement): Promise<void> {
   }
 
   const oggi = oggiInItalia();
-  const giorni = giorniPrenotabili(officina.orari, oggi);
+  const giorni = giorniPrenotabili(officina.orari, oggi, officina.chiusure);
   const primo = veicoli[0];
   const servizio = parametro('servizio');
 
@@ -338,17 +353,23 @@ export async function mostraPrenota(app: HTMLElement): Promise<void> {
 
   // Sotto il giorno: il giorno per esteso e le fasce in cui l'officina è aperta; le fasce chiuse si
   // disattivano (il controllo vero resta nello schema e nel database)
+  const off = officina;
   const giorno = app.querySelector<HTMLInputElement>('[name="giorno"]')!;
   const scelto = app.querySelector<HTMLElement>('[data-giorno-scelto]')!;
   const fasce = [...app.querySelectorAll<HTMLInputElement>('[name="fascia"]')];
   const aggiorna = () => {
     const g = giorni.find((x) => x.data === giorno.value);
+    const chiusura = chiusuraIl(off.chiusure, giorno.value);
     scelto.textContent = !giorno.value
       ? ''
       : g
         ? `${formattaGiorno(g.data)}: aperto ${g.fasce.map((f) => ETICHETTE_FASCIA[f].toLowerCase()).join(' e ')}`
         : /^\d{4}-\d{2}-\d{2}$/.test(giorno.value)
-          ? `${formattaGiorno(giorno.value)}: l'officina è chiusa o il giorno è fuori dalle date prenotabili`
+          ? `${formattaGiorno(giorno.value)}: ${
+              chiusura
+                ? `l'officina è chiusa${chiusura.motivo ? ` (${chiusura.motivo.toLowerCase()})` : ''}`
+                : "l'officina è chiusa o il giorno è fuori dalle date prenotabili"
+            }`
           : '';
     for (const f of fasce) {
       f.disabled = Boolean(g) && !g!.fasce.includes(f.value as 'MATTINA' | 'POMERIGGIO');
@@ -359,11 +380,11 @@ export async function mostraPrenota(app: HTMLElement): Promise<void> {
     if (g && aperte.length === 1) aperte[0]!.checked = true;
   };
   giorno.addEventListener('change', aggiorna);
+  giorno.addEventListener('input', aggiorna);
 
-  const off = officina;
   collegaModulo(
     app.querySelector('form')!,
-    creaRichiestaSchema(officina.orari, oggi),
+    creaRichiestaSchema(officina.orari, oggi, officina.chiusure),
     async (richiesta) => {
       const idPrenotazione = await richiediPrenotazione(off.id, richiesta);
       vaiConConferma(

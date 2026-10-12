@@ -167,3 +167,7 @@ cross join lateral (
   limit 1
 ) as g
 where o.id = 'b0000000-0000-4000-8000-000000000001';
+-- Una chiusura straordinaria di Gomme Rossi tra 20 e 22 giorni (lontana dai giorni usati dai test e2e)
+insert into public.chiusure_officina (officina_id, dal, al, motivo) values
+  ('b0000000-0000-4000-8000-000000000001', public.oggi_in_italia() + 20, public.oggi_in_italia() + 22,
+   'Inventario');

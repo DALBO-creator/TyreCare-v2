@@ -19,6 +19,7 @@ import {
   mostraProponi,
   mostraRifiuta,
 } from './pagine/appuntamenti';
+import { mostraCalendario } from './pagine/calendario';
 import { mostraCambiaPassword } from './pagine/cambia-password';
 import { mostraCliente } from './pagine/cliente';
 import { mostraClienti } from './pagine/clienti';
@@ -38,6 +39,7 @@ import { mostraNuovoCliente } from './pagine/nuovo-cliente';
 import { mostraNuovoControllo } from './pagine/nuovo-controllo';
 import { mostraNuovoVeicolo } from './pagine/nuovo-veicolo';
 import { mostraOfficina, mostraOfficine, mostraPrenota } from './pagine/officine';
+import { mostraNuovaChiusura, mostraOrari } from './pagine/orari';
 import { mostraPasswordDimenticata } from './pagine/password-dimenticata';
 import { mostraPneumatico } from './pagine/pneumatico';
 import { mostraProfilo } from './pagine/profilo';
@@ -99,6 +101,12 @@ const ROTTE: Rotta[] = [
     mostra: mostraAppuntamenti,
   },
   {
+    percorso: '/appuntamenti/calendario',
+    accesso: 'utente',
+    titolo: 'Calendario',
+    mostra: mostraCalendario,
+  },
+  {
     percorso: '/appuntamento',
     accesso: 'utente',
     titolo: 'Appuntamento',
@@ -117,6 +125,18 @@ const ROTTE: Rotta[] = [
     mostra: mostraRifiuta,
   },
   { percorso: '/servizi', accesso: 'utente', titolo: 'Servizi', mostra: mostraServizi },
+  {
+    percorso: '/officina/orari',
+    accesso: 'utente',
+    titolo: 'Orari e chiusure',
+    mostra: mostraOrari,
+  },
+  {
+    percorso: '/officina/chiusura',
+    accesso: 'utente',
+    titolo: 'Nuova chiusura',
+    mostra: mostraNuovaChiusura,
+  },
   {
     percorso: '/servizi/nuovo',
     accesso: 'utente',

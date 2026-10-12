@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import {
   ConfermaPrenotazioneSchema,
+  GIORNI_SETTIMANA,
+  TURNI,
+  campiTurno,
+  chiusuraIl,
+  creaChiusuraSchema,
+  creaOrariSchema,
+  testoChiusura,
   aggiungiGiorni,
   creaPropostaSchema,
   creaRichiestaSchema,
@@ -188,6 +195,98 @@ describe("risposta dell'officina", () => {
     expect(schema.safeParse({ giorno: OGGI, ora: '17:00', messaggio: '' }).success).toBe(true);
     expect(schema.safeParse({ giorno: '2026-10-11', ora: '17:00', messaggio: '' }).success).toBe(
       false,
+    );
+  });
+});
+
+describe('chiusure straordinarie', () => {
+  const ferie = [{ dal: '2026-10-14', al: '2026-10-15', motivo: 'Ferie' }];
+
+  it('giorni prenotabili senza i giorni di chiusura', () => {
+    const giorni = giorniPrenotabili(ORARI, OGGI, ferie).map((g) => g.data);
+    expect(giorni.slice(0, 3)).toEqual(['2026-10-13', '2026-10-16', '2026-10-17']);
+    expect(chiusuraIl(ferie, '2026-10-15')?.motivo).toBe('Ferie');
+    expect(chiusuraIl(ferie, '2026-10-16')).toBeUndefined();
+    expect(testoChiusura(ferie[0]!)).toBe('Chiuso: ferie');
+  });
+
+  it('la richiesta in un giorno di chiusura dice il motivo', () => {
+    const r = creaRichiestaSchema(ORARI, OGGI, ferie).safeParse({
+      servizio_id: 'a1000000-0000-4000-8000-000000000001',
+      targa: 'AB123CD',
+      veicolo: '',
+      giorno: '2026-10-14',
+      fascia: 'MATTINA',
+      telefono: '3471112223',
+      note: '',
+    });
+    expect(r.error?.issues.map((i) => [i.path[0], i.message])).toEqual([
+      ['giorno', "Quel giorno l'officina è chiusa (ferie)"],
+    ]);
+  });
+
+  it('periodo: da oggi, la fine dopo l’inizio, al massimo un anno', () => {
+    const schema = creaChiusuraSchema(OGGI);
+    expect(schema.safeParse({ dal: '2026-10-14', al: '2026-10-14', motivo: '' }).success).toBe(
+      true,
+    );
+    const errori = (dal: string, al: string) =>
+      schema.safeParse({ dal, al, motivo: '' }).error?.issues.map((i) => i.path[0]);
+    expect(errori('2026-10-11', '2026-10-14')).toEqual(['dal']);
+    expect(errori('2026-10-14', '2026-10-13')).toEqual(['al']);
+    expect(errori('2026-10-14', '2027-10-20')).toEqual(['al']);
+  });
+});
+
+describe('modulo degli orari', () => {
+  const vuoto = () =>
+    Object.fromEntries(
+      GIORNI_SETTIMANA.flatMap((g) =>
+        TURNI.flatMap((t) => Object.values(campiTurno(g, t)).map((c) => [c, ''])),
+      ),
+    );
+
+  it('due turni, orario continuato, giorno chiuso; "8.30" diventa 08:30', () => {
+    const orari = creaOrariSchema().parse({
+      ...vuoto(),
+      lun_1_apre: '8.30',
+      lun_1_chiude: '12:30',
+      lun_2_apre: '14:30',
+      lun_2_chiude: '19:00',
+      sab_1_apre: '09:00',
+      sab_1_chiude: '18:00',
+    });
+    expect(orari.lun).toEqual([
+      ['08:30', '12:30'],
+      ['14:30', '19:00'],
+    ]);
+    expect(orari.sab).toEqual([['09:00', '18:00']]);
+    expect(orari.dom).toEqual([]);
+    expect(fasceAperte(orari, '2026-10-17')).toEqual(['MATTINA', 'POMERIGGIO']);
+  });
+
+  it('errori sotto il campo giusto', () => {
+    const errori = (dati: Record<string, string>) =>
+      creaOrariSchema()
+        .safeParse({ ...vuoto(), ...dati })
+        .error?.issues.map((i) => [i.path[0], i.message]);
+    expect(errori({ lun_1_apre: '08:30' })).toEqual([['lun_1_chiude', "Manca l'ora di chiusura"]]);
+    expect(errori({ lun_1_apre: '12:30', lun_1_chiude: '08:30' })).toEqual([
+      ['lun_1_chiude', "Deve venire dopo l'apertura"],
+    ]);
+    expect(
+      errori({
+        lun_1_apre: '08:30',
+        lun_1_chiude: '13:00',
+        lun_2_apre: '12:00',
+        lun_2_chiude: '19:00',
+      }),
+    ).toEqual([['lun_2_apre', 'Il secondo turno deve iniziare dopo la fine del primo']]);
+    expect(errori({ mar_2_apre: '14:00', mar_2_chiude: '18:00' })).toEqual([
+      ['mar_1_apre', 'Scrivi prima il primo turno'],
+    ]);
+    expect(errori({ mer_1_apre: '25:00', mer_1_chiude: '26:00' })?.[0]?.[1]).toBe(
+      "Scrivi l'ora come 8:30",
     );
   });
 });

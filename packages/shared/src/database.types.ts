@@ -23,6 +23,41 @@ export type Database = {
   };
   public: {
     Tables: {
+      chiusure_officina: {
+        Row: {
+          al: string;
+          created_at: string;
+          dal: string;
+          id: string;
+          motivo: string;
+          officina_id: string;
+        };
+        Insert: {
+          al: string;
+          created_at?: string;
+          dal: string;
+          id?: string;
+          motivo?: string;
+          officina_id: string;
+        };
+        Update: {
+          al?: string;
+          created_at?: string;
+          dal?: string;
+          id?: string;
+          motivo?: string;
+          officina_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'chiusure_officina_officina_id_fkey';
+            columns: ['officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'officine';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       clienti_officina: {
         Row: {
           codice_gestionale: string | null;
@@ -692,6 +727,7 @@ export type Database = {
         Returns: string[];
       };
       oggi_in_italia: { Args: Record<PropertyKey, never>; Returns: string };
+      orari_validi: { Args: { p_orari: Json }; Returns: boolean };
       registra_controllo: {
         Args: {
           p_eseguito_il?: string;

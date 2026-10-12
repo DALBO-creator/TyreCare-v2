@@ -51,6 +51,13 @@ test("richiesta, conferma con l'ora e annullamento del cliente", async ({ page, 
   await expect(page.getByText('Appuntamento confermato.')).toBeVisible();
   await expect(page.getByText('Confermato', { exact: true })).toBeVisible();
 
+  // Nel calendario dell'officina: il giorno chiesto, di mattina, alle 9:30
+  await page.goto(`/appuntamenti/calendario?giorno=${giorno}`);
+  const mattina = page.getByRole('region', { name: 'Mattina' });
+  await expect(
+    mattina.getByRole('link', { name: new RegExp(`9:30.*${targa.slice(-5)}`) }),
+  ).toBeVisible();
+
   // Cliente: vede l'ora e il messaggio, poi annulla
   await cliente.goto(indirizzo);
   await expect(cliente.getByRole('heading', { name: /ore 9:30/ })).toBeVisible();

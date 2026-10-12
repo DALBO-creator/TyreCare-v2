@@ -1,5 +1,7 @@
 import {
   normalizzaTarga,
+  oggiInItalia,
+  type Chiusura,
   type RichiestaPrenotazione,
   type Servizio,
   type Tables,
@@ -86,17 +88,28 @@ export async function caricaOfficineAttive(): Promise<OfficinaPubblica[]> {
   );
 }
 
-export type OfficinaConServizi = OfficinaPubblica & { servizi: ServizioOfficina[] };
+export type OfficinaConServizi = OfficinaPubblica & {
+  servizi: ServizioOfficina[];
+  /** Chiusure straordinarie da oggi in poi. */
+  chiusure: Chiusura[];
+};
 
-/** Officina attiva con i servizi prenotabili; `null` se non esiste o non è attiva. */
+/**
+ * Officina attiva con i servizi prenotabili e le chiusure in programma; `null` se non esiste o non è
+ * attiva.
+ */
 export async function caricaOfficinaPubblica(id: string): Promise<OfficinaConServizi | null> {
   const { data, error } = await getSupabase()
     .from('officine')
-    .select(`${COLONNE_OFFICINA}, servizi:servizi_officina (*)`)
+    .select(
+      `${COLONNE_OFFICINA}, servizi:servizi_officina (*), chiusure:chiusure_officina (dal, al, motivo)`,
+    )
     .eq('id', id)
     .eq('stato_affiliazione', 'ATTIVA')
     // Un membro dell'officina vedrebbe anche i servizi non prenotabili
     .eq('servizi_officina.prenotabile', true)
+    .gte('chiusure_officina.al', oggiInItalia())
+    .order('dal', { referencedTable: 'chiusure_officina' })
     .maybeSingle();
   if (error) throw error;
   if (!data) return null;

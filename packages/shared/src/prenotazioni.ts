@@ -77,19 +77,131 @@ export function fasceAperte(orari: unknown, data: string): Fascia[] {
   return fasce;
 }
 
-/** I prossimi giorni in cui si può chiedere un appuntamento (da domani, per GIORNI_PRENOTABILI). */
+/** Chiusura straordinaria (ferie, festivi): dal … al compresi, come `chiusure_officina`. */
+export interface Chiusura {
+  dal: string;
+  al: string;
+  motivo: string;
+}
+
+/** La chiusura straordinaria che comprende quel giorno, se c'è. */
+export const chiusuraIl = (chiusure: readonly Chiusura[], data: string): Chiusura | undefined =>
+  chiusure.find((c) => c.dal <= data && data <= c.al);
+
+/**
+ * I prossimi giorni in cui si può chiedere un appuntamento (da domani, per GIORNI_PRENOTABILI): aperti
+ * secondo l'orario e non in una chiusura straordinaria.
+ */
 export function giorniPrenotabili(
   orari: unknown,
   oggi = oggiInItalia(),
+  chiusure: readonly Chiusura[] = [],
 ): { data: string; fasce: Fascia[] }[] {
   const giorni = [];
   for (let n = 1; n <= GIORNI_PRENOTABILI; n++) {
     const data = aggiungiGiorni(oggi, n);
-    const fasce = fasceAperte(orari, data);
+    const fasce = chiusuraIl(chiusure, data) ? [] : fasceAperte(orari, data);
     if (fasce.length) giorni.push({ data, fasce });
   }
   return giorni;
 }
+
+/** "Chiuso per ferie" oppure "Chiuso" (motivo facoltativo). */
+export const testoChiusura = (c: Chiusura): string =>
+  c.motivo ? `Chiuso: ${c.motivo.charAt(0).toLowerCase()}${c.motivo.slice(1)}` : 'Chiuso';
+
+// ---------------------------------------------------------------------------------------------------
+// Orari dell'officina (modulo del titolare)
+// ---------------------------------------------------------------------------------------------------
+
+/** Turni per giorno nel modulo: il primo e, facoltativo, il secondo (es. dopo la pausa pranzo). */
+export const TURNI = [1, 2] as const;
+
+/** Nomi dei campi di un turno, es. `lun_1_apre` e `lun_1_chiude`. */
+export const campiTurno = (giorno: GiornoSettimana, turno: (typeof TURNI)[number]) =>
+  ({ apre: `${giorno}_${turno}_apre`, chiude: `${giorno}_${turno}_chiude` }) as const;
+
+// Ora del campo `<input type="time">` (o scritta a mano, "8:30"); vuoto = nessun turno
+const oraFacoltativa = z
+  .string()
+  .trim()
+  .refine((s) => s === '' || /^([01]?\d|2[0-3])[:.][0-5]\d$/.test(s), {
+    error: "Scrivi l'ora come 8:30",
+  })
+  .transform((s) => (s === '' ? '' : s.replace('.', ':').padStart(5, '0')));
+
+/**
+ * Schema del modulo degli orari: 4 campi per giorno (apre/chiude di due turni). Restituisce l'oggetto
+ * `Orari` da salvare, con gli stessi vincoli di `orari_validi()`; gli errori vanno sotto il campo.
+ */
+export function creaOrariSchema() {
+  const forma: Record<string, typeof oraFacoltativa> = {};
+  for (const g of GIORNI_SETTIMANA) {
+    for (const t of TURNI) {
+      const c = campiTurno(g, t);
+      forma[c.apre] = oraFacoltativa;
+      forma[c.chiude] = oraFacoltativa;
+    }
+  }
+  return z
+    .object(forma)
+    .superRefine((v, ctx) => {
+      const errore = (campo: string, message: string) =>
+        ctx.addIssue({ code: 'custom', path: [campo], message });
+      for (const g of GIORNI_SETTIMANA) {
+        let fineTurnoPrima = '';
+        for (const t of TURNI) {
+          const c = campiTurno(g, t);
+          const [apre, chiude] = [v[c.apre]!, v[c.chiude]!];
+          if (!apre && !chiude) continue;
+          if (!apre) errore(c.apre, "Manca l'ora di apertura");
+          else if (!chiude) errore(c.chiude, "Manca l'ora di chiusura");
+          else if (chiude <= apre) errore(c.chiude, "Deve venire dopo l'apertura");
+          else if (fineTurnoPrima && apre <= fineTurnoPrima) {
+            errore(c.apre, 'Il secondo turno deve iniziare dopo la fine del primo');
+          }
+          fineTurnoPrima = chiude || fineTurnoPrima;
+        }
+        // Un secondo turno senza il primo: va scritto come primo
+        const [primo, secondo] = TURNI.map((t) => campiTurno(g, t));
+        if (!v[primo!.apre] && !v[primo!.chiude] && v[secondo!.apre]) {
+          errore(primo!.apre, 'Scrivi prima il primo turno');
+        }
+      }
+    })
+    .transform((v): Orari => {
+      const orari: Orari = {};
+      for (const g of GIORNI_SETTIMANA) {
+        orari[g] = TURNI.map((t) => campiTurno(g, t))
+          .filter((c) => v[c.apre] && v[c.chiude])
+          .map((c) => [v[c.apre]!, v[c.chiude]!]);
+      }
+      return orari;
+    });
+}
+
+/** Chiusura straordinaria: dal (da oggi), al (dopo dal, al massimo un anno), motivo facoltativo. */
+export function creaChiusuraSchema(oggi = oggiInItalia()) {
+  const data = (etichetta: string) =>
+    z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { error: `Scegli ${etichetta}` });
+  return z
+    .object({
+      dal: data('il primo giorno').refine((d) => d >= oggi, {
+        error: 'Il primo giorno non può essere passato',
+      }),
+      al: data("l'ultimo giorno"),
+      motivo: testo(100, 'Il motivo'),
+    })
+    .superRefine((c, ctx) => {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(c.dal) || !/^\d{4}-\d{2}-\d{2}$/.test(c.al)) return;
+      if (c.al < c.dal) {
+        ctx.addIssue({ code: 'custom', path: ['al'], message: 'Deve venire dopo il primo giorno' });
+      } else if (c.al > aggiungiGiorni(c.dal, 366)) {
+        ctx.addIssue({ code: 'custom', path: ['al'], message: 'Al massimo un anno' });
+      }
+    });
+}
+export type NuovaChiusura = z.output<ReturnType<typeof creaChiusuraSchema>>;
 
 /**
  * Istante (ISO, UTC) di un giorno e un'ora italiani, es. ("2026-10-20", "09:30") →
@@ -195,9 +307,13 @@ const ETICHETTE_FASCIA: Record<Fascia, string> = { MATTINA: 'mattina', POMERIGGI
 
 /**
  * Schema del modulo "Prenota" per un'officina: il giorno dev'essere tra domani e 60 giorni, con
- * l'officina aperta nella fascia scelta (secondo i suoi orari).
+ * l'officina aperta nella fascia scelta (secondo i suoi orari) e fuori dalle chiusure straordinarie.
  */
-export function creaRichiestaSchema(orari: unknown, oggi = oggiInItalia()) {
+export function creaRichiestaSchema(
+  orari: unknown,
+  oggi = oggiInItalia(),
+  chiusure: readonly Chiusura[] = [],
+) {
   return z
     .object({
       servizio_id: z.uuid({ error: 'Scegli il servizio' }),
@@ -217,6 +333,13 @@ export function creaRichiestaSchema(orari: unknown, oggi = oggiInItalia()) {
         .refine((d) => d > oggi, { error: 'Scegli un giorno da domani in poi', abort: true })
         .refine((d) => d <= aggiungiGiorni(oggi, GIORNI_PRENOTABILI), {
           error: `Si può prenotare fino a ${GIORNI_PRENOTABILI} giorni da oggi`,
+          abort: true,
+        })
+        .refine((d) => !chiusuraIl(chiusure, d), {
+          error: (iss) => {
+            const c = chiusuraIl(chiusure, String(iss.input));
+            return `Quel giorno l'officina è chiusa${c?.motivo ? ` (${c.motivo.toLowerCase()})` : ''}`;
+          },
           abort: true,
         })
         .refine((d) => fasceAperte(orari, d).length > 0, {

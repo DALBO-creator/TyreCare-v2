@@ -237,7 +237,7 @@ export async function modificaVeicolo(id: string, veicolo: Veicolo): Promise<voi
  * dal primo tentativo, prima di un errore di rete) ed è un successo; se c'è, mancano i permessi.
  */
 export async function elimina(
-  tabella: 'clienti_officina' | 'veicoli' | 'controlli' | 'servizi_officina',
+  tabella: 'clienti_officina' | 'veicoli' | 'controlli' | 'servizi_officina' | 'chiusure_officina',
   id: string,
   vietato: string,
 ): Promise<void> {

@@ -61,7 +61,12 @@ const VOCI_NAV: VoceNav[] = [
     icona: CalendarDays,
     anche: ['/appuntamento', '/servizi'],
   },
-  { percorso: '/profilo', etichetta: 'Profilo', icona: UserRound },
+  {
+    percorso: '/profilo',
+    etichetta: 'Profilo',
+    icona: UserRound,
+    anche: ['/officina/orari', '/officina/chiusura'],
+  },
 ];
 
 // La voce resta evidenziata anche nelle sottopagine (es. /profilo/password)

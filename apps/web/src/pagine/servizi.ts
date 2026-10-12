@@ -152,16 +152,16 @@ function campiServizio(s?: ServizioOfficina): string {
 }
 
 /** Contesto per le pagine di modifica: l'officina attiva, solo se l'utente ne è TITOLARE. */
-async function officinaDelTitolare(): Promise<string | null> {
+export async function officinaDelTitolare(): Promise<string | null> {
   const contesto = await caricaContestoOfficina();
   const id = contesto.attiva.officina.id;
   return eTitolare(contesto.officine, id) ? id : null;
 }
 
-const SOLO_TITOLARE = `
+export const SOLO_TITOLARE = `
   <div class="tc-contenuto pt-4">
-    <p>Solo il titolare dell'officina può modificare il catalogo dei servizi.</p>
-    <a class="btn btn-outline-light btn-lg w-100" href="/servizi">Torna ai servizi</a>
+    <p>Questa pagina è riservata al titolare dell'officina.</p>
+    <a class="btn btn-outline-light btn-lg w-100" href="/">Torna alla home</a>
   </div>`;
 
 export async function mostraNuovoServizio(app: HTMLElement): Promise<void> {

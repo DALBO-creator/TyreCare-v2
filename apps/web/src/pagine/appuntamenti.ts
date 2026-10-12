@@ -44,6 +44,7 @@ import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import { RIQUADRO_ERRORE, areaTesto, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
 import { IN_CORSO, badgePrenotazione, formattaGiornoTitolo, quando } from '../ui/prenotazione';
+import { selettoreVista } from './calendario';
 import {
   avvisoConferma,
   gestisciErroreCaricamento,
@@ -164,6 +165,7 @@ export async function mostraAppuntamenti(app: HTMLElement): Promise<void> {
   app.innerHTML = paginaApp(`
     ${intestazioneSottopagina('Appuntamenti', attiva ? attiva.officina.ragione_sociale : 'I tuoi')}
     <div class="tc-contenuto">
+      ${attiva ? selettoreVista('elenco') : ''}
       ${avvisoConferma()}
       ${corpo}
     </div>`);
