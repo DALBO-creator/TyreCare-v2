@@ -63,8 +63,10 @@ select is(
 -- ---------------------------------------------------------------- operatore di Gomme Rossi (Luca)
 select pg_temp.come('a0000000-0000-4000-8000-000000000003');
 
-select is(
-  (select count(*) from public.veicoli)::int, 2,
+-- Senza contare i veicoli: i test end-to-end (`npm run test:e2e`) ne aggiungono altri a Gomme Rossi
+select results_eq(
+  'select distinct officina_id from public.veicoli',
+  $$values ('b0000000-0000-4000-8000-000000000001'::uuid)$$,
   'operatore: vede solo i veicoli della propria officina'
 );
 select lives_ok(

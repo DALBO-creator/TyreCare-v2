@@ -45,3 +45,29 @@ jobs:
             echo "::error::database.types.ts non è aggiornato: eseguire npm run db:types e fare commit"
             exit 1
           }
+
+  # Test end-to-end (Playwright): l'app in sviluppo nel browser contro Supabase locale, con Auth e
+  # Mailpit per le email di conferma. Gli altri servizi non servono e si escludono per fare prima
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx supabase start -x studio,imgproxy,realtime,storage-api,edge-runtime,logflare,vector,supavisor,postgres-meta
+      - name: Variabili del web per Supabase locale
+        # Chiave pubblica "demo" uguale per ogni Supabase locale: non è un segreto
+        run: |
+          echo "VITE_SUPABASE_URL=http://127.0.0.1:54321" > apps/web/.env
+          npx supabase status -o env | grep '^ANON_KEY=' | sed 's/^ANON_KEY=/VITE_SUPABASE_ANON_KEY=/' >> apps/web/.env
+      - run: npm run test:e2e
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: e2e/playwright-report/
+          retention-days: 7

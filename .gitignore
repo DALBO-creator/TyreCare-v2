@@ -6,6 +6,10 @@ coverage/
 *.log
 *.tsbuildinfo
 
+# Risultati di Playwright (e2e)
+test-results/
+playwright-report/
+
 # Variabili d'ambiente (mai committare segreti)
 .env
 .env.*
