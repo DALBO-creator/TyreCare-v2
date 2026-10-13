@@ -953,3 +953,29 @@ giusto (es. "Deve venire dopo l'apertura"); accetta anche "8.30" scritto a mano.
 **Test e2e e dati rimasti.** Il test delle chiusure usa un giorno a più di 4 settimane (lontano dagli altri
 test e dalla chiusura del seed, tra 20 e 22 giorni) e controlla il suggerimento senza il motivo esatto: una
 chiusura rimasta da un'esecuzione interrotta non lo fa fallire.
+
+## Cliente — "Prenota" dal garage (Fase 4)
+
+**File:** `apps/web/src/pagine/garage-veicolo.ts`, `ui/avviso-pneumatici.ts`, `lib/prenotazioni.ts`
+(`caricaOfficinePrenotabili`), `pagine/officine.ts` (`mostraPrenota`), `styles/_componenti.scss`,
+`e2e/tests/prenotazioni.spec.ts`.
+
+- **Carta dell'officina** nella scheda del garage: se l'officina accetta prenotazioni dall'app (ATTIVA,
+  almeno un servizio prenotabile, almeno un giorno di apertura) c'è il pulsante rosso **"Prenota"** a tutta
+  larghezza sopra "Chiama" e "Indicazioni". Un'officina non ancora attiva (es. Pneus Express del seed)
+  resta con i soli contatti. Nel report del controllo la carta non ha "Prenota".
+- **Avviso sulle ruote**: se il veicolo ha pneumatici da sostituire o da controllare, sotto l'avviso c'è
+  "Prenota la sostituzione" (rosso) o "Prenota un controllo" (giallo), verso l'officina prenotabile che ha
+  visto il veicolo più di recente.
+- Entrambi aprono `/prenota?officina=…&targa=…`: il modulo compila targa e descrizione con quel veicolo
+  (anche se la targa non è tra quelli dell'account, la targa resta scritta) e "Annulla" torna alla scheda
+  del garage invece che alla scheda dell'officina.
+
+### Codice complesso
+
+`caricaOfficinePrenotabili(ids)` legge in **una sola query** le officine del veicolo con
+`servizi_officina!inner (id)` filtrati su `prenotabile = true`: l'`!inner` scarta le officine senza servizi
+prenotabili; gli orari si controllano nella pagina con `haOrari()`. L'errore di questa lettura è ignorato
+(il pulsante è solo una scorciatoia): il garage si vede comunque. `cartaOfficina(o, prenota?)` riceve
+l'indirizzo già pronto, quindi in `sezioneOfficine` si usa `officine.map((o) => cartaOfficina(o, …))` e non
+`map(cartaOfficina)` (che passerebbe l'indice come secondo argomento).

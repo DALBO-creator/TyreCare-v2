@@ -25,7 +25,7 @@
 | **Pressione consigliata** per veicolo/misura e confronto con quella misurata | 🟠 | PLAN P10: "misurata vs consigliata". |
 | **DOT diverso per ruota** nel montaggio di un treno | 🟢 | Oggi un DOT per tutto il treno: se differiscono si monta una ruota alla volta. |
 | **Garage anche per chi lavora in officina** (titolare con la sua auto cliente di un'altra officina) | 🟢 | Oggi la home di un membro di officina è sempre l'elenco dell'officina: servirebbe una voce "Il mio garage". `caricaGarage()` è già pronto (filtra per account). |
-| **Prenota dalla scheda del garage** quando un pneumatico è da sostituire | 🔴 | Fase 4: oggi l'avviso dice di contattare l'officina e c'è "Chiama". |
+| ~~**Prenota dalla scheda del garage**~~ quando un pneumatico è da sostituire | ✅ | Fatto il 2026-10-13 (sessione 15): "Prenota la sostituzione" / "Prenota un controllo" sotto l'avviso. |
 | **Età degli pneumatici dal DOT** anche nella carta del garage e nella scheda officina | 🟢 | Già nella pagina dello pneumatico (sessione 11), con avviso oltre i 5 anni. |
 | **Seed con più controlli** per la Panda (per vedere il grafico in locale) | 🟢 | Oggi il seed ha un solo controllo; aggiungerne uno cambia i conteggi di `dati.test.sql`. |
 | **Promemoria dalla stima del consumo** ("tra circa 2 mesi arrivi a 3 mm") | 🟠 | Fase 5: la stima c'è già in `lib/salute.ts`. |
@@ -39,7 +39,7 @@
 | **Filtri commerciali nel garage officina** (cambio stagionale da fare, nessun controllo da X mesi) | 🟠 | PLAN P13; per ora filtri per stato e ricerca. |
 | ~~**Editor degli orari dell'officina**~~ (titolare) | ✅ | Fatto nella sessione 14, con le chiusure straordinarie e il formato validato nel database. |
 | **Notifiche delle prenotazioni** (nuova richiesta all'officina, conferma/proposta/rifiuto al cliente) | 🔴 | Fase 5 (Web Push + email). Per ora le novità si vedono aprendo l'app; l'officina ha l'avviso in home. |
-| **Prenota dal garage**: pulsante "Prenota" nella carta dell'officina del veicolo, con targa già scelta | 🟢 | `cartaOfficina()` è condivisa tra garage e report. |
+| ~~**Prenota dal garage**~~: pulsante "Prenota" nella carta dell'officina del veicolo, con targa già scelta | ✅ | Fatto il 2026-10-13 (sessione 15); nel report la carta resta senza "Prenota". |
 | **Officine vicine** (distanza dalla posizione del telefono) | 🟠 | Le officine hanno già latitudine e longitudine; PLAN P14. |
 | **Capienza e slot automatici** (ponti/operatori, appuntamenti già presi) | 🟠 | P14 fase successiva; oggi l'officina decide l'ora a mano. |
 | **Collegare la prenotazione al cliente dell'officina** (crea il cliente e il veicolo dalla richiesta, o invita) | 🟢 | Oggi il dettaglio apre la scheda del veicolo se la targa è già registrata. |

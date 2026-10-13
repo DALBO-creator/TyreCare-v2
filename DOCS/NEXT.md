@@ -48,10 +48,17 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: scegliere con il titolare il prossimo passo della Fase 4 (o P8 se è arrivato il file).**
-> Fase 4 provata dal telefono il 2026-10-12 (sessione 14): prenotazioni, calendario, orari e chiusure
-> funzionano. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE: se c'è, si riprende
-> P8 (formato CSV + adattatore).
+> **Obiettivo: provare dal telefono "Prenota" dal garage, poi scegliere il prossimo passo (o P8 se è
+> arrivato il file).** Sessione 15 (2026-10-13): pulsante "Prenota" nella carta dell'officina e sotto
+> l'avviso sulle ruote, con il veicolo già scelto. **Prima di tutto** chiedere se è arrivato il file `.xls`
+> di GESTITYRE: se c'è, si riprende P8 (formato CSV + adattatore).
+
+**0 — Prova dal telefono (titolare)**
+
+- [ ] Con l'account cliente collegato a un veicolo dell'officina di prova: scheda del veicolo nel garage →
+  "Prenota" nella carta dell'officina → targa e veicolo già compilati → "Annulla" torna al garage
+- [ ] Se il veicolo ha una ruota rossa o gialla: sotto l'avviso "Prenota la sostituzione" / "Prenota un
+  controllo"
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -64,8 +71,8 @@ serve `db:reset`: i test creano dati con nomi unici.
 
 **1 — Lavoro di Claude**
 
-- [ ] Fase 4, passi successivi (scegliere con il titolare): "Prenota" dalla carta dell'officina nel
-  garage; creare cliente/veicolo dalla richiesta; officine vicine; capienza/slot
+- [ ] Fase 4, passi successivi (scegliere con il titolare): creare cliente/veicolo dalla richiesta;
+  officine vicine; capienza/slot
 - [ ] Fase 5 (notifiche): avvisare officina e cliente dei cambi di stato delle prenotazioni (Web Push +
   email), oggi visibili solo aprendo l'app
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
@@ -84,6 +91,7 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [x] (2026-10-12, sessione 14) Fase 4: catalogo dei servizi, richiesta con giorno e fascia, risposte
   dell'officina, appuntamenti di cliente e officina, calendario, orari e chiusure straordinarie (provata
   dal telefono)
+- [x] (2026-10-13, sessione 15) "Prenota" dal garage con il veicolo già scelto
 
 **Rimandati:**
 
@@ -118,6 +126,25 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 15 — 2026-10-13 (PC di casa)
+
+**Fatto**
+
+- Il file `.xls` di GESTITYRE **non è ancora arrivato**; scelta del titolare: **"Prenota" dal garage**
+- **Carta dell'officina** nella scheda del garage: pulsante rosso "Prenota" a tutta larghezza sopra
+  Chiama/Indicazioni, solo per le officine prenotabili (ATTIVA, servizi prenotabili, orari);
+  `caricaOfficinePrenotabili()` in una query, errore ignorato (è solo una scorciatoia)
+- **Avviso sulle ruote** nel garage: "Prenota la sostituzione" (rosso) / "Prenota un controllo" (giallo)
+  verso l'officina prenotabile più recente. Il report del controllo resta senza "Prenota"
+- **Modulo `/prenota`** con `targa=`: compila targa e descrizione con quel veicolo; "Annulla" torna al garage
+- Nuovo e2e (Giulia del seed: Prenota solo per Gomme Rossi, non per Pneus Express in attesa; modulo
+  compilato; Annulla): **11/11 verdi**. `npm run check` verde (97 Vitest). Screenshot a 390 px controllato
+- Aggiornati `NOTES.md`, `PLAN.md` (roadmap), `IMPLEMENTAZIONI.md` (due idee fatte)
+
+**Note**
+
+- Nessuna migrazione e nessuna nuova libreria (`STRUCT.md` invariato).
 
 ### Sessione 14 — 2026-10-12 (PC di casa)
 
