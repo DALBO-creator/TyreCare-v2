@@ -166,7 +166,8 @@ serve `db:reset`: i test creano dati con nomi unici.
   un account senza nome nel profilo (creato dalla dashboard): vincolo `clienti_officina_nominativo`.
   Correzione nella migrazione `20261013150000_cliente_da_prenotazione_senza_nome.sql`: nome di ripiego
   dalla parte dell'email prima della @ (o "Cliente"). 2 pgTAP (totale **195**); testo "Chi ha prenotato"
-  quando manca il nome
+  quando manca il nome. Commit `7b3f29f` (CI verde); migrazione **pubblicata dal titolare** con `db push`
+  (prima `--dry-run`): 11 migrazioni allineate, ripiego verificato nella funzione sul cloud
 - Un altro agente lavora in parallelo sulla **versione desktop**: questo lavoro non tocca stili né
   `ui/layout.ts`
 
