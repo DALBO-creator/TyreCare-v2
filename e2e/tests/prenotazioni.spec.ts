@@ -17,13 +17,19 @@ async function entra(browser: Browser, email: string): Promise<Page> {
 /** Il cliente chiede un appuntamento a Gomme Rossi; restituisce l'indirizzo della prenotazione. */
 async function chiedi(
   page: Page,
-  { targa, giorno, fascia }: { targa: string; giorno: string; fascia: 'Mattina' | 'Pomeriggio' },
+  {
+    targa,
+    giorno,
+    fascia,
+    veicolo,
+  }: { targa: string; giorno: string; fascia: 'Mattina' | 'Pomeriggio'; veicolo?: string },
 ): Promise<string> {
   await page.goto('/officine');
   await page.getByRole('link', { name: new RegExp(OFFICINA) }).click();
   await page.getByRole('link', { name: 'Chiedi un appuntamento' }).click();
   await page.getByLabel('Servizio').selectOption({ label: SERVIZIO });
   await page.getByLabel('Targa').fill(targa);
+  if (veicolo) await page.getByLabel('Veicolo (facoltativo)').fill(veicolo);
   await page.getByLabel('Giorno').fill(giorno);
   await page.getByLabel(fascia).check();
   await page.getByLabel('Il tuo telefono').fill('340 1234567');
@@ -175,4 +181,36 @@ test('dal garage "Prenota" apre il modulo con il veicolo già scelto', async ({ 
   // "Annulla" torna alla scheda del garage
   await page.getByRole('link', { name: 'Annulla' }).click();
   await expect(page).toHaveURL(/\/garage\/veicolo\?targa=AB123CD/);
+});
+
+test("l'officina aggiunge cliente e veicolo dalla richiesta; il cliente lo trova nel garage", async ({
+  page,
+  browser,
+}) => {
+  const targa = `R${unico().slice(-7)}`;
+  const cliente = await entra(browser, await nuovoAccountCliente('Sara'));
+  const indirizzo = await chiedi(cliente, {
+    targa,
+    giorno: prossimoFeriale(),
+    fascia: 'Mattina',
+    veicolo: 'Alfa Romeo Giulietta',
+  });
+
+  await accedi(page, 'titolare@tyrecare.test');
+  await page.goto(indirizzo);
+  await expect(page.getByText('non è ancora tra i tuoi clienti')).toBeVisible();
+  await page.getByRole('button', { name: 'Aggiungi cliente e veicolo' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Aggiungi', exact: true }).click();
+  await expect(page).toHaveURL(/\/veicolo\?id=/);
+  await expect(page.getByText('Cliente e veicolo aggiunti.')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Giulietta' })).toBeVisible();
+
+  // Ora la richiesta porta alla scheda del veicolo
+  await page.goto(indirizzo);
+  await expect(page.getByRole('link', { name: /Apri la scheda del veicolo/ })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Aggiungi/ })).toHaveCount(0);
+
+  // Il cliente vede il veicolo nel suo garage, senza invito
+  await cliente.goto('/');
+  await expect(cliente.getByRole('link', { name: /Giulietta/ })).toBeVisible();
 });

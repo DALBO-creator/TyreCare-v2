@@ -399,3 +399,22 @@ export type PropostaPrenotazione = z.output<ReturnType<typeof creaPropostaSchema
 /** Rifiuto (o annullamento da parte dell'officina): il motivo è facoltativo ma consigliato. */
 export const RifiutoPrenotazioneSchema = z.object({ messaggio });
 export type RifiutoPrenotazione = z.infer<typeof RifiutoPrenotazioneSchema>;
+
+/** Marche di due parole: senza, "Alfa Romeo Giulietta" diventerebbe marca "Alfa". */
+const MARCHE_DOPPIE = ['alfa romeo', 'aston martin', 'land rover', 'rolls royce', 'lynk co'];
+
+/**
+ * Marca e modello dalla descrizione libera del veicolo scritta nella richiesta ("Fiat Panda 1.2" →
+ * Fiat / Panda 1.2). Serve a compilare la scheda del veicolo: l'officina può correggerla.
+ */
+export function dividiVeicolo(descrizione: string): { marca: string; modello: string } {
+  const parole = descrizione.trim().split(/\s+/).filter(Boolean);
+  const doppia = MARCHE_DOPPIE.includes(
+    parole.slice(0, 2).join(' ').toLowerCase().replace(/[&-]/g, ' ').replace(/\s+/g, ' '),
+  );
+  const n = Math.min(doppia ? 2 : 1, parole.length);
+  return {
+    marca: parole.slice(0, n).join(' ').slice(0, 50),
+    modello: parole.slice(n).join(' ').slice(0, 100),
+  };
+}

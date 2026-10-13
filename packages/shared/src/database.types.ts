@@ -728,6 +728,16 @@ export type Database = {
       };
       oggi_in_italia: { Args: Record<PropertyKey, never>; Returns: string };
       orari_validi: { Args: { p_orari: Json }; Returns: boolean };
+      registra_cliente_da_prenotazione: {
+        Args: {
+          p_cliente_id: string;
+          p_marca: string;
+          p_modello: string;
+          p_prenotazione: string;
+          p_veicolo_id: string;
+        };
+        Returns: string;
+      };
       registra_controllo: {
         Args: {
           p_eseguito_il?: string;

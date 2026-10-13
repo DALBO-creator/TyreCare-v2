@@ -10,6 +10,7 @@ import {
   testoChiusura,
   aggiungiGiorni,
   creaPropostaSchema,
+  dividiVeicolo,
   creaRichiestaSchema,
   fasceAperte,
   giorniPrenotabili,
@@ -288,5 +289,28 @@ describe('modulo degli orari', () => {
     expect(errori({ mer_1_apre: '25:00', mer_1_chiude: '26:00' })?.[0]?.[1]).toBe(
       "Scrivi l'ora come 8:30",
     );
+  });
+});
+
+describe('dividiVeicolo', () => {
+  it('separa la marca dal modello', () => {
+    expect(dividiVeicolo('Fiat Panda 1.2')).toEqual({ marca: 'Fiat', modello: 'Panda 1.2' });
+    expect(dividiVeicolo('  Volkswagen   Golf ')).toEqual({ marca: 'Volkswagen', modello: 'Golf' });
+  });
+
+  it('riconosce le marche di due parole', () => {
+    expect(dividiVeicolo('Alfa Romeo Giulietta')).toEqual({
+      marca: 'Alfa Romeo',
+      modello: 'Giulietta',
+    });
+    expect(dividiVeicolo('land rover Defender')).toEqual({
+      marca: 'land rover',
+      modello: 'Defender',
+    });
+  });
+
+  it('descrizione vuota o di una parola', () => {
+    expect(dividiVeicolo('')).toEqual({ marca: '', modello: '' });
+    expect(dividiVeicolo('Panda')).toEqual({ marca: 'Panda', modello: '' });
   });
 });

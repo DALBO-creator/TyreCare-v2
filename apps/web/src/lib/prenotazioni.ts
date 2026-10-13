@@ -1,4 +1,5 @@
 import {
+  dividiVeicolo,
   normalizzaTarga,
   oggiInItalia,
   type Chiusura,
@@ -193,6 +194,10 @@ const ERRORI: Record<string, [string, string?]> = {
     "Questa prenotazione è cambiata nel frattempo: ricarica la pagina per vedere com'è ora.",
   ],
   ORARIO_NON_VALIDO: ['Controlla giorno e ora: devono essere futuri, entro 60 giorni.', 'ora'],
+  VEICOLO_GIA_REGISTRATO: [
+    'Questa targa è già registrata nella tua officina: ricarica la pagina per aprire la sua scheda.',
+  ],
+  PRENOTAZIONE_CHIUSA: ['La richiesta è stata rifiutata o annullata: niente da registrare.'],
 };
 
 function traduci(errore: { message?: string } | null): unknown {
@@ -297,6 +302,41 @@ export async function annullaPrenotazione(id: string): Promise<void> {
 }
 
 /** Numero di richieste ancora da confermare (da oggi in poi), per l'avviso nella home dell'officina. */
+/**
+ * Registra in officina il veicolo della richiesta, sulla scheda del cliente già collegato all'account
+ * di chi ha prenotato oppure su un cliente nuovo, collegato (funzione SQL). Restituisce l'id del veicolo.
+ */
+export async function registraClienteDaPrenotazione(p: Prenotazione): Promise<string> {
+  const { marca, modello } = dividiVeicolo(p.veicolo);
+  const ids = { p_cliente_id: crypto.randomUUID(), p_veicolo_id: crypto.randomUUID() };
+  const { data, error } = await conRiprova(() =>
+    getSupabase().rpc('registra_cliente_da_prenotazione', {
+      p_prenotazione: p.id,
+      ...ids,
+      p_marca: marca,
+      p_modello: modello,
+    }),
+  );
+  if (error) throw traduci(error);
+  return data;
+}
+
+/** Scheda del cliente dell'officina collegata all'account di chi ha prenotato, se c'è. */
+export async function caricaClienteDellaPrenotazione(
+  p: Prenotazione,
+): Promise<{ id: string; nome: string; cognome: string } | null> {
+  const { data, error } = await getSupabase()
+    .from('clienti_officina')
+    .select('id, nome, cognome')
+    .eq('officina_id', p.officina_id)
+    .eq('profile_id', p.cliente_id)
+    .order('created_at')
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
 export async function contaRichiesteDaConfermare(officinaId: string, dal: string): Promise<number> {
   const { count, error } = await getSupabase()
     .from('prenotazioni')

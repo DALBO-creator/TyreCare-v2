@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Phone,
   StickyNote,
+  UserPlus,
   UserX,
   Wrench,
 } from 'lucide';
@@ -29,10 +30,12 @@ import { esc } from '../lib/html';
 import { officinaAttiva } from '../lib/officina';
 import {
   annullaPrenotazione,
+  caricaClienteDellaPrenotazione,
   caricaMiePrenotazioni,
   caricaPrenotazione,
   caricaPrenotazioniOfficina,
   rispondiPrenotazione,
+  registraClienteDaPrenotazione,
   rispondiProposta,
   type Prenotazione,
 } from '../lib/prenotazioni';
@@ -214,6 +217,7 @@ export async function mostraAppuntamento(app: HTMLElement): Promise<void> {
   app.innerHTML = paginaApp(caricamento());
   let trovato: Awaited<ReturnType<typeof caricaConRuolo>>;
   let veicoloId: string | null = null;
+  let clienteCollegato: Awaited<ReturnType<typeof caricaClienteDellaPrenotazione>> = null;
   try {
     trovato = await caricaConRuolo(parametro('id'));
     if (trovato?.perOfficina) {
@@ -225,6 +229,8 @@ export async function mostraAppuntamento(app: HTMLElement): Promise<void> {
         .eq('targa', trovato.p.targa)
         .maybeSingle();
       veicoloId = data?.id ?? null;
+      // Altrimenti si può registrare: sulla scheda del cliente già collegato all'account, se c'è
+      if (!veicoloId) clienteCollegato = await caricaClienteDellaPrenotazione(trovato.p);
     }
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
@@ -271,10 +277,65 @@ export async function mostraAppuntamento(app: HTMLElement): Promise<void> {
       <div class="tc-lista">${dettagli}</div>
       <div class="tc-avviso tc-avviso--rosso" data-errore-azione role="alert" tabindex="-1" hidden></div>
       <div class="tc-azioni-appuntamento">${perOfficina ? azioniOfficina(p, oggi) : azioniCliente(p, oggi)}</div>
+      ${perOfficina && !veicoloId ? sezioneRegistra(p, clienteCollegato) : ''}
       <a class="btn btn-outline-light btn-lg w-100" href="/appuntamenti">Tutti gli appuntamenti</a>
     </div>`);
 
   collegaAzioni(app, p);
+  collegaRegistra(app, p, clienteCollegato);
+}
+
+type ClienteCollegato = Awaited<ReturnType<typeof caricaClienteDellaPrenotazione>>;
+
+const nomeCliente = (p: Prenotazione, c: ClienteCollegato) =>
+  (c && `${c.nome} ${c.cognome}`.trim()) || p.nome_cliente || 'il cliente';
+
+/**
+ * Officina, veicolo non ancora registrato: un tocco lo aggiunge (alla scheda del cliente già collegato
+ * o a un cliente nuovo, collegato all'account di chi ha prenotato).
+ */
+function sezioneRegistra(p: Prenotazione, cliente: ClienteCollegato): string {
+  if (p.stato === 'RIFIUTATA' || p.stato === 'ANNULLATA') return '';
+  return `
+    <section class="tc-azione" aria-labelledby="tc-registra">
+      <h2 id="tc-registra" class="tc-etichetta">Nella tua officina</h2>
+      <p class="text-body-secondary mb-0">
+        ${
+          cliente
+            ? `${esc(nomeCliente(p, cliente))} è già tra i tuoi clienti, ma questo veicolo non è ancora registrato.`
+            : `${esc(nomeCliente(p, cliente))} non è ancora tra i tuoi clienti. Aggiungi cliente e veicolo
+              per segnare pneumatici e controlli: li vedrà nel suo garage su TyreCare.`
+        }
+      </p>
+      <button type="button" class="btn btn-outline-light btn-lg w-100" data-registra>
+        ${icona(UserPlus)} ${cliente ? 'Aggiungi il veicolo' : 'Aggiungi cliente e veicolo'}
+      </button>
+    </section>`;
+}
+
+function collegaRegistra(app: HTMLElement, p: Prenotazione, cliente: ClienteCollegato): void {
+  const pulsante = app.querySelector<HTMLButtonElement>('[data-registra]');
+  if (!pulsante) return;
+  const nome = nomeCliente(p, cliente);
+  pulsante.addEventListener('click', () =>
+    chiediConferma({
+      titolo: cliente ? 'Aggiungere il veicolo?' : 'Aggiungere cliente e veicolo?',
+      testo: cliente
+        ? `${formattaTarga(p.targa)} va nella scheda di ${nome}, con i dati della richiesta.`
+        : `${nome} diventa tuo cliente con nome, telefono ed email del suo account, e ${formattaTarga(p.targa)} il suo veicolo. Vedrà nel suo garage i controlli che registrerai.`,
+      pulsante: cliente ? 'Aggiungi il veicolo' : 'Aggiungi',
+      iconaPulsante: UserPlus,
+      inCorso: 'Salvataggio…',
+      origine: pulsante,
+      azione: async () => {
+        const id = await registraClienteDaPrenotazione(p);
+        vaiConConferma(
+          `/veicolo?id=${id}`,
+          `${cliente ? 'Veicolo aggiunto' : 'Cliente e veicolo aggiunti'}. Controlla marca e modello e monta gli pneumatici.`,
+        );
+      },
+    }),
+  );
 }
 
 function azioniCliente(p: Prenotazione, oggi: string): string {
