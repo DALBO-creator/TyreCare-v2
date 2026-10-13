@@ -357,6 +357,15 @@ dell'officina) e la gestione degli orari notturni/festivi. Suggerisco di farlo *
 senza aggiungere un quarto ruolo globale. I ruoli si leggono nelle policy RLS tramite una funzione SQL o un
 custom claim nel JWT.
 
+### P20 — Le officine lavorano al computer: impaginazione da desktop ✅
+
+**Decisione del titolare (2026-10-13):** le officine accedono di solito dal PC, quindi la versione da
+computer va curata quanto quella da telefono (che resta quella del cliente e del piazzale). Da 992 px:
+barra laterale al posto delle barre del telefono, schede su due colonne (cruscotto del veicolo sempre in
+vista, elenco dei veicoli accanto al riepilogo, risposte all'appuntamento accanto ai dettagli), moduli
+stretti, scorciatoie da tastiera ("/" per cercare). Resta **una sola app** (stesse pagine, stesso codice):
+cambia solo l'impaginazione in CSS, guidata da `data-pagina`. Dettagli in `NOTES.md`.
+
 ## B4. Aspetti legali e privacy
 
 ### P17 — GDPR ✅
