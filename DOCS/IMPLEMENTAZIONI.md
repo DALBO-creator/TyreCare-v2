@@ -46,6 +46,10 @@
 | **Collegare la prenotazione al cliente dell'officina** (crea il cliente e il veicolo dalla richiesta, o invita) | 🟢 | Oggi il dettaglio apre la scheda del veicolo se la targa è già registrata. |
 | **Chi lavora in officina prenota altrove** | 🟢 | Per lui "Appuntamenti" mostra quelli dell'officina e "Officine" non è nella barra (la pagina `/officine` funziona comunque). |
 | ~~**Calendario dell'officina**~~ | ✅ | Fatto nella sessione 14 (settimana + agenda del giorno). Da valutare: vista di più giorni affiancati sul tablet, trascinare un appuntamento per spostarlo. |
+| **Settimana a colonne al computer** (gli appuntamenti di ogni giorno dentro la sua colonna, ore in verticale) | 🟠 | Oggi al computer il calendario ha giorni più alti e mattina/pomeriggio affiancati (2026-10-13); la vista vera da agenda richiede di cambiare `pagine/calendario.ts`. |
+| **Elenco veicoli a tabella** al computer (colonne targa, veicolo, cliente, ultimo controllo, stato; ordinabile) | 🟠 | Più denso dell'elenco a righe per officine con molti veicoli; insieme alla ricerca lato server. |
+| **Altre scorciatoie da tastiera** (es. `N` nuovo veicolo, `G` poi `C` clienti) con un pannello `?` che le elenca | 🟢 | Oggi c'è solo `/` per cercare (`attivaScorciatoie` in `ui/layout.ts`). |
+| **Barra laterale più ricca** al computer: nome dell'officina, numero di richieste da confermare accanto ad "Appuntamenti" | 🟢 | Il numero oggi è solo nell'avviso della home; servirebbe caricarlo una volta per sessione. |
 
 ## Tecnica
 

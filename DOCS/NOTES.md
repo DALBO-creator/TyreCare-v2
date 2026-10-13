@@ -1015,3 +1015,59 @@ senza creare un secondo cliente (19 test pgTAP).
 storto" (trovato dal titolare dal telefono). La migrazione `20261013150000_cliente_da_prenotazione_senza_nome.sql`
 usa come nome la parte dell'email prima della @ (`mario.rossi`), o "Cliente" senza email confermata;
 l'officina lo corregge con "Modifica dati del cliente".
+
+## Impaginazione da computer (officine al PC)
+
+**File:** `apps/web/src/ui/layout.ts` (`paginaApp`, `IMPAGINAZIONE`, `attivaScorciatoie`),
+`apps/web/src/styles/_desktop.scss`, `apps/web/src/styles/_tokens.scss` (`$tc-desktop`,
+`$tc-barra-laterale`), `e2e/tests/computer.spec.ts`.
+
+Le officine usano TyreCare soprattutto dal computer. Da **992 px** (breakpoint `lg` di Bootstrap):
+
+- la navigazione in basso diventa una **barra laterale** a sinistra (15 rem) con il marchio in alto e le
+  voci con icona e testo; la voce attiva ha lo sfondo più chiaro e una barretta rossa. La barra superiore
+  sparisce (il marchio è già nella barra laterale);
+- i **moduli** restano larghi 40 rem (leggibili), centrati nello spazio a destra della barra;
+- gli **elenchi** (clienti, appuntamenti, officine, servizi, scheda dell'officina) arrivano a 60 rem;
+- le **schede** arrivano a 76 rem e si dividono in colonne:
+  - **home dell'officina**: avviso delle richieste, riepilogo (i tre numeri uno sotto l'altro) e "Nuovo
+    veicolo" a sinistra; ricerca ed elenco dei veicoli a destra;
+  - **scheda del veicolo** (officina e garage del cliente): cruscotto a sinistra, **fermo** mentre si
+    scorrono a destra pneumatici, storico e officine (solo se la finestra è alta almeno 46 rem);
+  - **scheda del cliente**: contatti e app a sinistra, veicoli a destra;
+  - **dettaglio dell'appuntamento**: stato, dettagli, "Nella tua officina" e ritorno all'elenco a
+    sinistra; ora, messaggio e pulsanti di risposta a destra;
+  - **calendario**: giorni della settimana più alti, mattina e pomeriggio affiancati;
+  - **home del cliente**: carte del garage affiancate (almeno 20 rem l'una).
+- **Tastiera:** "Salta al contenuto" è il primo elemento raggiungibile con Tab (compare solo con il
+  focus) e porta il focus sul `<main>`; il tasto **`/`** porta nel campo di ricerca della pagina (home
+  dell'officina, clienti, officine), se non si sta già scrivendo in un campo.
+- Telefono e **stampa** non cambiano: tutte le regole sono in `@media screen and (min-width: 62rem)`.
+
+### Codice complesso
+
+**Nessuna pagina sa come si impagina al computer.** `paginaApp()` scrive sul `<main>` l'attributo
+`data-pagina` scelto dal percorso (`IMPAGINAZIONE` in `layout.ts`; `/` vale `home-officina` o
+`home-cliente`, i percorsi non elencati valgono `modulo`). `_desktop.scss` usa quell'attributo più la
+struttura che le pagine hanno già (figli diretti di `.tc-contenuto`, `:has()`), così i file in
+`src/pagine/` non sono stati toccati. **Se si cambia la struttura di una di queste pagine** (ordine o
+tipo dei blocchi dentro `.tc-contenuto`), controllarla a 1440 px.
+
+Le colonne usano una griglia con righe esplicite (`repeat(n, auto) 1fr`): i blocchi di sinistra occupano
+una riga ciascuno e il blocco di destra va da `grid-row: 1 / -1` (o `2 / -1`), cioè fino all'ultima riga
+esplicita. L'ultima riga `1fr` prende lo spazio che avanza, così un elenco lungo a destra non allarga le
+righe dei blocchi di sinistra. `n` deve essere almeno il numero massimo di blocchi a sinistra (4 nella
+home, 5 nel cliente, 6 nell'appuntamento): un blocco in più finirebbe in una riga implicita sotto la
+colonna di destra (si vede male, ma la pagina funziona).
+
+Nel dettaglio dell'appuntamento a destra va solo l'errore delle azioni (`[data-errore-azione]`), non
+qualunque `.tc-avviso`: l'avviso di conferma resta a sinistra, in cima.
+
+Il router intercetta **tutti** i link interni (anche `#tc-principale`) e ricaricherebbe la pagina: per
+questo "Salta al contenuto" ha un ascoltatore di `click` in **fase di cattura**, che parte prima di quello
+del router, sposta il focus e chiama `preventDefault()`; il router vede `defaultPrevented` e non fa nulla.
+Gli ascoltatori si registrano una volta sola (`attivaScorciatoie`), al primo `paginaApp()`.
+
+`computer.spec.ts` gira nel progetto `telefono` di Playwright ma con `test.use({ viewport: 1280×800,
+isMobile: false })`: controlla la barra laterale, l'elenco dei veicoli a destra del riepilogo, `/` e
+"Salta al contenuto".

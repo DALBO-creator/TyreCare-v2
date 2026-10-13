@@ -51,8 +51,8 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 > **Obiettivo: scegliere con il titolare il prossimo passo (Fase 4: officine vicine o capienza/slot;
 > oppure Fase 5: notifiche).** Sessione 15 (2026-10-13) chiusa: "Prenota" dal garage e cliente/veicolo
 > dalla richiesta, provati dal telefono. **Prima di tutto** chiedere se è arrivato il file `.xls` di
-> GESTITYRE: se c'è, si riprende P8 (formato CSV + adattatore). Un altro agente lavora sulla **versione
-> desktop**: fare `git pull` all'inizio e controllare in questo file cosa ha cambiato.
+> GESTITYRE: se c'è, si riprende P8 (formato CSV + adattatore). La **versione desktop** (barra laterale,
+> schede su due colonne) è stata unita in `main` il 2026-10-13: provarla dal PC (punto 0b).
 
 **0 — Da chiedere al titolare**
 
@@ -60,6 +60,15 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
   all'account senza invito (vedi `PLAN.md` P14)
 - [ ] (facoltativo) Dal telefono, veicolo con una ruota rossa o gialla: sotto l'avviso "Prenota la
   sostituzione" / "Prenota un controllo"
+
+**0b — Prova dal computer (titolare, impaginazione da desktop)**
+
+- [ ] Dal PC dell'officina (finestra larga almeno 992 px): barra laterale a sinistra; home con riepilogo e
+  "Nuovo veicolo" a sinistra ed elenco dei veicoli a destra; scheda del veicolo con il cruscotto fermo
+  mentre si scorre; dettaglio di una richiesta con le risposte a destra; calendario
+- [ ] Tasto `/` nella home o in Clienti → si scrive subito nella ricerca
+- [ ] Dire se qualche pagina va ancora stretta o larga, e se servono le idee nuove in
+  `IMPLEMENTAZIONI.md` (settimana a colonne, elenco veicoli a tabella, altre scorciatoie)
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -127,6 +136,36 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 15 (in parallelo) — 2026-10-13: impaginazione da computer
+
+Lavoro svolto da un secondo agente in parallelo alla sessione 15, nel worktree
+`desktop-ottimizzazione` (ramo `worktree-desktop-ottimizzazione`), senza toccare i file di `src/pagine/`
+su cui lavorava l'altro agente.
+
+**Fatto**
+
+- **Richiesta del titolare:** ottimizzare la versione da computer, perché le officine accedono di solito
+  dal PC (decisione in `PLAN.md` P20). Skill `ui-ux-pro-max` consultata (navigazione che non copre il
+  contenuto, ordine del Tab uguale a quello visivo, larghezza di lettura limitata)
+- Da 992 px **barra laterale** al posto delle barre del telefono; moduli 40 rem, elenchi 60 rem, schede
+  76 rem su **due colonne** (home dell'officina, scheda del veicolo con cruscotto fermo, scheda del
+  cliente, dettaglio dell'appuntamento compresa la nuova sezione "Nella tua officina", calendario con
+  mattina e pomeriggio affiancati, garage del cliente con le carte affiancate)
+- **"Salta al contenuto"** e tasto **`/`** per la ricerca
+- Tutto in `ui/layout.ts` (attributo `data-pagina` per percorso) e nel nuovo `styles/_desktop.scss`;
+  telefono e stampa invariati (screenshot a 390 px controllato)
+- Nuovo e2e `computer.spec.ts` (1280×800). **12/12 e2e verdi** (contro il Vite del worktree), `npm run
+  check` verde. Screenshot controllati a 1440 e 1024 px
+- Aggiornati `NOTES.md`, `DESIGN-SYSTEM.md`, `PLAN.md` (P20), `IMPLEMENTAZIONI.md` (4 idee nuove)
+
+**Note**
+
+- Nessuna migrazione e nessuna nuova libreria (`STRUCT.md` invariato).
+- Unito in `main` dopo la chiusura della sessione 15 (richiesta del titolare); unico conflitto in
+  `NOTES.md`, risolto tenendo entrambe le parti.
+- Le colonne dipendono dalla struttura delle pagine (figli di `.tc-contenuto`): se si riordina una di
+  quelle pagine, controllarla a 1440 px (vedi `NOTES.md`, "Impaginazione da computer").
 
 ### Sessione 15 — 2026-10-13 (PC di casa)
 

@@ -143,6 +143,9 @@ inviare dati a Google — GDPR). Attivate le varianti `cv11`/`ss01` (a e 1 più 
 | Agenda del giorno | `.tc-agenda`, `__riga`, `__ora`, `__ora--da-fissare` | titolo del giorno, orari di apertura o "Chiuso" con la luna; per fascia l'ora in colonna (cifre tabulari) poi servizio e cliente, badge a destra |
 | Giorno degli orari | `.tc-orari-giorno` (`fieldset`) | riquadro per giorno, nome in grassetto, due turni con i campi ora **sempre affiancati** |
 | Elimina in riga | `.tc-lista__elimina` | pulsante con il solo cestino (44 px, bordo rosso chiaro) e `aria-label` che dice cosa elimina |
+| Barra laterale (computer) | `.tc-bottomnav` da 992 px, `__marchio` | la navigazione in basso diventa una colonna di 15 rem a sinistra, nera con bordo destro sottile; marchio in alto (decorativo), voci con icona + testo alte 44 px; attiva = sfondo superficie alta, testo bianco in grassetto e **barretta rossa** a sinistra. La barra superiore sparisce |
+| Salta al contenuto | `.tc-salta` | primo elemento con Tab, nascosto finché non ha il focus; porta il focus sul `<main>` |
+| Impaginazione da computer | `data-pagina` sul `<main>` → `_desktop.scss` | moduli 40 rem, elenchi 60 rem, schede 76 rem in due colonne (vedi `NOTES.md`) |
 
 Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/anteprima.ts`).
 
@@ -164,7 +167,8 @@ Anteprima: `npm run dev:web` → http://localhost:5173 (pagina provvisoria `src/
 - [ ] Stati con colore + icona + testo; rosso brand solo per azioni e marchio
 - [ ] Navigabile da tastiera, focus visibile, ordine logico
 - [ ] Aree di tocco ≥ 44 px, spazio ≥ 8 px tra elementi toccabili
-- [ ] Provata a 375, 768, 1024 px senza scorrimento orizzontale
+- [ ] Provata a 375, 768, 1024 e 1440 px senza scorrimento orizzontale (da 992 px c'è la barra laterale:
+  se la pagina ha più blocchi affiancabili, valutare due colonne in `_desktop.scss`)
 - [ ] Contenuto non coperto da barre o notch
 - [ ] Animazioni assenti con `prefers-reduced-motion`
 - [ ] Se si può stampare: provata con l'emulazione di stampa (testo nero, niente sfondi scuri)
