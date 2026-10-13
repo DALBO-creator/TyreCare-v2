@@ -145,6 +145,10 @@ serve `db:reset`: i test creano dati con nomi unici.
 **Note**
 
 - Nessuna migrazione e nessuna nuova libreria (`STRUCT.md` invariato).
+- Commit `b496bdc` (codice) e `7c2d720` (documenti): deploy Vercel verde, ma il job CI `database` è
+  fallito per un **bug di date in `orari.test.sql`** (nulla a che fare con "Prenota"): di **martedì**
+  `prossimo(3)` (domani) viene prima di `prossimo(2)` (tra 7 giorni). Corretto usando `prossimo(2) + 1`;
+  `db:test` 176/176
 
 ### Sessione 14 — 2026-10-12 (PC di casa)
 

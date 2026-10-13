@@ -24,7 +24,9 @@ begin
 end;
 $$;
 
--- Primo giorno dopo oggi (in Italia) con quel giorno della settimana (1 = lunedì … 7 = domenica)
+-- Primo giorno dopo oggi (in Italia) con quel giorno della settimana (1 = lunedì … 7 = domenica).
+-- Il "giorno dopo" si scrive prossimo(2) + 1, non prossimo(3): di martedì prossimo(3) è domani e
+-- verrebbe prima di prossimo(2), tra 7 giorni.
 create function pg_temp.prossimo(p_isodow int) returns date language sql as $$
   select d::date
   from generate_series(public.oggi_in_italia() + 1, public.oggi_in_italia() + 7, interval '1 day') d
@@ -86,14 +88,14 @@ select lives_ok(
 );
 select throws_ok(
   $$insert into public.chiusure_officina (officina_id, dal, al)
-    values ('b0000000-0000-4000-8000-000000000001', pg_temp.prossimo(3), pg_temp.prossimo(2))$$,
+    values ('b0000000-0000-4000-8000-000000000001', (pg_temp.prossimo(2) + 1), pg_temp.prossimo(2))$$,
   '23514', null,
   'chiusura: la fine non può venire prima dell''inizio'
 );
 select pg_temp.come('a0000000-0000-4000-8000-000000000003');
 select throws_ok(
   $$insert into public.chiusure_officina (officina_id, dal, al)
-    values ('b0000000-0000-4000-8000-000000000001', pg_temp.prossimo(3), pg_temp.prossimo(3))$$,
+    values ('b0000000-0000-4000-8000-000000000001', (pg_temp.prossimo(2) + 1), (pg_temp.prossimo(2) + 1))$$,
   '42501', null,
   'operatore: non aggiunge chiusure'
 );
@@ -114,7 +116,7 @@ select throws_ok(
 );
 select lives_ok(
   $$select public.richiedi_prenotazione('b0000000-0000-4000-8000-000000000001',
-    'a1000000-0000-4000-8000-000000000001', pg_temp.prossimo(3), 'MATTINA', 'AB123CD', '',
+    'a1000000-0000-4000-8000-000000000001', (pg_temp.prossimo(2) + 1), 'MATTINA', 'AB123CD', '',
     '3471112223')$$,
   'richiesta: il giorno dopo la chiusura sì'
 );
