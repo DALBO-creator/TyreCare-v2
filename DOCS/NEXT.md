@@ -52,7 +52,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 > oppure Fase 5: notifiche).** Sessione 15 (2026-10-13) chiusa: "Prenota" dal garage e cliente/veicolo
 > dalla richiesta, provati dal telefono. **Prima di tutto** chiedere se è arrivato il file `.xls` di
 > GESTITYRE: se c'è, si riprende P8 (formato CSV + adattatore). La **versione desktop** (barra laterale,
-> schede su due colonne) è stata unita in `main` il 2026-10-13: provarla dal PC (punto 0b).
+> schede su due colonne) è in `main` dal 2026-10-13 ed è stata provata dal PC: funziona.
 
 **0 — Da chiedere al titolare**
 
@@ -61,14 +61,10 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 - [ ] (facoltativo) Dal telefono, veicolo con una ruota rossa o gialla: sotto l'avviso "Prenota la
   sostituzione" / "Prenota un controllo"
 
-**0b — Prova dal computer (titolare, impaginazione da desktop)**
+**0b — Versione desktop**
 
-- [ ] Dal PC dell'officina (finestra larga almeno 992 px): barra laterale a sinistra; home con riepilogo e
-  "Nuovo veicolo" a sinistra ed elenco dei veicoli a destra; scheda del veicolo con il cruscotto fermo
-  mentre si scorre; dettaglio di una richiesta con le risposte a destra; calendario
-- [ ] Tasto `/` nella home o in Clienti → si scrive subito nella ricerca
-- [ ] Dire se qualche pagina va ancora stretta o larga, e se servono le idee nuove in
-  `IMPLEMENTAZIONI.md` (settimana a colonne, elenco veicoli a tabella, altre scorciatoie)
+- [ ] (facoltativo) Chiedere se servono le idee nuove in `IMPLEMENTAZIONI.md` (settimana a colonne al
+  computer, elenco veicoli a tabella, altre scorciatoie da tastiera)
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -164,6 +160,8 @@ su cui lavorava l'altro agente.
 - Nessuna migrazione e nessuna nuova libreria (`STRUCT.md` invariato).
 - Unito in `main` dopo la chiusura della sessione 15 (richiesta del titolare); unico conflitto in
   `NOTES.md`, risolto tenendo entrambe le parti.
+- CI di `48e1cef` (`check`, `database`, `e2e`) **verde**; worktree e ramo cancellati. **Provata dal titolare
+  dal PC dell'officina: funziona** (barra laterale, colonne, tasto `/`).
 - Le colonne dipendono dalla struttura delle pagine (figli di `.tc-contenuto`): se si riordina una di
   quelle pagine, controllarla a 1440 px (vedi `NOTES.md`, "Impaginazione da computer").
 
