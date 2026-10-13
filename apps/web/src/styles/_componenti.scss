@@ -547,6 +547,11 @@ h6 {
     grid-template-columns: 1fr 1fr;
     gap: 0.75rem;
   }
+
+  // "Prenota" a tutta larghezza, sopra Chiama e Indicazioni
+  &__prenota {
+    grid-column: 1 / -1;
+  }
 }
 
 // --- Modulo (anteprima) ---------------------------------------------------------------------

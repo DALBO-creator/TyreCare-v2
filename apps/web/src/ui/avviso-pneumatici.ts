@@ -1,4 +1,6 @@
+import { CalendarPlus } from 'lucide';
 import { statoPeggiore, type StatoSalute } from '@tyrecare/shared';
+import { esc } from '../lib/html';
 import type { Misura } from '../lib/officina';
 import { ORDINE_POSIZIONI, POSIZIONI, formattaDecimale } from '../pagine/comune';
 import { statoMisura } from './cruscotto';
@@ -17,10 +19,14 @@ const TESTI: Record<StatoSalute, (uno: boolean) => string> = {
 
 /**
  * Se il controllo ha trovato pneumatici da sostituire o da controllare, un avviso che dice quali (dal
- * più grave) e cosa fare. Con `ancheVerde` (report) avvisa anche quando va tutto bene. Il colore non
+ * più grave) e cosa fare. Con `ancheVerde` (report) avvisa anche quando va tutto bene. Con `prenota`
+ * (indirizzo del modulo, garage) sotto un avviso rosso o giallo c'è anche "Prenota". Il colore non
  * basta: c'è l'icona e il testo dice lo stato.
  */
-export function avvisoPneumatici(misure: Misura[], { ancheVerde = false } = {}): string {
+export function avvisoPneumatici(
+  misure: Misura[],
+  { ancheVerde = false, prenota }: { ancheVerde?: boolean; prenota?: string | undefined } = {},
+): string {
   const stato = statoPeggiore(misure.map(statoMisura));
   if (!stato || (stato === 'VERDE' && !ancheVerde)) return '';
 
@@ -48,5 +54,12 @@ export function avvisoPneumatici(misure: Misura[], { ancheVerde = false } = {}):
         ${icona(s.icona)}
         <p class="mb-0">${testo}</p>
       </div>
+      ${
+        prenota && stato !== 'VERDE'
+          ? `<a class="btn btn-primary btn-lg w-100" href="${esc(prenota)}">
+              ${icona(CalendarPlus)} ${stato === 'ROSSO' ? 'Prenota la sostituzione' : 'Prenota un controllo'}
+            </a>`
+          : ''
+      }
     </section>`;
 }

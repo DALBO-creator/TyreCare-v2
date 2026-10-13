@@ -6,6 +6,7 @@ import {
   creaRichiestaSchema,
   formattaTarga,
   giorniPrenotabili,
+  normalizzaTarga,
   oggiInItalia,
 } from '@tyrecare/shared';
 import { esc } from '../lib/html';
@@ -240,8 +241,15 @@ export async function mostraPrenota(app: HTMLElement): Promise<void> {
 
   const oggi = oggiInItalia();
   const giorni = giorniPrenotabili(officina.orari, oggi, officina.chiusure);
-  const primo = veicoli[0];
+  // Dal garage arriva la targa del veicolo: si compila con quello, altrimenti con il primo
+  const targa = normalizzaTarga(parametro('targa') ?? '');
+  const primo: VeicoloMio | undefined = targa
+    ? (veicoli.find((v) => v.targa === targa) ?? { targa, descrizione: '' })
+    : veicoli[0];
   const servizio = parametro('servizio');
+  const indietro = targa
+    ? `/garage/veicolo?targa=${encodeURIComponent(targa)}`
+    : `/officina?id=${officina.id}`;
 
   app.innerHTML = paginaApp(`
     ${intestazioneSottopagina('Chiedi un appuntamento', officina.ragione_sociale)}
@@ -328,7 +336,7 @@ export async function mostraPrenota(app: HTMLElement): Promise<void> {
           aiuto: 'Es. gomme già in deposito, rumore in curva…',
         })}
         ${pulsanteInvio('Invia la richiesta', 'Invio…')}
-        <a class="btn btn-outline-light btn-lg w-100" href="/officina?id=${officina.id}">Annulla</a>
+        <a class="btn btn-outline-light btn-lg w-100" href="${esc(indietro)}">Annulla</a>
       </form>
 
       <details class="tc-orari-dettagli">

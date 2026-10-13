@@ -147,3 +147,32 @@ test('il titolare gestisce il catalogo; il cliente vede solo i servizi prenotabi
   await expect(page.getByText('Servizio eliminato.')).toBeVisible();
   await expect(page.getByText(nome)).toHaveCount(0);
 });
+
+test('dal garage "Prenota" apre il modulo con il veicolo già scelto', async ({ page }) => {
+  // Giulia (seed): la Panda è da Gomme Rossi (attiva, prenotabile) e da Pneus Express (in attesa)
+  await accedi(page, 'cliente@tyrecare.test');
+  await page.goto('/garage/veicolo?targa=AB123CD');
+  const officine = page.getByRole('region', { name: 'Le tue officine' });
+  await expect(officine.getByRole('link', { name: 'Prenota' })).toHaveCount(1);
+  await expect(
+    officine.getByRole('article').filter({ hasText: 'Pneus Express' }).getByRole('link', {
+      name: 'Prenota',
+    }),
+  ).toHaveCount(0);
+
+  // Il posteriore sinistro è sotto il limite: l'avviso porta anche al modulo
+  await expect(page.getByRole('link', { name: 'Prenota la sostituzione' })).toHaveAttribute(
+    'href',
+    /\/prenota\?officina=.+&targa=AB123CD/,
+  );
+
+  await officine.getByRole('link', { name: 'Prenota' }).click();
+  await expect(page.getByRole('heading', { name: 'Chiedi un appuntamento' })).toBeVisible();
+  await expect(page.getByText(OFFICINA).first()).toBeVisible();
+  await expect(page.getByLabel('Targa')).toHaveValue('AB 123 CD');
+  await expect(page.getByLabel('Veicolo (facoltativo)')).toHaveValue(/Panda/);
+
+  // "Annulla" torna alla scheda del garage
+  await page.getByRole('link', { name: 'Annulla' }).click();
+  await expect(page).toHaveURL(/\/garage\/veicolo\?targa=AB123CD/);
+});

@@ -117,6 +117,24 @@ export async function caricaOfficinaPubblica(id: string): Promise<OfficinaConSer
   return data;
 }
 
+/**
+ * Tra le officine indicate (es. quelle di un veicolo del garage), le attive con orari e servizi
+ * prenotabili: a quelle si può chiedere un appuntamento. Una query sola per tutte.
+ */
+export async function caricaOfficinePrenotabili(
+  ids: string[],
+): Promise<(Pick<Tables<'officine'>, 'id' | 'orari'> & { servizi: { id: string }[] })[]> {
+  if (!ids.length) return [];
+  const { data, error } = await getSupabase()
+    .from('officine')
+    .select('id, orari, servizi:servizi_officina!inner (id)')
+    .in('id', ids)
+    .eq('stato_affiliazione', 'ATTIVA')
+    .eq('servizi_officina.prenotabile', true);
+  if (error) throw error;
+  return data;
+}
+
 export interface VeicoloMio {
   targa: string;
   descrizione: string;

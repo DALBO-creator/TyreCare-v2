@@ -1,12 +1,14 @@
-import { MapPin, Phone, SearchX } from 'lucide';
+import { CalendarPlus, MapPin, Phone, SearchX } from 'lucide';
 import { formattaTarga, normalizzaTarga } from '@tyrecare/shared';
 import { caricaGarage, type OfficinaGarage, type VeicoloGarage } from '../lib/garage';
 import { esc } from '../lib/html';
+import { caricaOfficinePrenotabili } from '../lib/prenotazioni';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { avvisoPneumatici } from '../ui/avviso-pneumatici';
 import { ICONE_STAGIONE, cruscotto } from '../ui/cruscotto';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
+import { haOrari } from '../ui/prenotazione';
 import { sezioneStorico } from '../ui/storico';
 import { ETICHETTE_STAGIONE, gestisciErroreCaricamento, parametro } from './comune';
 import { descrizionePneumatico, gruppiPneumatici, nomeGruppo, riga } from './veicolo';
@@ -18,8 +20,15 @@ export async function mostraGarageVeicolo(app: HTMLElement): Promise<void> {
 
   const targa = normalizzaTarga(parametro('targa') ?? '');
   let veicolo: VeicoloGarage | undefined;
+  let prenotabili = new Set<string>();
   try {
     veicolo = (await caricaGarage()).find((v) => v.targa === targa);
+    // "Prenota" serve solo come scorciatoia: se non si riesce a sapere chi è prenotabile, niente pulsante
+    prenotabili = new Set(
+      (await caricaOfficinePrenotabili(veicolo?.officine.map((o) => o.id) ?? []).catch(() => []))
+        .filter((o) => o.servizi.length > 0 && haOrari(o.orari))
+        .map((o) => o.id),
+    );
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
     return;
@@ -29,6 +38,12 @@ export async function mostraGarageVeicolo(app: HTMLElement): Promise<void> {
     app.innerHTML = paginaApp(nonNelGarage());
     return;
   }
+  const prenota = (o: OfficinaGarage) =>
+    prenotabili.has(o.id)
+      ? `/prenota?officina=${o.id}&targa=${encodeURIComponent(targa)}`
+      : undefined;
+  // Nell'avviso sulle ruote: l'officina prenotabile che ha visto il veicolo più di recente
+  const officinaAvviso = veicolo.officine.find((o) => prenotabili.has(o.id));
 
   const { marca, modello, anno, pneumatici, controlli } = veicolo;
   const ultimo = controlli[0];
@@ -54,10 +69,12 @@ export async function mostraGarageVeicolo(app: HTMLElement): Promise<void> {
     </section>
 
     <div class="tc-contenuto">
-      ${avvisoPneumatici(ultimo?.misure ?? [])}
+      ${avvisoPneumatici(ultimo?.misure ?? [], {
+        prenota: officinaAvviso && prenota(officinaAvviso),
+      })}
       ${sezionePneumatici(veicolo)}
       ${sezioneStorico(controlli)}
-      ${sezioneOfficine(veicolo.officine)}
+      ${sezioneOfficine(veicolo.officine, prenota)}
     </div>`);
 }
 
@@ -89,19 +106,25 @@ function sezionePneumatici({ pneumatici, officinaPneumatici, officine }: Veicolo
     </section>`;
 }
 
-function sezioneOfficine(officine: OfficinaGarage[]): string {
+function sezioneOfficine(
+  officine: OfficinaGarage[],
+  prenota: (o: OfficinaGarage) => string | undefined,
+): string {
   if (officine.length === 0) return '';
   return `
     <section aria-labelledby="tc-officine">
       <h2 id="tc-officine" class="tc-etichetta">
         ${officine.length === 1 ? 'La tua officina' : 'Le tue officine'}
       </h2>
-      <div class="tc-officine">${officine.map(cartaOfficina).join('')}</div>
+      <div class="tc-officine">${officine.map((o) => cartaOfficina(o, prenota(o))).join('')}</div>
     </section>`;
 }
 
-/** Carta di un'officina con Chiama e Indicazioni (garage e report del controllo). */
-export function cartaOfficina(o: OfficinaGarage): string {
+/**
+ * Carta di un'officina con Chiama e Indicazioni (garage e report del controllo). Con `prenota`
+ * (indirizzo del modulo) anche "Prenota", sopra gli altri due.
+ */
+export function cartaOfficina(o: OfficinaGarage, prenota?: string): string {
   const indirizzo = [o.indirizzo, o.citta].filter(Boolean).join(', ');
   const mappa = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
     `${o.ragione_sociale}, ${indirizzo}`,
@@ -112,6 +135,12 @@ export function cartaOfficina(o: OfficinaGarage): string {
       ${indirizzo ? `<p class="tc-officina__indirizzo">${icona(MapPin)} ${esc(indirizzo)}</p>` : ''}
       ${o.telefono ? `<p class="tc-officina__telefono">${icona(Phone)} ${esc(o.telefono)}</p>` : ''}
       <div class="tc-officina__azioni">
+        ${
+          prenota
+            ? `<a class="btn btn-primary tc-officina__prenota" href="${esc(prenota)}">
+                ${icona(CalendarPlus)} Prenota</a>`
+            : ''
+        }
         ${
           o.telefono
             ? `<a class="btn btn-outline-light" href="tel:${esc(o.telefono.replace(/\s/g, ''))}">
