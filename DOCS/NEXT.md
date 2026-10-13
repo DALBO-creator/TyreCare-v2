@@ -162,6 +162,11 @@ serve `db:reset`: i test creano dati con nomi unici.
   "Conferma appuntamento" per non spingerlo in basso). Commit `0e5b4d9` (codice) e
   `c6a6d75` (documenti). **Migrazione pubblicata sul cloud da Claude** (ok del titolare, prima
   `--dry-run`): 10 migrazioni allineate, funzione presente. CI e deploy Vercel verdi
+- **Bug dal telefono (titolare):** "Aggiungi cliente e veicolo" falliva ("Qualcosa è andato storto") con
+  un account senza nome nel profilo (creato dalla dashboard): vincolo `clienti_officina_nominativo`.
+  Correzione nella migrazione `20261013150000_cliente_da_prenotazione_senza_nome.sql`: nome di ripiego
+  dalla parte dell'email prima della @ (o "Cliente"). 2 pgTAP (totale **195**); testo "Chi ha prenotato"
+  quando manca il nome
 - Un altro agente lavora in parallelo sulla **versione desktop**: questo lavoro non tocca stili né
   `ui/layout.ts`
 

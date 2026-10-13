@@ -1008,4 +1008,10 @@ prenotato. Per questo controlla da sola che chi chiama sia **membro dell'officin
 `VEICOLO_GIA_REGISTRATO` se la targa c'è già: quel veicolo ha un cliente e uno storico, e collegarlo
 all'account senza la verifica dell'email dell'invito mostrerebbe dati di altri. Gli id di cliente e veicolo
 li sceglie il web: una ripetizione dopo un errore di rete trova il veicolo con quell'id e lo restituisce
-senza creare un secondo cliente (17 test pgTAP).
+senza creare un secondo cliente (19 test pgTAP).
+
+**Profilo senza nome.** Un account creato dalla dashboard di Supabase ha nome e cognome vuoti, ma
+`clienti_officina_nominativo` vuole un nominativo: la prima versione falliva con "Qualcosa è andato
+storto" (trovato dal titolare dal telefono). La migrazione `20261013150000_cliente_da_prenotazione_senza_nome.sql`
+usa come nome la parte dell'email prima della @ (`mario.rossi`), o "Cliente" senza email confermata;
+l'officina lo corregge con "Modifica dati del cliente".

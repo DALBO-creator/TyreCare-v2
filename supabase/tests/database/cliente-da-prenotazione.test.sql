@@ -5,7 +5,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(17);
+select plan(19);
 
 -- Simula una richiesta dal client con il JWT dell'utente indicato (null = anonimo).
 create function pg_temp.come(p_utente uuid) returns void language plpgsql as $$
@@ -32,6 +32,14 @@ values (
   'authenticated', 'authenticated', 'Elena.Neri@tyrecare.test', now(),
   '{"nome": "Elena", "cognome": "Neri"}'
 );
+-- Due account senza nome nel profilo (come quelli creati dalla dashboard): Bruno con l'email
+-- confermata, Carla senza
+insert into auth.users (instance_id, id, aud, role, email, email_confirmed_at, raw_user_meta_data)
+values
+  ('00000000-0000-0000-0000-000000000000', 'a0000000-0000-4000-8000-0000000000f2',
+   'authenticated', 'authenticated', 'bruno.sanna@tyrecare.test', now(), '{}'),
+  ('00000000-0000-0000-0000-000000000000', 'a0000000-0000-4000-8000-0000000000f3',
+   'authenticated', 'authenticated', 'carla@tyrecare.test', null, '{}');
 
 -- Richieste scritte direttamente (le regole della richiesta le provano gli altri test):
 -- f1 Elena con una targa nuova, f2 Giulia con una seconda auto, f3 Giulia con la Panda già registrata,
@@ -51,7 +59,13 @@ insert into public.prenotazioni (
    'Fiat Panda', current_date + 3, 'MATTINA', 'RICHIESTA'),
   ('a4000000-0000-4000-8000-0000000000f4', 'b0000000-0000-4000-8000-000000000001', 'Controllo',
    'a0000000-0000-4000-8000-0000000000f1', 'Elena Neri', '+39 333 9998887', 'YY888YY',
-   '', current_date + 3, 'MATTINA', 'RIFIUTATA');
+   '', current_date + 3, 'MATTINA', 'RIFIUTATA'),
+  ('a4000000-0000-4000-8000-0000000000f5', 'b0000000-0000-4000-8000-000000000001', 'Controllo',
+   'a0000000-0000-4000-8000-0000000000f2', '', '+39 333 1110001', 'BB111BB',
+   '', current_date + 3, 'MATTINA', 'RICHIESTA'),
+  ('a4000000-0000-4000-8000-0000000000f6', 'b0000000-0000-4000-8000-000000000001', 'Controllo',
+   'a0000000-0000-4000-8000-0000000000f3', '', '+39 333 1110002', 'CC222CC',
+   '', current_date + 3, 'MATTINA', 'RICHIESTA');
 
 -- ---------------------------------------------------------------- permessi
 select pg_temp.come('a0000000-0000-4000-8000-0000000000f1');
@@ -164,6 +178,24 @@ select is(
   (select count(*)::int from public.veicoli where targa = 'YY888YY'),
   0,
   'richiesta rifiutata: nessun veicolo creato'
+);
+
+-- ---------------------------------------------------------------- profilo senza nome
+select pg_temp.come('a0000000-0000-4000-8000-000000000002');
+select public.registra_cliente_da_prenotazione('a4000000-0000-4000-8000-0000000000f5',
+  'a5000000-0000-4000-8000-0000000000c5', 'a5000000-0000-4000-8000-0000000000d5', '', '');
+select public.registra_cliente_da_prenotazione('a4000000-0000-4000-8000-0000000000f6',
+  'a5000000-0000-4000-8000-0000000000c6', 'a5000000-0000-4000-8000-0000000000d6', '', '');
+select results_eq(
+  $$select nome, cognome, email from public.clienti_officina
+    where id = 'a5000000-0000-4000-8000-0000000000c5'$$,
+  $$values ('bruno.sanna', '', 'bruno.sanna@tyrecare.test')$$,
+  'profilo senza nome: il nome è la parte dell''email prima della @'
+);
+select results_eq(
+  $$select nome, email from public.clienti_officina where id = 'a5000000-0000-4000-8000-0000000000c6'$$,
+  $$values ('Cliente', null::text)$$,
+  'profilo senza nome ed email non confermata: "Cliente", senza email'
 );
 
 -- Il collegamento resta vietato fuori dalla funzione

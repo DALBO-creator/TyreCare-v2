@@ -288,7 +288,7 @@ export async function mostraAppuntamento(app: HTMLElement): Promise<void> {
 type ClienteCollegato = Awaited<ReturnType<typeof caricaClienteDellaPrenotazione>>;
 
 const nomeCliente = (p: Prenotazione, c: ClienteCollegato) =>
-  (c && `${c.nome} ${c.cognome}`.trim()) || p.nome_cliente || 'il cliente';
+  (c && `${c.nome} ${c.cognome}`.trim()) || p.nome_cliente || 'Chi ha prenotato';
 
 /**
  * Officina, veicolo non ancora registrato: un tocco lo aggiunge (alla scheda del cliente già collegato
@@ -331,7 +331,7 @@ function collegaRegistra(app: HTMLElement, p: Prenotazione, cliente: ClienteColl
         const id = await registraClienteDaPrenotazione(p);
         vaiConConferma(
           `/veicolo?id=${id}`,
-          `${cliente ? 'Veicolo aggiunto' : 'Cliente e veicolo aggiunti'}. Controlla marca e modello e monta gli pneumatici.`,
+          `${cliente ? 'Veicolo aggiunto' : 'Cliente e veicolo aggiunti'}. Controlla i dati e monta gli pneumatici.`,
         );
       },
     }),
