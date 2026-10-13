@@ -58,6 +58,8 @@ $tc-font:
 $tc-touch-min: 2.75rem; // 44px: area minima di tocco
 $tc-appbar-h: 3.5rem;
 $tc-bottomnav-h: 4.25rem;
+$tc-desktop: 62rem; // 992 px (breakpoint `lg` di Bootstrap): da qui l'impaginazione da computer
+$tc-barra-laterale: 15rem; // navigazione a sinistra sul computer
 $tc-raggio-card: 0.75rem;
 $tc-raggio-pulsante: 0.375rem; // angoli quasi vivi: più "sartoriale" di una pillola
 $tc-transizione: cubic-bezier(0.2, 0.8, 0.2, 1); // uscita morbida, usata per tutte le animazioni

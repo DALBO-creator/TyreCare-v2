@@ -75,14 +75,76 @@ const attiva = ({ percorso, anche = [] }: VoceNav) =>
     (p) => location.pathname === p || location.pathname.startsWith(`${p}/`),
   );
 
-/** Guscio delle pagine con login: barra superiore, contenuto, navigazione inferiore. */
+/**
+ * Impaginazione da computer (da 992 px, `_desktop.scss`): le pagine con elenchi o schede usano tutta
+ * la larghezza e alcune si dividono in colonne; le altre (moduli) restano strette e leggibili.
+ * Il valore finisce in `data-pagina` sul `<main>`: nessuna pagina deve saperlo.
+ */
+const IMPAGINAZIONE: Record<string, string> = {
+  '/clienti': 'elenco',
+  '/appuntamenti': 'elenco',
+  '/officine': 'elenco',
+  '/officina': 'elenco',
+  '/servizi': 'elenco',
+  '/cliente': 'cliente',
+  '/veicolo': 'veicolo',
+  '/garage/veicolo': 'veicolo',
+  '/appuntamento': 'appuntamento',
+  '/appuntamenti/calendario': 'calendario',
+};
+
+const impaginazione = (): string =>
+  location.pathname === '/'
+    ? lavoraInOfficina()
+      ? 'home-officina'
+      : 'home-cliente'
+    : (IMPAGINAZIONE[location.pathname] ?? 'modulo');
+
+let scorciatoieAttive = false;
+
+/** Scorciatoie da tastiera, registrate una volta sola: comode soprattutto in officina, al computer. */
+function attivaScorciatoie(): void {
+  if (scorciatoieAttive) return;
+  scorciatoieAttive = true;
+
+  // "/" porta nel campo di ricerca della pagina (come in GitHub o Gmail), se non si sta già scrivendo
+  document.addEventListener('keydown', (evento) => {
+    if (evento.key !== '/' || evento.ctrlKey || evento.metaKey || evento.altKey) return;
+    const dove = evento.target as HTMLElement | null;
+    if (dove?.closest('input, textarea, select, [contenteditable="true"]')) return;
+    const ricerca = document.querySelector<HTMLInputElement>('main input[type="search"]');
+    if (!ricerca) return;
+    evento.preventDefault();
+    ricerca.focus();
+  });
+
+  // "Salta al contenuto": in fase di cattura, prima del router (che intercetta tutti i link interni)
+  document.addEventListener(
+    'click',
+    (evento) => {
+      if (!(evento.target as Element | null)?.closest('.tc-salta')) return;
+      evento.preventDefault();
+      document.getElementById('tc-principale')?.focus();
+    },
+    true,
+  );
+}
+
+/**
+ * Guscio delle pagine con login: barra superiore, contenuto, navigazione inferiore. Al computer la
+ * navigazione diventa una barra laterale con il marchio e la barra superiore sparisce.
+ */
 export function paginaApp(corpo: string): string {
+  attivaScorciatoie();
   return `
+    <a class="tc-salta" href="#tc-principale">Salta al contenuto</a>
     <header class="tc-appbar">
       <a class="text-decoration-none" href="/" aria-label="TyreCare, home">${MARCHIO}</a>
     </header>
-    <main class="tc-pagina tc-con-bottomnav">${corpo}</main>
+    <main id="tc-principale" class="tc-pagina tc-con-bottomnav" tabindex="-1"
+      data-pagina="${impaginazione()}">${corpo}</main>
     <nav class="tc-bottomnav" aria-label="Navigazione principale">
+      <span class="tc-bottomnav__marchio" aria-hidden="true">${MARCHIO}</span>
       ${VOCI_NAV.filter((v) => (lavoraInOfficina() ? !v.soloCliente : !v.soloOfficina))
         .map(
           (v) => `

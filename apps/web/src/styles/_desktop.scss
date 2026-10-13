@@ -1,0 +1,266 @@
+// Impaginazione da computer (da 992 px): le officine lavorano soprattutto al PC.
+// Il telefono resta com'è: tutte le regole sono dentro la media query, solo per lo schermo (la stampa
+// del report non cambia). La pagina sceglie l'impaginazione con `data-pagina` sul <main>, scritto da
+// `paginaApp()` in `src/ui/layout.ts` in base al percorso: le pagine non lo sanno.
+
+// --- "Salta al contenuto" (tutte le larghezze) ------------------------------------------------
+// Primo elemento della pagina: compare solo con il focus da tastiera
+.tc-salta {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: $zindex-fixed + 10;
+  padding: 0.75rem 1.25rem;
+  color: $tc-bianco;
+  background: var(--tc-superficie-alta);
+  border: 1px solid $tc-bordo-hover;
+  border-radius: $tc-raggio-pulsante;
+  text-decoration: none;
+  transform: translateY(-200%);
+
+  &:focus {
+    color: $tc-bianco;
+    transform: none;
+  }
+}
+
+// Il <main> riceve il focus da "Salta al contenuto": è un contenitore, niente anello attorno a tutto
+.tc-pagina:focus {
+  outline: none;
+}
+
+// Il marchio nella navigazione serve solo nella barra laterale
+.tc-bottomnav__marchio {
+  display: none;
+}
+
+@media screen and (min-width: $tc-desktop) {
+  // --- Guscio: barra laterale al posto della barra superiore e della navigazione in basso -------
+  .tc-appbar {
+    display: none;
+  }
+
+  body:has(> #app > .tc-bottomnav) {
+    padding-left: $tc-barra-laterale;
+  }
+
+  .tc-bottomnav {
+    inset: 0 auto 0 0;
+    width: $tc-barra-laterale;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.25rem;
+    padding: 1.75rem 0.75rem;
+    background: $tc-nero;
+    border-top: 0;
+    border-right: 1px solid rgba($tc-bianco, 0.06);
+    backdrop-filter: none;
+
+    &__marchio {
+      display: block;
+      padding: 0.25rem 0.875rem 2rem;
+      text-decoration: none;
+    }
+
+    &__voce {
+      flex: none;
+      max-width: none;
+      flex-direction: row;
+      justify-content: flex-start;
+      gap: 0.875rem;
+      min-height: $tc-touch-min;
+      padding: 0 0.875rem;
+      border-radius: $tc-raggio-pulsante;
+      font-size: 0.9375rem;
+      transition:
+        color 0.2s $tc-transizione,
+        background-color 0.2s $tc-transizione;
+
+      &:hover {
+        background: rgba($tc-bianco, 0.04);
+      }
+
+      // Voce attiva: sfondo più chiaro e barretta rossa a sinistra (non solo il colore)
+      &[aria-current='page'] {
+        background: var(--tc-superficie-alta);
+
+        &::after {
+          top: 50%;
+          bottom: auto;
+          left: 0;
+          width: 0.1875rem;
+          height: 1.25rem;
+          border-radius: 0 0.125rem 0.125rem 0;
+          transform: translateY(-50%);
+        }
+      }
+
+      .tc-icona {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+  }
+
+  .tc-con-bottomnav {
+    padding-bottom: 4rem;
+  }
+
+  // --- Larghezze: moduli stretti e leggibili, elenchi medi, schede larghe ----------------------
+  .tc-pagina {
+    padding: 1.5rem 1.25rem 0;
+
+    &[data-pagina='elenco'] {
+      max-width: 60rem;
+    }
+
+    &[data-pagina='home-officina'],
+    &[data-pagina='home-cliente'],
+    &[data-pagina='cliente'],
+    &[data-pagina='veicolo'],
+    &[data-pagina='appuntamento'],
+    &[data-pagina='calendario'] {
+      max-width: 76rem;
+    }
+  }
+
+  // --- Home dell'officina: riepilogo e "Nuovo veicolo" a sinistra, elenco dei veicoli a destra ---
+  [data-pagina='home-officina'] .tc-contenuto {
+    grid-template-columns: clamp(17rem, 30%, 22rem) minmax(0, 1fr);
+    // Fino a 4 blocchi a sinistra (scelta dell'officina, avviso, riepilogo, pulsante); l'ultima riga
+    // prende lo spazio che avanza, così l'elenco a destra può essere lungo quanto serve
+    grid-template-rows: repeat(4, auto) 1fr;
+    gap: 1.25rem 3rem;
+    align-items: start;
+
+    > * {
+      grid-column: 1;
+    }
+
+    > section:last-child {
+      grid-column: 2;
+      grid-row: 1 / -1;
+    }
+
+    // Nella colonna stretta i tre numeri vanno uno sotto l'altro: numero a sinistra, etichetta accanto
+    .tc-riepilogo {
+      grid-template-columns: 1fr;
+    }
+
+    .tc-riepilogo__voce {
+      grid-template-columns: 3.5rem 1fr;
+      align-items: center;
+      min-height: 4rem;
+      padding-block: 0.625rem;
+    }
+  }
+
+  // --- Home del cliente: le carte del garage affiancate -----------------------------------------
+  [data-pagina='home-cliente'] .tc-garage {
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 1rem;
+  }
+
+  // --- Scheda del veicolo (officina e garage): cruscotto a sinistra, fermo; dettagli a destra ----
+  [data-pagina='veicolo']:has(> .tc-hero .tc-cruscotto) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 3rem;
+    align-items: start;
+
+    > .tc-contenuto {
+      padding-top: 1.25rem;
+    }
+
+    // Il cruscotto resta in vista mentre si scorrono pneumatici e storico (solo se ci sta in altezza)
+    @media (min-height: 46rem) {
+      > .tc-hero {
+        position: sticky;
+        top: 0;
+      }
+    }
+  }
+
+  // --- Scheda del cliente: contatti e app a sinistra, veicoli a destra ---------------------------
+  [data-pagina='cliente'] .tc-contenuto:has(> section > #tc-veicoli) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: repeat(3, auto) 1fr;
+    gap: 2.5rem 3rem;
+    align-items: start;
+
+    > * {
+      grid-column: 1;
+    }
+
+    > section:has(> #tc-veicoli) {
+      grid-column: 2;
+      grid-row: 1 / -1;
+    }
+
+    // Stessa altezza della testata "Contatti" (che ha accanto "Modifica"): i due titoli si allineano
+    #tc-veicoli {
+      display: flex;
+      align-items: center;
+      min-height: $tc-touch-min;
+      margin-bottom: 0;
+    }
+  }
+
+  // --- Dettaglio dell'appuntamento: i dati a sinistra, le risposte a destra ----------------------
+  [data-pagina='appuntamento'] .tc-contenuto:has(> .tc-azioni-appuntamento) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: repeat(3, auto) 1fr;
+    gap: 1.5rem 3rem;
+    align-items: start;
+
+    > * {
+      grid-column: 1;
+    }
+
+    > .tc-avviso {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    > .tc-azioni-appuntamento {
+      grid-column: 2;
+      grid-row: 2 / -1;
+    }
+  }
+
+  // --- Calendario: giorni più alti, mattina e pomeriggio affiancati ------------------------------
+  [data-pagina='calendario'] {
+    .tc-vista {
+      max-width: 28rem;
+    }
+
+    .tc-settimana__giorni {
+      gap: 0.5rem;
+    }
+
+    .tc-settimana__giorno {
+      min-height: 5.5rem;
+      padding-block: 0.875rem;
+
+      &:not([aria-pressed='true']):not(.tc-settimana__giorno--chiuso):hover {
+        border-color: $tc-bordo-hover;
+      }
+    }
+
+    .tc-agenda {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0.75rem 2rem;
+      align-items: start;
+
+      > :not(section) {
+        grid-column: 1 / -1;
+      }
+
+      > section {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+  }
+}
