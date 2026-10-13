@@ -59,7 +59,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
   "Prenota" nella carta dell'officina → targa e veicolo già compilati → "Annulla" torna al garage
 - [ ] Se il veicolo ha una ruota rossa o gialla: sotto l'avviso "Prenota la sostituzione" / "Prenota un
   controllo"
-- [ ] (dopo la migrazione sul cloud) Richiesta da un account che non è ancora cliente → come titolare, nel
+- [ ] Richiesta da un account che non è ancora cliente → come titolare, nel
   dettaglio: "Aggiungi cliente e veicolo" → scheda del veicolo; il cliente lo vede nel garage. **Decisione
   da confermare:** il cliente viene collegato all'account senza invito (vedi `PLAN.md` P14)
 
@@ -74,8 +74,6 @@ serve `db:reset`: i test creano dati con nomi unici.
 
 **1 — Lavoro di Claude**
 
-- [ ] **Pubblicare sul cloud** la migrazione `20261013120000_cliente_da_prenotazione.sql` (`db push`,
-  prima `--dry-run`, con l'ok del titolare): finché non c'è, "Aggiungi cliente e veicolo" dà errore
 - [ ] Fase 4, passi successivi (scegliere con il titolare): officine vicine; capienza/slot
 - [ ] Fase 5 (notifiche): avvisare officina e cliente dei cambi di stato delle prenotazioni (Web Push +
   email), oggi visibili solo aprendo l'app
@@ -96,8 +94,7 @@ serve `db:reset`: i test creano dati con nomi unici.
   dell'officina, appuntamenti di cliente e officina, calendario, orari e chiusure straordinarie (provata
   dal telefono)
 - [x] (2026-10-13, sessione 15) "Prenota" dal garage con il veicolo già scelto
-- [x] (2026-10-13, sessione 15) Cliente e veicolo creati dalla richiesta di appuntamento (migrazione da
-  pubblicare)
+- [x] (2026-10-13, sessione 15) Cliente e veicolo creati dalla richiesta di appuntamento
 
 **Rimandati:**
 
@@ -162,7 +159,9 @@ serve `db:reset`: i test creano dati con nomi unici.
   è chiusa; ripetibile). 17 pgTAP (totale **193**); tipi rigenerati. `dividiVeicolo` in shared con 3
   Vitest (totale **100**). Dettaglio della richiesta: sezione "Nella tua officina" sotto le azioni, con
   dialogo di conferma. Nuovo e2e: **12/12 verdi**. Screenshot a 390 px controllati (sezione spostata sotto
-  "Conferma appuntamento" per non spingerlo in basso). Migrazione **non ancora pubblicata sul cloud**
+  "Conferma appuntamento" per non spingerlo in basso). Commit `0e5b4d9` (codice) e
+  `c6a6d75` (documenti). **Migrazione pubblicata sul cloud da Claude** (ok del titolare, prima
+  `--dry-run`): 10 migrazioni allineate, funzione presente. CI e deploy Vercel verdi
 - Un altro agente lavora in parallelo sulla **versione desktop**: questo lavoro non tocca stili né
   `ui/layout.ts`
 
