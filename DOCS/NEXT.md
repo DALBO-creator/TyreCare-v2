@@ -48,20 +48,18 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: provare dal telefono "Prenota" dal garage, poi scegliere il prossimo passo (o P8 se è
-> arrivato il file).** Sessione 15 (2026-10-13): pulsante "Prenota" nella carta dell'officina e sotto
-> l'avviso sulle ruote, con il veicolo già scelto. **Prima di tutto** chiedere se è arrivato il file `.xls`
-> di GESTITYRE: se c'è, si riprende P8 (formato CSV + adattatore).
+> **Obiettivo: scegliere con il titolare il prossimo passo (Fase 4: officine vicine o capienza/slot;
+> oppure Fase 5: notifiche).** Sessione 15 (2026-10-13) chiusa: "Prenota" dal garage e cliente/veicolo
+> dalla richiesta, provati dal telefono. **Prima di tutto** chiedere se è arrivato il file `.xls` di
+> GESTITYRE: se c'è, si riprende P8 (formato CSV + adattatore). Un altro agente lavora sulla **versione
+> desktop**: fare `git pull` all'inizio e controllare in questo file cosa ha cambiato.
 
-**0 — Prova dal telefono (titolare)**
+**0 — Da chiedere al titolare**
 
-- [ ] Con l'account cliente collegato a un veicolo dell'officina di prova: scheda del veicolo nel garage →
-  "Prenota" nella carta dell'officina → targa e veicolo già compilati → "Annulla" torna al garage
-- [ ] Se il veicolo ha una ruota rossa o gialla: sotto l'avviso "Prenota la sostituzione" / "Prenota un
-  controllo"
-- [ ] Richiesta da un account che non è ancora cliente → come titolare, nel
-  dettaglio: "Aggiungi cliente e veicolo" → scheda del veicolo; il cliente lo vede nel garage. **Decisione
-  da confermare:** il cliente viene collegato all'account senza invito (vedi `PLAN.md` P14)
+- [ ] **Confermare la decisione** della sessione 15: il cliente creato dalla richiesta viene collegato
+  all'account senza invito (vedi `PLAN.md` P14)
+- [ ] (facoltativo) Dal telefono, veicolo con una ruota rossa o gialla: sotto l'avviso "Prenota la
+  sostituzione" / "Prenota un controllo"
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -168,6 +166,8 @@ serve `db:reset`: i test creano dati con nomi unici.
   dalla parte dell'email prima della @ (o "Cliente"). 2 pgTAP (totale **195**); testo "Chi ha prenotato"
   quando manca il nome. Commit `7b3f29f` (CI verde); migrazione **pubblicata dal titolare** con `db push`
   (prima `--dry-run`): 11 migrazioni allineate, ripiego verificato nella funzione sul cloud
+- **Prove dal telefono del titolare riuscite:** "Prenota" nella carta "La tua officina"; "Aggiungi cliente
+  e veicolo" funziona (dopo la correzione del profilo senza nome)
 - Un altro agente lavora in parallelo sulla **versione desktop**: questo lavoro non tocca stili né
   `ui/layout.ts`
 
