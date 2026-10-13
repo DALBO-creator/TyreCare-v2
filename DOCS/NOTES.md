@@ -979,3 +979,33 @@ prenotabili; gli orari si controllano nella pagina con `haOrari()`. L'errore di 
 (il pulsante è solo una scorciatoia): il garage si vede comunque. `cartaOfficina(o, prenota?)` riceve
 l'indirizzo già pronto, quindi in `sezioneOfficine` si usa `officine.map((o) => cartaOfficina(o, …))` e non
 `map(cartaOfficina)` (che passerebbe l'indice come secondo argomento).
+
+## Officina — cliente e veicolo dalla richiesta di appuntamento (Fase 4)
+
+**File:** `supabase/migrations/20261013120000_cliente_da_prenotazione.sql`,
+`supabase/tests/database/cliente-da-prenotazione.test.sql`, `packages/shared/src/prenotazioni.ts`
+(`dividiVeicolo`), `apps/web/src/lib/prenotazioni.ts` (`registraClienteDaPrenotazione`,
+`caricaClienteDellaPrenotazione`), `apps/web/src/pagine/appuntamenti.ts`, `e2e/tests/prenotazioni.spec.ts`.
+
+- Nel dettaglio di una richiesta, se la targa **non** è registrata in officina, sotto le azioni c'è la
+  sezione "Nella tua officina":
+  - chi ha prenotato non è ancora cliente → **"Aggiungi cliente e veicolo"**: il cliente prende nome e
+    cognome dal profilo, il telefono dalla richiesta, l'email confermata dall'account, ed è **collegato
+    all'account** (il veicolo compare subito nel suo garage, senza invito);
+  - è già cliente (scheda collegata all'account) → **"Aggiungi il veicolo"** alla sua scheda.
+  Un dialogo di conferma dice cosa succede; poi si apre la scheda del veicolo ("Controlla marca e modello e
+  monta gli pneumatici"). Marca e modello si ricavano dalla descrizione libera ("Alfa Romeo Giulietta" →
+  Alfa Romeo / Giulietta).
+- Se la targa è già registrata la richiesta mostra, come prima, "Apri la scheda del veicolo". Richieste
+  rifiutate o annullate non hanno la sezione.
+
+### Codice complesso
+
+`registra_cliente_da_prenotazione` è `security definer` per due motivi: scrivere `profile_id` (il
+trigger `proteggi_collegamento_cliente` lo vieta agli utenti) e leggere profilo ed email di chi ha
+prenotato. Per questo controlla da sola che chi chiama sia **membro dell'officina della richiesta**
+(altrimenti `PRENOTAZIONE_NON_TROVATA`, anche per chi ha prenotato). Si ferma con
+`VEICOLO_GIA_REGISTRATO` se la targa c'è già: quel veicolo ha un cliente e uno storico, e collegarlo
+all'account senza la verifica dell'email dell'invito mostrerebbe dati di altri. Gli id di cliente e veicolo
+li sceglie il web: una ripetizione dopo un errore di rete trova il veicolo con quell'id e lo restituisce
+senza creare un secondo cliente (17 test pgTAP).

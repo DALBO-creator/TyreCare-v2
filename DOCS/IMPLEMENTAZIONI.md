@@ -41,6 +41,7 @@
 | **Notifiche delle prenotazioni** (nuova richiesta all'officina, conferma/proposta/rifiuto al cliente) | 🔴 | Fase 5 (Web Push + email). Per ora le novità si vedono aprendo l'app; l'officina ha l'avviso in home. |
 | ~~**Prenota dal garage**~~: pulsante "Prenota" nella carta dell'officina del veicolo, con targa già scelta | ✅ | Fatto il 2026-10-13 (sessione 15); nel report la carta resta senza "Prenota". |
 | **Officine vicine** (distanza dalla posizione del telefono) | 🟠 | Le officine hanno già latitudine e longitudine; PLAN P14. |
+| **Invito dalla richiesta** quando la targa è già di un cliente non collegato | 🟢 | Oggi la richiesta apre la scheda del veicolo; si potrebbe proporre l'invito già scritto con l'email dell'account di chi ha prenotato (sessione 15). |
 | **Capienza e slot automatici** (ponti/operatori, appuntamenti già presi) | 🟠 | P14 fase successiva; oggi l'officina decide l'ora a mano. |
 | **Collegare la prenotazione al cliente dell'officina** (crea il cliente e il veicolo dalla richiesta, o invita) | 🟢 | Oggi il dettaglio apre la scheda del veicolo se la targa è già registrata. |
 | **Chi lavora in officina prenota altrove** | 🟢 | Per lui "Appuntamenti" mostra quelli dell'officina e "Officine" non è nella barra (la pagina `/officine` funziona comunque). |

@@ -337,6 +337,11 @@ Propongo:
   altro orario o rifiuta; nel catalogo il **prezzo indicativo è facoltativo** ("da 40 €", vuoto = su
   preventivo). Stati usati: `RICHIESTA`, `PROPOSTA`, `CONFERMATA`, `RIFIUTATA`, `ANNULLATA`,
   `COMPLETATA`, `NON_PRESENTATO`. Implementazione in `NOTES.md`.
+- **Cliente e veicolo dalla richiesta (2026-10-13, sessione 15):** dal dettaglio della richiesta chi
+  lavora in officina registra il veicolo con un tocco; se chi ha prenotato non è ancora cliente, il
+  cliente nasce **già collegato al suo account, senza invito**. È sicuro perché cliente e veicolo nascono
+  dai dati della richiesta (nessuno storico altrui da mostrare); se la targa è già registrata in officina
+  si apre la sua scheda e per collegarla resta l'invito via email. Da confermare con il titolare.
 
 ### P15 — Intervento su strada è un flusso diverso ✅
 
@@ -387,7 +392,7 @@ documento dedicato.
 | 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | ✅ chiusa il 2026-10-07 (design system v3, ruoli/RLS, auth web + API, profilo, email in italiano, logo). Rimandati: SMTP col dominio di LA SANTI GOMME, rifinitura dell'auto |
 | 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07; il 2026-10-08 fatte le schermate officina (elenco, cliente, veicolo, pneumatici, nuovo controllo). Il 2026-10-08 (sessione 8) anche correzione ed eliminazione. Il 2026-10-09 elenco e scheda clienti e smontaggio senza sostituzione. Resta l'import CSV |
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | 🟨 iniziata il 2026-10-09: garage con i veicoli uniti per targa tra le officine, scheda in sola lettura con cruscotto, avviso, storico e officine; il cliente vede anche le officine non attive di cui è cliente. Il 2026-10-09 (sessione 11) report del singolo controllo con stampa/PDF (link pubblico rimandato) e stato di salute del singolo pneumatico (grafico, consumo, stima, età dal DOT). Il 2026-10-10 (sessione 12) **rivendicazione dei veicoli con l'invito via email dall'officina** (decisione del titolare). Resta il link pubblico del report, rimandato |
-| 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | 🟨 iniziata il 2026-10-12 (sessione 14): catalogo dei servizi (titolare), elenco e scheda delle officine attive, richiesta con giorno e fascia, conferma con l'ora / proposta di un altro orario / rifiuto, annullamento del cliente, completato / non presentato; poi calendario dell'officina, editor degli orari con chiusure straordinarie; "Prenota" dal garage con il veicolo già scelto (sessione 15). Restano: distanza (geolocalizzazione), capienza e slot automatici, notifiche (Fase 5) |
+| 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | 🟨 iniziata il 2026-10-12 (sessione 14): catalogo dei servizi (titolare), elenco e scheda delle officine attive, richiesta con giorno e fascia, conferma con l'ora / proposta di un altro orario / rifiuto, annullamento del cliente, completato / non presentato; poi calendario dell'officina, editor degli orari con chiusure straordinarie; "Prenota" dal garage con il veicolo già scelto e cliente/veicolo creati dalla richiesta (sessione 15). Restano: distanza (geolocalizzazione), capienza e slot automatici, notifiche (Fase 5) |
 | 5 — Notifiche | Web Push, reminder schedulati, fallback email | ⬜ |
 | 6 — Pilota | 2–3 gommisti reali, feedback, Lighthouse, privacy/legale | ⬜ |
 | 7 — Commerciale | Stripe abbonamenti, onboarding officine, intervento su strada | ⬜ |

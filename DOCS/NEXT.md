@@ -59,6 +59,9 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
   "Prenota" nella carta dell'officina → targa e veicolo già compilati → "Annulla" torna al garage
 - [ ] Se il veicolo ha una ruota rossa o gialla: sotto l'avviso "Prenota la sostituzione" / "Prenota un
   controllo"
+- [ ] (dopo la migrazione sul cloud) Richiesta da un account che non è ancora cliente → come titolare, nel
+  dettaglio: "Aggiungi cliente e veicolo" → scheda del veicolo; il cliente lo vede nel garage. **Decisione
+  da confermare:** il cliente viene collegato all'account senza invito (vedi `PLAN.md` P14)
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -71,8 +74,9 @@ serve `db:reset`: i test creano dati con nomi unici.
 
 **1 — Lavoro di Claude**
 
-- [ ] Fase 4, passi successivi (scegliere con il titolare): creare cliente/veicolo dalla richiesta;
-  officine vicine; capienza/slot
+- [ ] **Pubblicare sul cloud** la migrazione `20261013120000_cliente_da_prenotazione.sql` (`db push`,
+  prima `--dry-run`, con l'ok del titolare): finché non c'è, "Aggiungi cliente e veicolo" dà errore
+- [ ] Fase 4, passi successivi (scegliere con il titolare): officine vicine; capienza/slot
 - [ ] Fase 5 (notifiche): avvisare officina e cliente dei cambi di stato delle prenotazioni (Web Push +
   email), oggi visibili solo aprendo l'app
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
@@ -92,6 +96,8 @@ serve `db:reset`: i test creano dati con nomi unici.
   dell'officina, appuntamenti di cliente e officina, calendario, orari e chiusure straordinarie (provata
   dal telefono)
 - [x] (2026-10-13, sessione 15) "Prenota" dal garage con il veicolo già scelto
+- [x] (2026-10-13, sessione 15) Cliente e veicolo creati dalla richiesta di appuntamento (migrazione da
+  pubblicare)
 
 **Rimandati:**
 
@@ -149,6 +155,16 @@ serve `db:reset`: i test creano dati con nomi unici.
   fallito per un **bug di date in `orari.test.sql`** (nulla a che fare con "Prenota"): di **martedì**
   `prossimo(3)` (domani) viene prima di `prossimo(2)` (tra 7 giorni). Corretto usando `prossimo(2) + 1`;
   `db:test` 176/176
+- Titolare: "Prenota" visto dal telefono nella scheda del veicolo ("La tua officina")
+- **Cliente e veicolo dalla richiesta:** migrazione `20261013120000_cliente_da_prenotazione.sql` con
+  `registra_cliente_da_prenotazione` (`security definer`, solo membri dell'officina; cliente nuovo
+  collegato all'account o veicolo sulla scheda già collegata; si ferma se la targa c'è già o la richiesta
+  è chiusa; ripetibile). 17 pgTAP (totale **193**); tipi rigenerati. `dividiVeicolo` in shared con 3
+  Vitest (totale **100**). Dettaglio della richiesta: sezione "Nella tua officina" sotto le azioni, con
+  dialogo di conferma. Nuovo e2e: **12/12 verdi**. Screenshot a 390 px controllati (sezione spostata sotto
+  "Conferma appuntamento" per non spingerlo in basso). Migrazione **non ancora pubblicata sul cloud**
+- Un altro agente lavora in parallelo sulla **versione desktop**: questo lavoro non tocca stili né
+  `ui/layout.ts`
 
 ### Sessione 14 — 2026-10-12 (PC di casa)
 
