@@ -81,6 +81,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **Supabase** | — | ✅ | PostgreSQL gestito + Auth + Storage + Realtime + Edge Functions. Sicurezza con **RLS**. Progetto cloud `boqksbqcqulrtmyshhxe` (eu-west-1). |
 | **Supabase CLI** | 2.119 | ✅ | Installata come dipendenza (`npx supabase …`). Configurazione in `supabase/config.toml`. Il database locale (`npx supabase start`) gira su **Docker Desktop**: API http://127.0.0.1:54321, Studio http://127.0.0.1:54323. |
 | **pgTAP** | — | ✅ | Test del database in SQL (`npm run db:test`): verificano le policy RLS impersonando ogni ruolo. Estensione già presente nell'immagine Postgres di Supabase. |
+| **Supabase Realtime** | — | ✅ | Contatore delle notifiche aggiornato senza ricaricare (`lib/notifiche.ts`, tabella `notifiche` nella pubblicazione `supabase_realtime`, con RLS). Dal 2026-10-14. |
 | **Supabase Cron** | — | 🟡 | Job giornaliero dei reminder (Fase 5). |
 | **Vercel** | — | ✅ | Hosting della PWA: https://tyre-care-v2.vercel.app (Root Directory `apps/web`). L'API avrà un secondo progetto Vercel in Fase 1. |
 

@@ -48,23 +48,38 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: scegliere con il titolare il prossimo passo (Fase 4: officine vicine o capienza/slot;
-> oppure Fase 5: notifiche).** Sessione 15 (2026-10-13) chiusa: "Prenota" dal garage e cliente/veicolo
-> dalla richiesta, provati dal telefono. **Prima di tutto** chiedere se è arrivato il file `.xls` di
-> GESTITYRE: se c'è, si riprende P8 (formato CSV + adattatore). La **versione desktop** (barra laterale,
-> schede su due colonne) è in `main` dal 2026-10-13 ed è stata provata dal PC: funziona.
+> **Obiettivo: Fase 5, secondo passo → Web Push** (P21). Sessione 16 (2026-10-14): fatte le **notifiche
+> nell'app** (voce "Notifiche" con badge in tempo reale). **Prima di tutto** chiedere se è arrivato il file
+> `.xls` di GESTITYRE (se c'è si riprende P8) e se la migrazione `20261014120000_notifiche.sql` è stata
+> pubblicata sul cloud (se no: `npx supabase db push --dry-run`, poi `db push`, con l'ok del titolare).
 
 **0 — Da chiedere al titolare**
 
-- [ ] **Confermare la decisione** della sessione 15: il cliente creato dalla richiesta viene collegato
-  all'account senza invito (vedi `PLAN.md` P14)
-- [ ] (facoltativo) Dal telefono, veicolo con una ruota rossa o gialla: sotto l'avviso "Prenota la
-  sostituzione" / "Prenota un controllo"
+- [ ] Prova dal telefono delle notifiche nell'app: con due account (cliente e officina) chiedere un
+  appuntamento → il badge rosso compare sulla campanella dell'officina senza ricaricare; confermare → arriva
+  al cliente
+- [ ] Confermare la **proposta P21**: invio push/email da una **Supabase Edge Function** chiamata dal
+  database (invece che da Fastify, che non è online)
+- [ ] (facoltativo) Idee nuove in `IMPLEMENTAZIONI.md`: promemoria del giorno prima, pulizia delle notifiche
+  vecchie, preferenze
 
-**0b — Versione desktop**
+**1 — Lavoro di Claude: Web Push**
 
-- [ ] (facoltativo) Chiedere se servono le idee nuove in `IMPLEMENTAZIONI.md` (settimana a colonne al
-  computer, elenco veicoli a tabella, altre scorciatoie da tastiera)
+- [ ] Chiavi **VAPID** (pubblica nel web come `VITE_VAPID_PUBLIC_KEY`, privata solo nei segreti di Supabase)
+- [ ] Tabella `iscrizioni_push` (endpoint, chiavi, `profile_id`; RLS: solo le proprie) + funzioni per
+  iscriversi/disiscriversi
+- [ ] Service worker: gestore `push` (mostra titolo/testo della notifica) e `notificationclick` (apre il
+  `link`). Con `vite-plugin-pwa` serve passare a `injectManifest` oppure `workbox.importScripts`
+- [ ] Richiesta del permesso **in contesto** (skill ui-ux-pro-max): pulsante "Avvisami sul telefono" nella
+  pagina Notifiche e dopo l'invio di una richiesta; su iPhone spiegare "Aggiungi a Home" (P5)
+- [ ] Edge Function `invia-notifica` (Deno, libreria Web Push) chiamata da un trigger `pg_net` su
+  `notifiche`; iscrizioni scadute (410) eliminate
+- [ ] Poi: email di riserva (dopo l'SMTP definitivo), promemoria del giorno prima con Supabase Cron
+
+**Altro lavoro in attesa**
+
+- [ ] Fase 4, passi successivi: officine vicine; capienza/slot
+- [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -74,13 +89,6 @@ Dopo uno **standby** del PC il container `supabase_vector` (solo log di Studio) 
 riavvio (*"Network unreachable … :2375"*): non tocca l'app; si risolve riavviando Docker Desktop.
 **Test end-to-end:** `npm run test:e2e` con Supabase locale avviato (il server Vite parte da solo). Non
 serve `db:reset`: i test creano dati con nomi unici.
-
-**1 — Lavoro di Claude**
-
-- [ ] Fase 4, passi successivi (scegliere con il titolare): officine vicine; capienza/slot
-- [ ] Fase 5 (notifiche): avvisare officina e cliente dei cambi di stato delle prenotazioni (Web Push +
-  email), oggi visibili solo aprendo l'app
-- [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
 
 **Fatto in passato (riferimento):**
 
@@ -98,6 +106,7 @@ serve `db:reset`: i test creano dati con nomi unici.
   dal telefono)
 - [x] (2026-10-13, sessione 15) "Prenota" dal garage con il veicolo già scelto
 - [x] (2026-10-13, sessione 15) Cliente e veicolo creati dalla richiesta di appuntamento
+- [x] (2026-10-14, sessione 16) Fase 5: notifiche nell'app per le prenotazioni, con badge in tempo reale
 
 **Rimandati:**
 
@@ -132,6 +141,31 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 16 — 2026-10-14 (PC di casa)
+
+**Fatto**
+
+- Il file `.xls` di GESTITYRE **non è ancora arrivato**. Il titolare ha **confermato la decisione P14**
+  (cliente creato dalla richiesta collegato all'account senza invito) e ha scelto la **Fase 5: notifiche**
+- **Database:** migrazione `20261014120000_notifiche.sql`: tabella `notifiche` (titolo, testo e link in
+  italiano), trigger `prenotazioni_notifica` su ogni cambio di stato (nuova richiesta, proposta accettata,
+  annullamento → officina; conferma, proposta, rifiuto → cliente; chi agisce non riceve nulla),
+  `testo_quando()`, RLS (solo il destinatario; dall'app si cambia solo `letta_il`), tabella in Realtime.
+  `notifiche.test.sql`: **31 pgTAP** (totale **226**); tipi rigenerati
+- **Web:** voce **"Notifiche"** (campanella, quinta voce) con badge rosso delle non lette aggiornato in
+  tempo reale (`lib/notifiche.ts`, Supabase Realtime); pagina `/notifiche` (ultime 50, nuove evidenziate,
+  aprirla le segna lette); aprire un appuntamento segna lette le sue. Skill `ui-ux-pro-max` consultata
+  (badge sulla voce che si azzera dopo la visita, conteggio annunciato come frase, link diretti)
+- 6 Vitest nuovi (totale **106**); e2e `notifiche.spec.ts` (badge che arriva senza ricaricare, dai due
+  lati): **15/15 e2e verdi**. `npm run check` verde. Screenshot a 390 e 1440 px controllati: corretto un
+  problema (aprendo direttamente `/notifiche` chi lavora in officina vedeva le voci del cliente)
+- Aggiornati `NOTES.md`, `PLAN.md` (P21, roadmap), `STRUCT.md` (Realtime), `IMPLEMENTAZIONI.md`
+
+**Note**
+
+- Nessuna nuova libreria. La migrazione **non è ancora sul cloud** (vedi "Prossima sessione").
+- Le notifiche nascono nel database: Web Push ed email leggeranno la stessa tabella (P21).
 
 ### Sessione 15 (in parallelo) — 2026-10-13: impaginazione da computer
 

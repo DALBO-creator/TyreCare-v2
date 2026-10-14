@@ -1071,3 +1071,54 @@ Gli ascoltatori si registrano una volta sola (`attivaScorciatoie`), al primo `pa
 `computer.spec.ts` gira nel progetto `telefono` di Playwright ma con `test.use({ viewport: 1280×800,
 isMobile: false })`: controlla la barra laterale, l'elenco dei veicoli a destra del riepilogo, `/` e
 "Salta al contenuto".
+
+## Notifiche nell'app (Fase 5, primo passo)
+
+Primo passo della Fase 5 (2026-10-14, sessione 16): le novità delle prenotazioni arrivano come
+**notifiche dentro l'app**. Web Push ed email arriveranno dopo e useranno la stessa tabella.
+
+- A ogni cambio di stato di una prenotazione il database crea una notifica per chi deve saperlo:
+  - **officina** (titolare e operatori): nuova richiesta, orario proposto accettato dal cliente, appuntamento
+    annullato dal cliente;
+  - **cliente**: appuntamento confermato, nuovo orario proposto (anche un secondo o uno spostamento),
+    appuntamento non accettato. Il messaggio dell'officina va in fondo, tra « ».
+  - Chi fa l'azione non riceve nulla (né i suoi colleghi, quando risponde l'officina). "Completato" e
+    "Non presentato" non avvisano nessuno.
+- Voce **"Notifiche"** (campanella) nella navigazione, per officina e cliente (quinta voce): badge rosso con
+  il numero delle non lette (oltre 9 → "9+"), aggiornato **in tempo reale** senza ricaricare.
+- Pagina **`/notifiche`**: le ultime 50, le nuove evidenziate (titolo marcato e barretta rossa); ogni
+  notifica apre l'appuntamento. Aprire la pagina le segna come lette (il badge si azzera, l'evidenza resta
+  finché si è sulla pagina). Aprire un appuntamento, da dove si vuole, segna come lette le sue.
+
+### Codice complesso
+
+**Database** (`20261014120000_notifiche.sql`). Tabella `notifiche` con titolo, testo e link **già pronti in
+italiano**: app, push ed email useranno lo stesso testo. La scrive solo il trigger `prenotazioni_notifica`
+(`after insert or update of stato, appuntamento`), quindi vale per tutte le funzioni che toccano le
+prenotazioni, anche future. Chi ha fatto l'azione è `auth.uid()`: serve per distinguere una conferma dopo
+una proposta (se l'ha fatta il cliente è `PROPOSTA_ACCETTATA` per l'officina, se l'ha fatta l'officina è
+`CONFERMATA` per il cliente) e per non avvisare chi agisce. Le risposte ripetute (rete instabile) non creano
+doppioni: le funzioni non toccano la riga se lo stato è già quello. `testo_quando()` scrive "martedì 13
+ottobre, ore 9:30" in SQL (nomi di giorni e mesi negli array: `to_char` dipende dalla lingua del server).
+
+Permessi: lettura e aggiornamento solo del destinatario (RLS); dall'app si può cambiare **solo la colonna
+`letta_il`** (`grant update (letta_il)`), niente inserimenti né eliminazioni. La tabella è nella
+pubblicazione `supabase_realtime`: Realtime applica la RLS, quindi ogni utente riceve solo i propri eventi.
+31 test pgTAP in `notifiche.test.sql` (dentro una transazione `created_at` è uguale per tutte le righe:
+i test confrontano i tipi in ordine alfabetico).
+
+**Web.** `lib/notifiche.ts` tiene il contatore: `avviaNotifiche()` è chiamata da ogni `paginaApp()` e parte
+una volta per account (se l'account cambia riparte, `fermaNotifiche()` all'uscita). Legge il numero delle
+non lette (`count: 'exact', head: true`) e apre un canale Realtime filtrato su `destinatario_id`: a ogni
+evento rilegge il numero (più semplice e sempre giusto, invece di contare gli eventi). Rilegge anche quando
+l'app torna in primo piano (`visibilitychange`), perché sul telefono il canale può cadere. La navigazione si
+ridisegna a ogni pagina con l'ultimo numero noto; i badge già sullo schermo si aggiornano dagli attributi
+`data-notifiche-badge` / `data-notifiche-testo`. Per i lettori di schermo il numero è nel nome della voce
+("Notifiche, 1 notifica da leggere") e un solo `role="status"` annuncia le notifiche nuove.
+
+La pagina `/notifiche` carica anche `caricaDatiUtente()`: senza, aprendola direttamente la navigazione
+mostrerebbe le voci del cliente a chi lavora in officina.
+
+E2e `notifiche.spec.ts` (due browser, cliente e titolare): il badge del titolare passa a 1 **senza
+ricaricare** quando la cliente chiede l'appuntamento, e viceversa per la conferma. `entra` e `chiedi` sono
+state spostate in `aiuti.ts` per usarle anche qui.

@@ -341,7 +341,7 @@ Propongo:
   lavora in officina registra il veicolo con un tocco; se chi ha prenotato non è ancora cliente, il
   cliente nasce **già collegato al suo account, senza invito**. È sicuro perché cliente e veicolo nascono
   dai dati della richiesta (nessuno storico altrui da mostrare); se la targa è già registrata in officina
-  si apre la sua scheda e per collegarla resta l'invito via email. Da confermare con il titolare.
+  si apre la sua scheda e per collegarla resta l'invito via email. **Confermata dal titolare il 2026-10-14.**
 
 ### P15 — Intervento su strada è un flusso diverso ✅
 
@@ -365,6 +365,22 @@ barra laterale al posto delle barre del telefono, schede su due colonne (cruscot
 vista, elenco dei veicoli accanto al riepilogo, risposte all'appuntamento accanto ai dettagli), moduli
 stretti, scorciatoie da tastiera ("/" per cercare). Resta **una sola app** (stesse pagine, stesso codice):
 cambia solo l'impaginazione in CSS, guidata da `data-pagina`. Dettagli in `NOTES.md`.
+
+### P21 — Notifiche: una tabella, più canali ✅
+
+**Decisione del titolare (2026-10-14):** si parte dalla Fase 5 con le notifiche delle prenotazioni.
+
+- **Le notifiche nascono nel database**: un trigger su `prenotazioni` scrive in `notifiche` titolo, testo e
+  link già pronti, per ogni destinatario. Così nessun cambio di stato si dimentica di avvisare, chiunque lo
+  faccia (app, funzioni future, correzioni dell'ADMIN), e tutti i canali usano lo stesso testo.
+- **Canali, in quest'ordine:** 1) nell'app, con contatore in tempo reale (fatto il 2026-10-14); 2) **Web
+  Push**; 3) **email** di riserva (P5), quando ci sarà l'SMTP definitivo (oggi Resend in prova consegna solo
+  all'indirizzo del titolare).
+- **Proposta per l'invio push/email (da confermare):** una **Supabase Edge Function** chiamata dal database
+  a ogni nuova notifica (Database Webhook / `pg_net`), con le chiavi VAPID nei segreti di Supabase. Rispetto a
+  P2 ("push da Fastify") evita di pubblicare `apps/api` solo per questo: oggi l'API non è online.
+- Promemoria schedulati (P11, giorno prima dell'appuntamento, cambio stagionale) = un job **Supabase Cron**
+  che inserisce righe nella stessa tabella.
 
 ## B4. Aspetti legali e privacy
 
@@ -402,7 +418,7 @@ documento dedicato.
 | 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07; il 2026-10-08 fatte le schermate officina (elenco, cliente, veicolo, pneumatici, nuovo controllo). Il 2026-10-08 (sessione 8) anche correzione ed eliminazione. Il 2026-10-09 elenco e scheda clienti e smontaggio senza sostituzione. Resta l'import CSV |
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | 🟨 iniziata il 2026-10-09: garage con i veicoli uniti per targa tra le officine, scheda in sola lettura con cruscotto, avviso, storico e officine; il cliente vede anche le officine non attive di cui è cliente. Il 2026-10-09 (sessione 11) report del singolo controllo con stampa/PDF (link pubblico rimandato) e stato di salute del singolo pneumatico (grafico, consumo, stima, età dal DOT). Il 2026-10-10 (sessione 12) **rivendicazione dei veicoli con l'invito via email dall'officina** (decisione del titolare). Resta il link pubblico del report, rimandato |
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | 🟨 iniziata il 2026-10-12 (sessione 14): catalogo dei servizi (titolare), elenco e scheda delle officine attive, richiesta con giorno e fascia, conferma con l'ora / proposta di un altro orario / rifiuto, annullamento del cliente, completato / non presentato; poi calendario dell'officina, editor degli orari con chiusure straordinarie; "Prenota" dal garage con il veicolo già scelto e cliente/veicolo creati dalla richiesta (sessione 15). Restano: distanza (geolocalizzazione), capienza e slot automatici, notifiche (Fase 5) |
-| 5 — Notifiche | Web Push, reminder schedulati, fallback email | ⬜ |
+| 5 — Notifiche | Web Push, reminder schedulati, fallback email | 🟨 iniziata il 2026-10-14 (sessione 16): **notifiche nell'app** per i cambi di stato delle prenotazioni (tabella scritta da un trigger, badge in tempo reale, pagina `/notifiche`). Restano Web Push, email e promemoria schedulati (P21) |
 | 6 — Pilota | 2–3 gommisti reali, feedback, Lighthouse, privacy/legale | ⬜ |
 | 7 — Commerciale | Stripe abbonamenti, onboarding officine, intervento su strada | ⬜ |
 
