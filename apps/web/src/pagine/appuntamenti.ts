@@ -27,6 +27,7 @@ import {
 import { messaggioErrore, sessioneCorrente } from '../lib/auth';
 import { ErroreModulo } from '../lib/errori';
 import { esc } from '../lib/html';
+import { notificheNonLette, segnaLette } from '../lib/notifiche';
 import { officinaAttiva } from '../lib/officina';
 import {
   annullaPrenotazione,
@@ -243,6 +244,8 @@ export async function mostraAppuntamento(app: HTMLElement): Promise<void> {
   }
 
   const { p, perOfficina } = trovato;
+  // Le notifiche di questo appuntamento ora sono viste (errori ignorati: è solo il contatore)
+  if (notificheNonLette()) segnaLette(p.id).catch(() => undefined);
   const oggi = oggiInItalia();
   const veicolo = [formattaTarga(p.targa), p.veicolo].filter(Boolean).join(' · ');
   const richiestoIl = `Chiesto per ${formattaGiornoTitolo(p.giorno).toLowerCase()}, ${p.fascia === 'MATTINA' ? 'mattina' : 'pomeriggio'}`;

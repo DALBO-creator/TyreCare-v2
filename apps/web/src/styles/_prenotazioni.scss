@@ -337,3 +337,43 @@ form .tc-pulsante-elimina {
     margin-top: 0.25rem;
   }
 }
+
+// --- Notifiche (Fase 5) ------------------------------------------------------------------------
+.tc-notifica {
+  align-items: flex-start;
+
+  &__titolo {
+    font-weight: 500;
+  }
+
+  // Il messaggio dell'officina va a capo, tra « »
+  &__testo {
+    color: var(--bs-secondary-color);
+    font-size: 0.9375rem;
+    font-weight: 400;
+    white-space: pre-line;
+  }
+
+  small {
+    margin-top: 0.25rem;
+  }
+
+  // Nuova: titolo più marcato e barretta rossa a sinistra (non solo il colore)
+  &--nuova {
+    position: relative;
+    background: var(--tc-superficie-alta);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 0.75rem auto 0.75rem 0;
+      width: 0.1875rem;
+      border-radius: 0 0.125rem 0.125rem 0;
+      background: var(--tc-brand);
+    }
+
+    .tc-notifica__titolo {
+      font-weight: 700;
+    }
+  }
+}

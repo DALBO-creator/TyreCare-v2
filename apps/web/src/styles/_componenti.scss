@@ -617,6 +617,34 @@ h6 {
       height: 1.5rem;
     }
   }
+
+  // Icona con il numero delle notifiche da leggere nell'angolo
+  &__icona {
+    position: relative;
+    display: inline-flex;
+  }
+
+  &__badge {
+    position: absolute;
+    top: -0.375rem;
+    left: calc(100% - 0.625rem);
+    min-width: 1.125rem;
+    height: 1.125rem;
+    padding: 0 0.3125rem;
+    border-radius: 0.5625rem;
+    background: var(--tc-brand);
+    box-shadow: 0 0 0 2px $tc-nero;
+    color: $tc-bianco;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 1.125rem;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+
+    &[hidden] {
+      display: none;
+    }
+  }
 }
 
 // Spazio in fondo alla pagina per non coprire il contenuto con la navigazione

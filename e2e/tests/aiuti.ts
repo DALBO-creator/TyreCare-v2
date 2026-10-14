@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
-import { expect, type Page } from '@playwright/test';
+import { expect, type Browser, type Page } from '@playwright/test';
 
 // Funzioni comuni ai test: accesso, dati unici, operazioni dell'officina ed email lette da Mailpit.
 
@@ -141,4 +141,40 @@ export function prossimoFeriale(salta = 0): string {
     if (d.getUTCDay() >= 1 && d.getUTCDay() <= 5) trovati++;
   }
   return d.toISOString().slice(0, 10);
+}
+
+/** Servizio del seed di Gomme Rossi usato nelle richieste dei test. */
+export const SERVIZIO = 'Cambio gomme stagionale';
+
+/** Un browser separato, già entrato con l'account indicato. */
+export async function entra(browser: Browser, email: string): Promise<Page> {
+  const page = await (await browser.newContext()).newPage();
+  await accedi(page, email);
+  return page;
+}
+
+/** Il cliente chiede un appuntamento a Gomme Rossi; restituisce l'indirizzo della prenotazione. */
+export async function chiedi(
+  page: Page,
+  {
+    targa,
+    giorno,
+    fascia,
+    veicolo,
+  }: { targa: string; giorno: string; fascia: 'Mattina' | 'Pomeriggio'; veicolo?: string },
+): Promise<string> {
+  await page.goto('/officine');
+  await page.getByRole('link', { name: new RegExp(OFFICINA) }).click();
+  await page.getByRole('link', { name: 'Chiedi un appuntamento' }).click();
+  await page.getByLabel('Servizio').selectOption({ label: SERVIZIO });
+  await page.getByLabel('Targa').fill(targa);
+  if (veicolo) await page.getByLabel('Veicolo (facoltativo)').fill(veicolo);
+  await page.getByLabel('Giorno').fill(giorno);
+  await page.getByLabel(fascia).check();
+  await page.getByLabel('Il tuo telefono').fill('340 1234567');
+  await page.getByRole('button', { name: 'Invia la richiesta' }).click();
+  await expect(page).toHaveURL(/\/appuntamento\?id=/);
+  await expect(page.getByText(`Richiesta inviata a ${OFFICINA}`)).toBeVisible();
+  await expect(page.getByText('In attesa di risposta')).toBeVisible();
+  return new URL(page.url()).pathname + new URL(page.url()).search;
 }

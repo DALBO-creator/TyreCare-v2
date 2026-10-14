@@ -1,5 +1,6 @@
-import { CalendarDays, House, Store, UserRound, Users, type IconNode } from 'lucide';
+import { Bell, CalendarDays, House, Store, UserRound, Users, type IconNode } from 'lucide';
 import { esc } from '../lib/html';
+import { avviaNotifiche, notificheNonLette, numeroBadge, testoNonLette } from '../lib/notifiche';
 import { lavoraInOfficina } from '../lib/profilo';
 import { icona } from './icone';
 
@@ -37,6 +38,8 @@ interface VoceNav {
   soloOfficina?: boolean;
   /** Solo per chi non lavora in un'officina (es. "Officine", per prenotare). */
   soloCliente?: boolean;
+  /** Mostra il numero delle notifiche da leggere. */
+  contatore?: boolean;
 }
 
 const VOCI_NAV: VoceNav[] = [
@@ -61,6 +64,7 @@ const VOCI_NAV: VoceNav[] = [
     icona: CalendarDays,
     anche: ['/appuntamento', '/servizi'],
   },
+  { percorso: '/notifiche', etichetta: 'Notifiche', icona: Bell, contatore: true },
   {
     percorso: '/profilo',
     etichetta: 'Profilo',
@@ -86,12 +90,29 @@ const IMPAGINAZIONE: Record<string, string> = {
   '/officine': 'elenco',
   '/officina': 'elenco',
   '/servizi': 'elenco',
+  '/notifiche': 'elenco',
   '/cliente': 'cliente',
   '/veicolo': 'veicolo',
   '/garage/veicolo': 'veicolo',
   '/appuntamento': 'appuntamento',
   '/appuntamenti/calendario': 'calendario',
 };
+
+/** Icona della voce, con il badge delle notifiche da leggere se serve (aggiornato da `lib/notifiche`). */
+function iconaVoce(v: VoceNav): string {
+  if (!v.contatore) return icona(v.icona);
+  const n = notificheNonLette();
+  return `
+    <span class="tc-bottomnav__icona">${icona(v.icona)}<span class="tc-bottomnav__badge"
+      data-notifiche-badge aria-hidden="true"${n ? '' : ' hidden'}>${numeroBadge(n)}</span></span>`;
+}
+
+const testoVoce = (v: VoceNav): string =>
+  v.contatore
+    ? `<span>${v.etichetta}<span class="visually-hidden" data-notifiche-testo>${
+        notificheNonLette() ? `, ${testoNonLette(notificheNonLette())}` : ''
+      }</span></span>`
+    : `<span>${v.etichetta}</span>`;
 
 const impaginazione = (): string =>
   location.pathname === '/'
@@ -136,6 +157,7 @@ function attivaScorciatoie(): void {
  */
 export function paginaApp(corpo: string): string {
   attivaScorciatoie();
+  avviaNotifiche();
   return `
     <a class="tc-salta" href="#tc-principale">Salta al contenuto</a>
     <header class="tc-appbar">
@@ -150,10 +172,11 @@ export function paginaApp(corpo: string): string {
           (v) => `
         <a class="tc-bottomnav__voce" href="${v.percorso}"${
           attiva(v) ? ' aria-current="page"' : ''
-        }>${icona(v.icona)}<span>${v.etichetta}</span></a>`,
+        }>${iconaVoce(v)}${testoVoce(v)}</a>`,
         )
         .join('')}
-    </nav>`;
+    </nav>
+    <span class="visually-hidden" role="status" aria-atomic="true" data-notifiche-annuncio></span>`;
 }
 
 /** Indicatore di caricamento accessibile (annunciato dai lettori di schermo). */

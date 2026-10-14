@@ -3,6 +3,7 @@ import './styles/main.scss';
 import { registerSW } from 'virtual:pwa-register';
 import { mostraAnteprima } from './anteprima';
 import { inizializzaAuth, sessioneCorrente } from './lib/auth';
+import { fermaNotifiche } from './lib/notifiche';
 import {
   PAGINA_ACCESSO,
   avviaRouter,
@@ -34,6 +35,7 @@ import { mostraModificaProfilo } from './pagine/modifica-profilo';
 import { mostraModificaVeicolo } from './pagine/modifica-veicolo';
 import { mostraMontaPneumatici } from './pagine/monta-pneumatici';
 import { mostraNonTrovata } from './pagine/non-trovata';
+import { mostraNotifiche } from './pagine/notifiche';
 import { mostraNuovaPassword } from './pagine/nuova-password';
 import { mostraNuovoCliente } from './pagine/nuovo-cliente';
 import { mostraNuovoControllo } from './pagine/nuovo-controllo';
@@ -125,6 +127,8 @@ const ROTTE: Rotta[] = [
     mostra: mostraRifiuta,
   },
   { percorso: '/servizi', accesso: 'utente', titolo: 'Servizi', mostra: mostraServizi },
+  // Notifiche (Fase 5): le crea il database a ogni cambio di stato di una prenotazione
+  { percorso: '/notifiche', accesso: 'utente', titolo: 'Notifiche', mostra: mostraNotifiche },
   {
     percorso: '/officina/orari',
     accesso: 'utente',
@@ -247,6 +251,7 @@ if (app) {
     if (evento === 'SIGNED_IN' && rotta.accesso === 'ospite') {
       vaiA(destinazioneDopoAccesso(), { sostituisci: true });
     } else if (evento === 'SIGNED_OUT' && rotta.accesso === 'utente') {
+      fermaNotifiche();
       vaiA(PAGINA_ACCESSO, { sostituisci: true });
     } else if (evento === 'PASSWORD_RECOVERY' && rotta.percorso !== '/nuova-password') {
       vaiA('/nuova-password', { sostituisci: true });

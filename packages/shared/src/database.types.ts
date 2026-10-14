@@ -303,6 +303,57 @@ export type Database = {
           },
         ];
       };
+      notifiche: {
+        Row: {
+          created_at: string;
+          destinatario_id: string;
+          id: string;
+          letta_il: string | null;
+          link: string;
+          prenotazione_id: string | null;
+          testo: string;
+          tipo: Database['public']['Enums']['tipo_notifica'];
+          titolo: string;
+        };
+        Insert: {
+          created_at?: string;
+          destinatario_id: string;
+          id?: string;
+          letta_il?: string | null;
+          link: string;
+          prenotazione_id?: string | null;
+          testo?: string;
+          tipo: Database['public']['Enums']['tipo_notifica'];
+          titolo: string;
+        };
+        Update: {
+          created_at?: string;
+          destinatario_id?: string;
+          id?: string;
+          letta_il?: string | null;
+          link?: string;
+          prenotazione_id?: string | null;
+          testo?: string;
+          tipo?: Database['public']['Enums']['tipo_notifica'];
+          titolo?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'notifiche_destinatario_id_fkey';
+            columns: ['destinatario_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'notifiche_prenotazione_id_fkey';
+            columns: ['prenotazione_id'];
+            isOneToOne: false;
+            referencedRelation: 'prenotazioni';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       officina_utenti: {
         Row: {
           created_at: string;
@@ -768,6 +819,14 @@ export type Database = {
         Returns: undefined;
       };
       rispondi_proposta: { Args: { p_accetta: boolean; p_id: string }; Returns: undefined };
+      testo_quando: {
+        Args: {
+          p_appuntamento: string;
+          p_fascia: Database['public']['Enums']['fascia_oraria'];
+          p_giorno: string;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       fascia_oraria: 'MATTINA' | 'POMERIGGIO';
@@ -785,6 +844,13 @@ export type Database = {
         | 'ANNULLATA'
         | 'COMPLETATA'
         | 'NON_PRESENTATO';
+      tipo_notifica:
+        | 'NUOVA_RICHIESTA'
+        | 'CONFERMATA'
+        | 'PROPOSTA'
+        | 'RIFIUTATA'
+        | 'PROPOSTA_ACCETTATA'
+        | 'ANNULLATA';
       usura: 'REGOLARE' | 'INTERNA' | 'ESTERNA' | 'CENTRALE' | 'BORDI';
     };
     CompositeTypes: {
@@ -915,6 +981,14 @@ export const Constants = {
         'ANNULLATA',
         'COMPLETATA',
         'NON_PRESENTATO',
+      ],
+      tipo_notifica: [
+        'NUOVA_RICHIESTA',
+        'CONFERMATA',
+        'PROPOSTA',
+        'RIFIUTATA',
+        'PROPOSTA_ACCETTATA',
+        'ANNULLATA',
       ],
       usura: ['REGOLARE', 'INTERNA', 'ESTERNA', 'CENTRALE', 'BORDI'],
     },
