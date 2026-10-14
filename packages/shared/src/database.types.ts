@@ -551,6 +551,7 @@ export type Database = {
           nome_cliente: string;
           note: string;
           officina_id: string;
+          promemoria_per: string | null;
           servizio: string;
           servizio_id: string | null;
           stato: Database['public']['Enums']['stato_prenotazione'];
@@ -571,6 +572,7 @@ export type Database = {
           nome_cliente: string;
           note?: string;
           officina_id: string;
+          promemoria_per?: string | null;
           servizio: string;
           servizio_id?: string | null;
           stato?: Database['public']['Enums']['stato_prenotazione'];
@@ -591,6 +593,7 @@ export type Database = {
           nome_cliente?: string;
           note?: string;
           officina_id?: string;
+          promemoria_per?: string | null;
           servizio?: string;
           servizio_id?: string | null;
           stato?: Database['public']['Enums']['stato_prenotazione'];
@@ -776,6 +779,7 @@ export type Database = {
           scade_il: string;
         }[];
       };
+      crea_promemoria_appuntamenti: { Args: { p_adesso?: string }; Returns: number };
       fasce_aperte: {
         Args: { p_giorno: string; p_orari: Json };
         Returns: Database['public']['Enums']['fascia_oraria'][];
@@ -889,7 +893,8 @@ export type Database = {
         | 'PROPOSTA'
         | 'RIFIUTATA'
         | 'PROPOSTA_ACCETTATA'
-        | 'ANNULLATA';
+        | 'ANNULLATA'
+        | 'PROMEMORIA';
       usura: 'REGOLARE' | 'INTERNA' | 'ESTERNA' | 'CENTRALE' | 'BORDI';
     };
     CompositeTypes: {
@@ -1028,6 +1033,7 @@ export const Constants = {
         'RIFIUTATA',
         'PROPOSTA_ACCETTATA',
         'ANNULLATA',
+        'PROMEMORIA',
       ],
       usura: ['REGOLARE', 'INTERNA', 'ESTERNA', 'CENTRALE', 'BORDI'],
     },

@@ -48,27 +48,28 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: provare le notifiche push dal telefono e scegliere il passo successivo.** Sessione 16
-> (2026-10-14, chiusa): notifiche nell'app + **Web Push**, tutto pubblicato sul cloud, CI verde. **Prima di tutto** chiedere se
-> è arrivato il file `.xls` di GESTITYRE (se c'è si riprende P8) e com'è andata la prova delle push.
+> **Obiettivo: pubblicare i promemoria sul cloud e scegliere il passo successivo.** Sessione 17
+> (2026-10-14): push provate dal titolare (funzionano) e **promemoria del giorno prima** fatti in locale,
+> **non ancora pubblicati**. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si
+> riprende P8).
 
 **0 — Da chiedere al titolare**
 
-- [ ] **Prova delle push dal telefono** (Android: Chrome; iPhone: prima "Aggiungi alla schermata Home" e
-  aprire TyreCare da lì): Notifiche → "Avvisami su questo dispositivo" → consentire. Poi chiudere l'app e,
-  da un altro account, fare un'azione su un appuntamento (richiesta o conferma): deve arrivare l'avviso;
-  toccandolo si apre l'appuntamento. Se non arriva: Supabase → Edge Functions → `invia-notifica` → Logs
-- [ ] (facoltativo) Dal telefono, veicolo con una ruota rossa o gialla: sotto l'avviso "Prenota la
-  sostituzione" / "Prenota un controllo" (sessione 15)
-- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: promemoria del giorno prima, pulizia delle notifiche
-  vecchie, preferenze; settimana a colonne al computer, elenco veicoli a tabella
+- [ ] **Pubblicare i promemoria**: dopo il commit, `npx supabase db push` (crea il tipo, la colonna e il job
+  `pg_cron`). Poi controllare in Supabase → *Integrations → Cron* che il job `promemoria-appuntamenti` ci sia
+  e giri ogni ora senza errori
+- [ ] **Prova dal telefono**: confermare un appuntamento per **domani**; dopo le 18 (entro l'ora successiva)
+  deve arrivare "Domani hai un appuntamento" (nell'app e come push)
+- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: pulizia delle notifiche vecchie, preferenze; settimana a
+  colonne al computer, elenco veicoli a tabella
 
 **1 — Lavoro di Claude (da scegliere con il titolare)**
 
-- [ ] Fase 5: **promemoria del giorno prima** dell'appuntamento (Supabase Cron → nuova riga in `notifiche`,
-  quindi anche push); poi promemoria degli pneumatici (P11)
-- [ ] Fase 5: **email di riserva** — dopo l'SMTP definitivo (vedi "Rimandati")
+- [ ] Fase 5: **promemoria degli pneumatici** (P11): battistrada vicino al limite dalla stima del consumo
+  (`lib/salute.ts` → va portata nel database), cambio stagionale; stesso schema dei promemoria (job
+  pg_cron → `notifiche`)
 - [ ] Invitare ad attivare le push anche dopo l'invio di una richiesta (oggi solo nella pagina Notifiche)
+- [ ] Fase 5: **email di riserva** — dopo l'SMTP definitivo (vedi "Rimandati")
 - [ ] Fase 4: officine vicine; capienza/slot
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
 
@@ -99,6 +100,7 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [x] (2026-10-13, sessione 15) Cliente e veicolo creati dalla richiesta di appuntamento
 - [x] (2026-10-14, sessione 16) Fase 5: notifiche nell'app per le prenotazioni, con badge in tempo reale
 - [x] (2026-10-14, sessione 16) Fase 5: notifiche push (Edge Function `invia-notifica`, pg_net, VAPID)
+- [x] (2026-10-14, sessione 17) Fase 5: promemoria del giorno prima (pg_cron)
 
 **Rimandati:**
 
@@ -133,6 +135,20 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 17 — 2026-10-14 (PC di casa)
+
+**Fatto**
+
+- Il file `.xls` di GESTITYRE **non è ancora arrivato**. Il titolare ha provato le **push dal telefono:
+  funzionano**. Scelto il **promemoria del giorno prima**
+- **Database:** migrazione `20261014180000_promemoria_appuntamenti.sql`: nuovo tipo di notifica
+  `PROMEMORIA`, colonna `prenotazioni.promemoria_per`, funzione `crea_promemoria_appuntamenti(p_adesso)` e
+  job **pg_cron** `promemoria-appuntamenti` ogni ora (minuto 5): dalle 18 italiane avvisa il cliente degli
+  appuntamenti confermati del giorno dopo, una volta per orario (di nuovo se l'appuntamento è spostato).
+  `promemoria.test.sql`: **13 pgTAP** (totale **247**); tipi rigenerati
+- **Web:** icona sveglia per i promemoria nella pagina Notifiche
+- `npm run check` verde, `db:test` verde. **Non ancora pubblicato sul cloud** (`supabase db push`)
 
 ### Sessione 16 — 2026-10-14 (PC di casa)
 

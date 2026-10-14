@@ -1158,3 +1158,31 @@ dopo il commit e non rallenta la risposta) → Edge Function **`invia-notifica`*
 - Verificato sul cloud (2026-10-14): una notifica inserita a mano con un'iscrizione finta → la funzione
   risponde 200 `{"inviate":0,"dispositivi":1}` (l'endpoint finto non esiste); dati di prova cancellati.
   8 pgTAP in `push.test.sql`. La consegna vera sul telefono va provata dal titolare.
+
+## Promemoria del giorno prima (Fase 5)
+
+Terzo passo della Fase 5 (2026-10-14, sessione 17): la sera prima di un appuntamento **confermato** il
+cliente riceve "Domani hai un appuntamento" con officina, ora e servizio (es. *"Gomme Rossi S.n.c. ti
+aspetta martedì 20 ottobre, ore 9:30 · Cambio gomme stagionale"*). È una notifica come le altre: compare
+nella pagina Notifiche (icona sveglia) e arriva anche come push. Chi lavora in officina non la riceve (ha il
+calendario).
+
+### Codice complesso
+
+Migrazione `20261014180000_promemoria_appuntamenti.sql`.
+
+- **Job.** `pg_cron` (Supabase Cron) esegue `crea_promemoria_appuntamenti()` **ogni ora al minuto 5**
+  (`cron.job`, nome `promemoria-appuntamenti`). La funzione non fa nulla prima delle **18:00 italiane**;
+  dalle 18 avvisa gli appuntamenti `CONFERMATA` del giorno dopo. Il giro orario (invece di uno al giorno)
+  evita i problemi dell'ora legale (pg_cron ragiona in UTC) e recupera un giro saltato.
+- **Una volta sola per orario.** Nuova colonna `prenotazioni.promemoria_per`: l'`appuntamento` per cui il
+  promemoria è già partito. La funzione fa in un'unica istruzione `update … returning` (segna) + `insert`
+  in `notifiche`; se l'officina sposta l'appuntamento a un altro giorno, `promemoria_per` non coincide più
+  e al nuovo orario parte un altro promemoria. L'update tocca solo `promemoria_per`, quindi non scatta il
+  trigger `prenotazioni_notifica` (che guarda `stato` e `appuntamento`).
+- **Test.** `p_adesso` (predefinito `now()`) permette ai 13 pgTAP di `promemoria.test.sql` di simulare l'ora.
+  La funzione restituisce quanti promemoria ha creato; non è chiamabile dagli utenti (solo dal job).
+- **Nuovo tipo** `PROMEMORIA` in `tipo_notifica` (`alter type … add value`): il valore non si può usare
+  nella stessa transazione in cui nasce, per questo compare solo dentro il corpo della funzione.
+- Per provarlo a mano sul database locale (SQL editor di Studio) si passa un momento dopo le 18 del giorno
+  prima dell'appuntamento, es. `select public.crea_promemoria_appuntamenti('2026-10-19 18:30 Europe/Rome');`

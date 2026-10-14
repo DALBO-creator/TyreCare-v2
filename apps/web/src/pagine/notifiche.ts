@@ -1,4 +1,5 @@
 import {
+  AlarmClock,
   Ban,
   Bell,
   CalendarCheck,
@@ -28,6 +29,7 @@ const ICONE: Record<Enums<'tipo_notifica'>, IconNode> = {
   RIFIUTATA: CalendarX,
   PROPOSTA_ACCETTATA: CalendarCheck,
   ANNULLATA: Ban,
+  PROMEMORIA: AlarmClock,
 };
 
 function rigaNotifica(n: Notifica): string {
