@@ -48,16 +48,15 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: pubblicare i promemoria sul cloud e scegliere il passo successivo.** Sessione 17
-> (2026-10-14): push provate dal titolare (funzionano) e **promemoria del giorno prima** fatti in locale,
-> **non ancora pubblicati**. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si
+> **Obiettivo: provare i promemoria dal telefono e scegliere il passo successivo.** Sessione 17
+> (2026-10-14, chiusa): push provate dal titolare (funzionano) e **promemoria del giorno prima** pubblicati
+> sul cloud, CI verde. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si
 > riprende P8).
 
 **0 — Da chiedere al titolare**
 
-- [ ] **Pubblicare i promemoria**: dopo il commit, `npx supabase db push` (crea il tipo, la colonna e il job
-  `pg_cron`). Poi controllare in Supabase → *Integrations → Cron* che il job `promemoria-appuntamenti` ci sia
-  e giri ogni ora senza errori
+- [ ] (facoltativo) In Supabase → *Integrations → Cron*: il job `promemoria-appuntamenti` gira ogni ora
+  senza errori
 - [ ] **Prova dal telefono**: confermare un appuntamento per **domani**; dopo le 18 (entro l'ora successiva)
   deve arrivare "Domani hai un appuntamento" (nell'app e come push)
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: pulizia delle notifiche vecchie, preferenze; settimana a
@@ -148,7 +147,10 @@ serve `db:reset`: i test creano dati con nomi unici.
   appuntamenti confermati del giorno dopo, una volta per orario (di nuovo se l'appuntamento è spostato).
   `promemoria.test.sql`: **13 pgTAP** (totale **247**); tipi rigenerati
 - **Web:** icona sveglia per i promemoria nella pagina Notifiche
-- `npm run check` verde, `db:test` verde. **Non ancora pubblicato sul cloud** (`supabase db push`)
+- `npm run check` verde, `db:test` verde, CI verde. Il token della Supabase CLI era scaduto: il titolare ha
+  rifatto `npx supabase login` **in un PowerShell esterno** (dentro Claude Code il login interattivo non
+  funziona). **Pubblicato sul cloud** con `db push`; verificato con `supabase db query --linked` che il job
+  `promemoria-appuntamenti` esiste ed è attivo
 
 ### Sessione 16 — 2026-10-14 (PC di casa)
 
