@@ -49,7 +49,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 ## Prossima sessione
 
 > **Obiettivo: provare le notifiche push dal telefono e scegliere il passo successivo.** Sessione 16
-> (2026-10-14): notifiche nell'app + **Web Push**, tutto pubblicato sul cloud. **Prima di tutto** chiedere se
+> (2026-10-14, chiusa): notifiche nell'app + **Web Push**, tutto pubblicato sul cloud, CI verde. **Prima di tutto** chiedere se
 > è arrivato il file `.xls` di GESTITYRE (se c'è si riprende P8) e com'è andata la prova delle push.
 
 **0 — Da chiedere al titolare**
@@ -173,6 +173,8 @@ serve `db:reset`: i test creano dati con nomi unici.
   segreto, 404 con id inventato; notifica di prova con iscrizione finta → la funzione è stata chiamata dal
   database e ha risposto 200 (`dispositivi: 1`). Dati di prova cancellati. **Consegna vera sul telefono non
   ancora provata** (serve un dispositivo reale)
+- Commit `684d5da`: **CI (`check`, `database`, `e2e`) e deploy Vercel verdi**. La chiave privata VAPID è
+  solo nei segreti di Supabase (copia locale cancellata): se si perde, nuove chiavi e nuove iscrizioni
 - Le notifiche nascono nel database: Web Push ed email leggeranno la stessa tabella (P21).
 
 ### Sessione 15 (in parallelo) — 2026-10-13: impaginazione da computer
