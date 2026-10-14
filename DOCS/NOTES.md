@@ -1122,3 +1122,39 @@ mostrerebbe le voci del cliente a chi lavora in officina.
 E2e `notifiche.spec.ts` (due browser, cliente e titolare): il badge del titolare passa a 1 **senza
 ricaricare** quando la cliente chiede l'appuntamento, e viceversa per la conferma. `entra` e `chiedi` sono
 state spostate in `aiuti.ts` per usarle anche qui.
+
+## Notifiche push (Fase 5, Web Push)
+
+Secondo passo della Fase 5 (2026-10-14, sessione 16): ogni notifica dell'app arriva anche come **avviso
+sul telefono/computer**, anche con l'app chiusa.
+
+- Nella pagina **Notifiche**, sezione "Avvisi sul telefono": "Avvisami su questo dispositivo" chiede il
+  permesso (solo dopo il tocco) e iscrive il dispositivo; "Disattiva gli avvisi" lo toglie. Se il permesso è
+  bloccato spiega come riattivarlo; su **iPhone/iPad senza l'app nella schermata Home** spiega come
+  aggiungerla (lì le push funzionano solo così, P5).
+- Toccando l'avviso si apre l'appuntamento (in una finestra dell'app già aperta, se c'è). Avvisi dello stesso
+  appuntamento non si accumulano: il nuovo sostituisce il vecchio (`tag`).
+
+### Codice complesso
+
+Catena: `notifiche` (insert) → trigger `notifiche_push` → `net.http_post` (**pg_net**, asincrono: parte
+dopo il commit e non rallenta la risposta) → Edge Function **`invia-notifica`** (Deno,
+`supabase/functions/invia-notifica/index.ts`) → `web-push` con le chiavi VAPID → servizio push del browser →
+`public/sw-push.js` nel service worker.
+
+- **Segreti.** La funzione legge `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `PUSH_SEGRETO` (`supabase secrets
+  set`). Il database legge indirizzo della funzione e segreto dal **Vault** (`url_invia_notifica`,
+  `segreto_invia_notifica`) e lo manda nell'intestazione `x-segreto`: la funzione è pubblica
+  (`verify_jwt = false` in `config.toml`) ma senza il segreto risponde 401. Senza i segreti nel Vault (DB
+  locale, CI) il trigger non fa nulla. La chiave **pubblica** VAPID è scritta in `lib/push.ts` (non è un
+  segreto); se si cambiano le chiavi, tutti i dispositivi vanno iscritti di nuovo.
+- **Iscrizioni.** `iscrizioni_push` (RLS: solo le proprie). Si scrive con `iscrivi_push()` (`security
+  definer`): lo stesso browser può essere iscritto da un altro account e la riga vecchia, invisibile per la
+  RLS, bloccherebbe l'`unique` sull'endpoint. Le iscrizioni che il servizio push dà per scadute (404/410)
+  le elimina la funzione.
+- **Service worker.** Resta quello generato da vite-plugin-pwa (`generateSW`) con
+  `workbox.importScripts: ['sw-push.js']`; in sviluppo il service worker ora è **classico** (non `module`),
+  perché `importScripts` non funziona nei service worker module.
+- Verificato sul cloud (2026-10-14): una notifica inserita a mano con un'iscrizione finta → la funzione
+  risponde 200 `{"inviate":0,"dispositivi":1}` (l'endpoint finto non esiste); dati di prova cancellati.
+  8 pgTAP in `push.test.sql`. La consegna vera sul telefono va provata dal titolare.

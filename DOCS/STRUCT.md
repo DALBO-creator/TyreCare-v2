@@ -72,7 +72,9 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **tsx** | 4.23 | ✅ | Esegue TypeScript direttamente in sviluppo, con riavvio automatico (`npm run dev:api`). |
 | **tsup** | 8.5 | ✅ | Compila l'API in un unico file JavaScript (`dist/server.js`), includendo il codice di `@tyrecare/shared`. |
 | **Lettore Excel `.xls`** (proposta: **SheetJS**) | — | 🟡 | Import dell'export del gestionale **GESTITYRE** (primo partner LA SANTI GOMME, PLAN P8), che produce `.xls` binari (Excel 97–2003). SheetJS legge sia `.xls` che `.xlsx`; ExcelJS invece legge solo `.xlsx`. Attenzione: la versione aggiornata di SheetJS si installa dal loro CDN (`https://cdn.sheetjs.com/`), quella su npm (`xlsx`) è ferma e ha vulnerabilità note. Da decidere in Fase 2 con un file di esempio. |
-| **web-push** | — | 🟡 | Invio notifiche push con chiavi VAPID (Fase 5). |
+| **web-push** | 3.6 | ✅ | Invio delle notifiche push con chiavi VAPID, dentro la Edge Function `invia-notifica` (import `npm:` in Deno), non in Fastify (PLAN P21). |
+| **Supabase Edge Functions** (Deno) | — | ✅ | `supabase/functions/invia-notifica`: Web Push a ogni nuova notifica. Deploy: `npx supabase functions deploy invia-notifica`. |
+| **pg_net** + **Vault** | — | ✅ | Il trigger `notifiche_push` chiama la Edge Function in modo asincrono; indirizzo e segreto nel Vault. |
 
 ## Database e servizi
 

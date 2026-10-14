@@ -377,3 +377,34 @@ form .tc-pulsante-elimina {
     }
   }
 }
+
+// Sezione "Avvisi sul telefono" in cima alle notifiche
+.tc-push {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 1.125rem;
+  background: var(--tc-superficie);
+  border: 1px solid var(--bs-border-color);
+  border-radius: $tc-raggio-card;
+
+  &__titolo {
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  &__testo {
+    flex: 1;
+    color: var(--bs-secondary-color);
+    font-size: 0.9375rem;
+  }
+
+  &__errore {
+    margin-top: 0.5rem;
+    color: var(--tc-brand);
+  }
+}
+
+[data-sezione-push]:empty {
+  display: none;
+}

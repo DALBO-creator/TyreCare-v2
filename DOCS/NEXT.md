@@ -48,37 +48,28 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: Fase 5, secondo passo → Web Push** (P21). Sessione 16 (2026-10-14): fatte le **notifiche
-> nell'app** (voce "Notifiche" con badge in tempo reale). Migrazione già sul cloud, CI verde. **Prima di
-> tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si riprende P8) e com'è andata la
-> prova dal telefono.
+> **Obiettivo: provare le notifiche push dal telefono e scegliere il passo successivo.** Sessione 16
+> (2026-10-14): notifiche nell'app + **Web Push**, tutto pubblicato sul cloud. **Prima di tutto** chiedere se
+> è arrivato il file `.xls` di GESTITYRE (se c'è si riprende P8) e com'è andata la prova delle push.
 
 **0 — Da chiedere al titolare**
 
-- [ ] Prova dal telefono delle notifiche nell'app: con due account (cliente e officina) chiedere un
-  appuntamento → il badge rosso compare sulla campanella dell'officina senza ricaricare; confermare → arriva
-  al cliente
-- [ ] Confermare la **proposta P21**: invio push/email da una **Supabase Edge Function** chiamata dal
-  database (invece che da Fastify, che non è online)
-- [ ] (facoltativo) Idee nuove in `IMPLEMENTAZIONI.md`: promemoria del giorno prima, pulizia delle notifiche
-  vecchie, preferenze
+- [ ] **Prova delle push dal telefono** (Android: Chrome; iPhone: prima "Aggiungi alla schermata Home" e
+  aprire TyreCare da lì): Notifiche → "Avvisami su questo dispositivo" → consentire. Poi chiudere l'app e,
+  da un altro account, fare un'azione su un appuntamento (richiesta o conferma): deve arrivare l'avviso;
+  toccandolo si apre l'appuntamento. Se non arriva: Supabase → Edge Functions → `invia-notifica` → Logs
+- [ ] (facoltativo) Dal telefono, veicolo con una ruota rossa o gialla: sotto l'avviso "Prenota la
+  sostituzione" / "Prenota un controllo" (sessione 15)
+- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: promemoria del giorno prima, pulizia delle notifiche
+  vecchie, preferenze; settimana a colonne al computer, elenco veicoli a tabella
 
-**1 — Lavoro di Claude: Web Push**
+**1 — Lavoro di Claude (da scegliere con il titolare)**
 
-- [ ] Chiavi **VAPID** (pubblica nel web come `VITE_VAPID_PUBLIC_KEY`, privata solo nei segreti di Supabase)
-- [ ] Tabella `iscrizioni_push` (endpoint, chiavi, `profile_id`; RLS: solo le proprie) + funzioni per
-  iscriversi/disiscriversi
-- [ ] Service worker: gestore `push` (mostra titolo/testo della notifica) e `notificationclick` (apre il
-  `link`). Con `vite-plugin-pwa` serve passare a `injectManifest` oppure `workbox.importScripts`
-- [ ] Richiesta del permesso **in contesto** (skill ui-ux-pro-max): pulsante "Avvisami sul telefono" nella
-  pagina Notifiche e dopo l'invio di una richiesta; su iPhone spiegare "Aggiungi a Home" (P5)
-- [ ] Edge Function `invia-notifica` (Deno, libreria Web Push) chiamata da un trigger `pg_net` su
-  `notifiche`; iscrizioni scadute (410) eliminate
-- [ ] Poi: email di riserva (dopo l'SMTP definitivo), promemoria del giorno prima con Supabase Cron
-
-**Altro lavoro in attesa**
-
-- [ ] Fase 4, passi successivi: officine vicine; capienza/slot
+- [ ] Fase 5: **promemoria del giorno prima** dell'appuntamento (Supabase Cron → nuova riga in `notifiche`,
+  quindi anche push); poi promemoria degli pneumatici (P11)
+- [ ] Fase 5: **email di riserva** — dopo l'SMTP definitivo (vedi "Rimandati")
+- [ ] Invitare ad attivare le push anche dopo l'invio di una richiesta (oggi solo nella pagina Notifiche)
+- [ ] Fase 4: officine vicine; capienza/slot
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
@@ -107,6 +98,7 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [x] (2026-10-13, sessione 15) "Prenota" dal garage con il veicolo già scelto
 - [x] (2026-10-13, sessione 15) Cliente e veicolo creati dalla richiesta di appuntamento
 - [x] (2026-10-14, sessione 16) Fase 5: notifiche nell'app per le prenotazioni, con badge in tempo reale
+- [x] (2026-10-14, sessione 16) Fase 5: notifiche push (Edge Function `invia-notifica`, pg_net, VAPID)
 
 **Rimandati:**
 
@@ -170,6 +162,17 @@ serve `db:reset`: i test creano dati con nomi unici.
 - La prima CI ha fallito solo nel job `e2e`: Supabase partiva **senza Realtime** (`-x realtime` in
   `ci.yml`) e il badge non arrivava. Tolto dalla lista (`ci:` commit successivo): **CI tutta verde**,
   deploy Vercel verde
+- Test del titolare superati. **Web Push** (autorizzazione del titolare a fare e pubblicare tutto; P21
+  confermata): migrazione `20261014150000_notifiche_push.sql` (`iscrizioni_push`, `iscrivi_push()`,
+  trigger `notifiche_push` con pg_net e segreti nel Vault), Edge Function `invia-notifica` (`web-push`,
+  iscrizioni scadute eliminate), `public/sw-push.js` importato nel service worker, `lib/push.ts` e sezione
+  "Avvisi sul telefono" nella pagina Notifiche (permesso chiesto solo dopo il tocco, istruzioni per iPhone).
+  8 pgTAP in `push.test.sql` (totale **234**), `npm run check` verde, e2e delle notifiche verdi
+- **Pubblicato sul cloud da Claude:** segreti della funzione (`VAPID_*`, `PUSH_SEGRETO`), deploy di
+  `invia-notifica`, migrazione (prima `--dry-run`), segreti nel Vault. Verificato: funzione 401 senza
+  segreto, 404 con id inventato; notifica di prova con iscrizione finta → la funzione è stata chiamata dal
+  database e ha risposto 200 (`dispositivi: 1`). Dati di prova cancellati. **Consegna vera sul telefono non
+  ancora provata** (serve un dispositivo reale)
 - Le notifiche nascono nel database: Web Push ed email leggeranno la stessa tabella (P21).
 
 ### Sessione 15 (in parallelo) — 2026-10-13: impaginazione da computer

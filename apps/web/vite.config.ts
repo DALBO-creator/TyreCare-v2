@@ -41,9 +41,13 @@ export default defineConfig({
         // Oltre ai file di default precarica icone e i font dei soli caratteri latini (italiano):
         // gli altri alfabeti si scaricano solo se servono
         globPatterns: ['**/*.{js,css,html,ico,png,svg}', '**/*-latin-wght-normal-*.woff2'],
+        // Notifiche push (Fase 5): gestori `push` e `notificationclick` in public/sw-push.js
+        importScripts: ['sw-push.js'],
+        globIgnores: ['**/sw-push.js'],
       },
-      // Service worker attivo anche in `npm run dev`, per provare la PWA in locale
-      devOptions: { enabled: true, type: 'module' },
+      // Service worker attivo anche in `npm run dev`, per provare la PWA in locale (classico, non
+      // "module": `importScripts` funziona solo nei service worker classici)
+      devOptions: { enabled: true },
     }),
   ],
 });

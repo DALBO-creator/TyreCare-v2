@@ -38,7 +38,7 @@
 | **Logo dell'officina** nel report stampato | 🟢 | Serve il caricamento del logo (Storage). |
 | **Filtri commerciali nel garage officina** (cambio stagionale da fare, nessun controllo da X mesi) | 🟠 | PLAN P13; per ora filtri per stato e ricerca. |
 | ~~**Editor degli orari dell'officina**~~ (titolare) | ✅ | Fatto nella sessione 14, con le chiusure straordinarie e il formato validato nel database. |
-| **Notifiche delle prenotazioni** (nuova richiesta all'officina, conferma/proposta/rifiuto al cliente) | 🔴 | **Nell'app fatte il 2026-10-14** (sessione 16): voce "Notifiche" con badge in tempo reale. Restano Web Push ed email (Fase 5). |
+| **Notifiche delle prenotazioni** (nuova richiesta all'officina, conferma/proposta/rifiuto al cliente) | 🔴 | **Nell'app fatte il 2026-10-14** (sessione 16): voce "Notifiche" con badge in tempo reale. Web Push fatte lo stesso giorno; resta l'email (dopo l'SMTP definitivo). |
 | **Promemoria del giorno prima** ("Domani alle 9:30 hai l'appuntamento da …") | 🟠 | Job giornaliero (Supabase Cron) che inserisce una notifica: riusa la tabella `notifiche` con un nuovo tipo. |
 | **Pulizia delle notifiche vecchie** (es. lette da più di 6 mesi) | 🟢 | Job periodico; oggi l'app ne mostra solo le ultime 50. |
 | **Preferenze delle notifiche** (quali ricevere, su quali canali) | 🟢 | PLAN P5; utile quando arrivano push ed email. |

@@ -245,6 +245,41 @@ export type Database = {
           },
         ];
       };
+      iscrizioni_push: {
+        Row: {
+          auth: string;
+          created_at: string;
+          endpoint: string;
+          id: string;
+          p256dh: string;
+          profile_id: string;
+        };
+        Insert: {
+          auth: string;
+          created_at?: string;
+          endpoint: string;
+          id?: string;
+          p256dh: string;
+          profile_id?: string;
+        };
+        Update: {
+          auth?: string;
+          created_at?: string;
+          endpoint?: string;
+          id?: string;
+          p256dh?: string;
+          profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'iscrizioni_push_profile_id_fkey';
+            columns: ['profile_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       misure_pneumatico: {
         Row: {
           battistrada_mm: number;
@@ -763,6 +798,10 @@ export type Database = {
       is_membro_officina: { Args: { p_officina_id: string }; Returns: boolean };
       is_titolare_officina: { Args: { p_officina_id: string }; Returns: boolean };
       is_veicolo_mio: { Args: { p_veicolo_id: string }; Returns: boolean };
+      iscrivi_push: {
+        Args: { p_auth: string; p_endpoint: string; p_p256dh: string };
+        Returns: undefined;
+      };
       modifica_controllo: {
         Args: {
           p_eseguito_il: string;
