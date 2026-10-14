@@ -28,7 +28,7 @@
 | ~~**Prenota dalla scheda del garage**~~ quando un pneumatico è da sostituire | ✅ | Fatto il 2026-10-13 (sessione 15): "Prenota la sostituzione" / "Prenota un controllo" sotto l'avviso. |
 | **Età degli pneumatici dal DOT** anche nella carta del garage e nella scheda officina | 🟢 | Già nella pagina dello pneumatico (sessione 11), con avviso oltre i 5 anni. |
 | **Seed con più controlli** per la Panda (per vedere il grafico in locale) | 🟢 | Oggi il seed ha un solo controllo; aggiungerne uno cambia i conteggi di `dati.test.sql`. |
-| **Promemoria dalla stima del consumo** ("tra circa 2 mesi arrivi a 3 mm") | 🟠 | Fase 5: la stima c'è già in `lib/salute.ts`. |
+| **Promemoria dalla stima del consumo** ("tra circa 2 mesi arrivi a 3 mm") | 🟠 | Fase 5: la stima c'è già in `lib/salute.ts` (andrebbe portata in SQL, es. `regr_slope`). Non scelto il 2026-10-14. |
 | **Link pubblico del report** di un controllo (da mandare a chi non ha l'app, es. un familiare) | 🟠 | Oggi c'è "Stampa o salva in PDF". Servirebbe un token casuale e revocabile per controllo, letto da una rotta Fastify o da una funzione `security definer` (mai una policy RLS aperta), con scadenza. |
 | **Invio del report al cliente** (email/WhatsApp) quando l'officina salva il controllo | 🟠 | Dopo il link pubblico; per i clienti senza account. |
 | **Invio automatico dell'invito** da TyreCare (oggi parte dal programma di posta dell'officina) | 🟠 | Con l'SMTP definitivo: Edge Function o rotta Fastify che manda l'email con il template in italiano; stessa tabella `inviti_cliente`. |
@@ -40,6 +40,8 @@
 | ~~**Editor degli orari dell'officina**~~ (titolare) | ✅ | Fatto nella sessione 14, con le chiusure straordinarie e il formato validato nel database. |
 | **Notifiche delle prenotazioni** (nuova richiesta all'officina, conferma/proposta/rifiuto al cliente) | 🔴 | **Nell'app fatte il 2026-10-14** (sessione 16): voce "Notifiche" con badge in tempo reale. Web Push fatte lo stesso giorno; resta l'email (dopo l'SMTP definitivo). |
 | ~~**Promemoria del giorno prima**~~ ("Domani hai un appuntamento") | ✅ | Fatto nella sessione 17 (2026-10-14): job orario di Supabase Cron, dalle 18 del giorno prima, tipo `PROMEMORIA` (anche push). |
+| ~~**Esito del controllo** e **cambio stagionale**~~ | ✅ | Fatti nella sessione 17 (2026-10-14): notifica al cliente dopo un controllo con gomme gialle/rosse; promemoria stagionale dal 15 ottobre e dal 15 marzo. |
+| **Promemoria gomme vecchie** (DOT oltre i 5 anni) | 🟠 | Scartato per ora dal titolare (2026-10-14). Stesso schema di `crea_promemoria_pneumatici()`, chiave per pneumatico. |
 | **Pulizia delle notifiche vecchie** (es. lette da più di 6 mesi) | 🟢 | Job periodico; oggi l'app ne mostra solo le ultime 50. |
 | **Preferenze delle notifiche** (quali ricevere, su quali canali) | 🟢 | PLAN P5; utile quando arrivano push ed email. |
 | ~~**Prenota dal garage**~~: pulsante "Prenota" nella carta dell'officina del veicolo, con targa già scelta | ✅ | Fatto il 2026-10-13 (sessione 15); nel report la carta resta senza "Prenota". |

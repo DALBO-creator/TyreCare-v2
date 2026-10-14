@@ -75,7 +75,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **web-push** | 3.6 | ✅ | Invio delle notifiche push con chiavi VAPID, dentro la Edge Function `invia-notifica` (import `npm:` in Deno), non in Fastify (PLAN P21). |
 | **Supabase Edge Functions** (Deno) | — | ✅ | `supabase/functions/invia-notifica`: Web Push a ogni nuova notifica. Deploy: `npx supabase functions deploy invia-notifica`. |
 | **pg_net** + **Vault** | — | ✅ | Il trigger `notifiche_push` chiama la Edge Function in modo asincrono; indirizzo e segreto nel Vault. |
-| **pg_cron** (Supabase Cron) | — | ✅ | Job `promemoria-appuntamenti` ogni ora: dalle 18 crea il promemoria del giorno prima (`crea_promemoria_appuntamenti()`). Elenco dei job: tabella `cron.job`; esecuzioni: `cron.job_run_details`. |
+| **pg_cron** (Supabase Cron) | — | ✅ | Job orari: `promemoria-appuntamenti` (dalle 18, promemoria del giorno prima) e `promemoria-pneumatici` (dalle 10, cambio stagionale). Elenco dei job: tabella `cron.job`; esecuzioni: `cron.job_run_details`. |
 
 ## Database e servizi
 

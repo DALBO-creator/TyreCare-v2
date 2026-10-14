@@ -340,6 +340,7 @@ export type Database = {
       };
       notifiche: {
         Row: {
+          chiave: string | null;
           created_at: string;
           destinatario_id: string;
           id: string;
@@ -351,6 +352,7 @@ export type Database = {
           titolo: string;
         };
         Insert: {
+          chiave?: string | null;
           created_at?: string;
           destinatario_id: string;
           id?: string;
@@ -362,6 +364,7 @@ export type Database = {
           titolo: string;
         };
         Update: {
+          chiave?: string | null;
           created_at?: string;
           destinatario_id?: string;
           id?: string;
@@ -780,6 +783,7 @@ export type Database = {
         }[];
       };
       crea_promemoria_appuntamenti: { Args: { p_adesso?: string }; Returns: number };
+      crea_promemoria_pneumatici: { Args: { p_adesso?: string }; Returns: number };
       fasce_aperte: {
         Args: { p_giorno: string; p_orari: Json };
         Returns: Database['public']['Enums']['fascia_oraria'][];
@@ -862,12 +866,21 @@ export type Database = {
         Returns: undefined;
       };
       rispondi_proposta: { Args: { p_accetta: boolean; p_id: string }; Returns: undefined };
+      stato_battistrada: {
+        Args: { p_mm: number; p_stagione: Database['public']['Enums']['stagione'] };
+        Returns: string;
+      };
+      testo_gomme: { Args: { p_quante: number }; Returns: string };
       testo_quando: {
         Args: {
           p_appuntamento: string;
           p_fascia: Database['public']['Enums']['fascia_oraria'];
           p_giorno: string;
         };
+        Returns: string;
+      };
+      testo_veicolo: {
+        Args: { p_marca: string; p_modello: string; p_targa: string };
         Returns: string;
       };
     };
@@ -894,7 +907,9 @@ export type Database = {
         | 'RIFIUTATA'
         | 'PROPOSTA_ACCETTATA'
         | 'ANNULLATA'
-        | 'PROMEMORIA';
+        | 'PROMEMORIA'
+        | 'ESITO_CONTROLLO'
+        | 'CAMBIO_STAGIONE';
       usura: 'REGOLARE' | 'INTERNA' | 'ESTERNA' | 'CENTRALE' | 'BORDI';
     };
     CompositeTypes: {
@@ -1034,6 +1049,8 @@ export const Constants = {
         'PROPOSTA_ACCETTATA',
         'ANNULLATA',
         'PROMEMORIA',
+        'ESITO_CONTROLLO',
+        'CAMBIO_STAGIONE',
       ],
       usura: ['REGOLARE', 'INTERNA', 'ESTERNA', 'CENTRALE', 'BORDI'],
     },

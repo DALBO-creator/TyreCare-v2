@@ -1186,3 +1186,40 @@ Migrazione `20261014180000_promemoria_appuntamenti.sql`.
   nella stessa transazione in cui nasce, per questo compare solo dentro il corpo della funzione.
 - Per provarlo a mano sul database locale (SQL editor di Studio) si passa un momento dopo le 18 del giorno
   prima dell'appuntamento, es. `select public.crea_promemoria_appuntamenti('2026-10-19 18:30 Europe/Rome');`
+
+## Promemoria degli pneumatici (Fase 5, P11)
+
+Quarto passo della Fase 5 (2026-10-14, sessione 17). Scelte del titolare: **esito del controllo** e
+**cambio stagionale**; solo al **cliente** con il veicolo nel garage (mai all'officina); promemoria
+stagionale alle **10**. Come le altre notifiche arrivano anche come push.
+
+- **Esito del controllo.** Appena l'officina registra un controllo con gomme gialle o rosse, il cliente
+  riceve *"Gomme da sostituire"* (almeno una rossa) o *"Gomme da tenere d'occhio"* (solo gialle), es.
+  *"Gomme Rossi S.n.c. ha controllato AB123CD (Fiat Panda): 1 gomma sotto il limite di legge e 1 gomma
+  sotto la soglia consigliata. Apri il report per i dettagli."* → apre il report (`/controllo?id=…`).
+  Nulla se sono tutte verdi, per i controlli importati, per quelli registrati più di 7 giorni dopo e per
+  le correzioni (`modifica_controllo`).
+- **Cambio stagionale.** Dal 15 ottobre a fine anno, se risultano montate gomme **estive**: *"È ora delle
+  gomme invernali"*. Dal 15 marzo a fine maggio, se risultano montate gomme **invernali**: *"È ora delle
+  gomme estive"*. Le 4 stagioni e la ruota di scorta non contano. Un promemoria per stagione e per targa →
+  apre il veicolo del garage (`/garage/veicolo?targa=…`), dove c'è "Prenota".
+
+### Codice complesso
+
+Migrazione `20261014200000_promemoria_pneumatici.sql`; 21 pgTAP in `promemoria-pneumatici.test.sql`.
+
+- **`stato_battistrada(mm, stagione)`** ripete in SQL le soglie di `statoBattistrada()` di
+  `packages/shared/src/pneumatici.ts` (1,6 mm; 3 estivi, 4 invernali e 4 stagioni). **Se cambiano le
+  soglie, vanno cambiate in tutti e due i posti** (i pgTAP fissano i valori di confine).
+- **Esito: trigger "deferred".** `controlli_notifica_esito` è un `constraint trigger … deferrable
+  initially deferred` su `controlli`: scatta alla **fine della transazione**, quando `registra_controllo`
+  ha già scritto anche le misure (un trigger normale sull'insert del controllo non le vedrebbe ancora).
+  Vale anche per scritture future fuori da quella funzione. Nei test si forza con `set constraints …
+  immediate`, perché la transazione dei test finisce con un rollback.
+- **`notifiche.chiave`** + indice unico parziale `(destinatario_id, chiave)`: una notifica con la stessa
+  chiave non si ripete (`insert … on conflict do nothing`). Chiavi: `ESITO_CONTROLLO:<id controllo>`,
+  `CAMBIO_STAGIONE:<stagione da montare>:<anno>:<targa>`. La targa (non il veicolo) perché la stessa auto
+  può essere in due officine del cliente; `distinct on` evita due righe nello stesso giro.
+- **Job** `promemoria-pneumatici` (pg_cron, minuto 15 di ogni ora): `crea_promemoria_pneumatici()` non fa
+  nulla prima delle 10 italiane; dopo, la chiave impedisce i doppioni nei giri successivi. Prova a mano:
+  `select public.crea_promemoria_pneumatici('2026-10-20 10:30 Europe/Rome');`

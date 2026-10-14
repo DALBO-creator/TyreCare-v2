@@ -49,25 +49,29 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 ## Prossima sessione
 
 > **Obiettivo: provare i promemoria dal telefono e scegliere il passo successivo.** Sessione 17
-> (2026-10-14, chiusa): push provate dal titolare (funzionano) e **promemoria del giorno prima** pubblicati
-> sul cloud, CI verde. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si
-> riprende P8).
+> (2026-10-14): **promemoria del giorno prima** e **promemoria degli pneumatici** (esito del controllo,
+> cambio stagionale). **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si
+> riprende P8) e com'è andata la prova dei promemoria.
 
 **0 — Da chiedere al titolare**
 
-- [ ] (facoltativo) In Supabase → *Integrations → Cron*: il job `promemoria-appuntamenti` gira ogni ora
-  senza errori
-- [ ] **Prova dal telefono**: confermare un appuntamento per **domani**; dopo le 18 (entro l'ora successiva)
-  deve arrivare "Domani hai un appuntamento" (nell'app e come push)
-- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: pulizia delle notifiche vecchie, preferenze; settimana a
-  colonne al computer, elenco veicoli a tabella
+- [ ] **Promemoria del giorno prima**: confermare un appuntamento per **domani**; dopo le 18 (entro l'ora
+  successiva) deve arrivare "Domani hai un appuntamento" (nell'app e come push)
+- [ ] **Esito del controllo**: in officina registrare un controllo con una gomma sotto 1,6 mm su un veicolo
+  collegato all'account di prova → il cliente riceve subito "Gomme da sostituire"; toccandola si apre il
+  report
+- [ ] **Cambio stagionale**: oggi (dal 15 ottobre) parte alle 10 per i veicoli nel garage con gomme
+  **estive** montate. Da domani mattina il cliente di prova dovrebbe ricevere "È ora delle gomme invernali"
+  (se ha estive montate)
+- [ ] (facoltativo) In Supabase → *Integrations → Cron*: i job `promemoria-appuntamenti` e
+  `promemoria-pneumatici` girano senza errori
+- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, pulizia delle
+  notifiche vecchie, preferenze
 
 **1 — Lavoro di Claude (da scegliere con il titolare)**
 
-- [ ] Fase 5: **promemoria degli pneumatici** (P11): battistrada vicino al limite dalla stima del consumo
-  (`lib/salute.ts` → va portata nel database), cambio stagionale; stesso schema dei promemoria (job
-  pg_cron → `notifiche`)
 - [ ] Invitare ad attivare le push anche dopo l'invio di una richiesta (oggi solo nella pagina Notifiche)
+- [ ] Aprire il report di un controllo potrebbe segnare letta la sua notifica (come già l'appuntamento)
 - [ ] Fase 5: **email di riserva** — dopo l'SMTP definitivo (vedi "Rimandati")
 - [ ] Fase 4: officine vicine; capienza/slot
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
@@ -100,6 +104,7 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [x] (2026-10-14, sessione 16) Fase 5: notifiche nell'app per le prenotazioni, con badge in tempo reale
 - [x] (2026-10-14, sessione 16) Fase 5: notifiche push (Edge Function `invia-notifica`, pg_net, VAPID)
 - [x] (2026-10-14, sessione 17) Fase 5: promemoria del giorno prima (pg_cron)
+- [x] (2026-10-14, sessione 17) Fase 5: promemoria degli pneumatici (esito del controllo, cambio stagionale)
 
 **Rimandati:**
 
@@ -151,6 +156,13 @@ serve `db:reset`: i test creano dati con nomi unici.
   rifatto `npx supabase login` **in un PowerShell esterno** (dentro Claude Code il login interattivo non
   funziona). **Pubblicato sul cloud** con `db push`; verificato con `supabase db query --linked` che il job
   `promemoria-appuntamenti` esiste ed è attivo
+- **Promemoria degli pneumatici** (P11). Scelte del titolare: esito del controllo e cambio stagionale, solo al
+  cliente, alle 10 (scartati per ora: gomme vecchie e stima del consumo). Migrazione
+  `20261014200000_promemoria_pneumatici.sql`: tipi `ESITO_CONTROLLO` e `CAMBIO_STAGIONE`, colonna
+  `notifiche.chiave` (unica per destinatario: niente doppioni), `stato_battistrada()` (soglie come
+  `packages/shared`), constraint trigger **deferred** `controlli_notifica_esito`, funzione
+  `crea_promemoria_pneumatici()` e job pg_cron `promemoria-pneumatici` (minuto 15). 21 pgTAP (totale
+  **268**); verificato a mano che il trigger scatta al commit. Icone nella pagina Notifiche
 
 ### Sessione 16 — 2026-10-14 (PC di casa)
 

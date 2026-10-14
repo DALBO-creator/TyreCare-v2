@@ -6,7 +6,9 @@ import {
   CalendarClock,
   CalendarPlus,
   CalendarX,
+  ClipboardCheck,
   Smartphone,
+  ThermometerSnowflake,
   type IconNode,
 } from 'lucide';
 import type { Enums } from '@tyrecare/shared';
@@ -30,6 +32,8 @@ const ICONE: Record<Enums<'tipo_notifica'>, IconNode> = {
   PROPOSTA_ACCETTATA: CalendarCheck,
   ANNULLATA: Ban,
   PROMEMORIA: AlarmClock,
+  ESITO_CONTROLLO: ClipboardCheck,
+  CAMBIO_STAGIONE: ThermometerSnowflake,
 };
 
 function rigaNotifica(n: Notifica): string {
