@@ -49,7 +49,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 ## Prossima sessione
 
 > **Obiettivo: provare i promemoria dal telefono e scegliere il passo successivo.** Sessione 17
-> (2026-10-14): **promemoria del giorno prima** e **promemoria degli pneumatici** (esito del controllo,
+> (2026-10-14, chiusa): **promemoria del giorno prima** e **promemoria degli pneumatici** (esito del controllo,
 > cambio stagionale). **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si
 > riprende P8) e com'è andata la prova dei promemoria.
 
