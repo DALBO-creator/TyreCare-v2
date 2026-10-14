@@ -49,9 +49,9 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 ## Prossima sessione
 
 > **Obiettivo: Fase 5, secondo passo → Web Push** (P21). Sessione 16 (2026-10-14): fatte le **notifiche
-> nell'app** (voce "Notifiche" con badge in tempo reale). **Prima di tutto** chiedere se è arrivato il file
-> `.xls` di GESTITYRE (se c'è si riprende P8) e se la migrazione `20261014120000_notifiche.sql` è stata
-> pubblicata sul cloud (se no: `npx supabase db push --dry-run`, poi `db push`, con l'ok del titolare).
+> nell'app** (voce "Notifiche" con badge in tempo reale). Migrazione già sul cloud, CI verde. **Prima di
+> tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si riprende P8) e com'è andata la
+> prova dal telefono.
 
 **0 — Da chiedere al titolare**
 
@@ -164,7 +164,12 @@ serve `db:reset`: i test creano dati con nomi unici.
 
 **Note**
 
-- Nessuna nuova libreria. La migrazione **non è ancora sul cloud** (vedi "Prossima sessione").
+- Nessuna nuova libreria.
+- Commit `56b13df` (codice) e `4d13a93` (documenti). **Migrazione pubblicata sul cloud da Claude** (ok del
+  titolare, prima `--dry-run`): 12 migrazioni allineate, trigger e Realtime verificati sul cloud
+- La prima CI ha fallito solo nel job `e2e`: Supabase partiva **senza Realtime** (`-x realtime` in
+  `ci.yml`) e il badge non arrivava. Tolto dalla lista (`ci:` commit successivo): **CI tutta verde**,
+  deploy Vercel verde
 - Le notifiche nascono nel database: Web Push ed email leggeranno la stessa tabella (P21).
 
 ### Sessione 15 (in parallelo) — 2026-10-13: impaginazione da computer
