@@ -58,7 +58,8 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npx supabase start -x studio,imgproxy,realtime,storage-api,edge-runtime,logflare,vector,supavisor,postgres-meta
+      # Realtime serve: il contatore delle notifiche si aggiorna senza ricaricare (notifiche.spec.ts)
+      - run: npx supabase start -x studio,imgproxy,storage-api,edge-runtime,logflare,vector,supavisor,postgres-meta
       - name: Variabili del web per Supabase locale
         # Chiave pubblica "demo" uguale per ogni Supabase locale: non è un segreto
         run: |
