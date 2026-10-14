@@ -162,7 +162,8 @@ serve `db:reset`: i test creano dati con nomi unici.
   `notifiche.chiave` (unica per destinatario: niente doppioni), `stato_battistrada()` (soglie come
   `packages/shared`), constraint trigger **deferred** `controlli_notifica_esito`, funzione
   `crea_promemoria_pneumatici()` e job pg_cron `promemoria-pneumatici` (minuto 15). 21 pgTAP (totale
-  **268**); verificato a mano che il trigger scatta al commit. Icone nella pagina Notifiche
+  **268**); verificato a mano che il trigger scatta al commit. Icone nella pagina Notifiche. Commit
+  `d0ad309`, CI verde, **pubblicato sul cloud** con `db push`: i due job pg_cron risultano attivi
 
 ### Sessione 16 — 2026-10-14 (PC di casa)
 
