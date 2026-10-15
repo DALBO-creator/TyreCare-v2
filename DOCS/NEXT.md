@@ -58,7 +58,8 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 - [ ] **Invito agli avvisi**: su un telefono **senza** avvisi attivi (o dopo "Disattiva gli avvisi" nella
   pagina Notifiche) inviare una richiesta di appuntamento → sotto la conferma compare "Vuoi sapere subito
   quando risponde?"; "Avvisami su questo dispositivo" chiede il permesso e diventa "Avvisi attivi".
-  Riaprendo l'appuntamento l'invito non c'è più
+  Riaprendo l'appuntamento l'invito non c'è più. **Nota (2026-10-15):** al primo tentativo non compariva
+  perché sul telefono gli avvisi erano già attivi (comportamento previsto): spegnerli prima della prova
 - [ ] **Report letto**: con una notifica "Gomme da sostituire" non letta, aprire il report dal garage
   (non dalla notifica) → il badge della campanella si azzera
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, pulizia delle
