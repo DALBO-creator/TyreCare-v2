@@ -43,6 +43,7 @@ import {
 import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { getSupabase } from '../lib/supabase';
+import { collegaAvvisiPush } from '../ui/avvisi-push';
 import { chiediConferma } from '../ui/conferma';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
@@ -213,8 +214,18 @@ async function caricaConRuolo(
   return { p, perOfficina };
 }
 
+// Invito ad attivare le push sulla prossima pagina dell'appuntamento (una sola volta)
+let invitoPush = false;
+
+/** Dopo una richiesta: la pagina dell'appuntamento invita ad attivare gli avvisi, se sono spenti. */
+export function invitaAgliAvvisi(): void {
+  invitoPush = true;
+}
+
 export async function mostraAppuntamento(app: HTMLElement): Promise<void> {
   const n = visualizzazioneCorrente();
+  const invito = invitoPush;
+  invitoPush = false;
   app.innerHTML = paginaApp(caricamento());
   let trovato: Awaited<ReturnType<typeof caricaConRuolo>>;
   let veicoloId: string | null = null;
@@ -245,7 +256,7 @@ export async function mostraAppuntamento(app: HTMLElement): Promise<void> {
 
   const { p, perOfficina } = trovato;
   // Le notifiche di questo appuntamento ora sono viste (errori ignorati: è solo il contatore)
-  if (notificheNonLette()) segnaLette(p.id).catch(() => undefined);
+  if (notificheNonLette()) segnaLette({ prenotazione: p.id }).catch(() => undefined);
   const oggi = oggiInItalia();
   const veicolo = [formattaTarga(p.targa), p.veicolo].filter(Boolean).join(' · ');
   const richiestoIl = `Chiesto per ${formattaGiornoTitolo(p.giorno).toLowerCase()}, ${p.fascia === 'MATTINA' ? 'mattina' : 'pomeriggio'}`;
@@ -275,6 +286,7 @@ export async function mostraAppuntamento(app: HTMLElement): Promise<void> {
     ${intestazioneSottopagina(quando(p), perOfficina ? 'Appuntamento' : p.officina.ragione_sociale)}
     <div class="tc-contenuto">
       ${avvisoConferma()}
+      <div data-sezione-push></div>
       <p class="mb-0">${badgePrenotazione(p.stato, perOfficina)}</p>
       ${p.appuntamento || p.stato !== 'RICHIESTA' ? `<p class="small text-body-secondary mb-0">${esc(richiestoIl)}</p>` : ''}
       <div class="tc-lista">${dettagli}</div>
@@ -286,6 +298,8 @@ export async function mostraAppuntamento(app: HTMLElement): Promise<void> {
 
   collegaAzioni(app, p);
   collegaRegistra(app, p, clienteCollegato);
+  const push = app.querySelector<HTMLElement>('[data-sezione-push]');
+  if (push && invito) void collegaAvvisiPush(push, { invito: true });
 }
 
 type ClienteCollegato = Awaited<ReturnType<typeof caricaClienteDellaPrenotazione>>;

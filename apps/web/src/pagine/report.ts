@@ -1,6 +1,7 @@
 import { ArrowLeft, ChevronRight, Pencil, Printer, SearchX } from 'lucide';
 import { SOGLIE_BATTISTRADA_MM, formattaTarga } from '@tyrecare/shared';
 import { esc } from '../lib/html';
+import { notificheNonLette, segnaLette } from '../lib/notifiche';
 import { caricaDatiUtente } from '../lib/profilo';
 import { caricaReport, type MisuraReport, type Report } from '../lib/report';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
@@ -51,6 +52,8 @@ export async function mostraReport(app: HTMLElement): Promise<void> {
     return;
   }
 
+  // La notifica dell'esito di questo controllo ora è vista (errori ignorati: è solo il contatore)
+  if (notificheNonLette()) segnaLette({ controllo: report.id }).catch(() => undefined);
   const { veicolo, misure } = report;
   const ordinate = [...misure].sort(
     (a, b) =>

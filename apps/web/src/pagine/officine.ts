@@ -40,6 +40,7 @@ import {
   parametro,
   vaiConConferma,
 } from './comune';
+import { invitaAgliAvvisi } from './appuntamenti';
 import { cartaOfficina } from './garage-veicolo';
 import { periodoChiusura } from './orari';
 import { dettagliServizio } from './servizi';
@@ -395,6 +396,7 @@ export async function mostraPrenota(app: HTMLElement): Promise<void> {
     creaRichiestaSchema(officina.orari, oggi, officina.chiusure),
     async (richiesta) => {
       const idPrenotazione = await richiediPrenotazione(off.id, richiesta);
+      invitaAgliAvvisi();
       vaiConConferma(
         `/appuntamento?id=${idPrenotazione}`,
         `Richiesta inviata a ${off.ragione_sociale}. La risposta con l'ora precisa la trovi qui.`,

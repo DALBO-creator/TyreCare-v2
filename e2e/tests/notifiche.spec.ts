@@ -74,3 +74,32 @@ test('aprire un appuntamento segna come lette le sue notifiche', async ({ page, 
   await expect(page.getByRole('button', { name: 'Conferma appuntamento' })).toBeVisible();
   await expect(voceNotifiche(page)).toHaveAccessibleName(/^Notifiche$/);
 });
+
+test('dopo la richiesta la pagina invita ad attivare gli avvisi, una volta sola', async ({
+  browser,
+}) => {
+  const cliente = await entra(browser, await nuovoAccountCliente('Pia'));
+  // Nei test il service worker è bloccato e Chromium senza finestra nega le notifiche: si finge un
+  // telefono con l'app installata su cui non si è ancora scelto (avvisi spenti, permesso da chiedere)
+  await cliente.addInitScript(() => {
+    const finto = { pushManager: { getSubscription: () => Promise.resolve(null) } };
+    navigator.serviceWorker.getRegistration = () =>
+      Promise.resolve(finto as unknown as ServiceWorkerRegistration);
+    Object.defineProperty(Notification, 'permission', { get: () => 'default' });
+  });
+  const indirizzo = await chiedi(cliente, {
+    targa: `N${unico().slice(-7)}`,
+    giorno: prossimoFeriale(2),
+    fascia: 'Mattina',
+  });
+  const invito = cliente.getByRole('heading', { name: 'Vuoi sapere subito quando risponde?' });
+  await expect(invito).toBeVisible();
+  await expect(
+    cliente.getByRole('button', { name: 'Avvisami su questo dispositivo' }),
+  ).toBeVisible();
+
+  // Riaprendo l'appuntamento l'invito non c'è più (resta la pagina Notifiche)
+  await cliente.goto(indirizzo);
+  await expect(cliente.getByText('In attesa di risposta')).toBeVisible();
+  await expect(invito).toHaveCount(0);
+});

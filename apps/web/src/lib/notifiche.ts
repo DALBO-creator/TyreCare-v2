@@ -22,13 +22,19 @@ export async function caricaNotifiche(): Promise<Notifica[]> {
   return data;
 }
 
-/** Segna come lette tutte le notifiche (o solo quelle di una prenotazione). */
-export async function segnaLette(prenotazioneId?: string): Promise<void> {
+/** Quali notifiche segnare lette: quelle di una prenotazione o quella dell'esito di un controllo. */
+export type FiltroNotifiche = { prenotazione: string } | { controllo: string };
+
+/** Segna come lette tutte le notifiche (o solo quelle del filtro). */
+export async function segnaLette(filtro?: FiltroNotifiche): Promise<void> {
   let query = getSupabase()
     .from('notifiche')
     .update({ letta_il: new Date().toISOString() })
     .is('letta_il', null);
-  if (prenotazioneId) query = query.eq('prenotazione_id', prenotazioneId);
+  if (filtro && 'prenotazione' in filtro) query = query.eq('prenotazione_id', filtro.prenotazione);
+  // La chiave è quella scritta da `notifica_esito_controllo` (migrazione dei promemoria pneumatici)
+  if (filtro && 'controllo' in filtro)
+    query = query.eq('chiave', `ESITO_CONTROLLO:${filtro.controllo}`);
   const { error } = await query;
   if (error) throw error;
   await aggiornaContatore();

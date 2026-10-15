@@ -1223,3 +1223,35 @@ Migrazione `20261014200000_promemoria_pneumatici.sql`; 21 pgTAP in `promemoria-p
 - **Job** `promemoria-pneumatici` (pg_cron, minuto 15 di ogni ora): `crea_promemoria_pneumatici()` non fa
   nulla prima delle 10 italiane; dopo, la chiave impedisce i doppioni nei giri successivi. Prova a mano:
   `select public.crea_promemoria_pneumatici('2026-10-20 10:30 Europe/Rome');`
+
+## Rifiniture delle notifiche (Fase 5)
+
+2026-10-15, sessione 18. Due ritocchi scelti dal titolare dopo la prova dei promemoria dal telefono.
+
+- **Invito ad attivare gli avvisi dopo una richiesta.** Inviata la richiesta di appuntamento, la pagina
+  dell'appuntamento mostra sotto la conferma verde la sezione *"Vuoi sapere subito quando risponde?"* con
+  "Avvisami su questo dispositivo". Compare **solo** se le push si possono ancora attivare (stato
+  `spente`: niente iscrizione e permesso non negato) e **una volta sola**: riaprendo l'appuntamento non
+  c'è più (per accenderle resta la pagina Notifiche). Dopo il tocco: *"Avvisi attivi"*, senza pulsante
+  per spegnerle.
+- **Il report segna letta la sua notifica.** Aprire il report di un controllo (`/controllo?id=…`, anche
+  non dalla notifica) segna letta la notifica *"Gomme da sostituire / da tenere d'occhio"* di quel
+  controllo, come già succede per gli appuntamenti.
+
+### Codice complesso
+
+- **`ui/avvisi-push.ts`**: la sezione "Avvisi sul telefono" spostata fuori da `pagine/notifiche.ts` per
+  usarla in due posti. `collegaAvvisiPush(contenitore, { invito })`: con `invito` usa i testi della
+  tabella `INVITO` (per gli stati che non ci sono si torna a quelli di `PUSH`) e, se lo stato iniziale non
+  è `spente`, lascia il contenitore vuoto (`[data-sezione-push]:empty` è nascosto dal CSS).
+- **"Una volta sola"**: `invitaAgliAvvisi()` (in `pagine/appuntamenti.ts`) alza un flag prima di
+  `vaiConConferma()` dalla pagina della richiesta; `mostraAppuntamento` lo legge e lo azzera subito
+  all'inizio, così vale solo per la pagina che segue (stesso schema dell'avviso di conferma).
+- **`segnaLette(filtro?)`** ora prende `{ prenotazione: id }` o `{ controllo: id }`. Per il controllo
+  filtra sulla `chiave` `ESITO_CONTROLLO:<id>` scritta da `notifica_esito_controllo()`: nessuna
+  migrazione (la RLS e il `grant update (letta_il)` già bastano).
+- **E2e** (`notifiche.spec.ts`): Playwright blocca il service worker e Chromium senza finestra nega le
+  notifiche, quindi l'app vedrebbe `non-supportate`/`bloccate`. Il test, con `addInitScript`, finge una
+  registrazione senza iscrizione e `Notification.permission = 'default'`. La lettura della notifica dal
+  report è stata provata a mano (notifica inserita con `psql` sulla Panda del seed, poi rimossa): un e2e
+  vero richiederebbe di montare le gomme e registrare un controllo su un veicolo collegato a un account.

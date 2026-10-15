@@ -48,33 +48,29 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: provare i promemoria dal telefono e scegliere il passo successivo.** Sessione 17
-> (2026-10-14, chiusa): **promemoria del giorno prima** e **promemoria degli pneumatici** (esito del controllo,
-> cambio stagionale). **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si
-> riprende P8) e com'è andata la prova dei promemoria.
+> **Obiettivo: provare le rifiniture delle notifiche e scegliere il passo successivo.** Sessione 18
+> (2026-10-15, chiusa): **invito ad attivare gli avvisi dopo una richiesta** e **report che segna letta la
+> sua notifica**. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si
+> riprende P8) e com'è andata la prova.
 
 **0 — Da chiedere al titolare**
 
-- [ ] **Promemoria del giorno prima**: confermare un appuntamento per **domani**; dopo le 18 (entro l'ora
-  successiva) deve arrivare "Domani hai un appuntamento" (nell'app e come push)
-- [ ] **Esito del controllo**: in officina registrare un controllo con una gomma sotto 1,6 mm su un veicolo
-  collegato all'account di prova → il cliente riceve subito "Gomme da sostituire"; toccandola si apre il
-  report
-- [ ] **Cambio stagionale**: oggi (dal 15 ottobre) parte alle 10 per i veicoli nel garage con gomme
-  **estive** montate. Da domani mattina il cliente di prova dovrebbe ricevere "È ora delle gomme invernali"
-  (se ha estive montate)
-- [ ] (facoltativo) In Supabase → *Integrations → Cron*: i job `promemoria-appuntamenti` e
-  `promemoria-pneumatici` girano senza errori
+- [ ] **Invito agli avvisi**: su un telefono **senza** avvisi attivi (o dopo "Disattiva gli avvisi" nella
+  pagina Notifiche) inviare una richiesta di appuntamento → sotto la conferma compare "Vuoi sapere subito
+  quando risponde?"; "Avvisami su questo dispositivo" chiede il permesso e diventa "Avvisi attivi".
+  Riaprendo l'appuntamento l'invito non c'è più
+- [ ] **Report letto**: con una notifica "Gomme da sostituire" non letta, aprire il report dal garage
+  (non dalla notifica) → il badge della campanella si azzera
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, pulizia delle
   notifiche vecchie, preferenze
 
 **1 — Lavoro di Claude (da scegliere con il titolare)**
 
-- [ ] Invitare ad attivare le push anche dopo l'invio di una richiesta (oggi solo nella pagina Notifiche)
-- [ ] Aprire il report di un controllo potrebbe segnare letta la sua notifica (come già l'appuntamento)
 - [ ] Fase 5: **email di riserva** — dopo l'SMTP definitivo (vedi "Rimandati")
-- [ ] Fase 4: officine vicine; capienza/slot
+- [ ] Fase 4: officine vicine (geolocalizzazione); capienza/slot
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
+- [ ] Pubblicare sul cloud le rifiniture della sessione 18 (solo web: nessuna migrazione, basta il deploy
+  di Vercel dopo il push)
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -105,6 +101,7 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [x] (2026-10-14, sessione 16) Fase 5: notifiche push (Edge Function `invia-notifica`, pg_net, VAPID)
 - [x] (2026-10-14, sessione 17) Fase 5: promemoria del giorno prima (pg_cron)
 - [x] (2026-10-14, sessione 17) Fase 5: promemoria degli pneumatici (esito del controllo, cambio stagionale)
+- [x] (2026-10-15, sessione 18) Invito alle push dopo la richiesta; il report segna letta la sua notifica
 
 **Rimandati:**
 
@@ -139,6 +136,21 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 18 — 2026-10-15 (PC di casa)
+
+**Fatto**
+
+- Il file `.xls` di GESTITYRE **non è ancora arrivato**. Il titolare ha provato i **promemoria dal
+  telefono: funzionano tutti** (giorno prima, esito del controllo, cambio stagionale). Scelte le
+  **rifiniture delle notifiche**
+- **Web:** sezione "Avvisi sul telefono" spostata in `ui/avvisi-push.ts`; dopo l'invio di una richiesta la
+  pagina dell'appuntamento invita (una volta, solo se le push sono spente) ad attivare gli avvisi. Aprire
+  il report di un controllo segna letta la sua notifica di esito (`segnaLette({ controllo })`, filtro sulla
+  `chiave`; nessuna migrazione). Componente esistente riusato senza nuovo design
+- E2e nuovo in `notifiche.spec.ts` (invito che compare e poi sparisce, con service worker e permesso
+  finti); lettura dal report provata a mano con una notifica inserita via `psql` e poi rimossa.
+  `npm run check` verde (106 Vitest), e2e delle notifiche verdi
 
 ### Sessione 17 — 2026-10-14 (PC di casa)
 
