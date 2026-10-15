@@ -48,20 +48,15 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: provare le rifiniture delle notifiche e scegliere il passo successivo.** Sessione 18
-> (2026-10-15, chiusa): **invito ad attivare gli avvisi dopo una richiesta** e **report che segna letta la
-> sua notifica**. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si
-> riprende P8) e com'è andata la prova.
+> **Obiettivo: scegliere il passo successivo.** Sessione 18 (2026-10-15, chiusa): **invito ad attivare
+> gli avvisi dopo una richiesta** (provato dal telefono: funziona) e **report che segna letta la sua
+> notifica**. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si riprende
+> P8).
 
 **0 — Da chiedere al titolare**
 
-- [ ] **Invito agli avvisi**: su un telefono **senza** avvisi attivi (o dopo "Disattiva gli avvisi" nella
-  pagina Notifiche) inviare una richiesta di appuntamento → sotto la conferma compare "Vuoi sapere subito
-  quando risponde?"; "Avvisami su questo dispositivo" chiede il permesso e diventa "Avvisi attivi".
-  Riaprendo l'appuntamento l'invito non c'è più. **Nota (2026-10-15):** al primo tentativo non compariva
-  perché sul telefono gli avvisi erano già attivi (comportamento previsto): spegnerli prima della prova
-- [ ] **Report letto**: con una notifica "Gomme da sostituire" non letta, aprire il report dal garage
-  (non dalla notifica) → il badge della campanella si azzera
+- [ ] (se non già fatto) **Report letto**: con una notifica "Gomme da sostituire" non letta, aprire il
+  report dal garage (non dalla notifica) → il badge della campanella si azzera
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, pulizia delle
   notifiche vecchie, preferenze
 
@@ -70,8 +65,6 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 - [ ] Fase 5: **email di riserva** — dopo l'SMTP definitivo (vedi "Rimandati")
 - [ ] Fase 4: officine vicine (geolocalizzazione); capienza/slot
 - [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
-- [ ] Pubblicare sul cloud le rifiniture della sessione 18 (solo web: nessuna migrazione, basta il deploy
-  di Vercel dopo il push)
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -152,6 +145,8 @@ serve `db:reset`: i test creano dati con nomi unici.
 - E2e nuovo in `notifiche.spec.ts` (invito che compare e poi sparisce, con service worker e permesso
   finti); lettura dal report provata a mano con una notifica inserita via `psql` e poi rimossa.
   `npm run check` verde (106 Vitest), e2e delle notifiche verdi
+- Commit `6c71a9d`, CI verde, **pubblicato** (Vercel, nessuna migrazione). Prova dal telefono: l'invito
+  all'inizio non compariva perché gli avvisi erano già attivi (previsto); spenti gli avvisi, **funziona**
 
 ### Sessione 17 — 2026-10-14 (PC di casa)
 
