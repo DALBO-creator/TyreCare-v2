@@ -1,9 +1,10 @@
-import { Search, UserPlus, UserRound, Users } from 'lucide';
+import { FileUp, Search, UserPlus, UserRound, Users } from 'lucide';
 import { formattaTarga, normalizzaTarga } from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import {
   caricaContestoOfficina,
   caricaElencoClienti,
+  eTitolare,
   nominativo,
   type ClienteConVeicoli,
 } from '../lib/officina';
@@ -19,9 +20,11 @@ export async function mostraClienti(app: HTMLElement): Promise<void> {
 
   let officina: string;
   let clienti: ClienteConVeicoli[];
+  let titolare: boolean;
   try {
-    const { attiva } = await caricaContestoOfficina();
+    const { attiva, officine } = await caricaContestoOfficina();
     officina = attiva.officina.ragione_sociale;
+    titolare = eTitolare(officine, attiva.officina.id);
     clienti = await caricaElencoClienti(attiva.officina.id);
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
@@ -40,6 +43,13 @@ export async function mostraClienti(app: HTMLElement): Promise<void> {
       <a class="btn btn-primary btn-lg w-100" href="/clienti/nuovo?da=clienti">
         ${icona(UserPlus)} Nuovo cliente
       </a>
+      ${
+        titolare
+          ? `<a class="btn btn-outline-light w-100" href="/clienti/importa">
+              ${icona(FileUp)} Importa dal gestionale
+            </a>`
+          : ''
+      }
 
       <section aria-labelledby="tc-clienti">
         <h2 id="tc-clienti" class="tc-etichetta">

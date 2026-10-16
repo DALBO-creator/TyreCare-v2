@@ -1255,3 +1255,57 @@ Migrazione `20261014200000_promemoria_pneumatici.sql`; 21 pgTAP in `promemoria-p
   registrazione senza iscrizione e `Notification.permission = 'default'`. La lettura della notifica dal
   report è stata provata a mano (notifica inserita con `psql` sulla Panda del seed, poi rimossa): un e2e
   vero richiederebbe di montare le gomme e registrare un controllo su un veicolo collegato a un account.
+
+## Import di clienti e veicoli dal CSV standard (Fase 2, P8)
+
+2026-10-16, sessione 19. Primo passo dell'import dal gestionale, senza aspettare il file di GESTITYRE:
+il **formato CSV standard di TyreCare** per clienti e veicoli e la pagina **`/clienti/importa`** (solo
+il TITOLARE; in *Clienti* c'è il pulsante "Importa dal gestionale").
+
+- **Formato**: una riga per veicolo, con il suo cliente. Colonne `codice_cliente, nome, cognome,
+  ragione_sociale, telefono, email, targa, marca, modello, anno, telaio` (modello scaricabile dalla
+  pagina). Separatore `;` `,` o tabulatore, riconosciuto dall'intestazione; intestazioni senza badare a
+  maiuscole, spazi e accenti, con qualche sinonimo (`codice`, `cellulare`, `e-mail`, `vin`…); colonne
+  sconosciute ignorate e segnalate. Serve almeno la targa o il codice cliente: righe con solo il
+  veicolo (senza cliente) o solo il cliente (senza veicolo) vanno bene. Massimo 5000 righe.
+- **Chiavi** (import idempotente): il cliente si ritrova con `codice_cliente` →
+  `clienti_officina.codice_gestionale`, il veicolo con la targa (in forma canonica). Reimportare lo
+  stesso file non cambia nulla ("Nessuna modifica").
+- **Celle vuote** non cancellano i dati già presenti (es. il telefono inserito dall'app). Una riga con il
+  codice cliente collega il veicolo a quel cliente (anche spostandolo da un altro); senza codice, il
+  collegamento resta com'era. Clienti e veicoli nuovi hanno `origine = 'IMPORT'`.
+- **Anteprima**: righe lette / pronte / con errori, quanti clienti e veicoli sarebbero nuovi o
+  aggiornati, l'elenco degli errori per riga (i primi 100). Le righe con errori vengono **saltate**: si
+  importano le altre e, corretto il file, lo si ricarica.
+- **Registro**: ogni import (non le anteprime) lascia una riga in `import_log` (file, righe importate e
+  saltate, conteggi, autore); la pagina mostra gli ultimi 10.
+
+**Decisione del titolare (2026-10-16):** il file si legge e si controlla **nel browser**, non in Fastify
+come diceva P8 (apps/api non è pubblicata e il file è dell'officina, che quei dati li vede già); i
+controlli con le misure arriveranno in un secondo momento.
+
+### Codice complesso
+
+- **`packages/shared/src/importa.ts`**: `leggiCsv` è un piccolo lettore RFC 4180 (virgolette, `""`, a capo
+  dentro i campi, BOM, righe vuote saltate) che restituisce anche il **numero di riga nel file** per i
+  messaggi. `controllaImport` riusa `ClienteSchema` e `VeicoloSchema` dei moduli (stessi vincoli `check`
+  del database) e in più controlla i doppioni nel file: targa ripetuta, stesso codice cliente con
+  anagrafica diversa. Un problema del file intero (vuoto, senza colonne chiave, troppe righe) dà
+  `ok: false` con un solo messaggio.
+- **Codifica**: `leggiFile` (in `apps/web/src/lib/importa.ts`) prova UTF-8 con `fatal: true` e, se il file
+  non lo è, lo rilegge come **Windows-1252** (i CSV di Excel in italiano: "Niccolò" non diventa "Niccol�").
+  Il modello scaricato ha il BOM, così Excel lo apre in UTF-8.
+- **`importa_clienti_veicoli(p_officina_id, p_righe, p_nome_file, p_righe_scartate, p_simula)`**
+  (migrazione `20261016120000_import_clienti_veicoli.sql`, `security invoker` → valgono le RLS): una
+  chiamata = una transazione, tutto o niente. Gli aggiornamenti usano
+  `where (colonne) is distinct from (nuovi valori)`, così `found` dice se qualcosa è cambiato davvero e
+  si contano solo gli "aggiornati" veri. Lo stesso cliente su più righe si conta una volta (`v_visti`).
+- **Anteprima con la stessa funzione**: con `p_simula` le scritture avvengono dentro un blocco
+  `begin … exception` (una sottotransazione) che alla fine solleva l'errore `TCSIM` e lo cattura: tutto
+  viene annullato, ma i contatori (variabili PL/pgSQL) restano. Così l'anteprima conta con lo stesso
+  codice dell'import vero, compresi i casi limite.
+- **Test**: `importa.test.ts` (13 Vitest), `supabase/tests/database/import.test.sql` (17 pgTAP: permessi,
+  simulazione senza scritture, conteggi, celle vuote, idempotenza, tutto o niente, registro),
+  `e2e/tests/import.spec.ts` (CSV in Windows-1252 con una riga sbagliata, import, reimport, operatore).
+  Nei pgTAP il JSON delle righe sta in una tabella temporanea: `\set` di psql non accetta valori su più
+  righe.

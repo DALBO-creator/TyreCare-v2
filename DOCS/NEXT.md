@@ -48,23 +48,27 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: scegliere il passo successivo.** Sessione 18 (2026-10-15, chiusa): **invito ad attivare
-> gli avvisi dopo una richiesta** (provato dal telefono: funziona) e **report che segna letta la sua
-> notifica**. **Prima di tutto** chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si riprende
-> P8).
+> **Obiettivo: provare l'import dal telefono/PC e scegliere il passo successivo.** Sessione 19
+> (2026-10-16): **import CSV standard di clienti e veicoli** (`/clienti/importa`). **Prima di tutto**
+> chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si scrive l'adattatore verso il formato
+> standard).
 
 **0 — Da chiedere al titolare**
 
-- [ ] (se non già fatto) **Report letto**: con una notifica "Gomme da sostituire" non letta, aprire il
-  report dal garage (non dalla notifica) → il badge della campanella si azzera
+- [ ] **Prova dell'import** (migrazione già sul cloud, controllare che la CI sia verde): da titolare,
+  *Clienti → Importa dal gestionale → Scarica il modello CSV*, aprirlo in Excel, aggiungere 2–3 righe
+  (una sbagliata), salvarlo come CSV e caricarlo: anteprima, import, poi ricaricarlo ("Nessuna
+  modifica"). Controllare che gli accenti restino giusti
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, pulizia delle
-  notifiche vecchie, preferenze
+  notifiche vecchie, preferenze, annullare un import
 
 **1 — Lavoro di Claude (da scegliere con il titolare)**
 
+- [ ] P8: **import dei controlli** dal CSV (una riga per pneumatico misurato) — prima decidere come
+  montare gli pneumatici storici (vedi `IMPLEMENTAZIONI.md`)
+- [ ] P8: **adattatore GESTITYRE `.xls`** → formato standard, quando arriva il file di esempio
 - [ ] Fase 5: **email di riserva** — dopo l'SMTP definitivo (vedi "Rimandati")
 - [ ] Fase 4: officine vicine (geolocalizzazione); capienza/slot
-- [ ] Formato CSV standard di TyreCare + import (P8) — l'adattatore GESTITYRE aspetta il file di esempio
 
 **Avvio sessione (PC di casa):** aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
@@ -96,6 +100,7 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [x] (2026-10-14, sessione 17) Fase 5: promemoria del giorno prima (pg_cron)
 - [x] (2026-10-14, sessione 17) Fase 5: promemoria degli pneumatici (esito del controllo, cambio stagionale)
 - [x] (2026-10-15, sessione 18) Invito alle push dopo la richiesta; il report segna letta la sua notifica
+- [x] (2026-10-16, sessione 19) Import CSV standard di clienti e veicoli (anteprima, registro)
 
 **Rimandati:**
 
@@ -130,6 +135,28 @@ serve `db:reset`: i test creano dati con nomi unici.
 - [ ] Inserire nome e dati del titolare in `LICENSE.md`
 
 ## Storico
+
+### Sessione 19 — 2026-10-16 (PC di casa)
+
+**Fatto**
+
+- Il file `.xls` di GESTITYRE **non è ancora arrivato**. Il titolare ha confermato che il **report segna
+  letta la sua notifica** (prova della sessione 18). Scelto il **CSV standard + import (P8)**
+- **Decisioni del titolare:** il CSV si legge e si controlla **nel browser** con una funzione SQL che
+  scrive in transazione (niente Fastify per ora); **prima clienti e veicoli**, i controlli dopo
+- **Shared:** `importa.ts` (lettore CSV, riconoscimento colonne e separatore, controllo delle righe con
+  gli schemi dei moduli, doppioni nel file, modello da scaricare) + 13 Vitest
+- **Database:** migrazione `20261016120000_import_clienti_veicoli.sql` — tabella `import_log` e funzione
+  `importa_clienti_veicoli` (solo TITOLARE, idempotente, celle vuote che non cancellano, simulazione per
+  l'anteprima) + 17 pgTAP. Tipi rigenerati
+- **Web:** pagina `/clienti/importa` (modello, scelta del file, anteprima con conteggi ed errori per riga,
+  import, import precedenti); pulsante "Importa dal gestionale" in *Clienti* per il titolare. File di
+  Excel in Windows-1252 riletti con la codifica giusta. Componenti esistenti (`tc-riepilogo`,
+  `tc-lista`, `tc-avviso`)
+- E2e nuovo `import.spec.ts` (2 test verdi). `npm run check` verde (119 Vitest), `db:test` verde (i
+  pgTAP dell'import non dipendono dai dati lasciati dagli e2e)
+- Migrazione **pubblicata sul cloud da Claude** con `db push` (ok del titolare, prima `--dry-run`);
+  funzione e tabella verificate con `supabase db query --linked`. Commit e push su `main`
 
 ### Sessione 18 — 2026-10-15 (PC di casa)
 

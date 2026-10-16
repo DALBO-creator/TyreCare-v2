@@ -234,6 +234,14 @@ frequenza). Senza questo dato non sappiamo quanto sarà "aggiornato" lo stato de
     deposito gomme, interventi?) — vedi `NEXT.md`;
   - prima di caricare dati reali di clienti di LA SANTI GOMME serve l'**accordo di nomina (DPA)** di P17.
 
+**Decisioni del titolare (2026-10-16, fatto lo stesso giorno):** senza aspettare il file di GESTITYRE si
+parte dal **formato CSV standard** di clienti e veicoli (`packages/shared/src/importa.ts`, pagina
+`/clienti/importa`, solo TITOLARE). Il file si legge e si controlla **nel browser** e una funzione SQL
+(`importa_clienti_veicoli`) scrive in una transazione, con anteprima simulata e registro `import_log`:
+**niente Fastify** per ora (non è pubblicato; il file è dell'officina, che quei dati li vede già). Chiavi:
+codice cliente e targa; le celle vuote non cancellano i dati presenti; le righe con errori si saltano.
+I **controlli** con le misure arriveranno in un secondo passo. Dettagli in `NOTES.md`.
+
 ### P9 — Inserimento controlli direttamente da TyreCare ✅
 
 Oltre all'import, una **schermata "Nuovo controllo"** per l'officina (da tablet/telefono in officina):
@@ -421,7 +429,7 @@ documento dedicato.
 |------|-----------|-------|
 | 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | ✅ (resta solo il deploy di `apps/api`, rimandato) |
 | 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | ✅ chiusa il 2026-10-07 (design system v3, ruoli/RLS, auth web + API, profilo, email in italiano, logo). Rimandati: SMTP col dominio di LA SANTI GOMME, rifinitura dell'auto |
-| 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07; il 2026-10-08 fatte le schermate officina (elenco, cliente, veicolo, pneumatici, nuovo controllo). Il 2026-10-08 (sessione 8) anche correzione ed eliminazione. Il 2026-10-09 elenco e scheda clienti e smontaggio senza sostituzione. Resta l'import CSV |
+| 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07; il 2026-10-08 fatte le schermate officina (elenco, cliente, veicolo, pneumatici, nuovo controllo). Il 2026-10-08 (sessione 8) anche correzione ed eliminazione. Il 2026-10-09 elenco e scheda clienti e smontaggio senza sostituzione. Il 2026-10-16 (sessione 19) **import CSV standard di clienti e veicoli**. Restano l'import dei controlli e l'adattatore GESTITYRE |
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | 🟨 iniziata il 2026-10-09: garage con i veicoli uniti per targa tra le officine, scheda in sola lettura con cruscotto, avviso, storico e officine; il cliente vede anche le officine non attive di cui è cliente. Il 2026-10-09 (sessione 11) report del singolo controllo con stampa/PDF (link pubblico rimandato) e stato di salute del singolo pneumatico (grafico, consumo, stima, età dal DOT). Il 2026-10-10 (sessione 12) **rivendicazione dei veicoli con l'invito via email dall'officina** (decisione del titolare). Resta il link pubblico del report, rimandato |
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | 🟨 iniziata il 2026-10-12 (sessione 14): catalogo dei servizi (titolare), elenco e scheda delle officine attive, richiesta con giorno e fascia, conferma con l'ora / proposta di un altro orario / rifiuto, annullamento del cliente, completato / non presentato; poi calendario dell'officina, editor degli orari con chiusure straordinarie; "Prenota" dal garage con il veicolo già scelto e cliente/veicolo creati dalla richiesta (sessione 15). Restano: distanza (geolocalizzazione), capienza e slot automatici, notifiche (Fase 5) |
 | 5 — Notifiche | Web Push, reminder schedulati, fallback email | 🟨 iniziata il 2026-10-14 (sessione 16): **notifiche nell'app** per i cambi di stato delle prenotazioni (tabella scritta da un trigger, badge in tempo reale, pagina `/notifiche`). Lo stesso giorno **Web Push** (Edge Function `invia-notifica`, pg_net). Il 2026-10-14 (sessione 17) **promemoria del giorno prima** e **promemoria degli pneumatici** (esito del controllo, cambio stagionale; pg_cron). Resta l'email (P21) |

@@ -181,6 +181,66 @@ export type Database = {
           },
         ];
       };
+      import_log: {
+        Row: {
+          clienti_aggiornati: number;
+          clienti_nuovi: number;
+          created_at: string;
+          eseguito_da: string | null;
+          id: string;
+          nome_file: string;
+          officina_id: string;
+          righe_importate: number;
+          righe_scartate: number;
+          tipo: string;
+          veicoli_aggiornati: number;
+          veicoli_nuovi: number;
+        };
+        Insert: {
+          clienti_aggiornati?: number;
+          clienti_nuovi?: number;
+          created_at?: string;
+          eseguito_da?: string | null;
+          id?: string;
+          nome_file?: string;
+          officina_id: string;
+          righe_importate: number;
+          righe_scartate?: number;
+          tipo?: string;
+          veicoli_aggiornati?: number;
+          veicoli_nuovi?: number;
+        };
+        Update: {
+          clienti_aggiornati?: number;
+          clienti_nuovi?: number;
+          created_at?: string;
+          eseguito_da?: string | null;
+          id?: string;
+          nome_file?: string;
+          officina_id?: string;
+          righe_importate?: number;
+          righe_scartate?: number;
+          tipo?: string;
+          veicoli_aggiornati?: number;
+          veicoli_nuovi?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'import_log_eseguito_da_fkey';
+            columns: ['eseguito_da'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'import_log_officina_id_fkey';
+            columns: ['officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'officine';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       inviti_cliente: {
         Row: {
           annullato_il: string | null;
@@ -789,6 +849,16 @@ export type Database = {
         Returns: Database['public']['Enums']['fascia_oraria'][];
       };
       giorni_prenotabili: { Args: Record<PropertyKey, never>; Returns: number };
+      importa_clienti_veicoli: {
+        Args: {
+          p_nome_file?: string;
+          p_officina_id: string;
+          p_righe: Json;
+          p_righe_scartate?: number;
+          p_simula?: boolean;
+        };
+        Returns: Json;
+      };
       impronta_codice: { Args: { p_codice: string }; Returns: string };
       info_invito: {
         Args: { p_codice: string };

@@ -21,6 +21,9 @@
 | ~~**Modifica ed eliminazione** di clienti, veicoli, pneumatici e controlli (lato officina)~~ | ✅ | Fatto in sessione 8 (2026-10-08). Vedi `NOTES.md`. |
 | ~~**Elenco e scheda clienti** dell'officina (con i loro veicoli)~~ | ✅ | Fatto in sessione 9 (2026-10-09). Vedi `NOTES.md`. |
 | **Unire due anagrafiche** dello stesso cliente (doppioni) | 🟢 | Sposta i veicoli sull'anagrafica giusta ed elimina l'altra. Utile dopo l'import. |
+| **Import dei controlli** dal CSV (una riga per pneumatico misurato: documento, targa, data, km, posizione, battistrada, pressione, misura/marca/DOT/stagione) | 🔴 | Secondo passo di P8. Da decidere come montare gli pneumatici storici quando la misura/marca cambia e con file in ordine non cronologico. |
+| **Annullare un import** (eliminare i record creati da quell'import) | 🟢 | Servirebbe l'id dell'import su clienti e veicoli. |
+| **Scaricare gli errori dell'anteprima** come CSV, per correggerli in Excel | 🟢 | Oggi si vedono i primi 100 nella pagina. |
 | **Annullare uno smontaggio** fatto per errore | 🟢 | Oggi si rimonta con "Cambia pneumatici" (nuovo record) oppure lo corregge un ADMIN. |
 | **Pressione consigliata** per veicolo/misura e confronto con quella misurata | 🟠 | PLAN P10: "misurata vs consigliata". |
 | **DOT diverso per ruota** nel montaggio di un treno | 🟢 | Oggi un DOT per tutto il treno: se differiscono si monta una ruota alla volta. |

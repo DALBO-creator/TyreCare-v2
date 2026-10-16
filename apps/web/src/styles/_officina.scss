@@ -495,3 +495,31 @@
 [data-errore-invito] {
   margin-top: 0.75rem;
 }
+
+// Import dal gestionale (`/clienti/importa`): riepilogo a quattro voci, elenco degli errori
+.tc-riepilogo--import {
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (min-width: 36rem) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .tc-riepilogo__voce:hover {
+    border-color: var(--bs-border-color);
+  }
+}
+
+.tc-import {
+  display: grid;
+  gap: 1rem;
+
+  > h2:focus {
+    outline: none;
+  }
+}
+
+ul.tc-lista {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}

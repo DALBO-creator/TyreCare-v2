@@ -4,3 +4,4 @@ export * from './auth';
 export * from './officina';
 export * from './prenotazioni';
 export type * from './database.types';
+export * from './importa';
