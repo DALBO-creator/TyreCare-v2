@@ -48,10 +48,9 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ## Prossima sessione
 
-> **Obiettivo: provare l'import dal telefono/PC e scegliere il passo successivo.** Sessione 19
-> (2026-10-16): **import CSV standard di clienti e veicoli** (`/clienti/importa`). **Prima di tutto**
-> chiedere se è arrivato il file `.xls` di GESTITYRE (se c'è si scrive l'adattatore verso il formato
-> standard).
+> **Obiettivo: scegliere il passo successivo.** Sessione 19 (2026-10-16, chiusa): **import CSV standard
+> di clienti e veicoli** (`/clienti/importa`), provato dal titolare: funziona. **Prima di tutto** chiedere
+> se è arrivato il file `.xls` di GESTITYRE (se c'è si scrive l'adattatore verso il formato standard).
 
 **0 — Da chiedere al titolare**
 
@@ -160,7 +159,7 @@ serve `db:reset`: i test creano dati con nomi unici.
   modifica: i dati di questo file sono già in TyreCare"*, che sembrava un via libera. Ora dice in rosso
   che la riga con errori non è stata importata e va corretta (e2e aggiornato). Corretta la riga, il
   titolare ha importato Totti (codice `C0003`, 1 veicolo, verificato sul cloud): **import provato e
-  funzionante**
+  funzionante**. Correzione nel commit `88fdf19`, CI verde, pubblicata (nessuna migrazione)
 
 ### Sessione 18 — 2026-10-15 (PC di casa)
 

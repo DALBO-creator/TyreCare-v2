@@ -1277,6 +1277,10 @@ il TITOLARE; in *Clienti* c'è il pulsante "Importa dal gestionale").
 - **Anteprima**: righe lette / pronte / con errori, quanti clienti e veicoli sarebbero nuovi o
   aggiornati, l'elenco degli errori per riga (i primi 100). Le righe con errori vengono **saltate**: si
   importano le altre e, corretto il file, lo si ricarica.
+- **Esito dell'anteprima**: con righe da scrivere compare "Importa N righe"; se tutto è già in TyreCare
+  il riquadro verde *"Nessuna modifica"*; se le righe valide sono già importate ma ce ne sono **con
+  errori**, un riquadro **rosso** dice che quelle righe non sono state importate e vanno corrette (prima
+  compariva il verde, che sembrava un via libera: segnalato dal titolare il 2026-10-16).
 - **Registro**: ogni import (non le anteprime) lascia una riga in `import_log` (file, righe importate e
   saltate, conteggi, autore); la pagina mostra gli ultimi 10.
 
