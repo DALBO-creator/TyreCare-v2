@@ -182,11 +182,20 @@ async function mostraAnteprima(
       ${
         righe.length === 0
           ? avvisoErrore('Nessuna riga da importare: correggi il file e caricalo di nuovo.')
-          : nessunaModifica
-            ? `<div class="tc-avviso tc-avviso--verde" role="status">
-                <p class="mb-0">Nessuna modifica: i dati di questo file sono già in TyreCare.</p>
-              </div>`
-            : `<div data-errore-import></div>
+          : nessunaModifica && scartate > 0
+            ? // Le righe valide sono già importate: restano solo quelle con errori, da correggere
+              avvisoErrore(
+                `Niente da importare: le righe valide sono già in TyreCare. ${
+                  scartate === 1
+                    ? 'La riga con errori non è stata importata: correggila'
+                    : `Le ${scartate} righe con errori non sono state importate: correggile`
+                } nel file e caricalo di nuovo.`,
+              )
+            : nessunaModifica
+              ? `<div class="tc-avviso tc-avviso--verde" role="status">
+                  <p class="mb-0">Nessuna modifica: i dati di questo file sono già in TyreCare.</p>
+                </div>`
+              : `<div data-errore-import></div>
               <button type="button" class="btn btn-primary btn-lg w-100" data-importa>
                 ${icona(FileUp)} Importa ${plurale(righe.length, 'riga', 'righe')}
               </button>`

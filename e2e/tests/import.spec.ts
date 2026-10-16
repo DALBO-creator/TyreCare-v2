@@ -41,10 +41,12 @@ test('il titolare importa un CSV di Excel e reimportarlo non cambia nulla', asyn
   ).toBeVisible();
   await expect(page.getByRole('region', { name: 'Import precedenti' })).toContainText(file.name);
 
-  // Lo stesso file di nuovo: nulla da importare
+  // Lo stesso file di nuovo: le righe valide ci sono già, resta solo quella sbagliata da correggere
   await page.getByLabel(/File CSV/).setInputFiles(file);
   await expect(
-    page.getByText('Nessuna modifica: i dati di questo file sono già in TyreCare.'),
+    page.getByText(
+      'Niente da importare: le righe valide sono già in TyreCare. La riga con errori non è stata importata',
+    ),
   ).toBeVisible();
   await expect(page.getByRole('button', { name: /^Importa/ })).toHaveCount(0);
 

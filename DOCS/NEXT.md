@@ -55,10 +55,6 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 **0 — Da chiedere al titolare**
 
-- [ ] **Prova dell'import** (già pubblicato): da titolare,
-  *Clienti → Importa dal gestionale → Scarica il modello CSV*, aprirlo in Excel, aggiungere 2–3 righe
-  (una sbagliata), salvarlo come CSV e caricarlo: anteprima, import, poi ricaricarlo ("Nessuna
-  modifica"). Controllare che gli accenti restino giusti
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, pulizia delle
   notifiche vecchie, preferenze, annullare un import
 
@@ -158,6 +154,13 @@ serve `db:reset`: i test creano dati con nomi unici.
 - Migrazione **pubblicata sul cloud da Claude** con `db push` (ok del titolare, prima `--dry-run`);
   funzione e tabella verificate con `supabase db query --linked`. Commit `a94c305`, **CI verde**,
   pubblicato (Vercel)
+- **Prova del titolare:** aggiunto "Francesco Totti" al modello, ma non importato. Sul cloud c'è un solo
+  import (le 2 righe del modello, 0 saltate): la riga di Totti è stata scartata dall'anteprima. Difetto
+  trovato: con le righe valide già importate e una riga con errori l'anteprima diceva in verde *"Nessuna
+  modifica: i dati di questo file sono già in TyreCare"*, che sembrava un via libera. Ora dice in rosso
+  che la riga con errori non è stata importata e va corretta (e2e aggiornato). Corretta la riga, il
+  titolare ha importato Totti (codice `C0003`, 1 veicolo, verificato sul cloud): **import provato e
+  funzionante**
 
 ### Sessione 18 — 2026-10-15 (PC di casa)
 
