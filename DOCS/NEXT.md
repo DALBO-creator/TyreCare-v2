@@ -55,7 +55,7 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 **0 — Da chiedere al titolare**
 
-- [ ] **Prova dell'import** (migrazione già sul cloud, controllare che la CI sia verde): da titolare,
+- [ ] **Prova dell'import** (già pubblicato): da titolare,
   *Clienti → Importa dal gestionale → Scarica il modello CSV*, aprirlo in Excel, aggiungere 2–3 righe
   (una sbagliata), salvarlo come CSV e caricarlo: anteprima, import, poi ricaricarlo ("Nessuna
   modifica"). Controllare che gli accenti restino giusti
@@ -156,7 +156,8 @@ serve `db:reset`: i test creano dati con nomi unici.
 - E2e nuovo `import.spec.ts` (2 test verdi). `npm run check` verde (119 Vitest), `db:test` verde (i
   pgTAP dell'import non dipendono dai dati lasciati dagli e2e)
 - Migrazione **pubblicata sul cloud da Claude** con `db push` (ok del titolare, prima `--dry-run`);
-  funzione e tabella verificate con `supabase db query --linked`. Commit e push su `main`
+  funzione e tabella verificate con `supabase db query --linked`. Commit `a94c305`, **CI verde**,
+  pubblicato (Vercel)
 
 ### Sessione 18 — 2026-10-15 (PC di casa)
 
