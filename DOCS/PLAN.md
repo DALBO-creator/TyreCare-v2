@@ -9,7 +9,8 @@
 | File | Contenuto | Aggiornamento |
 |------|-----------|---------------|
 | [`PLAN.md`](PLAN.md) | Visione, funzionalità, ruoli, stack, roadmap | Quando cambia una decisione |
-| [`NEXT.md`](NEXT.md) | Cosa è stato fatto nella sessione e cosa fare nella prossima | **Ogni sessione (obbligatorio)** |
+| [`NEXT.md`](NEXT.md) | Cosa fare nella prossima sessione e promemoria permanenti | **Ogni sessione (obbligatorio)** |
+| [`STORICO.md`](STORICO.md) | Resoconto di ogni sessione, la più recente in cima | **Ogni sessione (obbligatorio)** |
 | [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) | Colori, tipografia, componenti e regole di accessibilità | Quando cambia l'aspetto |
 | [`NOTES.md`](NOTES.md) | Spiegazione del codice più complesso e del funzionamento delle funzionalità | Ad ogni funzionalità implementata |
 | [`STRUCT.md`](STRUCT.md) | Linguaggi, framework e librerie con spiegazione d'uso | Ad ogni nuova dipendenza |
@@ -242,6 +243,9 @@ parte dal **formato CSV standard** di clienti e veicoli (`packages/shared/src/im
 codice cliente e targa; le celle vuote non cancellano i dati presenti; le righe con errori si saltano.
 I **controlli** con le misure arriveranno in un secondo passo. Dettagli in `NOTES.md`.
 
+**Aggiornamento 2026-10-20:** l'adattatore specifico GESTITYRE (punto 2 e "primo adattatore" sopra) è
+sostituito da **P22** (import con mappatura delle colonne): non serve più aspettare il file di esempio.
+
 ### P9 — Inserimento controlli direttamente da TyreCare ✅
 
 Oltre all'import, una **schermata "Nuovo controllo"** per l'officina (da tablet/telefono in officina):
@@ -325,6 +329,15 @@ Punto importante: **lo stesso cliente può essere cliente di più officine**. L'
 quando il cliente si registra e "rivendica" i suoi veicoli (es. codice invito generato dall'officina, oppure
 verifica targa + telefono).
 
+### P22 — Import con mappatura delle colonne ✅
+
+**Decisione del titolare (2026-10-20):** invece di un adattatore per ogni gestionale (P8, punto 2), l'officina
+carica **qualsiasi file Excel/CSV** esportato dal suo gestionale e **associa le colonne** del file a quelle di
+TyreCare (codice cliente, nome, targa, …). Il risultato passa poi per lo stesso import del formato standard
+(anteprima, righe con errori saltate, registro `import_log`). Sostituisce l'**adattatore specifico GESTITYRE**
+`.xls`: non serve più aspettare il file di esempio di LA SANTI GOMME (resta utile per provare la mappatura su
+un file vero).
+
 ## B3. Funzionalità
 
 ### P13 — "Garage": due viste distinte ✅
@@ -387,14 +400,22 @@ cambia solo l'impaginazione in CSS, guidata da `data-pagina`. Dettagli in `NOTES
   link già pronti, per ogni destinatario. Così nessun cambio di stato si dimentica di avvisare, chiunque lo
   faccia (app, funzioni future, correzioni dell'ADMIN), e tutti i canali usano lo stesso testo.
 - **Canali, in quest'ordine:** 1) nell'app, con contatore in tempo reale (fatto il 2026-10-14); 2) **Web
-  Push**; 3) **email** di riserva (P5), quando ci sarà l'SMTP definitivo (oggi Resend in prova consegna solo
-  all'indirizzo del titolare).
+  Push**; 3) **email** di riserva (P5), quando ci sarà l'email dal dominio di TyreCare (P23; oggi Resend in prova
+  consegna solo all'indirizzo del titolare).
 - **Invio push/email (confermato dal titolare il 2026-10-14, push fatte lo stesso giorno):** una **Supabase Edge Function** chiamata dal database
   a ogni nuova notifica (Database Webhook / `pg_net`), con le chiavi VAPID nei segreti di Supabase. Rispetto a
   P2 ("push da Fastify") evita di pubblicare `apps/api` solo per questo: oggi l'API non è online.
 - Promemoria schedulati (P11, giorno prima dell'appuntamento, cambio stagionale) = un job **Supabase Cron**
   che inserisce righe nella stessa tabella. **Giorno prima fatto il 2026-10-14:** solo al cliente, dalle 18
   del giorno prima, un solo promemoria per orario (di nuovo se l'appuntamento viene spostato).
+
+### P23 — Email dal dominio di TyreCare ✅
+
+**Decisione del titolare (2026-10-20):** tutte le email (conferme, inviti, notifiche di riserva) partono da un
+**mittente unico** `noreply@<dominio TyreCare>`, invece che dal dominio di ogni officina. I record DNS del
+dominio (SPF/DKIM su Resend) li configura **una volta** il titolare; poi si aggiornano le *SMTP Settings* di
+Supabase. Non serve più chiedere a ogni officina chi gestisce il suo dominio. Sostituisce l'"SMTP definitivo con
+il dominio di LA SANTI GOMME".
 
 ## B4. Aspetti legali e privacy
 
@@ -428,11 +449,11 @@ documento dedicato.
 | Fase | Contenuto | Stato |
 |------|-----------|-------|
 | 0 — Setup | Monorepo, TS, ESLint/Prettier, Vitest, Supabase locale, CI, deploy Vercel vuoto | ✅ (resta solo il deploy di `apps/api`, rimandato) |
-| 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | ✅ chiusa il 2026-10-07 (design system v3, ruoli/RLS, auth web + API, profilo, email in italiano, logo). Rimandati: SMTP col dominio di LA SANTI GOMME, rifinitura dell'auto |
-| 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07; il 2026-10-08 fatte le schermate officina (elenco, cliente, veicolo, pneumatici, nuovo controllo). Il 2026-10-08 (sessione 8) anche correzione ed eliminazione. Il 2026-10-09 elenco e scheda clienti e smontaggio senza sostituzione. Il 2026-10-16 (sessione 19) **import CSV standard di clienti e veicoli**. Restano l'import dei controlli e l'adattatore GESTITYRE |
+| 1 — Fondamenta | Auth, ruoli, RLS, anagrafica officine, design system (ui-ux-pro-max) | ✅ chiusa il 2026-10-07 (design system v3, ruoli/RLS, auth web + API, profilo, email in italiano, logo). Rimandati: email dal dominio di TyreCare (P23), rifinitura dell'auto |
+| 2 — Dati | Modello veicoli/pneumatici/controlli, import CSV standard, inserimento controllo da app | 🟨 iniziata il 2026-10-07; il 2026-10-08 fatte le schermate officina (elenco, cliente, veicolo, pneumatici, nuovo controllo). Il 2026-10-08 (sessione 8) anche correzione ed eliminazione. Il 2026-10-09 elenco e scheda clienti e smontaggio senza sostituzione. Il 2026-10-16 (sessione 19) **import CSV standard di clienti e veicoli**. Restano l'import dei controlli e l'import con mappatura delle colonne (P22, al posto dell'adattatore GESTITYRE) |
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | 🟨 iniziata il 2026-10-09: garage con i veicoli uniti per targa tra le officine, scheda in sola lettura con cruscotto, avviso, storico e officine; il cliente vede anche le officine non attive di cui è cliente. Il 2026-10-09 (sessione 11) report del singolo controllo con stampa/PDF (link pubblico rimandato) e stato di salute del singolo pneumatico (grafico, consumo, stima, età dal DOT). Il 2026-10-10 (sessione 12) **rivendicazione dei veicoli con l'invito via email dall'officina** (decisione del titolare). Resta il link pubblico del report, rimandato |
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | 🟨 iniziata il 2026-10-12 (sessione 14): catalogo dei servizi (titolare), elenco e scheda delle officine attive, richiesta con giorno e fascia, conferma con l'ora / proposta di un altro orario / rifiuto, annullamento del cliente, completato / non presentato; poi calendario dell'officina, editor degli orari con chiusure straordinarie; "Prenota" dal garage con il veicolo già scelto e cliente/veicolo creati dalla richiesta (sessione 15). Restano: distanza (geolocalizzazione), capienza e slot automatici, notifiche (Fase 5) |
-| 5 — Notifiche | Web Push, reminder schedulati, fallback email | 🟨 iniziata il 2026-10-14 (sessione 16): **notifiche nell'app** per i cambi di stato delle prenotazioni (tabella scritta da un trigger, badge in tempo reale, pagina `/notifiche`). Lo stesso giorno **Web Push** (Edge Function `invia-notifica`, pg_net). Il 2026-10-14 (sessione 17) **promemoria del giorno prima** e **promemoria degli pneumatici** (esito del controllo, cambio stagionale; pg_cron). Resta l'email (P21) |
+| 5 — Notifiche | Web Push, reminder schedulati, fallback email | 🟨 iniziata il 2026-10-14 (sessione 16): **notifiche nell'app** per i cambi di stato delle prenotazioni (tabella scritta da un trigger, badge in tempo reale, pagina `/notifiche`). Lo stesso giorno **Web Push** (Edge Function `invia-notifica`, pg_net). Il 2026-10-14 (sessione 17) **promemoria del giorno prima** e **promemoria degli pneumatici** (esito del controllo, cambio stagionale; pg_cron). Resta l'email (P21), dal dominio di TyreCare (P23) |
 | 6 — Pilota | 2–3 gommisti reali, feedback, Lighthouse, privacy/legale | ⬜ |
 | 7 — Commerciale | Stripe abbonamenti, onboarding officine, intervento su strada | ⬜ |
 
@@ -440,8 +461,8 @@ documento dedicato.
 
 - Quale gestionale usano i gommisti target e quali export permette? (formato, frequenza, campi)
   → **in parte risolta:** il primo partner LA SANTI GOMME usa **GESTITYRE**, export **Excel `.xls`** (vedi
-  P8). Restano da capire **campi** (serve un file di esempio) e **frequenza** dell'export (manuale? ogni
-  quanto?)
+  P8). Con **P22** (2026-10-20) i **campi** li associa l'officina con la mappatura delle colonne: il file
+  di esempio non è più necessario. Resta da capire la **frequenza** dell'export (manuale? ogni quanto?)
 - ~~Il cliente si registra da solo o solo su invito dell'officina?~~ → si registra da solo, ma vede i
   veicoli solo dopo aver accettato l'invito dell'officina (2026-10-10)
 - Le officine devono poter vedere i veicoli dei clienti di altre officine? (proposta: **no**)
