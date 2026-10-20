@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import * as XLSX from '@e965/xlsx';
 import { accedi } from './aiuti';
 
 // Import di clienti e veicoli dal CSV standard (P8): anteprima con errori, import, reimport senza
@@ -65,4 +66,36 @@ test("l'operatore non vede l'import", async ({ page }) => {
   await expect(page.getByRole('link', { name: 'Importa dal gestionale' })).toHaveCount(0);
   await page.goto('/clienti/importa');
   await expect(page.getByText("Solo il titolare dell'officina può importare")).toBeVisible();
+});
+
+test('il titolare importa un file Excel .xlsx', async ({ page }) => {
+  const id = Date.now().toString(36).toUpperCase().slice(-6);
+  const nome = `Zaccarìa${id}`;
+  const foglio = XLSX.utils.aoa_to_sheet([
+    ['codice_cliente', 'nome', 'cognome', 'telefono', 'targa', 'marca', 'modello', 'anno'],
+    [`X${id}`, nome, 'Excel', '333 7654321', `E${id}`, 'Fiat', 'Panda', 2020],
+    [`X${id}`, nome, 'Excel', '333 7654321', `F${id}`, 'Fiat', '500', 2022],
+  ]);
+  const cartella = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(cartella, foglio, 'Clienti');
+  const file = {
+    name: `gestionale-${id}.xlsx`,
+    mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    buffer: Buffer.from(XLSX.write(cartella, { bookType: 'xlsx', type: 'buffer' }) as Buffer),
+  };
+
+  await accedi(page, 'titolare@tyrecare.test');
+  await page.goto('/clienti/importa');
+  await page.getByLabel(/File CSV/).setInputFiles(file);
+  await expect(page.getByRole('heading', { name: `Anteprima di «${file.name}»` })).toBeFocused();
+  await expect(page.getByText('2 righe lette: 2 pronte da importare.')).toBeVisible();
+  const riepilogo = page.locator('.tc-riepilogo--import');
+  await expect(riepilogo).toContainText(/1\s*Clienti nuovi/);
+  await expect(riepilogo).toContainText(/2\s*Veicoli nuovi/);
+
+  await page.getByRole('button', { name: 'Importa 2 righe' }).click();
+  await expect(
+    page.getByText('Import completato: 1 cliente nuovo, 2 veicoli nuovi.'),
+  ).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Import precedenti' })).toContainText(file.name);
 });

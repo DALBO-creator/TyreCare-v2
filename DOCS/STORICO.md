@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-20 — T009
+
+**Fatto**
+
+- Import: `/clienti/importa` legge anche i file Excel (`.xls`, `.xlsx`, `.ods`), sempre nel browser. Nuova
+  dipendenza `@e965/xlsx` 0.20.3 (versione esatta; anche devDependency di `e2e`), caricata con `import()`
+  dinamico: pezzo `xlsx` di 492 kB (160 kB gzip) separato dal codice iniziale, sotto il limite di 2 MiB
+  del precache Workbox (precache 1031 KiB, service worker generato)
+- `lib/excel.ts`: `tabellaDaFoglio(foglio, XLSX)` (pura; prende anche la libreria per non importarla
+  nel codice iniziale) e `leggiExcel(file)`; `lib/importa.ts`: `leggiTabella(file)` sceglie Excel o CSV
+  per estensione e rifiuta file oltre 10 MB. La pagina usa `controllaTabella` + `mappaturaAutomatica`
+- Test: 3 Vitest in `excel.test.ts` (righe vuote, date, giro `.xls` BIFF8 con "Niccolò"); 1 e2e nuovo in
+  `import.spec.ts` (da verificare in CI)
+
 ### Sessione agenti — 2026-10-20 — T008
 
 **Fatto**

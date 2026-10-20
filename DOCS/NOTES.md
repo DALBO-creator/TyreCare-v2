@@ -1301,6 +1301,23 @@ file (confronto con `nomeColonna`, quindi ignora maiuscole/accenti) e dà `null`
 intestazione. `ignorate` = intestazioni non vuote non usate dalla mappatura. Interfaccia e salvataggio
 delle mappature: passi successivi.
 
+### File Excel nel browser (P8/P22)
+
+2026-10-20, T009. **File coinvolti:** `apps/web/src/lib/excel.ts`, `apps/web/src/lib/importa.ts`,
+`apps/web/src/pagine/importa.ts`. **Come funziona:** `/clienti/importa` accetta `.csv`, `.txt`, `.xls`
+(Excel 97–2003, quello di GESTITYRE), `.xlsx` e `.ods`. `leggiTabella(file)` guarda l'estensione (senza
+badare alle maiuscole): per Excel chiama `leggiExcel`, che carica la libreria `@e965/xlsx` (SheetJS CE
+0.20.3) con `import()` dinamico, legge il **primo foglio** e lo trasforma in `Tabella`; per il resto
+legge il CSV come prima. File oltre 10 MB rifiutati con un messaggio; file Excel illeggibili danno
+"Non riusciamo a leggere il file Excel". Poi l'anteprima è identica: `controllaTabella` con
+`mappaturaAutomatica`. La mappatura a mano delle colonne arriva con T010.
+
+- **`excel.ts` `tabellaDaFoglio`**: scorre l'area `!ref` cella per cella; il testo è `cell.w` (quello che
+  si vede in Excel: date e numeri come formattati) o, se manca, `String(cell.v)`. Salta le righe tutte
+  vuote; la prima non vuota è l'intestazione; `numero` è la riga di Excel. Prende la libreria come
+  argomento (solo i tipi sono importati) così il modulo non la porta nel codice iniziale: la libreria
+  (492 kB, 160 kB gzip) è un pezzo a parte che si scarica solo scegliendo un file Excel.
+
 ### Codice complesso
 
 - **`packages/shared/src/importa.ts`**: `leggiCsv` è un piccolo lettore RFC 4180 (virgolette, `""`, a capo

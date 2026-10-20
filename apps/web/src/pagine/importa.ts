@@ -1,11 +1,16 @@
 import { Download, FileUp } from 'lucide';
-import { controllaImport, MAX_RIGHE_IMPORT, type RigaImport } from '@tyrecare/shared';
+import {
+  controllaTabella,
+  mappaturaAutomatica,
+  MAX_RIGHE_IMPORT,
+  type RigaImport,
+} from '@tyrecare/shared';
 import { codiceErrore } from '../lib/errori';
 import { esc } from '../lib/html';
 import {
   caricaImportPassati,
   importaClientiVeicoli,
-  leggiFile,
+  leggiTabella,
   scaricaModello,
   type ConteggiImport,
   type ImportPassato,
@@ -22,7 +27,7 @@ import {
 } from './comune';
 
 // Import di clienti e veicoli dal gestionale (PLAN P8): `/clienti/importa`, solo per il TITOLARE.
-// 1. si sceglie il file CSV; il browser lo controlla e chiede al database una simulazione;
+// 1. si sceglie il file CSV o Excel (letto nel browser); il browser lo controlla e chiede al database una simulazione;
 // 2. l'anteprima mostra quanti clienti e veicoli sarebbero nuovi o aggiornati e le righe con errori;
 // 3. "Importa" scrive tutto in una transazione; sotto, il registro degli import passati.
 
@@ -67,7 +72,7 @@ export async function mostraImporta(app: HTMLElement): Promise<void> {
     <div class="tc-contenuto">
       ${avvisoConferma()}
       <p class="text-body-secondary mb-0">
-        Carica un file CSV esportato dal gestionale: una riga per veicolo, con il suo cliente.
+        Carica il file CSV o Excel (.xls, .xlsx) esportato dal gestionale: una riga per veicolo, con il suo cliente.
         Puoi reimportare lo stesso file quando vuoi: clienti e veicoli già presenti vengono
         aggiornati, non duplicati, e le celle vuote non cancellano i dati che ci sono già.
       </p>
@@ -76,9 +81,9 @@ export async function mostraImporta(app: HTMLElement): Promise<void> {
       </button>
 
       <div>
-        <label class="form-label" for="tc-file">File CSV (al massimo ${MAX_RIGHE_IMPORT} righe)</label>
+        <label class="form-label" for="tc-file">File CSV o Excel (al massimo ${MAX_RIGHE_IMPORT} righe)</label>
         <input class="form-control form-control-lg" id="tc-file" type="file"
-          accept=".csv,text/csv" aria-describedby="tc-file-aiuto" />
+          accept=".csv,.txt,.xls,.xlsx,.ods" aria-describedby="tc-file-aiuto" />
         <p class="form-text" id="tc-file-aiuto">
           Colonne: codice_cliente, nome, cognome, ragione_sociale, telefono, email, targa, marca,
           modello, anno, telaio. Serve almeno la targa o il codice cliente.
@@ -132,8 +137,19 @@ async function mostraAnteprima(
 ): Promise<void> {
   box.innerHTML = caricamento('Controllo del file…');
 
-  const esito = controllaImport(await leggiFile(file));
+  let tabella;
+  try {
+    tabella = await leggiTabella(file);
+  } catch (errore) {
+    if (attuale()) box.innerHTML = avvisoErrore((errore as Error).message);
+    return;
+  }
   if (!attuale()) return;
+  if (!tabella) {
+    box.innerHTML = avvisoErrore('Il file è vuoto.');
+    return;
+  }
+  const esito = controllaTabella(tabella, mappaturaAutomatica(tabella.intestazioni));
   if (!esito.ok) {
     box.innerHTML = avvisoErrore(esito.messaggio);
     return;
