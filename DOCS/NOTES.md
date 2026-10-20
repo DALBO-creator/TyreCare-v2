@@ -1288,6 +1288,19 @@ il TITOLARE; in *Clienti* c'è il pulsante "Importa dal gestionale").
 come diceva P8 (apps/api non è pubblicata e il file è dell'officina, che quei dati li vede già); i
 controlli con le misure arriveranno in un secondo momento.
 
+### Mappatura delle colonne (P22, solo logica)
+
+2026-10-20, T008. `importa.ts` separa tre passi: `tabellaDaCsv` (intestazioni + righe con il numero nel
+file), la **mappatura** (`Mappatura` = colonna di TyreCare → intestazione del file, testo esatto) e
+`controllaTabella(tabella, mappatura)`, che prima chiama `erroriMappatura` (intestazione usata due volte,
+inesistente, né targa né codice cliente: se ci sono, `ok: false` con i messaggi uniti) e poi controlla le
+righe come prima. `mappaturaAutomatica` è il riconoscimento di sempre (nome standard o sinonimo, vince la
+prima intestazione); `controllaImport(testo)` = i tre passi insieme, con lo stesso messaggio di prima se
+mancano targa e codice. `applicaMappatura(salvata, intestazioni)` ritrova una mappatura salvata in un altro
+file (confronto con `nomeColonna`, quindi ignora maiuscole/accenti) e dà `null` se manca anche una sola
+intestazione. `ignorate` = intestazioni non vuote non usate dalla mappatura. Interfaccia e salvataggio
+delle mappature: passi successivi.
+
 ### Codice complesso
 
 - **`packages/shared/src/importa.ts`**: `leggiCsv` è un piccolo lettore RFC 4180 (virgolette, `""`, a capo

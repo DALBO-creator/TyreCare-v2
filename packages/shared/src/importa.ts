@@ -175,27 +175,107 @@ export type EsitoControllo =
       ignorate: string[];
     };
 
+/** File letto: la riga d'intestazione e le righe di dati, ciascuna con il suo numero nel file. */
+export interface Tabella {
+  /** Intestazioni come scritte nel file (anche vuote). */
+  intestazioni: string[];
+  /** Righe di dati; `numero` è la riga nel file (l'intestazione ha il suo `numero`, di solito 1). */
+  righe: { numero: number; celle: string[] }[];
+}
+
+/** Legge un CSV come tabella: la prima riga è l'intestazione. `null` se il file è vuoto. */
+export function tabellaDaCsv(testo: string): Tabella | null {
+  const [intestazione, ...righe] = leggiCsv(testo);
+  if (!intestazione) return null;
+  return { intestazioni: intestazione.celle, righe };
+}
+
+/** Colonna di TyreCare → intestazione del file (testo esatto come nel file). */
+export type Mappatura = Partial<Record<ColonnaImport, string>>;
+
+/** Nomi delle colonne come li vede l'utente. */
+export const ETICHETTE_COLONNE_IMPORT: Record<ColonnaImport, string> = {
+  codice_cliente: 'Codice cliente',
+  nome: 'Nome',
+  cognome: 'Cognome',
+  ragione_sociale: 'Ragione sociale',
+  telefono: 'Telefono',
+  email: 'Email',
+  targa: 'Targa',
+  marca: 'Marca',
+  modello: 'Modello',
+  anno: 'Anno',
+  telaio: 'Telaio',
+};
+
+/**
+ * Associa le colonne di TyreCare alle intestazioni riconosciute (nome standard o sinonimo).
+ * Se più intestazioni corrispondono alla stessa colonna vince la prima.
+ */
+export function mappaturaAutomatica(intestazioni: string[]): Mappatura {
+  const m: Mappatura = {};
+  for (const h of intestazioni) {
+    const n = nomeColonna(h);
+    const colonna = (COLONNE_IMPORT as readonly string[]).includes(n)
+      ? (n as ColonnaImport)
+      : SINONIMI[n];
+    if (colonna && m[colonna] === undefined) m[colonna] = h;
+  }
+  return m;
+}
+
+/**
+ * Problemi di una mappatura rispetto alle intestazioni del file: intestazione usata per due
+ * colonne, intestazione che nel file non c'è, mancano sia la targa sia il codice cliente.
+ */
+export function erroriMappatura(m: Mappatura, intestazioni: string[]): string[] {
+  const errori: string[] = [];
+  const usate = new Map<string, number>();
+  for (const h of Object.values(m)) usate.set(h, (usate.get(h) ?? 0) + 1);
+  for (const [h, volte] of usate) {
+    if (volte > 1) errori.push(`La colonna «${h}» del file è associata due volte.`);
+  }
+  for (const colonna of COLONNE_IMPORT) {
+    const h = m[colonna];
+    if (h !== undefined && !intestazioni.includes(h)) {
+      errori.push(
+        `La colonna «${h}», associata a «${ETICHETTE_COLONNE_IMPORT[colonna]}», non esiste nel file.`,
+      );
+    }
+  }
+  if (m.targa === undefined && m.codice_cliente === undefined) {
+    errori.push('Associa almeno la colonna della targa o del codice cliente.');
+  }
+  return errori;
+}
+
+/**
+ * Ritrova una mappatura salvata nel file: `null` se anche una sola delle sue intestazioni manca.
+ * Il confronto ignora maiuscole, accenti e punteggiatura; restituisce l'intestazione come scritta
+ * nel file.
+ */
+export function applicaMappatura(salvata: Mappatura, intestazioni: string[]): Mappatura | null {
+  const m: Mappatura = {};
+  for (const colonna of COLONNE_IMPORT) {
+    const h = salvata[colonna];
+    if (h === undefined) continue;
+    const n = nomeColonna(h);
+    const trovata = intestazioni.find((x) => nomeColonna(x) === n);
+    if (trovata === undefined) return null;
+    m[colonna] = trovata;
+  }
+  return m;
+}
+
 /**
  * Controlla un CSV nel formato standard. Un problema del file intero (es. manca la colonna della
  * targa) dà `ok: false`; altrimenti le righe valide e, a parte, gli errori delle altre.
  */
 export function controllaImport(testo: string): EsitoControllo {
-  const [intestazione, ...dati] = leggiCsv(testo);
-  if (!intestazione) return { ok: false, messaggio: 'Il file è vuoto.' };
-
-  // Posizione di ogni colonna riconosciuta
-  const indici = new Map<ColonnaImport, number>();
-  const ignorate: string[] = [];
-  intestazione.celle.forEach((h, i) => {
-    const n = nomeColonna(h);
-    const colonna = (COLONNE_IMPORT as readonly string[]).includes(n)
-      ? (n as ColonnaImport)
-      : SINONIMI[n];
-    if (colonna && !indici.has(colonna)) indici.set(colonna, i);
-    else if (h.trim()) ignorate.push(h.trim());
-  });
-
-  if (!indici.has('targa') && !indici.has('codice_cliente')) {
+  const tabella = tabellaDaCsv(testo);
+  if (!tabella) return { ok: false, messaggio: 'Il file è vuoto.' };
+  const mappatura = mappaturaAutomatica(tabella.intestazioni);
+  if (!mappatura.targa && !mappatura.codice_cliente) {
     return {
       ok: false,
       messaggio:
@@ -203,6 +283,29 @@ export function controllaImport(testo: string): EsitoControllo {
         'scelto il file giusto, oppure parti dal modello.',
     };
   }
+  return controllaTabella(tabella, mappatura);
+}
+
+/**
+ * Controlla le righe di una tabella secondo la mappatura data (automatica o scelta a mano).
+ * `ignorate` = intestazioni non vuote che la mappatura non usa.
+ */
+export function controllaTabella(t: Tabella, m: Mappatura): EsitoControllo {
+  const errMappatura = erroriMappatura(m, t.intestazioni);
+  if (errMappatura.length > 0) return { ok: false, messaggio: errMappatura.join(' ') };
+
+  const dati = t.righe;
+  const intestazione = { celle: t.intestazioni };
+
+  // Posizione di ogni colonna associata
+  const indici = new Map<ColonnaImport, number>();
+  for (const colonna of COLONNE_IMPORT) {
+    const h = m[colonna];
+    if (h !== undefined) indici.set(colonna, t.intestazioni.indexOf(h));
+  }
+  const usati = new Set(indici.values());
+  const ignorate = t.intestazioni.flatMap((h, i) => (!usati.has(i) && h.trim() ? [h.trim()] : []));
+
   if (dati.length === 0) return { ok: false, messaggio: 'Il file non ha righe di dati.' };
   if (dati.length > MAX_RIGHE_IMPORT) {
     return {
