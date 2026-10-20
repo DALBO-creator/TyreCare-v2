@@ -518,6 +518,17 @@
   }
 }
 
+// Passo "Associa le colonne": un campo sotto l'altro sul telefono, due colonne da computer (P20)
+.tc-mappatura__campi {
+  display: grid;
+  gap: 1rem;
+
+  @media screen and (min-width: $tc-desktop) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem 1.5rem;
+  }
+}
+
 ul.tc-lista {
   padding: 0;
   margin: 0;
