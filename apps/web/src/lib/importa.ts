@@ -1,4 +1,11 @@
-import { modelloCsv, type RigaImport, type Tables } from '@tyrecare/shared';
+import {
+  modelloCsv,
+  tabellaDaCsv,
+  type RigaImport,
+  type Tabella,
+  type Tables,
+} from '@tyrecare/shared';
+import { leggiExcel } from './excel';
 import { conRiprova } from './rete';
 import { getSupabase } from './supabase';
 
@@ -16,6 +23,29 @@ export async function leggiFile(file: File): Promise<string> {
     return new TextDecoder('utf-8', { fatal: true }).decode(byte);
   } catch {
     return new TextDecoder('windows-1252').decode(byte);
+  }
+}
+
+/** File più grandi di così non si leggono (un export di migliaia di righe pesa molto meno). */
+export const MAX_BYTE_FILE = 10 * 1024 * 1024;
+
+const ESTENSIONI_EXCEL = /\.(xls|xlsx|ods)$/i;
+
+/**
+ * Legge un file del gestionale come tabella: Excel (.xls, .xlsx, .ods, in base all'estensione) o CSV.
+ * `null` se il file è vuoto; lancia un errore con messaggio leggibile se è troppo grande o illeggibile.
+ */
+export async function leggiTabella(file: File): Promise<Tabella | null> {
+  if (file.size > MAX_BYTE_FILE) {
+    throw new Error(
+      'Il file è troppo grande (al massimo 10 MB): controlla di aver scelto quello giusto.',
+    );
+  }
+  if (!ESTENSIONI_EXCEL.test(file.name)) return tabellaDaCsv(await leggiFile(file));
+  try {
+    return await leggiExcel(file);
+  } catch {
+    throw new Error('Non riusciamo a leggere il file Excel: controlla che non sia danneggiato.');
   }
 }
 
