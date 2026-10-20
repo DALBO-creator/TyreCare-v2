@@ -23,7 +23,9 @@
 
 - [ ] P8: **import dei controlli** dal CSV (una riga per pneumatico misurato) — prima decidere come
   montare gli pneumatici storici (vedi `IMPLEMENTAZIONI.md`)
-- [ ] P22: **import con mappatura delle colonne** — l'officina carica qualsiasi Excel/CSV e associa le sue
+- [ ] P22: **import con mappatura delle colonne** — (2026-10-20, T008: fatta la logica condivisa in
+  `importa.ts`: `tabellaDaCsv`, `mappaturaAutomatica`, `erroriMappatura`, `applicaMappatura`,
+  `controllaTabella`; restano interfaccia e mappature salvate) — l'officina carica qualsiasi Excel/CSV e associa le sue
   colonne a quelle di TyreCare (sostituisce l'adattatore GESTITYRE `.xls`: non serve più aspettare il file
   di esempio)
 - [ ] Fase 5: **email di riserva** — dopo l'email dal dominio di TyreCare (P23, vedi "Rimandati")

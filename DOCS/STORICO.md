@@ -4,6 +4,16 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-20 — T008
+
+**Fatto**
+
+- Import, primo passo di P22 (solo logica, senza interfaccia): in `packages/shared/src/importa.ts` la lettura
+  e il controllo sono separati dal riconoscimento delle colonne. Nuovi: `Tabella`, `tabellaDaCsv`,
+  `Mappatura`, `mappaturaAutomatica`, `ETICHETTE_COLONNE_IMPORT`, `erroriMappatura`, `applicaMappatura`,
+  `controllaTabella`. `controllaImport` ha la stessa firma e lo stesso comportamento (13 test esistenti
+  invariati); 9 test nuovi in `importa.test.ts`
+
 ### Sessione agenti — 2026-10-20 — T001
 
 **Fatto**
