@@ -99,3 +99,55 @@ test('il titolare importa un file Excel .xlsx', async ({ page }) => {
   ).toBeVisible();
   await expect(page.getByRole('region', { name: 'Import precedenti' })).toContainText(file.name);
 });
+
+test('intestazioni sconosciute: il titolare associa le colonne e importa', async ({ page }) => {
+  const id = Date.now().toString(36).toUpperCase().slice(-6);
+  const csv = Buffer.from(
+    [
+      'Cod. Cli.;Nominativo;Cell.;Targa veicolo;Casa;Mod.',
+      `M${id};Rossi Mario ${id};333 1112223;M1${id};Fiat;Panda`,
+      `M${id};Rossi Mario ${id};333 1112223;M2${id};Fiat;500`,
+    ].join('\r\n'),
+    'latin1',
+  );
+  const file = { name: `mappatura-${id}.csv`, mimeType: 'text/csv', buffer: csv };
+
+  await accedi(page, 'titolare@tyrecare.test');
+  await page.goto('/clienti/importa');
+  await page.getByLabel(/File CSV/).setInputFiles(file);
+  await expect(page.getByRole('heading', { name: 'Associa le colonne' })).toBeFocused();
+
+  // Nessuna di queste intestazioni è riconosciuta da sola: le sceglie il titolare
+  await page.getByLabel('Codice cliente', { exact: true }).selectOption('Cod. Cli.');
+  await page.getByLabel('Telefono', { exact: true }).selectOption('Cell.');
+  await page.getByLabel('Cognome', { exact: true }).selectOption('Nominativo');
+  await page.getByLabel('Targa', { exact: true }).selectOption('Targa veicolo');
+  await page.getByLabel('Marca', { exact: true }).selectOption('Casa');
+  await page.getByLabel('Modello', { exact: true }).selectOption('Mod.');
+
+  // La stessa colonna del file due volte: errore, e si resta qui
+  await page.getByLabel('Nome', { exact: true }).selectOption('Nominativo');
+  await page.getByRole('button', { name: "Mostra l'anteprima" }).click();
+  await expect(page.getByRole('alert')).toContainText(
+    '«Nominativo» del file è associata due volte',
+  );
+  await expect(page.getByRole('heading', { name: 'Associa le colonne' })).toBeVisible();
+  await page.getByLabel('Nome', { exact: true }).selectOption('');
+
+  await page.getByRole('button', { name: "Mostra l'anteprima" }).click();
+  await expect(page.getByRole('heading', { name: `Anteprima di «${file.name}»` })).toBeFocused();
+  await expect(page.getByText('2 righe lette: 2 pronte da importare.')).toBeVisible();
+  const riepilogo = page.locator('.tc-riepilogo--import');
+  await expect(riepilogo).toContainText(/1\s*Clienti nuovi/);
+  await expect(riepilogo).toContainText(/2\s*Veicoli nuovi/);
+
+  // "Cambia le colonne" riporta al passo con le scelte già fatte
+  await page.getByRole('button', { name: 'Cambia le colonne' }).click();
+  await expect(page.getByLabel('Targa', { exact: true })).toHaveValue('Targa veicolo');
+  await page.getByRole('button', { name: "Mostra l'anteprima" }).click();
+
+  await page.getByRole('button', { name: 'Importa 2 righe' }).click();
+  await expect(
+    page.getByText('Import completato: 1 cliente nuovo, 2 veicoli nuovi.'),
+  ).toBeVisible();
+});

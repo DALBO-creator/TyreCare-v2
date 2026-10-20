@@ -1,9 +1,12 @@
 import { Download, FileUp } from 'lucide';
 import {
   controllaTabella,
+  erroriMappatura,
   mappaturaAutomatica,
   MAX_RIGHE_IMPORT,
+  type Mappatura,
   type RigaImport,
+  type Tabella,
 } from '@tyrecare/shared';
 import { codiceErrore } from '../lib/errori';
 import { esc } from '../lib/html';
@@ -20,6 +23,12 @@ import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import {
+  leggiScelte,
+  primoSelectCoinvolto,
+  schermataMappatura,
+  tuttoRiconosciuto,
+} from '../ui/mappatura';
+import {
   avvisoConferma,
   gestisciErroreCaricamento,
   intestazioneSottopagina,
@@ -27,7 +36,9 @@ import {
 } from './comune';
 
 // Import di clienti e veicoli dal gestionale (PLAN P8): `/clienti/importa`, solo per il TITOLARE.
-// 1. si sceglie il file CSV o Excel (letto nel browser); il browser lo controlla e chiede al database una simulazione;
+// 1. si sceglie il file CSV o Excel (letto nel browser); se le intestazioni non sono tutte riconosciute
+//    il titolare associa a mano le colonne ("Associa le colonne"); poi il browser controlla il file e
+//    chiede al database una simulazione;
 // 2. l'anteprima mostra quanti clienti e veicoli sarebbero nuovi o aggiornati e le righe con errori;
 // 3. "Importa" scrive tutto in una transazione; sotto, il registro degli import passati.
 
@@ -104,15 +115,14 @@ export async function mostraImporta(app: HTMLElement): Promise<void> {
     const questa = ++scelta;
     const file = input.files?.[0];
     if (file)
-      void mostraAnteprima(
-        anteprima,
-        file,
-        officinaId,
-        () => ancoraAttuale(n) && questa === scelta,
-      );
+      void leggiEMostra(anteprima, file, officinaId, () => ancoraAttuale(n) && questa === scelta);
     else anteprima.innerHTML = '';
   });
 }
+
+/** Pulsante sopra l'anteprima: riporta all'associazione delle colonne con le scelte fatte. */
+const pulsanteCambia = () =>
+  `<button type="button" class="btn btn-outline-light align-self-start" data-cambia-colonne>Cambia le colonne</button>`;
 
 /** Avviso rosso dentro l'anteprima. */
 const avvisoErrore = (messaggio: string) => `
@@ -129,7 +139,17 @@ function messaggioErrore(errore: unknown): string {
   return `Il database ha rifiutato i dati (${String((errore as Error).message)}). Controlla il file e riprova.`;
 }
 
-async function mostraAnteprima(
+/** Tutto ciò che serve per mostrare i passi dopo la lettura del file. */
+interface ContestoImport {
+  box: HTMLElement;
+  file: File;
+  tabella: Tabella;
+  officinaId: string;
+  /** Falso se nel frattempo si è cambiato pagina o file: le risposte tardive vanno scartate. */
+  attuale: () => boolean;
+}
+
+async function leggiEMostra(
   box: HTMLElement,
   file: File,
   officinaId: string,
@@ -149,9 +169,52 @@ async function mostraAnteprima(
     box.innerHTML = avvisoErrore('Il file è vuoto.');
     return;
   }
-  const esito = controllaTabella(tabella, mappaturaAutomatica(tabella.intestazioni));
+  const contesto: ContestoImport = { box, file, tabella, officinaId, attuale };
+  const automatica = mappaturaAutomatica(tabella.intestazioni);
+  // Si va dritti all'anteprima solo se c'è una chiave e nessuna intestazione resta senza colonna
+  if (
+    (automatica.targa !== undefined || automatica.codice_cliente !== undefined) &&
+    tuttoRiconosciuto(tabella, automatica)
+  ) {
+    await mostraAnteprima(contesto, automatica);
+  } else {
+    mostraMappatura(contesto, automatica);
+  }
+}
+
+/** Passo "Associa le colonne": scelte iniziali = quelle già fatte (o il riconoscimento automatico). */
+function mostraMappatura(c: ContestoImport, scelte: Mappatura): void {
+  const { box, tabella } = c;
+  box.innerHTML = schermataMappatura(tabella, scelte);
+  box.querySelector<HTMLElement>('#tc-mappatura')!.focus();
+  const errori = box.querySelector<HTMLElement>('[data-errori-mappatura]')!;
+  box.querySelector<HTMLButtonElement>('[data-mostra-anteprima]')!.addEventListener('click', () => {
+    const m = leggiScelte(box);
+    const problemi = erroriMappatura(m, tabella.intestazioni);
+    if (problemi.length > 0) {
+      errori.innerHTML = `<div class="tc-avviso tc-avviso--rosso"><ul class="mb-0 ps-3">${problemi
+        .map((p) => `<li>${esc(p)}</li>`)
+        .join('')}</ul></div>`;
+      primoSelectCoinvolto(box, m)?.focus();
+      return;
+    }
+    void mostraAnteprima(c, m);
+  });
+}
+
+async function mostraAnteprima(c: ContestoImport, mappatura: Mappatura): Promise<void> {
+  const { box, file, tabella, officinaId, attuale } = c;
+  box.innerHTML = caricamento('Controllo del file…');
+  const cambia = () => {
+    box.querySelector('[data-cambia-colonne]')?.addEventListener('click', () => {
+      if (attuale()) mostraMappatura(c, mappatura);
+    });
+  };
+
+  const esito = controllaTabella(tabella, mappatura);
   if (!esito.ok) {
-    box.innerHTML = avvisoErrore(esito.messaggio);
+    box.innerHTML = `${avvisoErrore(esito.messaggio)}${pulsanteCambia()}`;
+    cambia();
     return;
   }
 
@@ -168,7 +231,10 @@ async function mostraAnteprima(
         simula: true,
       });
     } catch (errore) {
-      if (attuale()) box.innerHTML = avvisoErrore(messaggioErrore(errore));
+      if (attuale()) {
+        box.innerHTML = `${avvisoErrore(messaggioErrore(errore))}${pulsanteCambia()}`;
+        cambia();
+      }
       return;
     }
   }
@@ -179,6 +245,7 @@ async function mostraAnteprima(
 
   box.innerHTML = `
     <section class="tc-import" aria-labelledby="tc-anteprima">
+      ${pulsanteCambia()}
       <h2 id="tc-anteprima" class="tc-etichetta" tabindex="-1">Anteprima di «${esc(file.name)}»</h2>
       <p class="mb-0">
         ${plurale(lette, 'riga letta', 'righe lette')}:
@@ -219,6 +286,7 @@ async function mostraAnteprima(
     </section>`;
 
   box.querySelector<HTMLElement>('#tc-anteprima')!.focus();
+  cambia();
   box
     .querySelector<HTMLButtonElement>('[data-importa]')
     ?.addEventListener('click', (e) =>

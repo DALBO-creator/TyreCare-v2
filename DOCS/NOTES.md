@@ -1310,13 +1310,39 @@ badare alle maiuscole): per Excel chiama `leggiExcel`, che carica la libreria `@
 0.20.3) con `import()` dinamico, legge il **primo foglio** e lo trasforma in `Tabella`; per il resto
 legge il CSV come prima. File oltre 10 MB rifiutati con un messaggio; file Excel illeggibili danno
 "Non riusciamo a leggere il file Excel". Poi l'anteprima è identica: `controllaTabella` con
-`mappaturaAutomatica`. La mappatura a mano delle colonne arriva con T010.
+`mappaturaAutomatica`. La mappatura a mano delle colonne è descritta sotto (T010).
 
 - **`excel.ts` `tabellaDaFoglio`**: scorre l'area `!ref` cella per cella; il testo è `cell.w` (quello che
   si vede in Excel: date e numeri come formattati) o, se manca, `String(cell.v)`. Salta le righe tutte
   vuote; la prima non vuota è l'intestazione; `numero` è la riga di Excel. Prende la libreria come
   argomento (solo i tipi sono importati) così il modulo non la porta nel codice iniziale: la libreria
   (492 kB, 160 kB gzip) è un pezzo a parte che si scarica solo scegliendo un file Excel.
+
+### Associa le colonne dell'import (P22)
+
+2026-10-20, T010. **File coinvolti:** `apps/web/src/pagine/importa.ts`, `apps/web/src/ui/mappatura.ts`,
+`apps/web/src/styles/_officina.scss` (`.tc-mappatura__campi`), `e2e/tests/import.spec.ts`.
+**Come funziona:** dopo la lettura del file `leggiEMostra` calcola `mappaturaAutomatica`. Se trova la
+targa o il codice cliente **e** ogni intestazione non vuota è usata (`tuttoRiconosciuto`), va dritto
+all'anteprima come prima. Altrimenti compare **"Associa le colonne"**: 11 `<select>` (uno per colonna di
+TyreCare, con etichetta visibile), opzioni "— Non c'è nel file —" + le intestazioni, ognuna con un
+esempio (prima cella non vuota della colonna, tagliata a 30 caratteri). Le scelte iniziali sono quelle
+automatiche. "Mostra l'anteprima" chiama `erroriMappatura`: se dà messaggi li mostra in un riquadro
+rosso (`role="alert"`) e mette il focus sul primo `<select>` coinvolto (`primoSelectCoinvolto`: uno con
+l'intestazione scelta due volte, altrimenti quello della targa); altrimenti `controllaTabella` e
+l'anteprima di sempre. Sopra l'anteprima "Cambia le colonne" riporta al passo con le scelte fatte
+(restano in memoria solo finché la pagina è aperta: salvarle è T012). Da 992 px i `<select>` stanno su
+due colonne (P20).
+
+### Codice complesso (associa le colonne)
+
+- `importa.ts` `leggiEMostra` / `mostraAnteprima` / `mostraMappatura`: condividono un `ContestoImport`
+  (tabella letta, file, `attuale()`); `attuale()` combina `ancoraAttuale(n)` e il contatore `scelta`, e
+  ogni passo asincrono lo controlla prima di toccare il DOM, così una risposta arrivata dopo aver
+  cambiato file o pagina viene scartata.
+- `mappatura.ts` `tuttoRiconosciuto`: confronta il numero di intestazioni non vuote con quello delle
+  intestazioni usate; un'intestazione ripetuta nel file conta come non riconosciuta e fa comparire il
+  passo di associazione. Le opzioni dei `<select>` non ripetono le intestazioni uguali.
 
 ### Codice complesso
 

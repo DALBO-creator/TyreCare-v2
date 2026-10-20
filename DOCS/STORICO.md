@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-20 — T010
+
+**Fatto**
+
+- Import, P22: nuovo passo "Associa le colonne" in `/clienti/importa`. Se `mappaturaAutomatica` non
+  trova targa o codice cliente, o c'è un'intestazione non riconosciuta, il titolare sceglie per ognuna
+  delle 11 colonne di TyreCare la colonna del file (con esempio dalla prima riga) e poi vede l'anteprima;
+  "Cambia le colonne" torna indietro con le scelte fatte. Nessun salvataggio (T012)
+- `ui/mappatura.ts` (HTML e funzioni pure), `pagine/importa.ts` rifatto in tre passi
+  (`leggiEMostra`, `mostraMappatura`, `mostraAnteprima`) con `ancoraAttuale` e `scelta` rispettati;
+  stile a due colonne da computer in `_officina.scss`
+- Test: 4 Vitest in `ui/mappatura.test.ts`; 1 e2e nuovo in `import.spec.ts` (intestazioni inventate,
+  errore di colonna doppia, "Cambia le colonne", import); gli altri e2e non sono stati toccati. e2e da
+  verificare in CI
+
 ### Sessione agenti — 2026-10-20 — T009
 
 **Fatto**
