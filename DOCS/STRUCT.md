@@ -65,7 +65,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | Tecnologia | Versione | Stato | Uso in TyreCare |
 |------------|----------|-------|-----------------|
 | **Node.js (LTS)** | 24 | ✅ | Runtime. Versione fissata in `.nvmrc` e `engines`. |
-| **fnm** (Fast Node Manager) | 1.39 | ✅ | Solo sul PC scolastico: installa Node 24 per l'utente senza permessi di amministratore (Node di sistema è v22). Va attivato in ogni terminale: vedi `NEXT.md` → Promemoria permanenti. |
+| **fnm** (Fast Node Manager) | 1.39 | ✅ | Solo sul PC scolastico: installa Node 24 per l'utente senza permessi di amministratore (Node di sistema è v22). Va attivato in ogni terminale: vedi `NEXT.md` → Solo per i PC di Davide. |
 | **Fastify** | 5.12 | ✅ | API HTTPS. `GET /health` (pubblica), `GET /me` (richiede il token dell'utente). |
 | **Zod** | 4.6 | ✅ | Validazione: variabili d'ambiente (`src/env.ts`) e, in seguito, dati in ingresso. Usato anche in `packages/shared` (schemi dei moduli di accesso) e nel web. |
 | **jose** | 6 | ✅ | Verifica dei JWT di Supabase Auth con le chiavi pubbliche (JWKS, ES256) in `src/auth.ts`: nessun segreto nel backend. |
