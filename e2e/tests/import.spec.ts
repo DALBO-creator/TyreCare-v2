@@ -174,6 +174,13 @@ test('il titolare salva l’associazione delle colonne e al file successivo va d
   const elimina = async () => {
     await page.goto('/clienti/importa');
     await page.getByLabel(/File CSV/).setInputFiles(nuovoFile('pulizia'));
+    // Con l'associazione salvata si va dritto all'anteprima: si torna al passo delle colonne
+    await page
+      .getByRole('heading', { name: /^(Associa le colonne|Anteprima di)/ })
+      .first()
+      .waitFor();
+    const cambia = page.getByRole('button', { name: 'Cambia le colonne' });
+    if (await cambia.isVisible()) await cambia.click();
     const salvata = page.getByLabel("Usa un'associazione salvata");
     if (await salvata.isVisible().catch(() => false)) {
       await salvata.selectOption({ label: nomeMappatura });
