@@ -16,6 +16,7 @@
 | [`STRUCT.md`](STRUCT.md) | Linguaggi, framework e librerie con spiegazione d'uso | Ad ogni nuova dipendenza |
 | [`PRODUZIONE-MARKETING.md`](PRODUZIONE-MARKETING.md) | Costi, modello di ricavo, BEP, go-to-market | Quando cambiano costi/prezzi |
 | [`IMPLEMENTAZIONI.md`](IMPLEMENTAZIONI.md) | Idee e implementazioni future | Man mano che emergono |
+| [`legale/`](legale/README.md) | Bozze di informativa privacy e termini di servizio, domande per il consulente | Dopo la revisione del consulente |
 | [`LICENSE.md`](LICENSE.md) | Licenza proprietaria | Raramente |
 | [`first-prompt.md`](first-prompt.md) | Prompt originale del progetto | Mai (archivio) |
 
@@ -426,6 +427,9 @@ I dati dei clienti caricati dall'officina sono **dell'officina** (titolare del t
 Inoltre: informativa privacy e cookie, consenso esplicito per notifiche marketing (distinte da quelle di servizio),
 diritto alla cancellazione/esportazione, dati su server UE (scegliere la **regione UE** su Supabase e Vercel),
 registro dei trattamenti. Da verificare con un consulente privacy prima del lancio.
+
+- **Bozze (2026-10-21, T013):** informativa privacy (con cookie e archiviazione locale) e termini di servizio
+  in [`legale/`](legale/README.md), con i dati mancanti e le domande per il consulente.
 
 ### P18 — Licenza ✅
 

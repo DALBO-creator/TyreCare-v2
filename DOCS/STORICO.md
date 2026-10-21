@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-21 — T013
+
+**Fatto**
+
+- P17: bozze legali in `DOCS/legale/` — `README.md` (elenco, dati mancanti, 12 domande per il consulente),
+  `informativa-privacy.md` (titolarità account/officina, dati ricavati dalle migrazioni, finalità e basi
+  giuridiche, conservazione, fornitori, diritti, cookie e archiviazione locale), `termini-di-servizio.md`
+  (ruoli, prenotazioni come richieste, dati degli pneumatici indicativi, abbonamento come segnaposto,
+  legge italiana). Ogni file comincia con "BOZZA — da rivedere con un consulente prima dell'uso"
+- Verificato nel codice: nessun cookie né analisi; `localStorage` solo per la sessione di Supabase e
+  l'officina scelta; il service worker mette in cache solo i file dell'app; caratteri non da siti esterni
+- Dati del titolare (voce D5) non ancora compilati: segnaposto `[DA COMPLETARE: …]`
+- `PLAN.md`: riga in §P17 e riga `legale/` nell'indice. Solo documentazione, niente codice
+
 ### Sessione agenti — 2026-10-21 — T012
 
 **Fatto**
