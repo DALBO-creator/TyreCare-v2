@@ -1,5 +1,6 @@
 import {
   modelloCsv,
+  type Mappatura,
   tabellaDaCsv,
   type RigaImport,
   type Tabella,
@@ -107,6 +108,45 @@ export async function caricaImportPassati(officinaId: string): Promise<ImportPas
     .limit(10);
   if (error) throw error;
   return data;
+}
+
+/** Associazione di colonne salvata dal titolare (tabella `import_mappature`). */
+export interface MappaturaSalvata {
+  id: string;
+  nome: string;
+  colonne: Mappatura;
+  updated_at: string;
+}
+
+/** Associazioni salvate dell'officina, dalla più recente (per ultima modifica). */
+export async function caricaMappature(officinaId: string): Promise<MappaturaSalvata[]> {
+  const { data, error } = await getSupabase()
+    .from('import_mappature')
+    .select('id, nome, colonne, updated_at')
+    .eq('officina_id', officinaId)
+    .order('updated_at', { ascending: false });
+  if (error) throw error;
+  return data.map((r) => ({ ...r, colonne: r.colonne as Mappatura }));
+}
+
+/** Salva l'associazione con un nome; se il nome esiste già nell'officina la sostituisce. */
+export async function salvaMappatura(
+  officinaId: string,
+  nome: string,
+  colonne: Mappatura,
+): Promise<void> {
+  const { error } = await getSupabase()
+    .from('import_mappature')
+    .upsert(
+      { officina_id: officinaId, nome: nome.trim(), colonne },
+      { onConflict: 'officina_id,nome' },
+    );
+  if (error) throw error;
+}
+
+export async function eliminaMappatura(id: string): Promise<void> {
+  const { error } = await getSupabase().from('import_mappature').delete().eq('id', id);
+  if (error) throw error;
 }
 
 /** Scarica il modello CSV. Il BOM iniziale fa aprire a Excel il file in UTF-8 (accenti corretti). */

@@ -6,11 +6,10 @@
 
 ## Prossima sessione
 
-> **Obiettivo: scegliere il passo successivo.** Ultima sessione: sessione agenti del 2026-10-21 (T011,
-> tabella `import_mappature` per le associazioni di colonne salvate; prossimo passo sull'import: T012,
-> l'interfaccia per salvarle e riusarle). L'**import CSV standard di clienti e veicoli** (sessione 19,
+> **Obiettivo: scegliere il passo successivo.** Ultima sessione: sessione agenti del 2026-10-21 (T012,
+> interfaccia per salvare, riusare ed eliminare le associazioni di colonne dell'import; P22 completo). L'**import CSV standard di clienti e veicoli** (sessione 19,
 > `/clienti/importa`) è stato provato dal titolare: funziona. Con **P22** non si aspetta più il file
-> `.xls` di GESTITYRE: l'import passa dalla **mappatura delle colonne** (T008–T011 fatti, manca T012).
+> `.xls` di GESTITYRE: l'import passa dalla **mappatura delle colonne** (T008–T012 fatti).
 
 **0 — Da chiedere al titolare**
 
@@ -26,8 +25,8 @@
 - [ ] P22: **import con mappatura delle colonne** — (2026-10-20, T008: fatta la logica condivisa in
   `importa.ts`: `tabellaDaCsv`, `mappaturaAutomatica`, `erroriMappatura`, `applicaMappatura`,
   `controllaTabella`; T009: lettura di .xls/.xlsx/.ods nel browser con `leggiTabella`; T010: schermata
-  "Associa le colonne"; T011: tabella `import_mappature` con RLS solo titolare; resta l'interfaccia per
-  salvare e riusare le associazioni, T012) — l'officina carica qualsiasi Excel/CSV e associa le sue
+  "Associa le colonne"; T011: tabella `import_mappature` con RLS solo titolare; T012: interfaccia per
+  salvare, riusare ed eliminare le associazioni) — l'officina carica qualsiasi Excel/CSV e associa le sue
   colonne a quelle di TyreCare (sostituisce l'adattatore GESTITYRE `.xls`: non serve più aspettare il file
   di esempio)
 - [ ] Fase 5: **email di riserva** — dopo l'email dal dominio di TyreCare (P23, vedi "Rimandati")
