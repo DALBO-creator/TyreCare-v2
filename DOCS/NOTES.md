@@ -1344,6 +1344,30 @@ due colonne (P20).
   intestazioni usate; un'intestazione ripetuta nel file conta come non riconosciuta e fa comparire il
   passo di associazione. Le opzioni dei `<select>` non ripetono le intestazioni uguali.
 
+### Associazioni di colonne salvate (P22, database)
+
+2026-10-21, T011. **File coinvolti:** `supabase/migrations/20261021120000_import_mappature.sql`,
+`supabase/tests/database/import-mappature.test.sql`, `packages/shared/src/database.types.ts`.
+**Come funziona:** tabella `import_mappature` (una riga per associazione salvata: `officina_id`, `nome`
+unico nell'officina, 1–60 caratteri, `colonne` = `{ colonna di TyreCare: intestazione del file }`,
+`creata_da` = chi l'ha salvata). Come l'import è **solo del titolare**: le quattro policy (select, insert,
+update, delete) usano `is_titolare_officina(officina_id)`; operatore, altre officine, clienti e anonimi
+non vedono e non scrivono nulla. Il contenuto di `colonne` lo controlla `mappatura_import_valida` in un
+vincolo `check`. Solo database: l'interfaccia per salvare e scegliere le associazioni è T012 (userà
+`applicaMappatura` per ritrovarle in un file nuovo).
+
+### Codice complesso (associazioni salvate)
+
+- `mappatura_import_valida(jsonb)`: `immutable` (serve per usarla in un `check`) e con le 11 chiavi di
+  `COLONNE_IMPORT` scritte nella funzione: se si aggiunge una colonna all'import va aggiunta **anche
+  qui** (con una nuova migrazione). Il `case` iniziale esclude i valori che non sono oggetti prima di
+  `jsonb_each`, che su un array o un numero darebbe errore invece di `false`.
+- La policy di `update` ha `using` **e** `with check`: senza il secondo un titolare potrebbe spostare
+  una riga in un'officina non sua cambiando `officina_id` (c'è un test).
+- `import-mappature.test.sql`: i tentativi di modifica ed eliminazione dell'operatore e di titolare2 sono
+  `update`/`delete` "nudi" (la RLS non dà errore, non trova righe); il test successivo, come titolare,
+  controlla che la riga sia rimasta uguale.
+
 ### Codice complesso
 
 - **`packages/shared/src/importa.ts`**: `leggiCsv` è un piccolo lettore RFC 4180 (virgolette, `""`, a capo
