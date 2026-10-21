@@ -91,8 +91,8 @@ export function schermataMappatura(
       ${usaSalvata}
       <div class="tc-mappatura__campi">${campi}</div>
       <div class="tc-campo">
-        <label class="form-label" for="tc-mappa-nome">Salva queste scelte come (facoltativo)</label>
-        <input class="form-control" id="tc-mappa-nome" type="text" maxlength="60"
+        <label class="form-label" for="tc-salva-come">Salva queste scelte come (facoltativo)</label>
+        <input class="form-control" id="tc-salva-come" type="text" maxlength="60"
           placeholder="Es. il nome del tuo gestionale" autocomplete="off" />
       </div>
       <div data-errori-mappatura role="alert"></div>

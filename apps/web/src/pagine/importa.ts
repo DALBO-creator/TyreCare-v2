@@ -258,7 +258,7 @@ function mostraMappatura(c: ContestoImport, scelte: Mappatura): void {
         primoSelectCoinvolto(box, m)?.focus();
         return;
       }
-      const nome = box.querySelector<HTMLInputElement>('#tc-mappa-nome')!.value.trim();
+      const nome = box.querySelector<HTMLInputElement>('#tc-salva-come')!.value.trim();
       let info: InfoAnteprima = {};
       if (nome) {
         try {
