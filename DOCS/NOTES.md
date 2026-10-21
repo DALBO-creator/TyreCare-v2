@@ -1368,6 +1368,23 @@ vincolo `check`. Solo database: l'interfaccia per salvare e scegliere le associa
   `update`/`delete` "nudi" (la RLS non dà errore, non trova righe); il test successivo, come titolare,
   controlla che la riga sia rimasta uguale.
 
+
+### Salvare e riusare le associazioni di colonne (P22)
+
+2026-10-21, T012. **File coinvolti:** `apps/web/src/lib/importa.ts` (`caricaMappature`, `salvaMappatura`,
+`eliminaMappatura`), `apps/web/src/pagine/importa.ts`, `apps/web/src/ui/mappatura.ts`,
+`e2e/tests/import.spec.ts`. **Come funziona:** caricando un file, `leggiEMostra` legge le associazioni
+salvate dell'officina (più recente prima; se la lettura fallisce si lavora senza). Se il riconoscimento
+automatico non basta, usa la prima per cui `applicaMappatura` non dà `null` (e `erroriMappatura` è
+vuoto) e va all'anteprima con la riga "Colonne associate con «nome»" e "Cambia le colonne". Nel passo
+"Associa le colonne", se ce ne sono, compare "Usa un'associazione salvata" (riempie i `<select>`; se
+non corrisponde al file avvisa) con il pulsante "Elimina" (conferma di `chiediConferma`). Il campo
+"Salva queste scelte come" (max 60 caratteri) salva con upsert su `officina_id,nome` quando si preme
+"Mostra l'anteprima" e le scelte sono valide; se il salvataggio fallisce un avviso giallo compare
+nell'anteprima, che si mostra lo stesso. Il nome è testo dell'utente: sempre con `esc`. Il test e2e
+elimina la sua associazione in un `finally`, perché le intestazioni inventate sono le stesse del test
+di T010 e una associazione rimasta lo farebbe saltare il passo di associazione.
+
 ### Codice complesso
 
 - **`packages/shared/src/importa.ts`**: `leggiCsv` è un piccolo lettore RFC 4180 (virgolette, `""`, a capo

@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-21 — T012
+
+**Fatto**
+
+- Import, P22: nel passo "Associa le colonne" si può salvare l'associazione con un nome (facoltativo,
+  max 60 caratteri), sceglierne una salvata ("Usa un'associazione salvata") ed eliminarla (con conferma)
+- Caricando un file non riconosciuto da solo, si applica la più recente salvata che corrisponde e si va
+  all'anteprima con "Colonne associate con «nome»" e "Cambia le colonne"; errore di salvataggio = avviso
+  e anteprima comunque
+- `lib/importa.ts`: `caricaMappature`, `salvaMappatura` (upsert), `eliminaMappatura`
+- Test: 1 e2e nuovo in `import.spec.ts` (nome con `<`, elimina in `finally`); gli esistenti non toccati.
+  e2e da verificare in CI
+
 ### Sessione agenti — 2026-10-21 — T011
 
 **Fatto**

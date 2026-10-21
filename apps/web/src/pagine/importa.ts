@@ -1,5 +1,6 @@
 import { Download, FileUp } from 'lucide';
 import {
+  applicaMappatura,
   controllaTabella,
   erroriMappatura,
   mappaturaAutomatica,
@@ -12,17 +13,23 @@ import { codiceErrore } from '../lib/errori';
 import { esc } from '../lib/html';
 import {
   caricaImportPassati,
+  caricaMappature,
+  eliminaMappatura,
   importaClientiVeicoli,
   leggiTabella,
+  salvaMappatura,
   scaricaModello,
   type ConteggiImport,
   type ImportPassato,
+  type MappaturaSalvata,
 } from '../lib/importa';
 import { caricaContestoOfficina, eTitolare } from '../lib/officina';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
+import { chiediConferma } from '../ui/conferma';
 import {
+  impostaScelte,
   leggiScelte,
   primoSelectCoinvolto,
   schermataMappatura,
@@ -147,6 +154,14 @@ interface ContestoImport {
   officinaId: string;
   /** Falso se nel frattempo si è cambiato pagina o file: le risposte tardive vanno scartate. */
   attuale: () => boolean;
+  /** Associazioni salvate dell'officina, dalla più recente. */
+  salvate: MappaturaSalvata[];
+}
+
+/** Cosa mostrare in più nell'anteprima: la mappatura salvata usata, o l'avviso di un salvataggio fallito. */
+interface InfoAnteprima {
+  usata?: string;
+  avviso?: string;
 }
 
 async function leggiEMostra(
@@ -169,7 +184,10 @@ async function leggiEMostra(
     box.innerHTML = avvisoErrore('Il file è vuoto.');
     return;
   }
-  const contesto: ContestoImport = { box, file, tabella, officinaId, attuale };
+  // Senza le associazioni salvate (errore di rete, tabella non raggiungibile) si lavora lo stesso
+  const salvate = await caricaMappature(officinaId).catch(() => []);
+  if (!attuale()) return;
+  const contesto: ContestoImport = { box, file, tabella, officinaId, attuale, salvate };
   const automatica = mappaturaAutomatica(tabella.intestazioni);
   // Si va dritti all'anteprima solo se c'è una chiave e nessuna intestazione resta senza colonna
   if (
@@ -177,32 +195,90 @@ async function leggiEMostra(
     tuttoRiconosciuto(tabella, automatica)
   ) {
     await mostraAnteprima(contesto, automatica);
-  } else {
-    mostraMappatura(contesto, automatica);
+    return;
   }
+  // Il riconoscimento automatico non basta: si prova la più recente tra le associazioni salvate
+  for (const salvata of salvate) {
+    const m = applicaMappatura(salvata.colonne, tabella.intestazioni);
+    if (m !== null && erroriMappatura(m, tabella.intestazioni).length === 0) {
+      await mostraAnteprima(contesto, m, { usata: salvata.nome });
+      return;
+    }
+  }
+  mostraMappatura(contesto, automatica);
 }
 
 /** Passo "Associa le colonne": scelte iniziali = quelle già fatte (o il riconoscimento automatico). */
 function mostraMappatura(c: ContestoImport, scelte: Mappatura): void {
   const { box, tabella } = c;
-  box.innerHTML = schermataMappatura(tabella, scelte);
+  box.innerHTML = schermataMappatura(tabella, scelte, c.salvate);
   box.querySelector<HTMLElement>('#tc-mappatura')!.focus();
   const errori = box.querySelector<HTMLElement>('[data-errori-mappatura]')!;
-  box.querySelector<HTMLButtonElement>('[data-mostra-anteprima]')!.addEventListener('click', () => {
-    const m = leggiScelte(box);
-    const problemi = erroriMappatura(m, tabella.intestazioni);
-    if (problemi.length > 0) {
-      errori.innerHTML = `<div class="tc-avviso tc-avviso--rosso"><ul class="mb-0 ps-3">${problemi
-        .map((p) => `<li>${esc(p)}</li>`)
-        .join('')}</ul></div>`;
-      primoSelectCoinvolto(box, m)?.focus();
+  const scegli = box.querySelector<HTMLSelectElement>('[data-mappa-salvata]');
+  const elimina = box.querySelector<HTMLButtonElement>('[data-elimina-mappatura]');
+  const scelta = () => c.salvate.find((x) => x.id === scegli?.value);
+  scegli?.addEventListener('change', () => {
+    const salvata = scelta();
+    if (elimina) elimina.disabled = !salvata;
+    errori.innerHTML = '';
+    if (!salvata) return;
+    const m = applicaMappatura(salvata.colonne, tabella.intestazioni);
+    if (m === null) {
+      errori.innerHTML = avvisoErrore(
+        `L'associazione «${salvata.nome}» non corrisponde alle colonne di questo file.`,
+      );
       return;
     }
-    void mostraAnteprima(c, m);
+    impostaScelte(box, m);
   });
+  elimina?.addEventListener('click', () => {
+    const salvata = scelta();
+    if (!salvata) return;
+    chiediConferma({
+      titolo: "Eliminare l'associazione?",
+      testo: `L'associazione «${salvata.nome}» non sarà più disponibile per i prossimi file.`,
+      pulsante: "Elimina l'associazione",
+      origine: elimina,
+      azione: async () => {
+        await eliminaMappatura(salvata.id);
+        c.salvate = c.salvate.filter((x) => x.id !== salvata.id);
+        if (c.attuale()) mostraMappatura(c, leggiScelte(box));
+      },
+    });
+  });
+  box
+    .querySelector<HTMLButtonElement>('[data-mostra-anteprima]')!
+    .addEventListener('click', async () => {
+      const m = leggiScelte(box);
+      const problemi = erroriMappatura(m, tabella.intestazioni);
+      if (problemi.length > 0) {
+        errori.innerHTML = `<div class="tc-avviso tc-avviso--rosso"><ul class="mb-0 ps-3">${problemi
+          .map((p) => `<li>${esc(p)}</li>`)
+          .join('')}</ul></div>`;
+        primoSelectCoinvolto(box, m)?.focus();
+        return;
+      }
+      const nome = box.querySelector<HTMLInputElement>('#tc-salva-come')!.value.trim();
+      let info: InfoAnteprima = {};
+      if (nome) {
+        try {
+          await salvaMappatura(c.officinaId, nome, m);
+        } catch {
+          info = {
+            avviso: `Non siamo riusciti a salvare l'associazione «${nome}»: l'anteprima è comunque qui sotto.`,
+          };
+        }
+        if (!c.attuale()) return;
+      }
+      void mostraAnteprima(c, m, info);
+    });
 }
 
-async function mostraAnteprima(c: ContestoImport, mappatura: Mappatura): Promise<void> {
+async function mostraAnteprima(
+  c: ContestoImport,
+  mappatura: Mappatura,
+  info: InfoAnteprima = {},
+): Promise<void> {
   const { box, file, tabella, officinaId, attuale } = c;
   box.innerHTML = caricamento('Controllo del file…');
   const cambia = () => {
@@ -246,6 +322,8 @@ async function mostraAnteprima(c: ContestoImport, mappatura: Mappatura): Promise
   box.innerHTML = `
     <section class="tc-import" aria-labelledby="tc-anteprima">
       ${pulsanteCambia()}
+      ${info.usata ? `<p class="mb-0">Colonne associate con «${esc(info.usata)}».</p>` : ''}
+      ${info.avviso ? `<div class="tc-avviso tc-avviso--giallo" role="status"><p class="mb-0">${esc(info.avviso)}</p></div>` : ''}
       <h2 id="tc-anteprima" class="tc-etichetta" tabindex="-1">Anteprima di «${esc(file.name)}»</h2>
       <p class="mb-0">
         ${plurale(lette, 'riga letta', 'righe lette')}:

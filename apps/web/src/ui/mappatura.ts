@@ -6,6 +6,7 @@ import {
   type Tabella,
 } from '@tyrecare/shared';
 import { esc } from '../lib/html';
+import type { MappaturaSalvata } from '../lib/importa';
 
 // Passo "Associa le colonne" dell'import (PLAN P22): per ogni colonna di TyreCare un <select> con le
 // intestazioni del file. Solo HTML e lettura dei valori: il flusso (anteprima, errori) è in pagine/importa.ts.
@@ -41,7 +42,11 @@ export function esempioColonna(t: Tabella, intestazione: string): string {
 const idCampo = (colonna: ColonnaImport) => `tc-mappa-${colonna}`;
 
 /** HTML del passo: i <select> con le scelte iniziali, il riquadro degli errori e il pulsante. */
-export function schermataMappatura(t: Tabella, scelte: Mappatura): string {
+export function schermataMappatura(
+  t: Tabella,
+  scelte: Mappatura,
+  salvate: MappaturaSalvata[] = [],
+): string {
   const opzioni = intestazioniUtili(t).map((h) => {
     const esempio = esempioColonna(t, h);
     return { h, testo: esempio ? `${h} (es. ${esempio})` : h };
@@ -61,6 +66,21 @@ export function schermataMappatura(t: Tabella, scelte: Mappatura): string {
         </select>
       </div>`,
   ).join('');
+  const usaSalvata = salvate.length
+    ? `
+      <div class="tc-campo">
+        <label class="form-label" for="tc-mappa-salvata">Usa un'associazione salvata</label>
+        <div class="d-flex gap-2">
+          <select class="form-select" id="tc-mappa-salvata" data-mappa-salvata>
+            <option value="">— Scegli —</option>
+            ${salvate.map((m) => `<option value="${esc(m.id)}">${esc(m.nome)}</option>`).join('')}
+          </select>
+          <button type="button" class="btn btn-outline-light" data-elimina-mappatura disabled>
+            Elimina
+          </button>
+        </div>
+      </div>`
+    : '';
   return `
     <section class="tc-import" aria-labelledby="tc-mappatura">
       <h2 id="tc-mappatura" class="tc-etichetta" tabindex="-1">Associa le colonne</h2>
@@ -68,7 +88,13 @@ export function schermataMappatura(t: Tabella, scelte: Mappatura): string {
         Non riconosciamo tutte le colonne del file. Per ogni dato di TyreCare scegli la colonna del
         tuo file che lo contiene. Serve almeno la targa o il codice cliente.
       </p>
+      ${usaSalvata}
       <div class="tc-mappatura__campi">${campi}</div>
+      <div class="tc-campo">
+        <label class="form-label" for="tc-salva-come">Salva queste scelte come (facoltativo)</label>
+        <input class="form-control" id="tc-salva-come" type="text" maxlength="60"
+          placeholder="Es. il nome del tuo gestionale" autocomplete="off" />
+      </div>
       <div data-errori-mappatura role="alert"></div>
       <button type="button" class="btn btn-primary btn-lg w-100" data-mostra-anteprima>
         Mostra l'anteprima
@@ -98,4 +124,11 @@ export function primoSelectCoinvolto(box: HTMLElement, m: Mappatura): HTMLSelect
     selects[0] ??
     null
   );
+}
+
+/** Imposta i <select> delle colonne sulle scelte date (le colonne non citate tornano a "non c'è"). */
+export function impostaScelte(box: HTMLElement, m: Mappatura): void {
+  for (const s of box.querySelectorAll<HTMLSelectElement>('select[data-colonna]')) {
+    s.value = m[s.dataset.colonna as ColonnaImport] ?? '';
+  }
 }

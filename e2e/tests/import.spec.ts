@@ -151,3 +151,83 @@ test('intestazioni sconosciute: il titolare associa le colonne e importa', async
     page.getByText('Import completato: 1 cliente nuovo, 2 veicoli nuovi.'),
   ).toBeVisible();
 });
+
+test('il titolare salva l’associazione delle colonne e al file successivo va dritto all’anteprima', async ({
+  page,
+}) => {
+  const id = Date.now().toString(36).toUpperCase().slice(-6);
+  const nomeMappatura = `Gestionale <${id}>`;
+  // Stesse intestazioni inventate del test sopra, ma righe e targhe diverse
+  const nuovoFile = (suffisso: string) => ({
+    name: `salvata-${suffisso}-${id}.csv`,
+    mimeType: 'text/csv',
+    buffer: Buffer.from(
+      [
+        'Cod. Cli.;Nominativo;Cell.;Targa veicolo;Casa;Mod.',
+        `S${id};Bianchi Sara ${id};333 4445556;S1${id};Fiat;Panda`,
+      ].join('\r\n'),
+      'latin1',
+    ),
+  });
+
+  // Elimina la mappatura dall'interfaccia, se c'è: serve anche a ripulire in caso di errore
+  const elimina = async () => {
+    await page.goto('/clienti/importa');
+    await page.getByLabel(/File CSV/).setInputFiles(nuovoFile('pulizia'));
+    // Con l'associazione salvata si va dritto all'anteprima: si torna al passo delle colonne
+    await page
+      .getByRole('heading', { name: /^(Associa le colonne|Anteprima di)/ })
+      .first()
+      .waitFor();
+    const cambia = page.getByRole('button', { name: 'Cambia le colonne' });
+    if (await cambia.isVisible()) await cambia.click();
+    const salvata = page.getByLabel("Usa un'associazione salvata");
+    if (await salvata.isVisible().catch(() => false)) {
+      await salvata.selectOption({ label: nomeMappatura });
+      await page.getByRole('button', { name: 'Elimina', exact: true }).click();
+      await page
+        .getByRole('dialog')
+        .getByRole('button', { name: "Elimina l'associazione" })
+        .click();
+    }
+  };
+
+  await accedi(page, 'titolare@tyrecare.test');
+  try {
+    await page.goto('/clienti/importa');
+    const primo = nuovoFile('uno');
+    await page.getByLabel(/File CSV/).setInputFiles(primo);
+    await expect(page.getByRole('heading', { name: 'Associa le colonne' })).toBeFocused();
+
+    await page.getByLabel('Codice cliente', { exact: true }).selectOption('Cod. Cli.');
+    await page.getByLabel('Telefono', { exact: true }).selectOption('Cell.');
+    await page.getByLabel('Cognome', { exact: true }).selectOption('Nominativo');
+    await page.getByLabel('Targa', { exact: true }).selectOption('Targa veicolo');
+    await page.getByLabel('Marca', { exact: true }).selectOption('Casa');
+    await page.getByLabel('Modello', { exact: true }).selectOption('Mod.');
+    await page.getByLabel('Salva queste scelte come (facoltativo)').fill(nomeMappatura);
+    await page.getByRole('button', { name: "Mostra l'anteprima" }).click();
+    await expect(page.getByRole('heading', { name: `Anteprima di «${primo.name}»` })).toBeFocused();
+
+    // Un altro file con le stesse intestazioni: l'associazione si applica da sola
+    const secondo = nuovoFile('due');
+    await page.goto('/clienti/importa');
+    await page.getByLabel(/File CSV/).setInputFiles(secondo);
+    await expect(
+      page.getByRole('heading', { name: `Anteprima di «${secondo.name}»` }),
+    ).toBeFocused();
+    await expect(page.getByText(`Colonne associate con «${nomeMappatura}».`)).toBeVisible();
+
+    // "Cambia le colonne": si può scegliere l'associazione salvata dall'elenco
+    await page.getByRole('button', { name: 'Cambia le colonne' }).click();
+    await expect(page.getByLabel("Usa un'associazione salvata")).toBeVisible();
+  } finally {
+    await elimina();
+  }
+
+  // Eliminata: lo stesso file torna a chiedere l'associazione
+  await page.goto('/clienti/importa');
+  await page.getByLabel(/File CSV/).setInputFiles(nuovoFile('tre'));
+  await expect(page.getByRole('heading', { name: 'Associa le colonne' })).toBeFocused();
+  await expect(page.getByLabel("Usa un'associazione salvata")).toHaveCount(0);
+});
