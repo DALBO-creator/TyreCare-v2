@@ -241,6 +241,51 @@ export type Database = {
           },
         ];
       };
+      import_mappature: {
+        Row: {
+          colonne: Json;
+          creata_da: string | null;
+          created_at: string;
+          id: string;
+          nome: string;
+          officina_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          colonne: Json;
+          creata_da?: string | null;
+          created_at?: string;
+          id?: string;
+          nome: string;
+          officina_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          colonne?: Json;
+          creata_da?: string | null;
+          created_at?: string;
+          id?: string;
+          nome?: string;
+          officina_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'import_mappature_creata_da_fkey';
+            columns: ['creata_da'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'import_mappature_officina_id_fkey';
+            columns: ['officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'officine';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       inviti_cliente: {
         Row: {
           annullato_il: string | null;
@@ -880,6 +925,7 @@ export type Database = {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string };
         Returns: undefined;
       };
+      mappatura_import_valida: { Args: { p_colonne: Json }; Returns: boolean };
       modifica_controllo: {
         Args: {
           p_eseguito_il: string;

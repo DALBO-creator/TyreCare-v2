@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-21 — T011
+
+**Fatto**
+
+- Import, P22: nuova migrazione `20261021120000_import_mappature.sql` con la tabella `import_mappature`
+  (associazioni di colonne salvate per officina: `nome` unico nell'officina, `colonne` jsonb, `creata_da`,
+  `updated_at` con trigger) e la funzione `mappatura_import_valida(jsonb)` usata nel `check` (chiavi tra
+  le 11 di `COLONNE_IMPORT`, valori testo 1–200, almeno targa o codice cliente)
+- RLS: select, insert, update (`using` + `with check`), delete solo `is_titolare_officina(officina_id)`
+- Test: 24 pgTAP in `import-mappature.test.sql` (titolare inserisce/legge/modifica/elimina; operatore,
+  titolare2, cliente e anonimo né vedono né scrivono; vincoli; nome doppio `23505`; spostamento in
+  un'altra officina rifiutato); da verificare in CI (niente Docker nel cloud)
+- `database.types.ts` aggiornato a mano (tabella e funzione). Niente interfaccia: è T012
+
 ### Sessione agenti — 2026-10-20 — T010
 
 **Fatto**
