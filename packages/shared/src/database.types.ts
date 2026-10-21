@@ -243,7 +243,7 @@ export type Database = {
       };
       import_mappature: {
         Row: {
-          colonne: Json;
+          colonne: NonNullable<Json>;
           creata_da: string | null;
           created_at: string;
           id: string;
@@ -252,7 +252,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          colonne: Json;
+          colonne: NonNullable<Json>;
           creata_da?: string | null;
           created_at?: string;
           id?: string;
@@ -261,7 +261,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          colonne?: Json;
+          colonne?: NonNullable<Json>;
           creata_da?: string | null;
           created_at?: string;
           id?: string;
