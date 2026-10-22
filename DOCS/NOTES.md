@@ -1410,3 +1410,36 @@ di T010 e una associazione rimasta lo farebbe saltare il passo di associazione.
   `e2e/tests/import.spec.ts` (CSV in Windows-1252 con una riga sbagliata, import, reimport, operatore).
   Nei pgTAP il JSON delle righe sta in una tabella temporanea: `\set` di psql non accetta valori su più
   righe.
+
+## Pilota — commenti degli utenti (database)
+
+**File coinvolti:** `supabase/migrations/20261022150000_commenti.sql`,
+`supabase/tests/database/commenti.test.sql`, `packages/shared/src/database.types.ts`
+
+**Come funziona:** durante il pilota officine e clienti mandano dall'app commenti e segnalazioni, salvati
+in `public.commenti` (l'interfaccia "Invia un commento" arriva con T016). Ogni commento ha l'autore (chi
+è collegato), un'officina facoltativa (solo se chi scrive ne è membro: il cliente la lascia vuota), la
+pagina dell'app da cui è partito (`percorso`) e il testo (3–2000 caratteri, spazi ai lati esclusi). Li
+legge solo l'autore (i propri) e l'ADMIN; nessuno li modifica o li elimina dall'app. Al massimo **20
+commenti in 24 ore** per persona: il ventunesimo dà l'errore `TROPPI_COMMENTI`.
+
+### Codice complesso
+
+- **`id` senza default**: lo genera il browser (`crypto.randomUUID()`), come le altre scritture ripetibili
+  (vedi "Scritture ripetibili dopo un errore di rete"): se l'invio viene ripetuto dopo un errore di rete,
+  la stessa chiave primaria dà `23505` invece di creare un doppione.
+- **Trigger `limita_commenti`** (`before insert`): conta i commenti dell'autore nelle ultime 24 ore e
+  solleva `TROPPI_COMMENTI` (P0001) se sono già 20. **Non** è `security definer`: gira come chi scrive, e
+  la RLS gli mostra proprio le sue righe, quelle da contare. In un `insert … select` di più righe ogni riga
+  vede quelle inserite prima nello stesso comando (regola di Postgres per i trigger `before` di riga),
+  quindi anche un inserimento multiplo si ferma al ventunesimo. Il trigger forza `created_at := now()`:
+  con una data vecchia scelta dal browser il commento non entrerebbe nel conteggio.
+- **Ordine dei controlli**: prima il trigger, poi la policy RLS (`with check`), poi i `check` delle
+  colonne. Per questo nel test del testo corto l'autore è quello giusto (altrimenti l'errore sarebbe
+  `42501`).
+- **Limite non "atomico"**: due invii nello stesso istante da due schede possono superare di poco i 20
+  (ognuno conta prima che l'altro sia visibile). Per un freno agli abusi basta; non serve un blocco.
+- **Test** (13 pgTAP): il cliente invia e rilegge il suo; testo corto, autore diverso, officina non sua e
+  modifica → rifiutati; l'operatore invia per la sua officina con una data vecchia e trova `now()`; non
+  vede i commenti altrui; l'ADMIN li vede tutti; l'anonimo non invia; 20 commenti con `generate_series`
+  passano e il ventunesimo dà `TROPPI_COMMENTI`.
