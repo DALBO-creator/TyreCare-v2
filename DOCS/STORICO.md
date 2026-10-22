@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-22 — T017
+
+**Fatto**
+
+- Pilota: nuova guida di una pagina per LA SANTI GOMME in `DOCS/pilota/guida-avvio.md` (9 passi: accesso e
+  app sulla Home, orari e chiusure, servizi, import, controlli, inviti, richieste di appuntamento,
+  notifiche, commento) con l'avviso sul DPA in fondo. Riga aggiunta nell'indice di `DOCS/PLAN.md`.
+- Ogni nome di pulsante o pagina citato è stato cercato con `grep` in `apps/web/src`. Solo documentazione:
+  nessun codice toccato.
+
+**Da sapere**
+
+- Le istruzioni per Android/iPhone (menu del browser) sono quelle generali dei browser, non dell'app.
+- Il passo 1 dà per scontato che il titolare abbia già un account: come viene creato quello del pilota
+  va deciso con Davide.
+
 ### Sessione agenti — 2026-10-22 — T016
 
 **Fatto**

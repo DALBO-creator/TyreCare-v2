@@ -7,7 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: sessione agenti del
-> 2026-10-22 (T016, pagina `/commento` "Invia un commento" dal Profilo; vedi `NOTES.md` → "Pilota —
+> 2026-10-22 (T017, guida di avvio per l'officina in `DOCS/pilota/guida-avvio.md`). Prima, T016 (pagina `/commento` "Invia un commento" dal Profilo; vedi `NOTES.md` → "Pilota —
 > commenti degli utenti (app)"; l'e2e `commenti.spec.ts` si verifica in CI). Prima: T015 (tabella
 > `commenti`, limite di 20 in 24 ore) e T014 (bozze legali in `DOCS/legale/`). L'**import CSV standard di
 > clienti e veicoli** (sessione 19, `/clienti/importa`) è stato provato dal titolare: funziona. Con **P22**
