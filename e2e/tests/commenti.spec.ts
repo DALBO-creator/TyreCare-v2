@@ -21,10 +21,15 @@ test('il cliente invia un commento e vede la conferma', async ({ page }) => {
 test('un testo troppo corto dà errore sul campo', async ({ page }) => {
   await accedi(page, 'cliente@tyrecare.test');
   await page.goto('/commento');
-  await page.getByLabel('Cosa vuoi dirci?').fill('ok');
+  const campo = page.getByLabel('Cosa vuoi dirci?');
+  await campo.fill('ok');
+  // Uscendo dal campo l'errore compare subito e sposta il pulsante: lo si tocca solo dopo,
+  // altrimenti il tocco cade dove il pulsante era prima e il modulo non viene inviato
+  await campo.blur();
+  await expect(page.getByText('Scrivi almeno 3 caratteri')).toBeVisible();
   await page.getByRole('button', { name: 'Invia', exact: true }).click();
 
-  await expect(page.getByText('Scrivi almeno 3 caratteri')).toBeVisible();
-  await expect(page.getByLabel('Cosa vuoi dirci?')).toBeFocused();
+  // L'invio con il testo sbagliato riporta nel campo
+  await expect(campo).toBeFocused();
   await expect(page).toHaveURL(/\/commento$/);
 });
