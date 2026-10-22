@@ -2,6 +2,7 @@ import {
   ChevronRight,
   ClipboardList,
   Clock,
+  MapPin,
   KeyRound,
   LogOut,
   MessageSquare,
@@ -95,7 +96,8 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
                 ${link(ClipboardList, 'Servizi e prezzi', '/servizi')}
                 ${
                   officine.some((o) => o.ruolo === 'TITOLARE')
-                    ? link(Clock, 'Orari e chiusure', '/officina/orari')
+                    ? link(Clock, 'Orari e chiusure', '/officina/orari') +
+                      link(MapPin, "Dati dell'officina", '/officina/dati')
                     : ''
                 }
               </nav>

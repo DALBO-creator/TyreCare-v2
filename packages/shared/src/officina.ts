@@ -260,3 +260,76 @@ export function creaControlloSchema(posizioni: readonly Posizione[]) {
     };
   });
 }
+
+// ---------------------------------------------------------------------------------------------------
+// Dati dell'officina (indirizzo, contatti, posizione)
+// ---------------------------------------------------------------------------------------------------
+
+const NUMERO = String.raw`-?\d+(?:\.\d+)?`;
+const COPPIA = new RegExp(String.raw`^(${NUMERO})(?:\s*,\s*|\s+)(${NUMERO})$`);
+const LINK_MAPS = new RegExp(String.raw`@(${NUMERO}),(${NUMERO}),`);
+
+/**
+ * Legge latitudine e longitudine da ciò che il titolare incolla: due numeri col punto decimale separati
+ * da virgola e/o spazi ("45.070312, 7.686856") oppure un link di Google Maps che contiene "@45.07,7.68,".
+ * Arrotonda a 6 decimali (come `numeric(9, 6)`); `null` se il formato o gli intervalli non vanno bene.
+ * La virgola decimale ("45,07 7,68") non si indovina: è rifiutata.
+ */
+export function leggiCoordinate(testo: string): { latitudine: number; longitudine: number } | null {
+  const t = testo.trim();
+  const m = t.match(LINK_MAPS) ?? t.match(COPPIA);
+  if (!m) return null;
+  const latitudine = Number(Number(m[1]).toFixed(6));
+  const longitudine = Number(Number(m[2]).toFixed(6));
+  if (Math.abs(latitudine) > 90 || Math.abs(longitudine) > 180) return null;
+  return { latitudine, longitudine };
+}
+
+/** Modulo "Dati dell'officina": stessi vincoli `check` della tabella `officine`. */
+export const DatiOfficinaSchema = z
+  .object({
+    indirizzo: testo(200, "L'indirizzo").refine((s) => s !== '', {
+      error: "Inserisci l'indirizzo",
+    }),
+    cap: z
+      .string()
+      .trim()
+      .refine((s) => s === '' || /^[0-9]{5}$/.test(s), { error: 'Il CAP ha 5 cifre (es. 10100)' })
+      .transform((s) => s || null),
+    citta: testo(100, 'La città').refine((s) => s !== '', { error: 'Inserisci la città' }),
+    provincia: z
+      .string()
+      .trim()
+      .transform((s) => s.toUpperCase())
+      .refine((s) => s === '' || /^[A-Z]{2}$/.test(s), {
+        error: 'La provincia è la sigla di 2 lettere (es. TO)',
+      })
+      .transform((s) => s || null),
+    telefono: TelefonoSchema,
+    email: z
+      .string()
+      .trim()
+      .refine((s) => s === '' || EMAIL.test(s), {
+        error: "Controlla l'email: sembra incompleta (es. nome@esempio.it)",
+      })
+      .transform((s) => s || null),
+    // Vuota = nessuna posizione
+    posizione: z.string().trim(),
+  })
+  .transform((v, ctx) => {
+    const { posizione, ...resto } = v;
+    if (posizione === '') return { ...resto, latitudine: null, longitudine: null };
+    const c = leggiCoordinate(posizione);
+    if (!c) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['posizione'],
+        message: /\d,\d/.test(posizione)
+          ? 'Scrivi i decimali con il punto, non con la virgola (es. 45.070312, 7.686856)'
+          : 'Non riesco a leggere la posizione: incolla due numeri (es. 45.070312, 7.686856) o un link di Google Maps',
+      });
+      return z.NEVER;
+    }
+    return { ...resto, ...c };
+  });
+export type DatiOfficina = z.infer<typeof DatiOfficinaSchema>;

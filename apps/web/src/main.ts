@@ -43,6 +43,7 @@ import { mostraNuovoCliente } from './pagine/nuovo-cliente';
 import { mostraNuovoControllo } from './pagine/nuovo-controllo';
 import { mostraNuovoVeicolo } from './pagine/nuovo-veicolo';
 import { mostraOfficina, mostraOfficine, mostraPrenota } from './pagine/officine';
+import { mostraDatiOfficina } from './pagine/dati-officina';
 import { mostraNuovaChiusura, mostraOrari } from './pagine/orari';
 import { mostraPasswordDimenticata } from './pagine/password-dimenticata';
 import { mostraPneumatico } from './pagine/pneumatico';
@@ -137,6 +138,12 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: 'Orari e chiusure',
     mostra: mostraOrari,
+  },
+  {
+    percorso: '/officina/dati',
+    accesso: 'utente',
+    titolo: "Dati dell'officina",
+    mostra: mostraDatiOfficina,
   },
   {
     percorso: '/officina/chiusura',

@@ -1470,3 +1470,25 @@ dashboard di Supabase (tabella `commenti`).
   "//…") di al massimo 200 caratteri, altrimenti `''`. La pagina precedente la ricorda il router
   (`vaiA` salva `location.pathname` prima di cambiare pagina): dal Profilo è quindi la pagina da cui
   si era arrivati al Profilo.
+
+## Dati dell'officina e posizione (Fase 4)
+
+**File coinvolti:** `apps/web/src/pagine/dati-officina.ts`, `apps/web/src/lib/dati-officina.ts`,
+`packages/shared/src/officina.ts` (`leggiCoordinate`, `DatiOfficinaSchema`), `apps/web/src/main.ts`
+(rotta `/officina/dati`), `apps/web/src/pagine/profilo.ts` (voce solo per il TITOLARE),
+`e2e/tests/dati-officina.spec.ts`.
+**Come funziona:** il titolare apre Profilo → Officina → "Dati dell'officina", modifica indirizzo, contatti
+e posizione e salva con un `update` su `officine` (policy "officine: modifica titolare o admin", nessuna
+migrazione). Ragione sociale e partita IVA sono solo mostrate. La posizione è un unico campo di testo:
+si incolla "45.070312, 7.686856" o un link di Google Maps, oppure si preme "Usa la posizione attuale".
+Campo vuoto = `latitudine`/`longitudine` a `null` (l'officina non sarà ordinata per distanza). Un operatore
+vede solo l'avviso "Solo il titolare…".
+
+### Codice complesso
+`packages/shared/src/officina.ts` (`leggiCoordinate`) — due espressioni regolari: il link di Maps cerca
+`@lat,lon,`, altrimenti due numeri col punto separati da virgola e/o spazi. La virgola decimale non si
+indovina ("45,07 7,68" potrebbe essere due coordinate o quattro numeri): è rifiutata e lo schema chiede il
+punto. Il valore è arrotondato con `toFixed(6)` (come `numeric(9, 6)`) e controllato negli intervalli.
+`DatiOfficinaSchema` — la trasformazione finale trasforma `posizione` in latitudine e longitudine; con
+errori sugli altri campi Zod non la esegue, quindi l'errore della posizione compare dopo aver corretto
+gli altri campi.
