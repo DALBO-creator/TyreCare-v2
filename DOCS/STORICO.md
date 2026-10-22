@@ -4,6 +4,26 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-22 — T014
+
+**Fatto**
+
+- P17: nuove bozze in `DOCS/legale/` — `dpa-officine.md` (accordo art. 28: parti, oggetto e durata,
+  finalità, interessati e dati come nell'informativa, istruzioni, riservatezza, misure di sicurezza,
+  sub-responsabili Supabase/Vercel/Resend con avviso per i nuovi, assistenza per i diritti, data breach,
+  cancellazione o restituzione, audit) e `registro-trattamenti.md` (art. 30: parte A TyreCare titolare —
+  account, notifiche, iscrizioni push, anagrafica officine, dati tecnici; parte B responsabile — clienti,
+  veicoli, pneumatici, controlli, inviti, prenotazioni, import). Entrambi con "BOZZA — da rivedere…" in
+  testa
+- Misure di sicurezza verificate nel codice prima di scriverle: `enable row level security` su tutte le 16
+  tabelle, policy per officina e per ruolo (admin escluso dai dati delle officine), test pgTAP sugli accessi
+  negati, SHA-256 dei codici invito, chiave di servizio solo in `invia-notifica`, Supabase eu-west-1
+- `legale/README.md`: elenco aggiornato e sezione "Da fare prima del lancio" con le misure che mancano
+  (registro accessi del personale, copie di sicurezza, esportazione e cancellazione, procedura violazioni,
+  2FA, password, intestazioni di sicurezza, captcha, regioni dei fornitori, impostazioni cloud, DPA dei
+  fornitori)
+- `PLAN.md`: riga in §P17 e indice. Solo documentazione, niente codice
+
 ### Sessione agenti — 2026-10-21 — T013
 
 **Fatto**

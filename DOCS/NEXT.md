@@ -6,8 +6,9 @@
 
 ## Prossima sessione
 
-> **Obiettivo: scegliere il passo successivo.** Ultima sessione: sessione agenti del 2026-10-21 (T013,
-> bozze legali: informativa privacy e termini di servizio in `DOCS/legale/`). L'**import CSV standard di
+> **Obiettivo: scegliere il passo successivo.** Ultima sessione: sessione agenti del 2026-10-22 (T014,
+> bozze legali: DPA per le officine e registro dei trattamenti in `DOCS/legale/`, dopo informativa e
+> termini di T013). L'**import CSV standard di
 > clienti e veicoli** (sessione 19, `/clienti/importa`) è stato provato dal titolare: funziona. Con **P22**
 > non si aspetta più il file `.xls` di GESTITYRE: l'import passa dalla **mappatura delle colonne**
 > (T008–T012 fatti).
@@ -15,8 +16,12 @@
 **0 — Da chiedere al titolare**
 
 - [ ] P17: completare i `[DA COMPLETARE: …]` delle bozze in `DOCS/legale/` (dati di chi offre TyreCare,
-  email privacy, tempi di conservazione, età minima, abbonamento) e farle rivedere a un consulente con le
-  domande di `DOCS/legale/README.md`; solo dopo si fanno le pagine nell'app
+  email privacy, tempi di conservazione, età minima, abbonamento; nel DPA anche preavvisi, tempi di avviso
+  di violazione e di cancellazione) e farle rivedere a un consulente con le domande di
+  `DOCS/legale/README.md`; solo dopo si fanno le pagine nell'app e si firma il DPA con LA SANTI GOMME
+- [ ] P17: decidere quali misure di "Da fare prima del lancio" (`DOCS/legale/README.md`) fare prima del
+  pilota (registro accessi del personale, esportazione dati, cancellazione account, 2FA, intestazioni di
+  sicurezza, procedura per le violazioni, copie di sicurezza)
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, pulizia delle
   notifiche vecchie, preferenze, annullare un import
 - [ ] P23: quale **dominio di TyreCare** usare per le email e quando configurarne i DNS su Resend

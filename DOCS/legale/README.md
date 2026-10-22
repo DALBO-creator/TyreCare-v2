@@ -12,10 +12,11 @@
 |------|-----------|------------------|
 | [`informativa-privacy.md`](informativa-privacy.md) | Informativa sul trattamento dei dati (art. 13–14 GDPR), con la parte su cookie e archiviazione locale | Clienti, titolari e operatori delle officine |
 | [`termini-di-servizio.md`](termini-di-servizio.md) | Condizioni d'uso del servizio, account e ruoli, prenotazioni, responsabilità, abbonamento | Tutti gli utenti |
+| [`dpa-officine.md`](dpa-officine.md) | Accordo di nomina a responsabile del trattamento (art. 28 GDPR): istruzioni, misure di sicurezza, sub-responsabili, data breach, fine del contratto, audit | Ogni officina affiliata (da firmare prima di caricare dati veri) |
+| [`registro-trattamenti.md`](registro-trattamenti.md) | Registro dei trattamenti (art. 30): parte A TyreCare titolare, parte B TyreCare responsabile per le officine | Uso interno; da mostrare al Garante se lo chiede |
 
-Da fare in seguito (non in questa bozza): **accordo di nomina a responsabile del trattamento (DPA, art. 28)**
-tra ogni officina e TyreCare, **registro dei trattamenti** (art. 30), contratto di abbonamento per le
-officine (P19).
+Le bozze di DPA e registro sono state aggiunte il 2026-10-22 (compito T014). Da fare in seguito: contratto
+di abbonamento per le officine (P19), a cui il DPA rimanda.
 
 ## Come sono state scritte
 
@@ -40,6 +41,42 @@ Nei documenti sono segnati con `[DA COMPLETARE: …]`. Si possono compilare nell
 - [DA COMPLETARE: dominio e indirizzo web di TyreCare (P23)]
 - Scelte da fare (meglio con il consulente): tempi di conservazione, età minima, regione dei server di
   Vercel e di Resend, prezzo e durata dell'abbonamento (P19), foro competente.
+
+## Da fare prima del lancio (misure di sicurezza che oggi mancano)
+
+Il DPA (§9) e il registro descrivono **solo** le misure verificate nel codice il 2026-10-22: RLS attiva su
+tutte le 16 tabelle con dati (`enable row level security` nelle migrazioni, con test pgTAP anche per gli
+accessi negati), accessi per ruolo, HTTPS, database Supabase in eu-west-1, password cifrate, codici degli
+inviti come impronta SHA-256, chiave di servizio solo nella funzione sul server. Queste invece **mancano**
+o non si possono verificare dal repository, e non vanno scritte come già fatte finché non lo sono:
+
+- [ ] **Registro degli accessi del personale di TyreCare** ai dati delle officine: chi usa la chiave di
+  servizio o la console di Supabase legge tutto senza traccia nell'app (DPA §8; domanda 9).
+- [ ] **Cifratura a riposo, copie di sicurezza e ripristino:** dipendono dal piano Supabase; verificare
+  cosa offre il piano scelto (copie giornaliere, ripristino a un momento preciso) e scriverlo nel DPA §9.
+- [ ] **Esportazione dei dati** in formato leggibile da computer: per la restituzione all'officina a fine
+  contratto (DPA §13) e per la portabilità dei clienti. Oggi non esiste: solo a mano su richiesta.
+- [ ] **Cancellazione dell'account** dall'app e **cancellazione automatica** dei dati scaduti (notifiche,
+  prenotazioni passate) secondo i tempi di conservazione che si decideranno: oggi nulla si cancella da sé.
+- [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
+  quanto, registro delle violazioni — art. 33.5): non esiste.
+- [ ] **Autenticazione a due fattori** per titolari delle officine e amministratori: disattivata
+  (`[auth.mfa.totp]` con `enroll_enabled = false` in `supabase/config.toml`).
+- [ ] **Regole sulle password più robuste:** oggi solo lunghezza minima 8 (`password_requirements = ""`) e
+  `secure_password_change = false` (cambio password senza riautenticazione recente).
+- [ ] **Intestazioni di sicurezza del sito** (Content-Security-Policy, X-Frame-Options o
+  `frame-ancestors`, Referrer-Policy, HSTS esplicito): `apps/web/vercel.json` imposta solo la cache.
+- [ ] **Protezione dagli abusi** su registrazione e accesso (captcha): non configurata; oggi ci sono solo i
+  limiti di frequenza di Supabase.
+- [ ] **Regioni dei fornitori:** Vercel (nessuna regione impostata in `vercel.json`), Resend e la funzione
+  sul server `invia-notifica` (Supabase Edge Function): verificare dove trattano i dati e le garanzie per
+  gli USA (domande 4 e 5).
+- [ ] **SSL obbligatorio sulle connessioni dirette al database** (quelle di manutenzione, non dell'app):
+  attivare "Enforce SSL" nel progetto Supabase e verificarlo.
+- [ ] **Impostazioni del progetto cloud:** `supabase/config.toml` vale per l'ambiente locale; controllare
+  che nel progetto Supabase in produzione ci siano le stesse (conferma email, rotazione dei token, ecc.).
+- [ ] **DPA firmati con i sub-responsabili** (Supabase, Vercel, Resend): accettarli dalle loro console e
+  conservarne copia.
 
 ## Domande per il consulente
 
