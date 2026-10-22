@@ -4,6 +4,26 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-23 — T018
+
+**Fatto**
+
+- Pagina `/officina/dati` ("Dati dell'officina"), raggiungibile da Profilo → Officina (solo TITOLARE):
+  indirizzo, CAP, città, provincia, telefono, email e "Posizione sulla mappa"; ragione sociale e partita
+  IVA in sola lettura. Salvataggio → `/profilo` con "Dati dell'officina salvati."; l'operatore vede
+  l'avviso "Solo il titolare dell'officina può modificare i dati dell'officina."
+- `packages/shared/src/officina.ts`: `leggiCoordinate` e `DatiOfficinaSchema`, con test Vitest. Nessuna
+  migrazione: bastano le colonne e la policy "officine: modifica titolare o admin".
+- Pulsante "Usa la posizione attuale" (`navigator.geolocation`).
+- e2e `e2e/tests/dati-officina.spec.ts` con titolare2 (Pneus Express): da verificare in CI.
+
+**Da sapere**
+
+- `is_titolare_officina` non guarda lo stato di affiliazione: titolare2 (IN_ATTESA) può aggiornare la sua
+  officina. Indirizzo e città sono obbligatori (colonne `not null`); CAP, provincia, telefono, email no.
+- La virgola decimale ("45,07 7,68") è rifiutata con un messaggio che chiede il punto.
+- Fatti in locale: format, lint, typecheck, test, build. Non eseguibile qui: e2e.
+
 ### Sessione agenti — 2026-10-22 — T017
 
 **Fatto**

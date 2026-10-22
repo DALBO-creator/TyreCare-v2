@@ -69,7 +69,7 @@ const VOCI_NAV: VoceNav[] = [
     percorso: '/profilo',
     etichetta: 'Profilo',
     icona: UserRound,
-    anche: ['/officina/orari', '/officina/chiusura', '/commento'],
+    anche: ['/officina/orari', '/officina/dati', '/officina/chiusura', '/commento'],
   },
 ];
 

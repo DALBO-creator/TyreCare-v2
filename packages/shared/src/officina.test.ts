@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
   ClienteSchema,
+  DatiOfficinaSchema,
   InvitoSchema,
   MontaPneumaticiSchema,
   SmontaPneumaticiSchema,
   VeicoloSchema,
   creaControlloSchema,
   formattaTarga,
+  leggiCoordinate,
   oggiISO,
 } from './officina';
 
@@ -177,5 +179,124 @@ describe('creaControlloSchema', () => {
   it('rifiuta valori fuori scala o non numerici', () => {
     const r = schema.safeParse({ ...base, mm_ANT_SX: '25', bar_ANT_SX: 'due', km: '-3' });
     expect(errori(r)).toEqual(['km', 'mm_ANT_SX', 'bar_ANT_SX']);
+  });
+});
+
+describe('leggiCoordinate', () => {
+  it('legge due numeri separati da virgola e/o spazi', () => {
+    const atteso = { latitudine: 45.070312, longitudine: 7.686856 };
+    expect(leggiCoordinate('45.070312, 7.686856')).toEqual(atteso);
+    expect(leggiCoordinate('45.070312,7.686856')).toEqual(atteso);
+    expect(leggiCoordinate('  45.070312   7.686856 ')).toEqual(atteso);
+    expect(leggiCoordinate('45.07 7.68')).toEqual({ latitudine: 45.07, longitudine: 7.68 });
+    expect(leggiCoordinate('-33.86, -151.2')).toEqual({ latitudine: -33.86, longitudine: -151.2 });
+  });
+
+  it('legge il link di Google Maps', () => {
+    expect(
+      leggiCoordinate('https://www.google.com/maps/place/Officina/@45.07,7.68,17z/data=!3m1'),
+    ).toEqual({ latitudine: 45.07, longitudine: 7.68 });
+  });
+
+  it('arrotonda a 6 decimali', () => {
+    expect(leggiCoordinate('45.12345678, 7.98765432')).toEqual({
+      latitudine: 45.123457,
+      longitudine: 7.987654,
+    });
+  });
+
+  it('rifiuta formati non validi e la virgola decimale', () => {
+    for (const t of [
+      '',
+      'ciao',
+      '45.07',
+      '45,070312 7,686856',
+      '45.07; 7.68',
+      '45.07, 7.68, 3.1',
+    ]) {
+      expect(leggiCoordinate(t), t).toBeNull();
+    }
+  });
+
+  it('rifiuta valori fuori intervallo', () => {
+    expect(leggiCoordinate('90.1, 7')).toBeNull();
+    expect(leggiCoordinate('-90.5, 7')).toBeNull();
+    expect(leggiCoordinate('45, 180.1')).toBeNull();
+    expect(leggiCoordinate('45, -181')).toBeNull();
+    expect(leggiCoordinate('90, 180')).toEqual({ latitudine: 90, longitudine: 180 });
+  });
+});
+
+describe('DatiOfficinaSchema', () => {
+  const base = {
+    indirizzo: 'Via Roma 1',
+    cap: '',
+    citta: 'Torino',
+    provincia: '',
+    telefono: '',
+    email: '',
+    posizione: '',
+  };
+
+  it('converte i campi facoltativi vuoti in null e la posizione vuota in nessuna', () => {
+    expect(DatiOfficinaSchema.parse(base)).toEqual({
+      indirizzo: 'Via Roma 1',
+      cap: null,
+      citta: 'Torino',
+      provincia: null,
+      telefono: null,
+      email: null,
+      latitudine: null,
+      longitudine: null,
+    });
+  });
+
+  it('pulisce i valori e legge la posizione', () => {
+    const r = DatiOfficinaSchema.parse({
+      ...base,
+      cap: '10100',
+      provincia: ' to ',
+      telefono: '011-123.456',
+      email: 'info@esempio.it',
+      posizione: '45.070312, 7.686856',
+    });
+    expect(r).toMatchObject({
+      cap: '10100',
+      provincia: 'TO',
+      telefono: '011 123 456',
+      email: 'info@esempio.it',
+      latitudine: 45.070312,
+      longitudine: 7.686856,
+    });
+  });
+
+  it('segnala i campi sbagliati', () => {
+    const r = DatiOfficinaSchema.safeParse({
+      indirizzo: ' ',
+      cap: '123',
+      citta: '',
+      provincia: 'TOR',
+      telefono: 'abc',
+      email: 'senza-chiocciola',
+      posizione: '',
+    });
+    expect(errori(r).sort()).toEqual(
+      ['indirizzo', 'cap', 'citta', 'provincia', 'telefono', 'email'].sort(),
+    );
+  });
+
+  it('segnala la posizione che non si legge', () => {
+    expect(errori(DatiOfficinaSchema.safeParse({ ...base, posizione: 'boh' }))).toEqual([
+      'posizione',
+    ]);
+    expect(errori(DatiOfficinaSchema.safeParse({ ...base, posizione: '95, 7' }))).toEqual([
+      'posizione',
+    ]);
+  });
+
+  it('chiede il punto decimale se la posizione ha la virgola', () => {
+    const r = DatiOfficinaSchema.safeParse({ ...base, posizione: '45,070312 7,686856' });
+    expect(errori(r)).toEqual(['posizione']);
+    expect(r.error?.issues[0]?.message).toContain('punto');
   });
 });
