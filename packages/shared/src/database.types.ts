@@ -124,6 +124,48 @@ export type Database = {
           },
         ];
       };
+      commenti: {
+        Row: {
+          autore_id: string;
+          created_at: string;
+          id: string;
+          officina_id: string | null;
+          percorso: string;
+          testo: string;
+        };
+        Insert: {
+          autore_id?: string;
+          created_at?: string;
+          id: string;
+          officina_id?: string | null;
+          percorso?: string;
+          testo: string;
+        };
+        Update: {
+          autore_id?: string;
+          created_at?: string;
+          id?: string;
+          officina_id?: string | null;
+          percorso?: string;
+          testo?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'commenti_autore_id_fkey';
+            columns: ['autore_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'commenti_officina_id_fkey';
+            columns: ['officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'officine';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       controlli: {
         Row: {
           codice_documento: string | null;
