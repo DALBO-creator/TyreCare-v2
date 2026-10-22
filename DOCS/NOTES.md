@@ -1443,3 +1443,30 @@ commenti in 24 ore** per persona: il ventunesimo dà l'errore `TROPPI_COMMENTI`.
   modifica → rifiutati; l'operatore invia per la sua officina con una data vecchia e trova `now()`; non
   vede i commenti altrui; l'ADMIN li vede tutti; l'anonimo non invia; 20 commenti con `generate_series`
   passano e il ventunesimo dà `TROPPI_COMMENTI`.
+
+## Pilota — commenti degli utenti (app)
+
+**File coinvolti:** `apps/web/src/pagine/commento.ts`, `apps/web/src/lib/commenti.ts`,
+`packages/shared/src/commenti.ts` (+ test), `apps/web/src/lib/router.ts` (`paginaPrecedente`),
+`apps/web/src/pagine/profilo.ts`, `apps/web/src/main.ts`, `e2e/tests/commenti.spec.ts`
+
+**Come funziona:** dal Profilo, sezione **Account**, "Invia un commento su TyreCare" porta a
+`/commento?da=<pagina da cui si veniva>`. Il modulo ha un solo campo, "Cosa vuoi dirci?" (3–2000
+caratteri senza gli spazi ai lati, con contatore); dopo l'invio si torna al Profilo con "Grazie, abbiamo
+ricevuto il tuo commento." Chi lavora in un'officina scrive con `officina_id` dell'officina attiva, il
+cliente con `null`. Se si superano i 20 commenti in 24 ore compare "Hai mandato molti commenti oggi:
+riprova domani." **Non c'è una pagina per leggere i commenti**: l'amministratore li legge dalla
+dashboard di Supabase (tabella `commenti`).
+
+### Codice complesso
+
+- `inviaCommento()` segue le scritture ripetibili (vedi "Scritture ripetibili dopo un errore di rete"):
+  l'id nasce nel browser e `conRiprova` ripete l'insert una volta se la rete non risponde; un `23505` su
+  `commenti_pkey` (`giaSalvato`) significa che il primo tentativo era arrivato ed è un successo.
+  `TROPPI_COMMENTI` arriva come errore `P0001` con quel testo e diventa un `ErroreModulo`.
+- Il testo dell'utente non entra mai come HTML: la textarea parte vuota e il testo va al database come
+  parametro; il contatore usa `textContent`.
+- `?da=` arriva dall'indirizzo e non è fidato: `percorsoCommento` accetta solo percorsi interni ("/…" non
+  "//…") di al massimo 200 caratteri, altrimenti `''`. La pagina precedente la ricorda il router
+  (`vaiA` salva `location.pathname` prima di cambiare pagina): dal Profilo è quindi la pagina da cui
+  si era arrivati al Profilo.

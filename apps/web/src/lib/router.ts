@@ -28,6 +28,12 @@ let primaVisualizzazione = true;
 // non deve sovrascriverla
 let generazione = 0;
 
+// Percorso della pagina lasciata con l'ultimo cambio di pagina (vuoto se non c'è stato)
+let precedente = '';
+
+/** Percorso della pagina da cui l'utente è arrivato in questa (vuoto se non c'è). */
+export const paginaPrecedente = (): string => precedente;
+
 export const PAGINA_ACCESSO = '/accedi';
 export const PAGINA_INIZIALE = '/';
 
@@ -53,7 +59,10 @@ export function visualizzazioneCorrente(): number {
 /** Porta alla pagina indicata. `sostituisci` non aggiunge una voce alla cronologia (redirect). */
 export function vaiA(destinazione: string, { sostituisci = false } = {}): void {
   if (sostituisci) history.replaceState(null, '', destinazione);
-  else history.pushState(null, '', destinazione);
+  else {
+    precedente = location.pathname;
+    history.pushState(null, '', destinazione);
+  }
   void mostraPagina();
 }
 
