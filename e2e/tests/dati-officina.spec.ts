@@ -28,7 +28,7 @@ test('coordinate sbagliate: errore sul campo e nessun salvataggio', async ({ pag
   await posizione.fill('45,070312 7,686856');
   await page.getByRole('button', { name: 'Salva dati' }).click();
   await expect(page.getByText('Scrivi i decimali con il punto')).toBeVisible();
-  await expect(posizione).toBeFocused();
+  await expect(posizione).toHaveAttribute('aria-invalid', 'true');
 
   await posizione.fill('95.0, 7.0');
   await page.getByRole('button', { name: 'Salva dati' }).click();
