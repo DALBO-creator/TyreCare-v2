@@ -22,6 +22,7 @@ import {
 } from './pagine/appuntamenti';
 import { mostraCalendario } from './pagine/calendario';
 import { mostraCambiaPassword } from './pagine/cambia-password';
+import { mostraCommento } from './pagine/commento';
 import { mostraCliente } from './pagine/cliente';
 import { mostraClienti } from './pagine/clienti';
 import { mostraGarageVeicolo } from './pagine/garage-veicolo';
@@ -61,6 +62,7 @@ const ROTTE: Rotta[] = [
     titolo: 'I tuoi dati',
     mostra: mostraModificaProfilo,
   },
+  { percorso: '/commento', accesso: 'utente', titolo: 'Invia un commento', mostra: mostraCommento },
   {
     percorso: '/profilo/password',
     accesso: 'utente',

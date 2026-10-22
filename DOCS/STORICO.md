@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-22 — T016
+
+**Fatto**
+
+- Pilota: pagina `/commento` ("Invia un commento"), raggiungibile da Profilo → Account → "Invia un
+  commento su TyreCare". Textarea "Cosa vuoi dirci?" (3–2000 caratteri, contatore), invio con id del
+  browser e ripetibile (`23505` sullo stesso id = riuscito), `officina_id` = officina attiva o `null`,
+  `percorso` = `?da=`. Conferma "Grazie, abbiamo ricevuto il tuo commento." nel Profilo;
+  `TROPPI_COMMENTI` → "Hai mandato molti commenti oggi: riprova domani."
+- `packages/shared/src/commenti.ts` (`CommentoSchema`, `percorsoCommento`) con test Vitest; e2e
+  `e2e/tests/commenti.spec.ts` (invio del cliente, testo troppo corto) da verificare in CI
+- Il router ricorda la pagina lasciata (`paginaPrecedente()`), usata per il parametro `da`
+
 ### Sessione agenti — 2026-10-22 — T015
 
 **Fatto**

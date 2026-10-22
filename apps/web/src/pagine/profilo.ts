@@ -4,6 +4,7 @@ import {
   Clock,
   KeyRound,
   LogOut,
+  MessageSquare,
   Mail,
   Phone,
   ShieldCheck,
@@ -13,7 +14,7 @@ import {
 import { esci, messaggioErrore } from '../lib/auth';
 import { esc } from '../lib/html';
 import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
-import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
+import { ancoraAttuale, paginaPrecedente, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import {
@@ -107,6 +108,11 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
         <nav class="tc-lista" aria-labelledby="tc-account">
           ${link(UserPen, 'Modifica i tuoi dati', '/profilo/dati')}
           ${link(KeyRound, 'Cambia password', '/profilo/password')}
+          ${link(
+            MessageSquare,
+            'Invia un commento su TyreCare',
+            `/commento?da=${encodeURIComponent(paginaPrecedente())}`,
+          )}
         </nav>
       </section>
 
