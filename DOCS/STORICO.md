@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-22 — T015
+
+**Fatto**
+
+- Pilota: tabella `public.commenti` per i commenti (feedback) di officine e clienti — migrazione
+  `20261022150000_commenti.sql`. `id` senza default (lo genera il browser, scritture ripetibili),
+  `autore_id` = chi scrive, `officina_id` facoltativo (solo un'officina di cui si è membri), `percorso`
+  (pagina dell'app, max 200), `testo` 3–2000 caratteri senza contare gli spazi ai lati
+- RLS: inserisce solo un utente con account, a proprio nome; legge l'autore (i suoi) e l'ADMIN; niente
+  modifica né eliminazione dall'app (`revoke update, delete`: solo l'ADMIN dalla dashboard)
+- Trigger `limita_commenti` (`before insert`, senza `security definer`): massimo 20 commenti in 24 ore per
+  autore, poi errore `TROPPI_COMMENTI` (P0001). Forza `created_at = now()`, altrimenti con una data vecchia
+  si aggirerebbe il limite
+- 13 pgTAP in `supabase/tests/database/commenti.test.sql` (permessi e accessi negati, testo corto, data
+  forzata, limite con `generate_series`); `database.types.ts` aggiornato a mano. Test del database e tipi
+  verificati dalla CI (nel cloud manca Docker)
+
 ### Sessione agenti — 2026-10-22 — T014
 
 **Fatto**

@@ -6,9 +6,10 @@
 
 ## Prossima sessione
 
-> **Obiettivo: scegliere il passo successivo.** Ultima sessione: sessione agenti del 2026-10-22 (T014,
-> bozze legali: DPA per le officine e registro dei trattamenti in `DOCS/legale/`, dopo informativa e
-> termini di T013). L'**import CSV standard di
+> **Obiettivo: T016 — "Invia un commento" dall'app** (coda di ai-org). Ultima sessione: sessione agenti
+> del 2026-10-22 (T015, tabella `commenti` per il feedback del pilota: RLS autore/ADMIN, limite di 20 in
+> 24 ore con l'errore `TROPPI_COMMENTI`; vedi `NOTES.md` → "Pilota — commenti degli utenti"). Prima: T014,
+> bozze legali (DPA per le officine e registro dei trattamenti in `DOCS/legale/`). L'**import CSV standard di
 > clienti e veicoli** (sessione 19, `/clienti/importa`) è stato provato dal titolare: funziona. Con **P22**
 > non si aspetta più il file `.xls` di GESTITYRE: l'import passa dalla **mappatura delle colonne**
 > (T008–T012 fatti).
