@@ -16,7 +16,7 @@
 | [`STRUCT.md`](STRUCT.md) | Linguaggi, framework e librerie con spiegazione d'uso | Ad ogni nuova dipendenza |
 | [`PRODUZIONE-MARKETING.md`](PRODUZIONE-MARKETING.md) | Costi, modello di ricavo, BEP, go-to-market | Quando cambiano costi/prezzi |
 | [`IMPLEMENTAZIONI.md`](IMPLEMENTAZIONI.md) | Idee e implementazioni future | Man mano che emergono |
-| [`legale/`](legale/README.md) | Bozze di informativa privacy e termini di servizio, domande per il consulente | Dopo la revisione del consulente |
+| [`legale/`](legale/README.md) | Bozze di informativa privacy, termini di servizio, DPA per le officine e registro dei trattamenti; domande per il consulente | Dopo la revisione del consulente |
 | [`LICENSE.md`](LICENSE.md) | Licenza proprietaria | Raramente |
 | [`first-prompt.md`](first-prompt.md) | Prompt originale del progetto | Mai (archivio) |
 
@@ -430,6 +430,10 @@ registro dei trattamenti. Da verificare con un consulente privacy prima del lanc
 
 - **Bozze (2026-10-21, T013):** informativa privacy (con cookie e archiviazione locale) e termini di servizio
   in [`legale/`](legale/README.md), con i dati mancanti e le domande per il consulente.
+- **Bozze (2026-10-22, T014):** accordo di nomina a responsabile (DPA, art. 28) da firmare con ogni officina
+  e registro dei trattamenti (art. 30, parte titolare e parte responsabile). Le misure di sicurezza descritte
+  sono solo quelle presenti nel codice; quelle mancanti sono in `legale/README.md` → "Da fare prima del
+  lancio".
 
 ### P18 — Licenza ✅
 
