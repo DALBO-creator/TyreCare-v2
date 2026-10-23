@@ -2,9 +2,10 @@ import { CalendarOff, Copy, Plus, Trash2 } from 'lucide';
 import {
   GIORNI_SETTIMANA,
   TURNI,
+  CAMPO_CAPIENZA,
   campiTurno,
   creaChiusuraSchema,
-  creaOrariSchema,
+  creaOrariECapienzaSchema,
   oggiInItalia,
   type GiornoSettimana,
   type Orari,
@@ -89,6 +90,7 @@ export async function mostraOrari(app: HTMLElement): Promise<void> {
   app.innerHTML = paginaApp(caricamento());
   let officinaId: string | null;
   let orari: Orari = {};
+  let capienza: number | null = null;
   let chiusure: ChiusuraOfficina[] = [];
   try {
     officinaId = await officinaDelTitolare();
@@ -96,6 +98,7 @@ export async function mostraOrari(app: HTMLElement): Promise<void> {
       const dati = await caricaOrariEChiusure(officinaId);
       // Il formato lo garantisce il vincolo `orari_validi` del database
       orari = dati.orari as Orari;
+      capienza = dati.capienza;
       chiusure = dati.chiusure;
     }
   } catch (errore) {
@@ -127,6 +130,16 @@ export async function mostraOrari(app: HTMLElement): Promise<void> {
           ${GIORNI_SETTIMANA.slice(1)
             .map((g) => giornoOrari(g, orari))
             .join('')}
+          ${campo({
+            nome: CAMPO_CAPIENZA,
+            etichetta: 'Richieste al massimo per fascia',
+            tipo: 'text',
+            autocomplete: 'off',
+            valore: capienza === null ? '' : String(capienza),
+            aiuto:
+              'Mattina e pomeriggio contano separatamente. Le richieste che confermi tu non hanno limite.',
+            attributi: 'inputmode="numeric" maxlength="2" placeholder="Nessun limite"',
+          })}
           ${pulsanteInvio('Salva orari', 'Salvataggio…')}
         </form>
       </section>
@@ -160,8 +173,8 @@ export async function mostraOrari(app: HTMLElement): Promise<void> {
 
   const form = app.querySelector('form')!;
   const id = officinaId;
-  collegaModulo(form, creaOrariSchema(), async (nuovi) => {
-    await salvaOrari(id, nuovi);
+  collegaModulo(form, creaOrariECapienzaSchema(), async ({ orari: nuovi, capienza: max }) => {
+    await salvaOrari(id, nuovi, max);
     vaiConConferma('/officina/orari', 'Orari salvati.', { sostituisci: true });
   });
 

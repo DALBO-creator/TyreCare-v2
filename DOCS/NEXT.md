@@ -7,8 +7,9 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: sessione agenti del
-> 2026-10-23 (T020, capienza per fascia nel database: `officine.capienza_fascia`, `fasce_piene`,
-> `FASCIA_PIENA` in `richiedi_prenotazione`; pgTAP da verificare in CI; l'interfaccia è T021).
+> 2026-10-23 (T021, capienza nell'interfaccia: campo in `/officina/orari`, fasce "(piene)" in `/prenota`,
+> messaggio `FASCIA_PIENA`; e2e `capienza.spec.ts` da verificare in CI). Prima, 2026-10-23 (T020, capienza per fascia nel database: `officine.capienza_fascia`, `fasce_piene`,
+> `FASCIA_PIENA` in `richiedi_prenotazione`; pgTAP da verificare in CI; fatta in T021).
 > Prima, 2026-10-23 (T019, "Vicino a me" in `/officine` con ordinamento per distanza; e2e da verificare in
 > CI). Prima, 2026-10-23 (T018, pagina `/officina/dati` con indirizzo, contatti e posizione dell'officina; e2e da
 > verificare in CI). Prima, 2026-10-22 (T017, guida di avvio per l'officina in `DOCS/pilota/guida-avvio.md`). Prima, T016 (pagina `/commento` "Invia un commento" dal Profilo; vedi `NOTES.md` → "Pilota —

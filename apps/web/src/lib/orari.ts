@@ -11,14 +11,14 @@ export type ChiusuraOfficina = Tables<'chiusure_officina'>;
 /** Orari e chiusure da oggi in poi (in ordine di data). */
 export async function caricaOrariEChiusure(
   officinaId: string,
-): Promise<{ orari: unknown; chiusure: ChiusuraOfficina[] }> {
+): Promise<{ orari: unknown; capienza: number | null; chiusure: ChiusuraOfficina[] }> {
   const supabase = getSupabase();
   const [officina, chiusure] = await Promise.all([
-    supabase.from('officine').select('orari').eq('id', officinaId).single(),
+    supabase.from('officine').select('orari, capienza_fascia').eq('id', officinaId).single(),
     caricaChiusure(officinaId, oggiInItalia()),
   ]);
   if (officina.error) throw officina.error;
-  return { orari: officina.data.orari, chiusure };
+  return { orari: officina.data.orari, capienza: officina.data.capienza_fascia, chiusure };
 }
 
 /** Chiusure che finiscono dal giorno indicato in poi. */
@@ -33,9 +33,19 @@ export async function caricaChiusure(officinaId: string, dal: string): Promise<C
   return data;
 }
 
-export async function salvaOrari(officinaId: string, orari: Orari): Promise<void> {
+/** Salva orari e capienza per fascia (null = nessun limite) insieme. */
+export async function salvaOrari(
+  officinaId: string,
+  orari: Orari,
+  capienza: number | null,
+): Promise<void> {
   const { error } = await conRiprova(() =>
-    getSupabase().from('officine').update({ orari }).eq('id', officinaId).select('id').single(),
+    getSupabase()
+      .from('officine')
+      .update({ orari, capienza_fascia: capienza })
+      .eq('id', officinaId)
+      .select('id')
+      .single(),
   );
   if (error) throw error;
 }
