@@ -1479,7 +1479,9 @@ dashboard di Supabase (tabella `commenti`).
 `e2e/tests/dati-officina.spec.ts`.
 **Come funziona:** il titolare apre Profilo → Officina → "Dati dell'officina", modifica indirizzo, contatti
 e posizione e salva con un `update` su `officine` (policy "officine: modifica titolare o admin", nessuna
-migrazione). Ragione sociale e partita IVA sono solo mostrate. La posizione è un unico campo di testo:
+migrazione). Ragione sociale e partita IVA sono solo mostrate: le cambia solo l'amministratore, e anche
+via API il titolare riceve `42501` — protetto dal trigger `proteggi_campi_riservati` (T024; inviare lo stesso
+valore di prima è permesso). La posizione è un unico campo di testo:
 si incolla "45.070312, 7.686856" o un link di Google Maps, oppure si preme "Usa la posizione attuale".
 Campo vuoto = `latitudine`/`longitudine` a `null` (l'officina non sarà ordinata per distanza). Un operatore
 vede solo l'avviso "Solo il titolare…".

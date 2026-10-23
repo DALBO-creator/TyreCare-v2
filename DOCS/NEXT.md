@@ -7,17 +7,11 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: sessione agenti del
-> 2026-10-23 (T021, capienza nell'interfaccia: campo in `/officina/orari`, fasce "(piene)" in `/prenota`,
-> messaggio `FASCIA_PIENA`; e2e `capienza.spec.ts` da verificare in CI). Prima, 2026-10-23 (T020, capienza per fascia nel database: `officine.capienza_fascia`, `fasce_piene`,
-> `FASCIA_PIENA` in `richiedi_prenotazione`; pgTAP da verificare in CI; fatta in T021).
-> Prima, 2026-10-23 (T019, "Vicino a me" in `/officine` con ordinamento per distanza; e2e da verificare in
-> CI). Prima, 2026-10-23 (T018, pagina `/officina/dati` con indirizzo, contatti e posizione dell'officina; e2e da
-> verificare in CI). Prima, 2026-10-22 (T017, guida di avvio per l'officina in `DOCS/pilota/guida-avvio.md`). Prima, T016 (pagina `/commento` "Invia un commento" dal Profilo; vedi `NOTES.md` → "Pilota —
-> commenti degli utenti (app)"; l'e2e `commenti.spec.ts` si verifica in CI). Prima: T015 (tabella
-> `commenti`, limite di 20 in 24 ore) e T014 (bozze legali in `DOCS/legale/`). L'**import CSV standard di
-> clienti e veicoli** (sessione 19, `/clienti/importa`) è stato provato dal titolare: funziona. Con **P22**
-> non si aspetta più il file `.xls` di GESTITYRE: l'import passa dalla **mappatura delle colonne**
-> (T008–T012 fatti).
+> 2026-10-24 (T024, ragione sociale e partita IVA dell'officina le cambia solo l'amministratore: trigger
+> `proteggi_campi_riservati`; pgTAP `officine-riservati.test.sql` da verificare in CI). L'**import CSV
+> standard di clienti e veicoli** (sessione 19, `/clienti/importa`) è stato provato dal titolare: funziona.
+> Con **P22** non si aspetta più il file `.xls` di GESTITYRE: l'import passa dalla **mappatura delle
+> colonne** (T008–T012 fatti).
 
 **0 — Da chiedere al titolare**
 

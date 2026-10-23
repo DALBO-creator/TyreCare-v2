@@ -4,6 +4,26 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-24 — T024
+
+**Fatto**
+
+- Migrazione `20261024120000_officine_campi_riservati.sql`: `create or replace` di
+  `public.proteggi_campi_riservati()` con lo stesso corpo di prima più, nel ramo `officine`, due controlli
+  come quello di `stato_affiliazione`: chi non è ADMIN non cambia `ragione_sociale` né `partita_iva`
+  (`42501`, "Solo un amministratore può cambiare la ragione sociale" / "… la partita IVA"). Nessun trigger
+  nuovo: `officine_proteggi_campi` chiama già la funzione. ADMIN e `auth.uid()` nullo restano liberi.
+- pgTAP `supabase/tests/database/officine-riservati.test.sql` (10 test): titolare cambia il telefono;
+  ragione sociale e partita IVA → `42501`; stesso valore di prima insieme al telefono → riesce; titolare2
+  e lo stato di affiliazione → ancora `42501`; admin e service role le cambiano.
+- `NOTES.md` → "Dati dell'officina e posizione": riga sul trigger (T024).
+
+**Da sapere**
+
+- Fatti in locale: format, lint, typecheck, test, build. pgTAP e e2e si verificano in CI (niente Docker).
+- `database.types.ts` non cambia (nessuna colonna nuova). La pagina `/officina/dati` non invia ragione
+  sociale e partita IVA (`DatiOfficinaSchema` non le ha): `dati-officina.spec.ts` non è toccato.
+
 ### Sessione agenti — 2026-10-23 — T021
 
 **Fatto**
