@@ -365,6 +365,10 @@ Propongo:
   altro orario o rifiuta; nel catalogo il **prezzo indicativo è facoltativo** ("da 40 €", vuoto = su
   preventivo). Stati usati: `RICHIESTA`, `PROPOSTA`, `CONFERMATA`, `RIFIUTATA`, `ANNULLATA`,
   `COMPLETATA`, `NON_PRESENTATO`. Implementazione in `NOTES.md`.
+- **Capienza per fascia (2026-10-23, T020):** restano le richieste che l'officina conferma; l'officina può
+  fissare quante richieste accetta al massimo per mattina o pomeriggio (`officine.capienza_fascia`, vuoto =
+  nessun limite). Oltre quel numero la fascia è piena e il cliente non la può chiedere (`FASCIA_PIENA`);
+  l'officina può sempre confermare o spostare. Niente prenotazione diretta né slot orari. In `NOTES.md`.
 - **Cliente e veicolo dalla richiesta (2026-10-13, sessione 15):** dal dettaglio della richiesta chi
   lavora in officina registra il veicolo con un tocco; se chi ha prenotato non è ancora cliente, il
   cliente nasce **già collegato al suo account, senza invito**. È sicuro perché cliente e veicolo nascono

@@ -578,6 +578,7 @@ export type Database = {
       officine: {
         Row: {
           cap: string | null;
+          capienza_fascia: number | null;
           citta: string;
           created_at: string;
           email: string | null;
@@ -595,6 +596,7 @@ export type Database = {
         };
         Insert: {
           cap?: string | null;
+          capienza_fascia?: number | null;
           citta?: string;
           created_at?: string;
           email?: string | null;
@@ -612,6 +614,7 @@ export type Database = {
         };
         Update: {
           cap?: string | null;
+          capienza_fascia?: number | null;
           citta?: string;
           created_at?: string;
           email?: string | null;
@@ -935,6 +938,13 @@ export type Database = {
         Args: { p_giorno: string; p_orari: Json };
         Returns: Database['public']['Enums']['fascia_oraria'][];
       };
+      fasce_piene: {
+        Args: { p_officina_id: string };
+        Returns: {
+          fascia: Database['public']['Enums']['fascia_oraria'];
+          giorno: string;
+        }[];
+      };
       giorni_prenotabili: { Args: Record<PropertyKey, never>; Returns: number };
       importa_clienti_veicoli: {
         Args: {
@@ -981,6 +991,14 @@ export type Database = {
       monta_pneumatici: {
         Args: { p_montato_il?: string; p_pneumatici: Json; p_veicolo_id: string };
         Returns: string[];
+      };
+      occupazione_fascia: {
+        Args: {
+          p_fascia: Database['public']['Enums']['fascia_oraria'];
+          p_giorno: string;
+          p_officina_id: string;
+        };
+        Returns: number;
       };
       oggi_in_italia: { Args: Record<PropertyKey, never>; Returns: string };
       orari_validi: { Args: { p_orari: Json }; Returns: boolean };

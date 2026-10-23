@@ -1515,3 +1515,46 @@ browser, senza servizi esterni (niente mappe né geocodifica).
 oltre; "1,0 km" invece di "1000 m". `ordinaPerDistanza` aggiunge `distanza_km` (`null` senza coordinate) e
 non modifica l'elenco ricevuto. Nel seed c'è una sola officina ATTIVA: l'ordinamento si verifica con Vitest,
 l'e2e prova solo la distanza e l'avviso.
+
+## Prenotazioni — capienza per fascia (database, Fase 4)
+
+**Decisione (T020, dedotta da P14 e dalle decisioni del 2026-10-12):** restano le **richieste** che
+l'officina conferma; la capienza limita solo le richieste nuove dei clienti. Niente prenotazione diretta,
+niente slot orari. L'interfaccia (impostazione per il titolare, fasce spente nel modulo "Prenota") è T021.
+
+**File coinvolti:** `supabase/migrations/20261023150000_capienza_fasce.sql`,
+`supabase/tests/database/capienza.test.sql`, `packages/shared/src/database.types.ts`.
+
+**Come funziona:**
+
+- `officine.capienza_fascia` (1–99, `null` = nessun limite, il valore iniziale): quante richieste
+  l'officina accetta al massimo per la mattina o per il pomeriggio di un giorno. La imposta il TITOLARE
+  con la policy "officine: modifica titolare o admin"; per l'operatore l'aggiornamento non cambia niente.
+- `occupazione_fascia(officina, giorno, fascia)` conta chi occupa la fascia: le `RICHIESTA` nel giorno e
+  nella fascia chiesti, le `PROPOSTA` e `CONFERMATA` nel giorno e nella fascia dell'ora fissata
+  (`appuntamento` in ora italiana; prima delle 13:00 mattina, dalle 13:00 pomeriggio). Rifiutate,
+  annullate, completate e non presentate non contano. È **interna**: non è concessa ad `anon` né ad
+  `authenticated`, perché conta prenotazioni di altri clienti.
+- `fasce_piene(officina)` è pubblica (anon e authenticated): le coppie giorno/fascia da domani a
+  `giorni_prenotabili()` con occupazione ≥ capienza. Per un'officina non ATTIVA o senza capienza non
+  restituisce righe; non restituisce mai conteggi né dati delle prenotazioni.
+- `richiedi_prenotazione` dopo il controllo delle chiusure solleva `FASCIA_PIENA` se la fascia è piena.
+  L'officina invece può sempre confermare, proporre o spostare un appuntamento anche in una fascia piena.
+
+Provato: **29 test pgTAP** (provati anche in locale con Postgres 16 e pgTAP, insieme a quelli delle
+prenotazioni, degli orari e delle notifiche), più una prova a mano di due richieste contemporanee.
+
+### Codice complesso
+
+`20261023150000_capienza_fasce.sql` (`richiedi_prenotazione`) — `pg_advisory_xact_lock` sull'hash di
+officina, giorno e fascia (`hashtextextended`) mette in fila le richieste della stessa fascia fino alla
+fine della transazione: senza, due clienti che chiedono insieme l'ultimo posto contano entrambi "1 libero" e passano
+entrambi. Il conteggio dopo il lucchetto è un'istruzione nuova, quindi in `read committed` vede la
+richiesta già salvata dall'altro. Due fasce diverse con lo stesso hash si aspettano a vicenda per un
+attimo: nessun errore. La ripetizione con lo stesso `p_id` resta **prima** di tutti i controlli, così una
+richiesta già riuscita ripetuta dopo un errore di rete non diventa `FASCIA_PIENA`.
+
+`capienza.test.sql` — una `CONFERMATA` con l'ora in un giorno diverso da quello chiesto non si ottiene
+dalle funzioni (accettando una proposta giorno e fascia si aggiornano), quindi il test la scrive
+direttamente per provare che conta il giorno dell'appuntamento; il caso reale "spostata" è la `PROPOSTA`,
+provata con `rispondi_prenotazione` alle 13:00 (pomeriggio).
