@@ -27,6 +27,9 @@
   tempo, il `finally` trovava la pagina chiusa: la capienza 1 restava e rompeva `prenotazioni.spec.ts`. Ora
   timeout di 180 s, ripristino in `beforeEach`/`afterEach` con un contesto nuovo del titolare e giorno
   `prossimoFeriale(40 + retry)`.
+- Seconda correzione: le verifiche sulla capienza passavano; il test si bloccava sull'annullamento finale
+  perché cercava "Annulla l'appuntamento", ma la richiesta del primo cliente non è confermata e il pulsante
+  è "Annulla la richiesta". Corretto il nome del pulsante nel test (l'interfaccia era giusta).
 
 ### Sessione agenti — 2026-10-23 — T020
 

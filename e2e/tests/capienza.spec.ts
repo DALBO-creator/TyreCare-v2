@@ -64,9 +64,10 @@ test('con capienza 1 la fascia occupata risulta piena per gli altri clienti', as
   await expect(secondo.getByLabel('Mattina (piena)')).toBeDisabled();
   await expect(secondo.getByLabel('Pomeriggio')).toBeEnabled();
 
-  // Libera la fascia: così l'esecuzione si può ripetere lo stesso giorno
+  // Libera la fascia: così l'esecuzione si può ripetere lo stesso giorno. La richiesta non è stata
+  // confermata, quindi il pulsante è "Annulla la richiesta" (non "Annulla l'appuntamento")
   await primo.goto(indirizzo);
-  await primo.getByRole('button', { name: "Annulla l'appuntamento" }).click();
+  await primo.getByRole('button', { name: 'Annulla la richiesta' }).click();
   await primo.getByRole('dialog').getByRole('button', { name: 'Sì, annulla' }).click();
   await expect(primo.getByText('Appuntamento annullato.')).toBeVisible();
 });
