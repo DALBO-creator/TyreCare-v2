@@ -4,15 +4,19 @@ import {
   aggiungiGiorni,
   chiusuraIl,
   creaRichiestaSchema,
+  fasceLibere,
+  fascePieneIl,
   formattaTarga,
   giorniPrenotabili,
   formattaDistanza,
   normalizzaTarga,
   oggiInItalia,
   ordinaPerDistanza,
+  type FasciaPiena,
 } from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import {
+  caricaFascePiene,
   caricaMieiVeicoli,
   caricaOfficinaPubblica,
   caricaOfficineAttive,
@@ -266,12 +270,15 @@ export async function mostraPrenota(app: HTMLElement): Promise<void> {
   let officina: OfficinaConServizi | null;
   let veicoli: VeicoloMio[];
   let utente: DatiUtente;
+  let piene: FasciaPiena[];
   try {
-    [officina, veicoli, utente] = await Promise.all([
+    [officina, veicoli, utente, piene] = await Promise.all([
       idValido(id) ? caricaOfficinaPubblica(id) : Promise.resolve(null),
       // I veicoli servono solo per compilare più in fretta: se non si leggono, pazienza
       caricaMieiVeicoli().catch(() => []),
       caricaDatiUtente(),
+      // Le fasce che hanno raggiunto la capienza (se non si leggono, il database controlla lo stesso)
+      idValido(id) ? caricaFascePiene(id) : Promise.resolve([]),
     ]);
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
@@ -412,22 +419,34 @@ export async function mostraPrenota(app: HTMLElement): Promise<void> {
   const aggiorna = () => {
     const g = giorni.find((x) => x.data === giorno.value);
     const chiusura = chiusuraIl(off.chiusure, giorno.value);
+    const libere = g ? fasceLibere(off.orari, g.data, off.chiusure, piene) : [];
+    const occupate = g ? fascePieneIl(piene, g.data) : [];
+    // Aperto ma con tutte le fasce piene: come un giorno chiuso
+    const tuttePiene = Boolean(g) && !libere.length;
     scelto.textContent = !giorno.value
       ? ''
-      : g
-        ? `${formattaGiorno(g.data)}: aperto ${g.fasce.map((f) => ETICHETTE_FASCIA[f].toLowerCase()).join(' e ')}`
-        : /^\d{4}-\d{2}-\d{2}$/.test(giorno.value)
-          ? `${formattaGiorno(giorno.value)}: ${
-              chiusura
-                ? `l'officina è chiusa${chiusura.motivo ? ` (${chiusura.motivo.toLowerCase()})` : ''}`
-                : "l'officina è chiusa o il giorno è fuori dalle date prenotabili"
-            }`
-          : '';
+      : tuttePiene
+        ? `${formattaGiorno(g!.data)}: le richieste sono al completo, scegli un altro giorno`
+        : g
+          ? `${formattaGiorno(g.data)}: aperto ${g.fasce.map((f) => ETICHETTE_FASCIA[f].toLowerCase()).join(' e ')}`
+          : /^\d{4}-\d{2}-\d{2}$/.test(giorno.value)
+            ? `${formattaGiorno(giorno.value)}: ${
+                chiusura
+                  ? `l'officina è chiusa${chiusura.motivo ? ` (${chiusura.motivo.toLowerCase()})` : ''}`
+                  : "l'officina è chiusa o il giorno è fuori dalle date prenotabili"
+              }`
+            : '';
     for (const f of fasce) {
-      f.disabled = Boolean(g) && !g!.fasce.includes(f.value as 'MATTINA' | 'POMERIGGIO');
+      const fascia = f.value as 'MATTINA' | 'POMERIGGIO';
+      f.disabled = Boolean(g) && !libere.includes(fascia);
       if (f.disabled) f.checked = false;
+      // "piena" accanto al nome, solo per le fasce aperte che hanno raggiunto la capienza
+      const testo = f.nextElementSibling;
+      if (testo) {
+        testo.textContent = `${ETICHETTE_FASCIA[fascia]}${occupate.includes(fascia) && g?.fasce.includes(fascia) ? ' (piena)' : ''}`;
+      }
     }
-    // Se è aperto in una sola fascia, si sceglie da sola
+    // Se è libera una sola fascia, si sceglie da sola
     const aperte = fasce.filter((f) => !f.disabled);
     if (g && aperte.length === 1) aperte[0]!.checked = true;
   };

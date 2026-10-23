@@ -4,6 +4,33 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-23 — T021
+
+**Fatto**
+
+- `/officina/orari`: campo "Richieste al massimo per fascia" (vuoto = nessun limite, 1–99), salvato insieme
+  agli orari (`creaOrariECapienzaSchema`, `salvaOrari(id, orari, capienza)`).
+- `/prenota`: le fasce piene (`rpc('fasce_piene')`, `caricaFascePiene`) sono disabilitate con "(piena)"
+  accanto; un giorno aperto con tutte le fasce piene dice che le richieste sono al completo.
+- `FASCIA_PIENA` nella tabella degli errori di `lib/prenotazioni.ts`: messaggio sotto il campo fascia.
+- Funzioni pure `fascePieneIl` e `fasceLibere` in `packages/shared/src/prenotazioni.ts` (+ test vitest);
+  `creaOrariSchema` ora condivide il codice con il nuovo schema (comportamento invariato).
+- e2e `e2e/tests/capienza.spec.ts` (da verificare in CI): capienza 1, un cliente chiede la mattina del
+  `prossimoFeriale(40)`, un secondo la vede piena e il pomeriggio libero; il primo annulla la richiesta e nel
+  `finally` il titolare rimette la capienza vuota. Offset 40 scelto perché gli altri test usano 0, 1, 2 e 25
+  (la chiusura del seed è tra 20 e 22 giorni) e resta entro i 60 giorni prenotabili.
+
+**Da sapere**
+
+- Fatti in locale: format, lint, typecheck, test (167), build. L'e2e si verifica in CI.
+- Correzione dopo la CI rossa: `capienza.spec.ts` superava i 60 s (due registrazioni, tre accessi) e, scaduto il
+  tempo, il `finally` trovava la pagina chiusa: la capienza 1 restava e rompeva `prenotazioni.spec.ts`. Ora
+  timeout di 180 s, ripristino in `beforeEach`/`afterEach` con un contesto nuovo del titolare e giorno
+  `prossimoFeriale(40 + retry)`.
+- Seconda correzione: le verifiche sulla capienza passavano; il test si bloccava sull'annullamento finale
+  perché cercava "Annulla l'appuntamento", ma la richiesta del primo cliente non è confermata e il pulsante
+  è "Annulla la richiesta". Corretto il nome del pulsante nel test (l'interfaccia era giusta).
+
 ### Sessione agenti — 2026-10-23 — T020
 
 **Fatto**

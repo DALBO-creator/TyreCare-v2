@@ -1520,7 +1520,7 @@ l'e2e prova solo la distanza e l'avviso.
 
 **Decisione (T020, dedotta da P14 e dalle decisioni del 2026-10-12):** restano le **richieste** che
 l'officina conferma; la capienza limita solo le richieste nuove dei clienti. Niente prenotazione diretta,
-niente slot orari. L'interfaccia (impostazione per il titolare, fasce spente nel modulo "Prenota") è T021.
+niente slot orari. L'interfaccia è descritta sotto (T021).
 
 **File coinvolti:** `supabase/migrations/20261023150000_capienza_fasce.sql`,
 `supabase/tests/database/capienza.test.sql`, `packages/shared/src/database.types.ts`.
@@ -1543,6 +1543,23 @@ niente slot orari. L'interfaccia (impostazione per il titolare, fasce spente nel
 
 Provato: **29 test pgTAP** (provati anche in locale con Postgres 16 e pgTAP, insieme a quelli delle
 prenotazioni, degli orari e delle notifiche), più una prova a mano di due richieste contemporanee.
+
+### Interfaccia della capienza (T021)
+
+**File:** `apps/web/src/pagine/orari.ts`, `apps/web/src/lib/orari.ts`, `apps/web/src/pagine/officine.ts`
+(`mostraPrenota`), `apps/web/src/lib/prenotazioni.ts`, `packages/shared/src/prenotazioni.ts`,
+`e2e/tests/capienza.spec.ts`.
+
+- Il titolare trova in `/officina/orari`, sotto gli orari, "Richieste al massimo per fascia": vuoto = nessun
+  limite, altrimenti 1–99 (`creaOrariECapienzaSchema`; errore sotto il campo). Si salva con "Salva orari"
+  nella stessa `update` di `orari` e `capienza_fascia`.
+- Nel modulo "Prenota" `caricaFascePiene` chiama `fasce_piene`; se la chiamata fallisce si usa l'elenco
+  vuoto (il database controlla comunque). Scelto il giorno, `fasceLibere` toglie le fasce chiuse (orari e
+  chiusure) e quelle piene: le fasce piene restano disabilitate con "(piena)" accanto al nome. Un giorno
+  aperto con tutte le fasce piene mostra "le richieste sono al completo, scegli un altro giorno".
+- Se la fascia si riempie dopo il caricamento della pagina, il database risponde `FASCIA_PIENA` e il
+  messaggio compare sotto il campo fascia (tabella `ERRORI` di `lib/prenotazioni.ts`). L'elenco delle fasce
+  piene non si aggiorna da solo: si ricarica la pagina.
 
 ### Codice complesso
 

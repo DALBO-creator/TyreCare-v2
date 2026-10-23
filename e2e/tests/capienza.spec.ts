@@ -1,0 +1,73 @@
+import { expect, test, type Browser } from '@playwright/test';
+import { accedi, chiedi, entra, nuovoAccountCliente, prossimoFeriale, unico } from './aiuti';
+
+// Capienza per fascia: il titolare fissa il limite dagli orari, il cliente vede la fascia piena come
+// non disponibile. Il limite si rimette vuoto alla fine: l'officina è la stessa degli altri test.
+
+// La capienza è un'impostazione condivisa dell'officina: si svuota in un contesto nuovo prima e dopo il
+// test (anche dopo un timeout, quando la pagina del test è già chiusa), altrimenti i test successivi
+// troverebbero le fasce piene.
+async function svuotaCapienza(browser: Browser): Promise<void> {
+  const titolare = await entra(browser, 'titolare@tyrecare.test');
+  try {
+    await titolare.goto('/officina/orari');
+    const campo = titolare.getByLabel('Richieste al massimo per fascia');
+    await campo.fill('');
+    await titolare.getByRole('button', { name: 'Salva orari' }).click();
+    await expect(titolare.getByText('Orari salvati.')).toBeVisible();
+    await expect(campo).toHaveValue('');
+  } finally {
+    await titolare.context().close();
+  }
+}
+
+test.beforeEach(({ browser }) => svuotaCapienza(browser));
+test.afterEach(({ browser }) => svuotaCapienza(browser));
+
+test('con capienza 1 la fascia occupata risulta piena per gli altri clienti', async ({
+  page,
+  browser,
+}, testInfo) => {
+  // Due registrazioni con email di conferma, tre accessi e le pagine del titolare: più dei 60 s usuali
+  test.setTimeout(180_000);
+  // Il 40° giorno feriale da oggi (circa 8 settimane): oltre i giorni degli altri test (0–2 e 25), ma entro i 60 giorni prenotabili;
+  // un nuovo tentativo usa il giorno dopo, perché il primo può aver lasciato una richiesta
+  const giorno = prossimoFeriale(40 + testInfo.retry);
+  const campo = () => page.getByLabel('Richieste al massimo per fascia');
+
+  await accedi(page, 'titolare@tyrecare.test');
+  await page.goto('/officina/orari');
+  // Il ripristino della capienza è in afterEach (svuotaCapienza), anche se il test si interrompe
+  await campo().fill('1');
+  await page.getByRole('button', { name: 'Salva orari' }).click();
+  await expect(page.getByText('Orari salvati.')).toBeVisible();
+  await expect(campo()).toHaveValue('1');
+
+  // Un valore non valido è segnalato sotto il campo
+  await campo().fill('0');
+  await page.getByRole('button', { name: 'Salva orari' }).click();
+  await expect(page.getByText(/Scrivi un numero da 1 a 99/)).toBeVisible();
+  await campo().fill('1');
+
+  const primo = await entra(browser, await nuovoAccountCliente('Anna'));
+  const indirizzo = await chiedi(primo, {
+    targa: `C${unico().slice(-7)}`,
+    giorno,
+    fascia: 'Mattina',
+  });
+
+  const secondo = await entra(browser, await nuovoAccountCliente('Bruno'));
+  await secondo.goto('/officine');
+  await secondo.getByRole('link', { name: /Gomme Rossi/ }).click();
+  await secondo.getByRole('link', { name: 'Chiedi un appuntamento' }).click();
+  await secondo.getByLabel('Giorno').fill(giorno);
+  await expect(secondo.getByLabel('Mattina (piena)')).toBeDisabled();
+  await expect(secondo.getByLabel('Pomeriggio')).toBeEnabled();
+
+  // Libera la fascia: così l'esecuzione si può ripetere lo stesso giorno. La richiesta non è stata
+  // confermata, quindi il pulsante è "Annulla la richiesta" (non "Annulla l'appuntamento")
+  await primo.goto(indirizzo);
+  await primo.getByRole('button', { name: 'Annulla la richiesta' }).click();
+  await primo.getByRole('dialog').getByRole('button', { name: 'Sì, annulla' }).click();
+  await expect(primo.getByText('Appuntamento annullato.')).toBeVisible();
+});

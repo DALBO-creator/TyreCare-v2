@@ -6,7 +6,9 @@ import {
   campiTurno,
   chiusuraIl,
   creaChiusuraSchema,
+  creaOrariECapienzaSchema,
   creaOrariSchema,
+  fasceLibere,
   testoChiusura,
   aggiungiGiorni,
   creaPropostaSchema,
@@ -312,5 +314,66 @@ describe('dividiVeicolo', () => {
   it('descrizione vuota o di una parola', () => {
     expect(dividiVeicolo('')).toEqual({ marca: '', modello: '' });
     expect(dividiVeicolo('Panda')).toEqual({ marca: 'Panda', modello: '' });
+  });
+});
+
+describe('capienza per fascia', () => {
+  const vuoto = () =>
+    Object.fromEntries(
+      GIORNI_SETTIMANA.flatMap((g) =>
+        TURNI.flatMap((t) => Object.values(campiTurno(g, t)).map((c) => [c, ''])),
+      ),
+    );
+  const base = { ...vuoto(), lun_1_apre: '08:30', lun_1_chiude: '12:30' };
+
+  it('vuoto = nessun limite; un numero da 1 a 99; altro è un errore sul campo', () => {
+    const leggi = (c: string) =>
+      creaOrariECapienzaSchema().safeParse({ ...base, capienza_fascia: c });
+    expect(leggi('').data?.capienza).toBeNull();
+    expect(leggi(' 3 ').data?.capienza).toBe(3);
+    expect(leggi('99').data?.capienza).toBe(99);
+    expect(leggi('').data?.orari.lun).toEqual([['08:30', '12:30']]);
+    for (const c of ['0', '100', '-1', '2.5', 'abc']) {
+      expect(leggi(c).error?.issues.map((i) => i.path[0])).toEqual(['capienza_fascia']);
+    }
+  });
+
+  it('gli errori degli orari restano sotto il loro campo', () => {
+    const r = creaOrariECapienzaSchema().safeParse({
+      ...base,
+      lun_1_chiude: '07:00',
+      capienza_fascia: '',
+    });
+    expect(r.error?.issues.map((i) => i.path[0])).toEqual(['lun_1_chiude']);
+  });
+
+  it('fasceLibere toglie chiuse e piene', () => {
+    const orari = {
+      lun: [
+        ['08:00', '12:00'],
+        ['14:00', '18:00'],
+      ],
+    };
+    const lunedi = '2026-11-02';
+    expect(fasceLibere(orari, lunedi)).toEqual(['MATTINA', 'POMERIGGIO']);
+    expect(fasceLibere(orari, lunedi, [], [{ giorno: lunedi, fascia: 'MATTINA' }])).toEqual([
+      'POMERIGGIO',
+    ]);
+    expect(fasceLibere(orari, lunedi, [], [{ giorno: '2026-11-03', fascia: 'MATTINA' }])).toEqual([
+      'MATTINA',
+      'POMERIGGIO',
+    ]);
+    expect(fasceLibere(orari, lunedi, [{ dal: lunedi, al: lunedi, motivo: '' }])).toEqual([]);
+    expect(
+      fasceLibere(
+        orari,
+        lunedi,
+        [],
+        [
+          { giorno: lunedi, fascia: 'MATTINA' },
+          { giorno: lunedi, fascia: 'POMERIGGIO' },
+        ],
+      ),
+    ).toEqual([]);
   });
 });

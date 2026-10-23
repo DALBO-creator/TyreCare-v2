@@ -3,6 +3,7 @@ import {
   normalizzaTarga,
   oggiInItalia,
   type Chiusura,
+  type FasciaPiena,
   type RichiestaPrenotazione,
   type Servizio,
   type Tables,
@@ -129,6 +130,15 @@ export async function caricaOfficinaPubblica(id: string): Promise<OfficinaConSer
 }
 
 /**
+ * Le fasce piene dell'officina (da domani ai prossimi 60 giorni). Serve solo a spegnerle nel modulo:
+ * se non si leggono, pazienza, il controllo vero lo fa il database.
+ */
+export async function caricaFascePiene(officinaId: string): Promise<FasciaPiena[]> {
+  const { data, error } = await getSupabase().rpc('fasce_piene', { p_officina_id: officinaId });
+  return error ? [] : data;
+}
+
+/**
  * Tra le officine indicate (es. quelle di un veicolo del garage), le attive con orari e servizi
  * prenotabili: a quelle si può chiedere un appuntamento. Una query sola per tutte.
  */
@@ -195,6 +205,7 @@ const ERRORI: Record<string, [string, string?]> = {
     "L'officina è chiusa in quel momento: scegli un altro giorno o fascia.",
     'fascia',
   ],
+  FASCIA_PIENA: ['Questa fascia si è appena riempita: scegli un altro giorno o fascia.', 'fascia'],
   TARGA_NON_VALIDA: ['La targa ha da 2 a 10 lettere e cifre', 'targa'],
   TELEFONO_NON_VALIDO: ['Controlla il numero di telefono', 'telefono'],
   TROPPE_RICHIESTE: [

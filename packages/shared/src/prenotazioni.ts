@@ -135,6 +135,10 @@ const oraFacoltativa = z
  * `Orari` da salvare, con gli stessi vincoli di `orari_validi()`; gli errori vanno sotto il campo.
  */
 export function creaOrariSchema() {
+  return z.object(formaOrari()).superRefine(controllaOrari).transform(orariDaCampi);
+}
+
+function formaOrari() {
   const forma: Record<string, typeof oraFacoltativa> = {};
   for (const g of GIORNI_SETTIMANA) {
     for (const t of TURNI) {
@@ -143,41 +147,87 @@ export function creaOrariSchema() {
       forma[c.chiude] = oraFacoltativa;
     }
   }
+  return forma;
+}
+
+function controllaOrari(v: Record<string, string>, ctx: z.RefinementCtx): void {
+  const errore = (campo: string, message: string) =>
+    ctx.addIssue({ code: 'custom', path: [campo], message });
+  for (const g of GIORNI_SETTIMANA) {
+    let fineTurnoPrima = '';
+    for (const t of TURNI) {
+      const c = campiTurno(g, t);
+      const [apre, chiude] = [v[c.apre]!, v[c.chiude]!];
+      if (!apre && !chiude) continue;
+      if (!apre) errore(c.apre, "Manca l'ora di apertura");
+      else if (!chiude) errore(c.chiude, "Manca l'ora di chiusura");
+      else if (chiude <= apre) errore(c.chiude, "Deve venire dopo l'apertura");
+      else if (fineTurnoPrima && apre <= fineTurnoPrima) {
+        errore(c.apre, 'Il secondo turno deve iniziare dopo la fine del primo');
+      }
+      fineTurnoPrima = chiude || fineTurnoPrima;
+    }
+    // Un secondo turno senza il primo: va scritto come primo
+    const [primo, secondo] = TURNI.map((t) => campiTurno(g, t));
+    if (!v[primo!.apre] && !v[primo!.chiude] && v[secondo!.apre]) {
+      errore(primo!.apre, 'Scrivi prima il primo turno');
+    }
+  }
+}
+
+function orariDaCampi(v: Record<string, string>): Orari {
+  const orari: Orari = {};
+  for (const g of GIORNI_SETTIMANA) {
+    orari[g] = TURNI.map((t) => campiTurno(g, t))
+      .filter((c) => v[c.apre] && v[c.chiude])
+      .map((c) => [v[c.apre]!, v[c.chiude]!]);
+  }
+  return orari;
+}
+
+/** Nome del campo "Richieste al massimo per fascia" nel modulo degli orari. */
+export const CAMPO_CAPIENZA = 'capienza_fascia';
+
+// Vuoto = nessun limite (null); altrimenti un intero da 1 a 99, come il vincolo del database
+const capienzaFacoltativa = z
+  .string()
+  .trim()
+  .refine((s) => s === '' || (/^\d{1,2}$/.test(s) && Number(s) >= 1), {
+    error: 'Scrivi un numero da 1 a 99, o lascia vuoto per nessun limite',
+  })
+  .transform((s) => (s === '' ? null : Number(s)));
+
+/** Schema del modulo "Orari e chiusure": gli orari di `creaOrariSchema` più la capienza per fascia. */
+export function creaOrariECapienzaSchema() {
   return z
-    .object(forma)
-    .superRefine((v, ctx) => {
-      const errore = (campo: string, message: string) =>
-        ctx.addIssue({ code: 'custom', path: [campo], message });
-      for (const g of GIORNI_SETTIMANA) {
-        let fineTurnoPrima = '';
-        for (const t of TURNI) {
-          const c = campiTurno(g, t);
-          const [apre, chiude] = [v[c.apre]!, v[c.chiude]!];
-          if (!apre && !chiude) continue;
-          if (!apre) errore(c.apre, "Manca l'ora di apertura");
-          else if (!chiude) errore(c.chiude, "Manca l'ora di chiusura");
-          else if (chiude <= apre) errore(c.chiude, "Deve venire dopo l'apertura");
-          else if (fineTurnoPrima && apre <= fineTurnoPrima) {
-            errore(c.apre, 'Il secondo turno deve iniziare dopo la fine del primo');
-          }
-          fineTurnoPrima = chiude || fineTurnoPrima;
-        }
-        // Un secondo turno senza il primo: va scritto come primo
-        const [primo, secondo] = TURNI.map((t) => campiTurno(g, t));
-        if (!v[primo!.apre] && !v[primo!.chiude] && v[secondo!.apre]) {
-          errore(primo!.apre, 'Scrivi prima il primo turno');
-        }
-      }
-    })
-    .transform((v): Orari => {
-      const orari: Orari = {};
-      for (const g of GIORNI_SETTIMANA) {
-        orari[g] = TURNI.map((t) => campiTurno(g, t))
-          .filter((c) => v[c.apre] && v[c.chiude])
-          .map((c) => [v[c.apre]!, v[c.chiude]!]);
-      }
-      return orari;
-    });
+    .object({ ...formaOrari(), [CAMPO_CAPIENZA]: capienzaFacoltativa })
+    .superRefine((v, ctx) => controllaOrari(v as unknown as Record<string, string>, ctx))
+    .transform((v): { orari: Orari; capienza: number | null } => ({
+      orari: orariDaCampi(v as unknown as Record<string, string>),
+      capienza: v[CAMPO_CAPIENZA],
+    }));
+}
+
+/** Una fascia piena di un giorno, come la restituisce `fasce_piene()` del database. */
+export interface FasciaPiena {
+  giorno: string;
+  fascia: Fascia;
+}
+
+/** Le fasce piene di un giorno. */
+export const fascePieneIl = (piene: readonly FasciaPiena[], data: string): Fascia[] =>
+  piene.filter((p) => p.giorno === data).map((p) => p.fascia);
+
+/** Le fasce di un giorno ancora libere: aperte secondo l'orario e non chiuse né piene. */
+export function fasceLibere(
+  orari: unknown,
+  data: string,
+  chiusure: readonly Chiusura[] = [],
+  piene: readonly FasciaPiena[] = [],
+): Fascia[] {
+  if (chiusuraIl(chiusure, data)) return [];
+  const occupate = fascePieneIl(piene, data);
+  return fasceAperte(orari, data).filter((f) => !occupate.includes(f));
 }
 
 /** Chiusura straordinaria: dal (da oggi), al (dopo dal, al massimo un anno), motivo facoltativo. */
