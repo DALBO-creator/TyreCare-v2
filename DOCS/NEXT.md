@@ -162,7 +162,8 @@ PowerShell **come amministratore**: `net stop winnat` → `net start winnat`. Do
 
 ### 🏠 Avvio sessione (PC di casa)
 
-Aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. Dopo un
+Aprire Docker Desktop → `npm run db:start` → `npm run dev:web`. A fine sessione `npm run db:stop` (i dati
+restano) e chiudere Docker Desktop. Dopo un
 `git pull` con nuove migrazioni: `npm run db:reset` (ricrea il database locale con il seed).
 **`npm run db:test` gira sui dati attuali del DB locale:** dopo prove nel browser che modificano il seed
 (es. "Smonta" sulla Panda) i test pgTAP falliscono → `npm run db:reset` prima di `db:test`.

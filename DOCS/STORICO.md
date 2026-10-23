@@ -4,6 +4,14 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione 20 — 2026-10-23 (PC di casa, breve)
+
+**Fatto**
+
+- Panoramica del lavoro degli agenti (T001–T019, PR #1–#13); repo del PC di casa allineato a `origin/main`
+  (`git pull`, `npm install`, `db:reset`): `db:test`, typecheck e Vitest passano; app provata nel browser.
+- Nuovo script `npm run db:stop` (`supabase stop`, i dati restano), in `STRUCT.md` e nell'avvio di `NEXT.md`.
+
 ### Sessione agenti — 2026-10-23 — T019
 
 **Fatto**
