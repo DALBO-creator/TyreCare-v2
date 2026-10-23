@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-23 — T019
+
+**Fatto**
+
+- `/officine`: pulsante "Vicino a me" (posizione del browser) che riordina le officine dalla più vicina e
+  mostra "A X da te" in ogni scheda; permesso negato o errore → avviso giallo e elenco invariato.
+- `packages/shared/src/distanza.ts`: `distanzaKm`, `formattaDistanza`, `ordinaPerDistanza`, con test Vitest.
+  `OfficinaPubblica` ora include `latitudine` e `longitudine`.
+- e2e `e2e/tests/officine.spec.ts` (contesto con geolocalizzazione vicino a Torino; contesto senza
+  permesso): da verificare in CI. La posizione del cliente non viene salvata (vedi `NOTES.md`).
+
+**Da sapere**
+
+- Nel seed c'è una sola officina ATTIVA (Gomme Rossi, con coordinate): l'ordinamento è provato solo da Vitest.
+- Fatti in locale: format, lint, typecheck, test, build. Non eseguibile qui: e2e.
+
 ### Sessione agenti — 2026-10-23 — T018
 
 **Fatto**

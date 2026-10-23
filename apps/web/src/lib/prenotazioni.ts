@@ -71,10 +71,20 @@ export const eliminaServizio = (id: string) =>
 
 export type OfficinaPubblica = Pick<
   Tables<'officine'>,
-  'id' | 'ragione_sociale' | 'indirizzo' | 'cap' | 'citta' | 'provincia' | 'telefono' | 'orari'
+  | 'id'
+  | 'ragione_sociale'
+  | 'indirizzo'
+  | 'cap'
+  | 'citta'
+  | 'provincia'
+  | 'latitudine'
+  | 'longitudine'
+  | 'telefono'
+  | 'orari'
 >;
 
-const COLONNE_OFFICINA = 'id, ragione_sociale, indirizzo, cap, citta, provincia, telefono, orari';
+const COLONNE_OFFICINA =
+  'id, ragione_sociale, indirizzo, cap, citta, provincia, latitudine, longitudine, telefono, orari';
 
 /** Officine affiliate (ATTIVE), in ordine di città e nome. */
 export async function caricaOfficineAttive(): Promise<OfficinaPubblica[]> {
