@@ -1,4 +1,4 @@
-import { CalendarPlus, ChevronRight, Search, Store } from 'lucide';
+import { CalendarPlus, ChevronRight, LocateFixed, Search, Store } from 'lucide';
 import {
   GIORNI_PRENOTABILI,
   aggiungiGiorni,
@@ -6,8 +6,10 @@ import {
   creaRichiestaSchema,
   formattaTarga,
   giorniPrenotabili,
+  formattaDistanza,
   normalizzaTarga,
   oggiInItalia,
+  ordinaPerDistanza,
 } from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import {
@@ -79,6 +81,10 @@ export async function mostraOfficine(app: HTMLElement): Promise<void> {
                   autocomplete="off" enterkeyhint="search" />
               </div>
             </div>
+            <button type="button" class="btn btn-outline-light w-100" data-vicino>
+              ${icona(LocateFixed)} <span data-vicino-testo>Vicino a me</span>
+            </button>
+            <div data-avviso-posizione></div>
             <p class="visually-hidden" aria-live="polite" data-conteggio></p>
             <div data-elenco></div>`
           : `<div class="tc-vuoto">
@@ -93,9 +99,15 @@ export async function mostraOfficine(app: HTMLElement): Promise<void> {
   const elenco = app.querySelector<HTMLElement>('[data-elenco]')!;
   const conteggio = app.querySelector<HTMLElement>('[data-conteggio]')!;
   const cerca = app.querySelector<HTMLInputElement>('#tc-cerca')!;
+  const vicino = app.querySelector<HTMLButtonElement>('[data-vicino]')!;
+  const testoVicino = app.querySelector<HTMLElement>('[data-vicino-testo]')!;
+  const avviso = app.querySelector<HTMLElement>('[data-avviso-posizione]')!;
+  // Elenco mostrato: all'inizio quello di partenza, dopo "Vicino a me" quello ordinato per distanza.
+  // La posizione del cliente vive solo in questa funzione: non si salva da nessuna parte.
+  let mostrate: (OfficinaPubblica & { distanza_km?: number | null })[] = officine;
   const disegna = () => {
     const testo = cerca.value.trim().toLowerCase();
-    const trovate = officine.filter((o) =>
+    const trovate = mostrate.filter((o) =>
       `${o.ragione_sociale} ${o.citta} ${o.indirizzo}`.toLowerCase().includes(testo),
     );
     conteggio.textContent =
@@ -107,6 +119,7 @@ export async function mostraOfficine(app: HTMLElement): Promise<void> {
           <a class="tc-lista__riga" href="/officina?id=${o.id}">
             <span class="tc-lista__testo">
               ${esc(o.ragione_sociale)}<small>${esc(indirizzoBreve(o))}</small>
+              ${o.distanza_km != null ? `<small class="tc-lista__distanza">A ${formattaDistanza(o.distanza_km)} da te</small>` : ''}
             </span>
             ${icona(ChevronRight)}
           </a>`,
@@ -119,6 +132,36 @@ export async function mostraOfficine(app: HTMLElement): Promise<void> {
         </div>`;
   };
   cerca.addEventListener('input', disegna);
+  vicino.addEventListener('click', () => {
+    avviso.innerHTML = '';
+    const nonRiuscito = () => {
+      avviso.innerHTML = `<div class="tc-avviso tc-avviso--giallo" role="alert"><p class="mb-0">Non riusciamo a sapere dove sei: controlla i permessi di posizione del browser.</p></div>`;
+      vicino.disabled = false;
+      testoVicino.textContent = 'Vicino a me';
+    };
+    if (!('geolocation' in navigator)) {
+      nonRiuscito();
+      return;
+    }
+    vicino.disabled = true;
+    testoVicino.textContent = 'Cerco la tua posizione…';
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        if (!ancoraAttuale(n)) return;
+        mostrate = ordinaPerDistanza(officine, {
+          latitudine: coords.latitude,
+          longitudine: coords.longitude,
+        });
+        vicino.disabled = false;
+        testoVicino.textContent = 'Vicino a me';
+        disegna();
+      },
+      () => {
+        if (ancoraAttuale(n)) nonRiuscito();
+      },
+      { timeout: 10000, maximumAge: 300000 },
+    );
+  });
   disegna();
 }
 

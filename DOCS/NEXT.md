@@ -7,7 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: sessione agenti del
-> 2026-10-23 (T018, pagina `/officina/dati` con indirizzo, contatti e posizione dell'officina; e2e da
+> 2026-10-23 (T019, "Vicino a me" in `/officine` con ordinamento per distanza; e2e da verificare in CI).
+> Prima, 2026-10-23 (T018, pagina `/officina/dati` con indirizzo, contatti e posizione dell'officina; e2e da
 > verificare in CI). Prima, 2026-10-22 (T017, guida di avvio per l'officina in `DOCS/pilota/guida-avvio.md`). Prima, T016 (pagina `/commento` "Invia un commento" dal Profilo; vedi `NOTES.md` → "Pilota —
 > commenti degli utenti (app)"; l'e2e `commenti.spec.ts` si verifica in CI). Prima: T015 (tabella
 > `commenti`, limite di 20 in 24 ore) e T014 (bozze legali in `DOCS/legale/`). L'**import CSV standard di
@@ -41,7 +42,7 @@
   colonne a quelle di TyreCare (sostituisce l'adattatore GESTITYRE `.xls`: non serve più aspettare il file
   di esempio)
 - [ ] Fase 5: **email di riserva** — dopo l'email dal dominio di TyreCare (P23, vedi "Rimandati")
-- [ ] Fase 4: officine vicine (geolocalizzazione); capienza/slot
+- [ ] Fase 4: capienza/slot (le officine vicine sono fatte: T019)
 
 Per l'avvio dell'ambiente vedi "Sessioni nel cloud" o "Solo per i PC di Davide" (sotto).
 

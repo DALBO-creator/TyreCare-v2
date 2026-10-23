@@ -1492,3 +1492,26 @@ punto. Il valore è arrotondato con `toFixed(6)` (come `numeric(9, 6)`) e contro
 `DatiOfficinaSchema` — la trasformazione finale trasforma `posizione` in latitudine e longitudine; con
 errori sugli altri campi Zod non la esegue, quindi l'errore della posizione compare dopo aver corretto
 gli altri campi.
+
+## Cliente — officine ordinate per distanza (Fase 4)
+
+**File coinvolti:** `packages/shared/src/distanza.ts` (+ `distanza.test.ts`), `apps/web/src/lib/prenotazioni.ts`
+(`COLONNE_OFFICINA` e `OfficinaPubblica` con `latitudine` e `longitudine`), `apps/web/src/pagine/officine.ts`
+(`mostraOfficine`), `e2e/tests/officine.spec.ts`.
+**Come funziona:** in `/officine` il pulsante "Vicino a me" chiede la posizione al browser
+(`getCurrentPosition`, `timeout` 10 s, `maximumAge` 5 minuti). Durante l'attesa è disabilitato e dice "Cerco
+la tua posizione…". Poi l'elenco si riordina (`ordinaPerDistanza`: prima le officine con coordinate, dalla
+più vicina; dopo quelle senza, nell'ordine di prima) e ogni scheda mostra "A 3,2 km da te". Se il permesso
+è negato o la lettura fallisce compare l'avviso giallo "Non riusciamo a sapere dove sei…" e l'elenco resta
+com'era. La ricerca per testo lavora sull'elenco mostrato, quindi anche su quello riordinato. Le coordinate
+delle officine si inseriscono in "Dati dell'officina" (T018).
+**Privacy:** la posizione del cliente **non** si salva da nessuna parte (né database né `localStorage`):
+vive in una variabile della funzione e sparisce alla chiusura della pagina; la distanza si calcola nel
+browser, senza servizi esterni (niente mappe né geocodifica).
+
+### Codice complesso
+`packages/shared/src/distanza.ts` (`distanzaKm`) — formula dell'emisenoverso con raggio 6371 km, linea d'aria
+(non il percorso stradale). `formattaDistanza` arrotonda a 50 m sotto 1 km, un decimale sotto 10 km, interi
+oltre; "1,0 km" invece di "1000 m". `ordinaPerDistanza` aggiunge `distanza_km` (`null` senza coordinate) e
+non modifica l'elenco ricevuto. Nel seed c'è una sola officina ATTIVA: l'ordinamento si verifica con Vitest,
+l'e2e prova solo la distanza e l'avviso.
