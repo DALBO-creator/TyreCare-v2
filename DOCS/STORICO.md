@@ -4,6 +4,25 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-23 — T020
+
+**Fatto**
+
+- Migrazione `20261023150000_capienza_fasce.sql` (solo aggiunte): colonna `officine.capienza_fascia`
+  (1–99, `null` = nessun limite), funzione interna `occupazione_fascia` (non concessa ad anon e
+  authenticated), funzione pubblica `fasce_piene` (solo giorno e fascia, nessun conteggio),
+  `richiedi_prenotazione` uguale alla versione del 2026-10-12 più il lucchetto per fascia e `FASCIA_PIENA`.
+- `supabase/tests/database/capienza.test.sql` (29 test pgTAP) e `database.types.ts` aggiornato a mano.
+- Decisione in `PLAN.md` P14: restano le richieste; la capienza limita solo le richieste nuove dei clienti.
+
+**Da sapere**
+
+- pgTAP provato in locale con Postgres 16 + pgTAP e una base Supabase finta (ruoli, `auth.uid()`, stub di
+  pg_net/pg_cron/vault): passano i nuovi e quelli di prenotazioni, orari, cliente-da-prenotazione,
+  notifiche e push. Provate a mano due richieste contemporanee per l'ultimo posto: la seconda aspetta e
+  riceve `FASCIA_PIENA`. I tipi generati e il job `database` si verificano in CI.
+- Fatti in locale: format, lint, typecheck, test, build.
+
 ### Sessione 20 — 2026-10-23 (PC di casa, breve)
 
 **Fatto**
