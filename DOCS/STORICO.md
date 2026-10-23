@@ -23,6 +23,10 @@
 **Da sapere**
 
 - Fatti in locale: format, lint, typecheck, test (167), build. L'e2e si verifica in CI.
+- Correzione dopo la CI rossa: `capienza.spec.ts` superava i 60 s (due registrazioni, tre accessi) e, scaduto il
+  tempo, il `finally` trovava la pagina chiusa: la capienza 1 restava e rompeva `prenotazioni.spec.ts`. Ora
+  timeout di 180 s, ripristino in `beforeEach`/`afterEach` con un contesto nuovo del titolare e giorno
+  `prossimoFeriale(40 + retry)`.
 
 ### Sessione agenti — 2026-10-23 — T020
 
