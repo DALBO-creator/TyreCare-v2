@@ -33,6 +33,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | `npm run format` | Formatta il codice con Prettier |
 | `npm run icons -w @tyrecare/web` | Rigenera le icone PWA da `apps/web/public/logo.svg` |
 | `npm run db:start` | Avvia Supabase locale (serve Docker Desktop acceso) |
+| `npm run db:stop` | Ferma Supabase locale; i dati del database restano salvati per il prossimo `db:start` |
 | `npm run db:reset` | Ricrea il database locale: applica le migrazioni e `supabase/seed.sql` |
 | `npm run db:test` | Test pgTAP del database (policy RLS, trigger) in `supabase/tests/database/` |
 | `npm run db:types` | Rigenera i tipi TypeScript del database in `packages/shared/src/database.types.ts` |
