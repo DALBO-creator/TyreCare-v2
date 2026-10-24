@@ -14,8 +14,10 @@
 | [`termini-di-servizio.md`](termini-di-servizio.md) | Condizioni d'uso del servizio, account e ruoli, prenotazioni, responsabilità, abbonamento | Tutti gli utenti |
 | [`dpa-officine.md`](dpa-officine.md) | Accordo di nomina a responsabile del trattamento (art. 28 GDPR): istruzioni, misure di sicurezza, sub-responsabili, data breach, fine del contratto, audit | Ogni officina affiliata (da firmare prima di caricare dati veri) |
 | [`registro-trattamenti.md`](registro-trattamenti.md) | Registro dei trattamenti (art. 30): parte A TyreCare titolare, parte B TyreCare responsabile per le officine | Uso interno; da mostrare al Garante se lo chiede |
+| [`procedura-violazioni.md`](procedura-violazioni.md) | Procedura per le violazioni dei dati: esempi, primi passi tecnici, chi avvisa chi e quando (artt. 33–34), registro delle violazioni (art. 33.5) | Uso interno; l'avviso alle officine segue il DPA §12 |
 
-Le bozze di DPA e registro sono state aggiunte il 2026-10-22 (compito T014). Da fare in seguito: contratto
+Le bozze di DPA e registro sono state aggiunte il 2026-10-22 (compito T014), quella della procedura per le
+violazioni il 2026-10-24 (compito T037). Da fare in seguito: contratto
 di abbonamento per le officine (P19), a cui il DPA rimanda.
 
 ## Come sono state scritte
@@ -59,7 +61,8 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 - [ ] **Cancellazione dell'account** dall'app e **cancellazione automatica** dei dati scaduti (notifiche,
   prenotazioni passate) secondo i tempi di conservazione che si decideranno: oggi nulla si cancella da sé.
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
-  quanto, registro delle violazioni — art. 33.5): non esiste.
+  quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
+  rivedere; restano da completare i contatti e il termine del DPA §12.1.
 - [ ] **Autenticazione a due fattori** per titolari delle officine e amministratori: disattivata
   (`[auth.mfa.totp]` con `enroll_enabled = false` in `supabase/config.toml`).
 - [ ] **Regole sulle password più robuste:** oggi solo lunghezza minima 8 (`password_requirements = ""`) e
@@ -114,3 +117,6 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 12. **Termini di servizio:** limitazioni di responsabilità sulle misure degli pneumatici e sulle
     prenotazioni non confermate, clausole vessatorie (artt. 1341–1342 c.c.) e diritti del consumatore
     (Codice del consumo) per i clienti privati.
+13. **Procedura per le violazioni** (`procedura-violazioni.md`): i passi tecnici e i tempi di avviso
+    (officine senza ingiustificato ritardo e entro il termine del DPA; Garante entro 72 ore per i dati di cui
+    TyreCare è titolare) sono adeguati? Il registro delle violazioni ha i campi giusti?
