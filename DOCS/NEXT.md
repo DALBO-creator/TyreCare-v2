@@ -7,11 +7,10 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: sessione agenti del
-> 2026-10-24 (T024, ragione sociale e partita IVA dell'officina le cambia solo l'amministratore: trigger
-> `proteggi_campi_riservati`; pgTAP `officine-riservati.test.sql` da verificare in CI). L'**import CSV
-> standard di clienti e veicoli** (sessione 19, `/clienti/importa`) è stato provato dal titolare: funziona.
-> Con **P22** non si aspetta più il file `.xls` di GESTITYRE: l'import passa dalla **mappatura delle
-> colonne** (T008–T012 fatti).
+> 2026-10-24 (T026, documenti allineati al lavoro fatto: roadmap e questa sezione).
+> Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
+> pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
+> dettagli in `STORICO.md`.
 
 **0 — Da chiedere al titolare**
 
@@ -31,15 +30,11 @@
 
 - [ ] P8: **import dei controlli** dal CSV (una riga per pneumatico misurato) — prima decidere come
   montare gli pneumatici storici (vedi `IMPLEMENTAZIONI.md`)
-- [ ] P22: **import con mappatura delle colonne** — (2026-10-20, T008: fatta la logica condivisa in
-  `importa.ts`: `tabellaDaCsv`, `mappaturaAutomatica`, `erroriMappatura`, `applicaMappatura`,
-  `controllaTabella`; T009: lettura di .xls/.xlsx/.ods nel browser con `leggiTabella`; T010: schermata
-  "Associa le colonne"; T011: tabella `import_mappature` con RLS solo titolare; T012: interfaccia per
-  salvare, riusare ed eliminare le associazioni) — l'officina carica qualsiasi Excel/CSV e associa le sue
-  colonne a quelle di TyreCare (sostituisce l'adattatore GESTITYRE `.xls`: non serve più aspettare il file
-  di esempio)
+- [x] P22: **import con mappatura delle colonne** — fatta (T008–T012, 2026-10-20/21): logica in `importa.ts`,
+  lettura di .xls/.xlsx/.ods, schermata "Associa le colonne", associazioni salvate per officina
 - [ ] Fase 5: **email di riserva** — dopo l'email dal dominio di TyreCare (P23, vedi "Rimandati")
-- [ ] Fase 4: capienza nell'interfaccia (T021: il database è fatto, T020); slot orari automatici più avanti
+- [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
+- [ ] Fase 4: slot orari automatici (più avanti)
 
 Per l'avvio dell'ambiente vedi "Sessioni nel cloud" o "Solo per i PC di Davide" (sotto).
 
