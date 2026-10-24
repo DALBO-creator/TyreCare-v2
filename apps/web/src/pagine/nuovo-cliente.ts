@@ -77,6 +77,14 @@ export async function mostraNuovoCliente(app: HTMLElement): Promise<void> {
       <form class="tc-auth__modulo" novalidate>
         ${RIQUADRO_ERRORE}
         ${campiCliente()}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="invita" id="invita"
+            aria-describedby="invita-aiuto" />
+          <label class="form-check-label" for="invita">Invitalo nell'app dopo il salvataggio</label>
+          <div id="invita-aiuto" class="form-text">
+            Ti prepariamo l'email con il link per vedere i suoi veicoli sul telefono.
+          </div>
+        </div>
         ${pulsanteInvio('Salva cliente', 'Salvataggio…')}
         <a class="btn btn-outline-light btn-lg w-100" href="${daClienti ? '/clienti' : '/veicoli/nuovo'}">
           Annulla
@@ -84,8 +92,14 @@ export async function mostraNuovoCliente(app: HTMLElement): Promise<void> {
       </form>
     </div>`);
 
-  collegaModulo(app.querySelector('form')!, ClienteSchema, async (cliente) => {
+  const modulo = app.querySelector('form')!;
+  collegaModulo(modulo, ClienteSchema, async (cliente) => {
+    // La casella non fa parte di ClienteSchema (zod scarta i campi sconosciuti): si legge dal modulo
+    const invita = modulo.querySelector<HTMLInputElement>('[name="invita"]')?.checked ?? false;
     const id = await creaCliente(officinaId, cliente);
+    if (invita) {
+      return vaiConConferma(`/cliente/invito?id=${id}`, "Cliente salvato: ora invialo nell'app.");
+    }
     if (daClienti) return vaiConConferma(`/cliente?id=${id}`, 'Cliente salvato.');
     vaiConConferma(`/veicoli/nuovo?cliente=${id}`, 'Cliente salvato: ora registra il suo veicolo.');
   });
