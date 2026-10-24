@@ -36,8 +36,8 @@ test('se la fascia si riempie mentre compili, la pagina la spegne', async ({
   browser,
 }, testInfo) => {
   test.setTimeout(180_000);
-  // Giorno diverso da quelli degli altri test (0–2, 25, 40); un nuovo tentativo usa il giorno dopo
-  const giorno = prossimoFeriale(44 + testInfo.retry);
+  // Giorno diverso da quelli degli altri test (0–2, 25, 40–41); un nuovo tentativo usa il giorno dopo
+  const giorno = prossimoFeriale(32 + testInfo.retry);
 
   await accedi(page, 'titolare@tyrecare.test');
   await page.goto('/officina/orari');
