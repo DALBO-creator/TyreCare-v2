@@ -25,6 +25,7 @@ import {
   type OfficinaPubblica,
   type VeicoloMio,
 } from '../lib/prenotazioni';
+import { ErroreModulo } from '../lib/errori';
 import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
@@ -457,7 +458,18 @@ export async function mostraPrenota(app: HTMLElement): Promise<void> {
     app.querySelector('form')!,
     creaRichiestaSchema(officina.orari, oggi, officina.chiusure),
     async (richiesta) => {
-      const idPrenotazione = await richiediPrenotazione(off.id, richiesta);
+      let idPrenotazione: string;
+      try {
+        idPrenotazione = await richiediPrenotazione(off.id, richiesta);
+      } catch (errore) {
+        // La fascia si è riempita mentre compilavi: si ricaricano le fasce piene così quella risulta
+        // spenta; l'errore riparte uguale e il modulo lo mostra sotto "fascia"
+        if (errore instanceof ErroreModulo && errore.codice === 'FASCIA_PIENA') {
+          piene = await caricaFascePiene(off.id).catch(() => piene);
+          aggiorna();
+        }
+        throw errore;
+      }
       invitaAgliAvvisi();
       vaiConConferma(
         `/appuntamento?id=${idPrenotazione}`,
