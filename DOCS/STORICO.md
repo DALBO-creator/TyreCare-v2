@@ -4,6 +4,28 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-24 — ciclo 20261024-03 — T025, T026, T027, T031, T034, T037
+
+**Fatto**
+
+- T025: `ErroreModulo` ha il campo `codice`; dopo `FASCIA_PIENA` il modulo Prenota ricarica le fasce piene e
+  spegne quella riempita. e2e `capienza-corsa.spec.ts` (giorno feriale 32).
+- T026: roadmap (Fasi 2, 4, 6) e "Prossima sessione" allineate al lavoro fatto (blocco iniziale di 4 righe;
+  P22 e capienza barrate; "Officine vicine" fatta). Solo `DOCS/`.
+- T027: funzione `crea_officina_con_titolare(ragione_sociale, partita_iva, email)` (solo admin o senza
+  utente) per creare l'officina del pilota; pgTAP con 14 test, verificati in locale.
+- T031: funzione `unisci_clienti(p_da, p_in)` per unire due anagrafiche dello stesso officina; pgTAP con
+  19 test, verificati in locale (compreso il telefono vuoto preso da `p_da`).
+- T034: «Nuovo cliente» ha la casella «Invitalo nell'app dopo il salvataggio»; se spuntata, dopo il
+  salvataggio si va a `/cliente/invito?id=`. e2e `nuovo-cliente-invito.spec.ts`.
+- T037: bozza di `DOCS/legale/procedura-violazioni.md` (esempi, primi passi tecnici, tempi di avviso artt.
+  33-34, registro art. 33.5) e README legale aggiornato. Solo documentazione.
+
+**Da sapere**
+
+- I coordinatori non avevano sottoagenti: il codice l'hanno scritto loro; la revisione l'ha fatta il gate del
+  supervisore (4 correzioni su 6 compiti).
+
 ### Sessione agenti — 2026-10-24 — T024
 
 **Fatto**

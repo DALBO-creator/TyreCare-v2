@@ -1577,3 +1577,61 @@ richiesta già riuscita ripetuta dopo un errore di rete non diventa `FASCIA_PIEN
 dalle funzioni (accettando una proposta giorno e fascia si aggiornano), quindi il test la scrive
 direttamente per provare che conta il giorno dell'appuntamento; il caso reale "spostata" è la `PROPOSTA`,
 provata con `rispondi_prenotazione` alle 13:00 (pomeriggio).
+
+---
+
+## Pilota — creare un'officina (T027)
+
+**File coinvolti:** `supabase/migrations/20261024150000_crea_officina.sql`,
+`supabase/tests/database/crea-officina.test.sql`.
+**Come funziona:** dall'editor SQL di Supabase si lancia
+`select public.crea_officina_con_titolare('LA SANTI GOMME ...', '<partita IVA>', '<email>');` (l'account del
+titolare deve già esistere). La funzione crea l'officina `IN_ATTESA`, porta il profilo da CLIENTE a OFFICINA
+(un ADMIN resta ADMIN) e inserisce il TITOLARE. Possono chiamarla solo un admin o chi non ha un utente (editor
+SQL). Errori: `ACCOUNT_NON_TROVATO`, `PARTITA_IVA_GIA_PRESENTE`, `42501`. Dopo la firma del DPA:
+`update public.officine set stato_affiliazione = 'ATTIVA' where id = '<id>';`. Provata con 14 test pgTAP.
+
+---
+
+## Unire due clienti (T031)
+
+**File coinvolti:** `supabase/migrations/20261024160000_unisci_clienti.sql`,
+`supabase/tests/database/unisci-clienti.test.sql`.
+**Come funziona:** `unisci_clienti(p_da, p_in)` unisce due anagrafiche dello stesso officina. Solo il titolare
+(altrimenti `CLIENTI_NON_VALIDI` / `42501`); se i due hanno account diversi risponde `ACCOUNT_DIVERSI`. Sposta
+veicoli e inviti su `p_in`, elimina `p_da`, poi completa i campi vuoti di `p_in` (profile_id,
+codice_gestionale, telefono, email, ragione_sociale, nome, cognome) con quelli di `p_da`; le note si accodano
+(max 2000 caratteri) e `consenso_marketing` è l'`or` dei due. Provata con 19 test pgTAP.
+
+### Codice complesso
+L'eliminazione di `p_da` precede la copia di codice gestionale e account su `p_in`: i vincoli unique li
+rifiuterebbero finché esistono due righe con lo stesso valore. Le altre chiavi esterne verso
+`clienti_officina` sono solo veicoli e inviti (verificato), quindi basta spostare quelle.
+
+---
+
+## Prenota: fascia riempita durante la compilazione (T025)
+
+**File coinvolti:** `apps/web/src/lib/prenotazioni.ts`, `apps/web/src/pagine/officine.ts` (`mostraPrenota`),
+`e2e/tests/capienza-corsa.spec.ts`.
+**Come funziona:** `traduci` passa la chiave del database come `codice` di `ErroreModulo`. In `mostraPrenota`
+il gestore di `collegaModulo` intercetta `FASCIA_PIENA`, rilegge `caricaFascePiene`, richiama `aggiorna()` e
+rilancia lo stesso errore, che il modulo mostra sotto "fascia". Se la rilettura fallisce si tengono le fasce
+precedenti. L'e2e usa il giorno feriale 32 (`prossimoFeriale(32 + retry)`).
+
+### Codice complesso
+`piene` è una `let` letta da `aggiorna()` a ogni chiamata: per questo basta riassegnarla e richiamare
+`aggiorna()` perché la fascia appena riempita si spenga.
+
+---
+
+## Nuovo cliente con invito (T034)
+
+**File coinvolti:** `apps/web/src/pagine/nuovo-cliente.ts` (`mostraNuovoCliente`), `e2e/tests/nuovo-cliente-invito.spec.ts`.
+**Come funziona:** «Nuovo cliente» ha la casella «Invitalo nell'app dopo il salvataggio»; se spuntata, dopo il
+salvataggio si va a `/cliente/invito?id=`. Vale per `?da=clienti` e per il percorso verso «Nuovo veicolo».
+
+### Codice complesso
+La casella `invita` è nel solo modulo di `mostraNuovoCliente`, non in `campiCliente` (condiviso con la
+modifica). `ClienteSchema` non cambia: zod scarta il campo, e il gestore lo legge dal form prima di
+`creaCliente`.
