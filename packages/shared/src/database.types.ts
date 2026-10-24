@@ -1063,6 +1063,7 @@ export type Database = {
         Args: { p_marca: string; p_modello: string; p_targa: string };
         Returns: string;
       };
+      unisci_clienti: { Args: { p_da: string; p_in: string }; Returns: undefined };
     };
     Enums: {
       fascia_oraria: 'MATTINA' | 'POMERIGGIO';
