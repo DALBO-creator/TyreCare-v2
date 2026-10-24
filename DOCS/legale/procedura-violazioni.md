@@ -34,9 +34,10 @@ Quattro esempi concreti di TyreCare:
    Postgres, Edge Functions) e di Vercel; non cancellare nulla; salva schermate e messaggi ricevuti.
 3. **Rigenera le chiavi coinvolte** (se il dubbio è se coinvolte, rigenerale tutte):
    - chiave di servizio (`service_role`) e chiave JWT del progetto Supabase, poi aggiorna le variabili
-     d'ambiente dove sono usate (API su Vercel, segreti delle Edge Functions);
+     d'ambiente dove sono usate (la PWA su Vercel, che usa la chiave anon; i segreti delle Edge Functions;
+     l'API quando sarà pubblicata);
    - chiavi VAPID delle notifiche push (`VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`) e `PUSH_SEGRETO`, con
-     `supabase secrets set`; le iscrizioni push esistenti vanno rifatte dagli utenti;
+     `supabase secrets set` e aggiorna lo stesso valore nel Vault del database (`segreto_invia_notifica`); le iscrizioni push esistenti vanno rifatte dagli utenti;
    - chiave di Resend usata come SMTP di Supabase (*SMTP Settings*): revocala dalla console di Resend e
      inseriscine una nuova.
 4. **Chiudi le sessioni** degli utenti coinvolti (o di tutti) dalla console di Supabase (Auth → Users) e,
@@ -51,7 +52,7 @@ Quattro esempi concreti di TyreCare:
 | Situazione | Chi | Verso chi | Quando |
 |------------|-----|-----------|--------|
 | Violazione sui **dati caricati dalle officine** (TyreCare responsabile, DPA) | TyreCare | Ogni officina titolare coinvolta, all'indirizzo del DPA §1 | **Senza ingiustificato ritardo** (art. 33.2) e comunque entro [DA COMPLETARE: N ore, DPA §12.1 — termine ancora aperto] dalla scoperta |
-| Stessa violazione, notifica al Garante | L'**officina** (titolare) | Garante per la protezione dei dati personali | Entro **72 ore** da quando l'officina ne è venuta a conoscenza (art. 33.1); TyreCare la aiuta (DPA §11) e non notifica a suo nome senza accordo (DPA §12.3) |
+| Stessa violazione, notifica al Garante | L'**officina** (titolare) | Garante per la protezione dei dati personali | Entro **72 ore** da quando l'officina ne è venuta a conoscenza (art. 33.1); TyreCare la aiuta (DPA §12.1) e non notifica a suo nome senza accordo (DPA §12.3) |
 | Violazione sui **dati di cui TyreCare è titolare** (account, accessi, notifiche push) | TyreCare | Garante | Entro **72 ore** dalla scoperta, salvo che sia improbabile un rischio per le persone (art. 33.1); oltre le 72 ore, con i motivi del ritardo |
 | Rischio **elevato** per le persone (es. password o dati di contatto esposti, uso illecito probabile) | Il titolare (officina o TyreCare) | Gli interessati, con parole semplici | Senza ingiustificato ritardo (art. 34) |
 
