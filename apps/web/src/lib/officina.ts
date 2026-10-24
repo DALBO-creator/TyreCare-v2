@@ -8,6 +8,7 @@ import {
   type Tables,
   type Veicolo,
 } from '@tyrecare/shared';
+import { leggiTutte } from './a-pagine';
 import { codiceErrore, ErroreModulo } from './errori';
 import { caricaDatiUtente, type DatiUtente, type OfficinaUtente } from './profilo';
 import { conRiprova } from './rete';
@@ -93,20 +94,23 @@ export async function caricaVeicoli(
     'officinaId' in filtro
       ? (['officina_id', filtro.officinaId] as const)
       : (['cliente_officina_id', filtro.clienteId] as const);
-  const { data, error } = await getSupabase()
-    .from('veicoli')
-    .select(
-      `id, targa, marca, modello,
+  // Oltre 1000 veicoli PostgREST ne darebbe solo 1000: si legge a pagine (targa = ordine stabile)
+  const data = await leggiTutte((da, a) =>
+    getSupabase()
+      .from('veicoli')
+      .select(
+        `id, targa, marca, modello,
        cliente:clienti_officina (nome, cognome, ragione_sociale),
        controlli (eseguito_il, misure_pneumatico (battistrada_mm, pneumatico:pneumatici (stagione)))`,
-    )
-    .eq(colonna, valore)
-    // Solo l'ultimo controllo di ogni veicolo
-    .order('eseguito_il', { referencedTable: 'controlli', ascending: false })
-    .order('created_at', { referencedTable: 'controlli', ascending: false })
-    .limit(1, { referencedTable: 'controlli' })
-    .order('targa');
-  if (error) throw error;
+      )
+      .eq(colonna, valore)
+      // Solo l'ultimo controllo di ogni veicolo
+      .order('eseguito_il', { referencedTable: 'controlli', ascending: false })
+      .order('created_at', { referencedTable: 'controlli', ascending: false })
+      .limit(1, { referencedTable: 'controlli' })
+      .order('targa')
+      .range(da, a),
+  );
 
   return data.map((v) => {
     const ultimo = v.controlli[0];
@@ -138,11 +142,14 @@ export type ClienteInElenco = Pick<
 >;
 
 export async function caricaClienti(officinaId: string): Promise<ClienteInElenco[]> {
-  const { data, error } = await getSupabase()
-    .from('clienti_officina')
-    .select('id, nome, cognome, ragione_sociale')
-    .eq('officina_id', officinaId);
-  if (error) throw error;
+  const data = await leggiTutte((da, a) =>
+    getSupabase()
+      .from('clienti_officina')
+      .select('id, nome, cognome, ragione_sociale')
+      .eq('officina_id', officinaId)
+      .order('id')
+      .range(da, a),
+  );
   return data.sort((a, b) => nominativo(a).localeCompare(nominativo(b), 'it'));
 }
 
@@ -153,12 +160,15 @@ export type ClienteConVeicoli = Pick<
 
 /** Clienti dell'officina con contatti e targhe, per l'elenco dei clienti (ordinati per nome). */
 export async function caricaElencoClienti(officinaId: string): Promise<ClienteConVeicoli[]> {
-  const { data, error } = await getSupabase()
-    .from('clienti_officina')
-    .select('id, nome, cognome, ragione_sociale, telefono, email, veicoli (targa)')
-    .eq('officina_id', officinaId)
-    .order('targa', { referencedTable: 'veicoli' });
-  if (error) throw error;
+  const data = await leggiTutte((da, a) =>
+    getSupabase()
+      .from('clienti_officina')
+      .select('id, nome, cognome, ragione_sociale, telefono, email, veicoli (targa)')
+      .eq('officina_id', officinaId)
+      .order('targa', { referencedTable: 'veicoli' })
+      .order('id')
+      .range(da, a),
+  );
   return data.sort((a, b) => nominativo(a).localeCompare(nominativo(b), 'it'));
 }
 
