@@ -4,6 +4,29 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-25 — ciclo 20261025-00 — T059 T063
+
+**Fatto**
+
+- T059: funzione `richiedi_affiliazione`: un account crea la sua officina IN_ATTESA e ne diventa TITOLARE; il
+  ruolo globale non cambia (lo cambia T061). Test pgTAP `affiliazione.test.sql` (16) e `database.types.ts`.
+- T063: tabella `link_report` con `crea_link_report`, `revoca_link_report` e `report_pubblico`: link casuale
+  al report di un controllo, valido 30 giorni, che si può disattivare e non mostra dati del cliente.
+  Migrazione `20261025000200`, 14 test pgTAP e tipi aggiornati.
+
+**Verifiche**
+
+- 195 test unitari verdi, con `format:check`, lint, typecheck e build (Node 22). I test pgTAP non sono stati
+  eseguiti in locale (pgTAP manca nel sandbox): provati su Postgres 16 con un sostituto minimo (16/16 e
+  14/14); li verifica la CI `database`.
+
+**Da sapere**
+
+- Idee accodate: T083 (report spento per le officine sospese), T084 (caso negato pgTAP sulla lettura di
+  `link_report`), T085 (rifiutare le richieste di affiliazione), T086 (indice unico su
+  `officina_utenti(profile_id)`), T087 (elenco dei link attivi con "Disattiva").
+- Le pagine restano da fare: richiesta (T060), attivazione dell'admin (T061) e report pubblico (T064).
+
 ### Sessione agenti — 2026-10-24 — ciclo 20261024-21 — T030 T032
 
 **Fatto**

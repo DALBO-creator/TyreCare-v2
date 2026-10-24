@@ -1784,3 +1784,35 @@ passare `termini_versione` nei metadati di `signUp` (lavoro di C3, T056).
 La versione è tagliata dagli spazi e al massimo di 40 caratteri. Errori: `42501` se non autenticato, `22023`
 con `VERSIONE_NON_VALIDA` se la versione è vuota o troppo lunga. L'utente può scrivere i due campi anche con
 un update sul proprio profilo: è una sua dichiarazione, non una prova legale.
+
+## Richiesta di affiliazione (T059)
+
+**File coinvolti:** `supabase/migrations/20261025000100_richiedi_affiliazione.sql`,
+`supabase/tests/database/affiliazione.test.sql`, `packages/shared/src/database.types.ts`.
+**Come funziona:** `public.richiedi_affiliazione(ragione_sociale, partita_iva, citta, telefono?)` crea
+un'officina `IN_ATTESA`; chi la chiama ne diventa `TITOLARE` e la prepara subito, mentre i clienti la vedono
+solo dopo l'attivazione (policy "officine: lettura attive"). È `security definer` e solo per `authenticated`.
+L'email dell'officina è quella dell'account (`auth.users`); il ruolo globale resta `CLIENTE` (lo
+cambia T061).
+
+### Codice complesso
+Errori `P0001`: `GIA_IN_OFFICINA`, `PARTITA_IVA_NON_VALIDA` (solo il formato: la cifra di controllo la
+verifica la pagina, T060), `RAGIONE_SOCIALE_NON_VALIDA`, `CITTA_MANCANTE`, `PARTITA_IVA_GIA_PRESENTE`; senza
+utente `42501`. Un `pg_advisory_xact_lock` per account impedisce due officine da richieste contemporanee; una
+`unique_violation` sulla partita IVA diventa `PARTITA_IVA_GIA_PRESENTE`.
+
+## Link pubblico del report (T063)
+
+**File coinvolti:** `supabase/migrations/20261025000200_link_report.sql`,
+`supabase/tests/database/link-report.test.sql`, `packages/shared/src/database.types.ts`.
+**Come funziona:** `crea_link_report(controllo_id)` genera un codice casuale di 128 bit, salva solo la sua
+impronta SHA-256 (`impronta_codice`, la stessa degli inviti) e restituisce il codice in chiaro una volta sola;
+il link scade dopo 30 giorni e più link validi possono coesistere. `revoca_link_report(controllo_id)` li
+disattiva tutti. Crea e revoca solo i membri dell'officina: controllo inesistente o di un'altra officina
+dà `42501`. La tabella è leggibile solo dai membri (RLS), senza scritture dirette.
+
+### Codice complesso
+`report_pubblico(codice)` (anche anon) restituisce un jsonb con le chiavi di `Report`
+(`apps/web/src/lib/report.ts`; lo pneumatico solo con i campi principali) oppure `null` se il codice è
+sbagliato, scaduto o disattivato. Non escono cliente, `cliente_officina_id` né telaio; le note del
+controllo sì.

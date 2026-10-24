@@ -62,7 +62,8 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 - [~] **Cancellazione dell'account** dall'app: in parte. La funzione SQL esiste (T038, `elimina_account()`;
   domanda 14) ma manca il pulsante nel profilo (T039). Manca anche la
   **cancellazione automatica** dei dati scaduti (notifiche, prenotazioni passate) secondo i tempi di
-  conservazione che si decideranno: oggi nulla si cancella da sé.
+  conservazione che si decideranno: oggi lo fa solo per le notifiche (T049, job notturno
+  `pulisci_notifiche`: le lette dopo 180 giorni, tutte dopo 365); il resto non si cancella da sé.
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
   quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
   rivedere; restano da completare i contatti e il termine del DPA §12.1.
