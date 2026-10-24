@@ -1717,3 +1717,34 @@ vietati; geolocalizzazione solo `self`, per "Vicino a me"). HSTS dura 2 anni, se
 ### Codice complesso
 La CSP è `Content-Security-Policy-Report-Only`: il browser segnala le violazioni in console senza bloccare
 nulla. Si rende obbligatoria dopo averle controllate sul sito pubblicato.
+
+---
+
+## Pulizia delle notifiche (T049)
+
+**File coinvolti:** `supabase/migrations/20261024184000_pulizia_notifiche.sql`,
+`supabase/tests/database/pulizia-notifiche.test.sql`.
+**Come funziona:** il job `pulizia-notifiche` (pg_cron, ogni notte alle 1:40 UTC) chiama
+`pulisci_notifiche(p_adesso)`. Cancella le notifiche lette da più di 180 giorni (dalla lettura) e tutte quelle
+create da più di 365 giorni. Le notifiche recenti o non lette da meno di un anno restano.
+
+### Codice complesso
+`pulisci_notifiche` è `security definer` e gli utenti non possono chiamarla: la esegue solo il job. Il
+parametro `p_adesso` permette ai test di simulare la data. Per cambiare i tempi si scrive una nuova migrazione
+con `create or replace function`; per l'orario, `cron.schedule` con lo stesso nome sostituisce il job.
+
+---
+
+## Accettazione dei termini (T054)
+
+**File coinvolti:** `supabase/migrations/20261024184100_termini_accettati.sql`,
+`supabase/tests/database/termini.test.sql`.
+**Come funziona:** `profiles` ha `termini_versione` e `termini_accettati_il`. Alla registrazione il trigger
+`crea_profilo_nuovo_utente` li compila dal metadato `termini_versione`; il ruolo resta sempre CLIENTE. Per
+riaccettare una versione nuova l'utente chiama `accetta_termini(p_versione)`. La registrazione web deve ancora
+passare `termini_versione` nei metadati di `signUp` (lavoro di C3, T056).
+
+### Codice complesso
+La versione è tagliata dagli spazi e al massimo di 40 caratteri. Errori: `42501` se non autenticato, `22023`
+con `VERSIONE_NON_VALIDA` se la versione è vuota o troppo lunga. L'utente può scrivere i due campi anche con
+un update sul proprio profilo: è una sua dichiarazione, non una prova legale.
