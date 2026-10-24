@@ -932,6 +932,10 @@ export type Database = {
           scade_il: string;
         }[];
       };
+      crea_officina_con_titolare: {
+        Args: { p_email_titolare: string; p_partita_iva: string; p_ragione_sociale: string };
+        Returns: string;
+      };
       crea_promemoria_appuntamenti: { Args: { p_adesso?: string }; Returns: number };
       crea_promemoria_pneumatici: { Args: { p_adesso?: string }; Returns: number };
       fasce_aperte: {
@@ -1059,6 +1063,7 @@ export type Database = {
         Args: { p_marca: string; p_modello: string; p_targa: string };
         Returns: string;
       };
+      unisci_clienti: { Args: { p_da: string; p_in: string }; Returns: undefined };
     };
     Enums: {
       fascia_oraria: 'MATTINA' | 'POMERIGGIO';

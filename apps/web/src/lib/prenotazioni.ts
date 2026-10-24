@@ -223,7 +223,7 @@ const ERRORI: Record<string, [string, string?]> = {
 
 function traduci(errore: { message?: string } | null): unknown {
   const voce = errore?.message ? ERRORI[errore.message] : undefined;
-  return voce ? new ErroreModulo(voce[0], voce[1]) : errore;
+  return voce ? new ErroreModulo(voce[0], voce[1], errore?.message) : errore;
 }
 
 /** Il cliente chiede un appuntamento; restituisce l'id della prenotazione. */

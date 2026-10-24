@@ -48,7 +48,7 @@
 | **Pulizia delle notifiche vecchie** (es. lette da più di 6 mesi) | 🟢 | Job periodico; oggi l'app ne mostra solo le ultime 50. |
 | **Preferenze delle notifiche** (quali ricevere, su quali canali) | 🟢 | PLAN P5; utile quando arrivano push ed email. |
 | ~~**Prenota dal garage**~~: pulsante "Prenota" nella carta dell'officina del veicolo, con targa già scelta | ✅ | Fatto il 2026-10-13 (sessione 15); nel report la carta resta senza "Prenota". |
-| **Officine vicine** (distanza dalla posizione del telefono) | 🟠 | Le officine hanno già latitudine e longitudine; PLAN P14. |
+| ~~**Officine vicine** (distanza dalla posizione del telefono)~~ | ✅ | Fatto il 2026-10-23 (T019): «Vicino a me» ordina per distanza; PLAN P14. |
 | **Invito dalla richiesta** quando la targa è già di un cliente non collegato | 🟢 | Oggi la richiesta apre la scheda del veicolo; si potrebbe proporre l'invito già scritto con l'email dell'account di chi ha prenotato (sessione 15). |
 | **Capienza e slot automatici** (ponti/operatori, appuntamenti già presi) | 🟠 | P14 fase successiva; oggi l'officina decide l'ora a mano. Dal 2026-10-23 (T020) c'è la capienza per fascia nel database (interfaccia: T021); restano gli slot orari. |
 | **Collegare la prenotazione al cliente dell'officina** (crea il cliente e il veicolo dalla richiesta, o invita) | 🟢 | Oggi il dettaglio apre la scheda del veicolo se la targa è già registrata. |
