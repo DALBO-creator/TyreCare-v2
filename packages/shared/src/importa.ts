@@ -446,3 +446,78 @@ export function modelloCsv(): string {
     'C0002;;;Trasporti Bianchi Srl;011 7654321;;EF456GH;Iveco;Daily;2021;ZCFC135A005123456',
   ].join('\r\n');
 }
+
+/** Cliente come serve all'esportazione (colonne di `clienti_officina`). */
+export interface ClienteDaEsportare {
+  id: string;
+  codice_gestionale: string | null;
+  nome: string;
+  cognome: string;
+  ragione_sociale: string | null;
+  telefono: string | null;
+  email: string | null;
+}
+
+/** Veicolo come serve all'esportazione (colonne di `veicoli`). */
+export interface VeicoloDaEsportare {
+  cliente_officina_id: string | null;
+  targa: string;
+  marca: string;
+  modello: string;
+  anno: number | null;
+  telaio: string | null;
+}
+
+/** "Verdi Giulia" oppure la ragione sociale (come `nominativo()` dell'app web). */
+function nominativoCliente(c: ClienteDaEsportare | null): string {
+  if (!c) return '';
+  return c.ragione_sociale ?? `${c.cognome} ${c.nome}`.trim();
+}
+
+/**
+ * Tutti i clienti e i veicoli nel formato del modello (stesse colonne, stesso ordine), pronti per
+ * essere reimportati. Una riga per veicolo con i dati del suo cliente; un veicolo senza cliente ha le
+ * colonne del cliente vuote; un cliente senza veicoli ha una riga con le colonne del veicolo vuote.
+ * Ordine: per nominativo del cliente (senza cliente in fondo), poi per targa.
+ */
+export function csvClientiVeicoli(
+  clienti: readonly ClienteDaEsportare[],
+  veicoli: readonly VeicoloDaEsportare[],
+): string {
+  const perId = new Map(clienti.map((c) => [c.id, c]));
+  const conVeicoli = new Set<string>();
+  const voci: { cliente: ClienteDaEsportare | null; veicolo: VeicoloDaEsportare | null }[] = [];
+  for (const v of veicoli) {
+    const cliente = (v.cliente_officina_id && perId.get(v.cliente_officina_id)) || null;
+    if (cliente) conVeicoli.add(cliente.id);
+    voci.push({ cliente, veicolo: v });
+  }
+  for (const c of clienti) if (!conVeicoli.has(c.id)) voci.push({ cliente: c, veicolo: null });
+
+  const nome = (cliente: ClienteDaEsportare | null) => nominativoCliente(cliente);
+  voci.sort((a, b) => {
+    const na = nome(a.cliente);
+    const nb = nome(b.cliente);
+    if (na === '' && nb !== '') return 1;
+    if (nb === '' && na !== '') return -1;
+    return (
+      na.localeCompare(nb, 'it') ||
+      (a.veicolo?.targa ?? '').localeCompare(b.veicolo?.targa ?? '', 'it')
+    );
+  });
+
+  const righe = voci.map(({ cliente: c, veicolo: v }) => [
+    c?.codice_gestionale ?? '',
+    c?.nome ?? '',
+    c?.cognome ?? '',
+    c?.ragione_sociale ?? '',
+    c?.telefono ?? '',
+    c?.email ?? '',
+    v?.targa ?? '',
+    v?.marca ?? '',
+    v?.modello ?? '',
+    v?.anno == null ? '' : String(v.anno),
+    v?.telaio ?? '',
+  ]);
+  return scriviCsv([[...COLONNE_IMPORT], ...righe]);
+}
