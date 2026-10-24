@@ -67,8 +67,10 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
   (`[auth.mfa.totp]` con `enroll_enabled = false` in `supabase/config.toml`).
 - [ ] **Regole sulle password più robuste:** oggi solo lunghezza minima 8 (`password_requirements = ""`) e
   `secure_password_change = false` (cambio password senza riautenticazione recente).
-- [ ] **Intestazioni di sicurezza del sito** (Content-Security-Policy, X-Frame-Options o
-  `frame-ancestors`, Referrer-Policy, HSTS esplicito): `apps/web/vercel.json` imposta solo la cache.
+- [~] **Intestazioni di sicurezza del sito:** in parte fatto (T036): intestazioni attive (nosniff,
+  X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS senza `includeSubDomains`); la CSP è in sola
+  osservazione (`Content-Security-Policy-Report-Only`) e va resa obbligatoria dopo aver controllato la
+  console del sito pubblicato (`apps/web/vercel.json`).
 - [ ] **Protezione dagli abusi** su registrazione e accesso (captcha): non configurata; oggi ci sono solo i
   limiti di frequenza di Supabase.
 - [ ] **Regioni dei fornitori:** Vercel (nessuna regione impostata in `vercel.json`), Resend e la funzione
