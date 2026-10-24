@@ -3,7 +3,9 @@
 Una pagina per partire da solo. Fai i passi nell'ordine; ognuno richiede pochi minuti.
 
 1. **Accedi e aggiungi l'app alla schermata Home.** Apri `https://tyre-care-v2.vercel.app` dal telefono ed
-   entra con il tuo account. Poi aggiungi TyreCare alla schermata Home:
+   entra con l'email e la password provvisoria che ti ha dato Davide, poi cambia la password da
+   **Profilo → "Cambia password"** e completa nome e cognome in **Profilo → "Modifica i tuoi dati"**. Poi
+   aggiungi TyreCare alla schermata Home:
    - **Android (Chrome):** menu ⋮ → "Installa app" (o "Aggiungi a schermata Home").
    - **iPhone (Safari):** tasto Condividi → "Aggiungi alla schermata Home". Su iPhone **le notifiche
      funzionano solo così**: aprendo l'app dall'icona sulla Home, non da Safari.
