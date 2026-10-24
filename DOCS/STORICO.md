@@ -4,6 +4,28 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-24 — ciclo 20261024-09 — T038 T043 T042 T029 T028 T036
+
+**Fatto**
+
+- T038: funzione `elimina_account()` (security definer) per cancellare il proprio account dall'app; 17 test
+  pgTAP.
+- T043: funzione `importa_controlli`, 4 colonne in `import_log` e tipo CONTROLLI per l'import dei controlli
+  dal CSV; 20 test pgTAP.
+- T042: elenchi dell'officina (veicoli, clienti, elenco clienti) letti a pagine da 1000 con `leggiTutte`:
+  oltre 1000 righe non spariscono più.
+- T029: nell'anteprima dell'import il pulsante "Scarica le righe con errori" scarica
+  `tyrecare-righe-con-errori.csv` (colonna `errore`), reimportabile dopo la correzione.
+- T028: nuova pagina `DOCS/pilota/crea-officina.md` (6 passi per Davide: account, officina, consegna
+  credenziali, attivazione dopo il DPA, ritiro, password dimenticata); passo 1 della guida di avvio
+  aggiornato.
+- T036: `apps/web/vercel.json` invia le intestazioni di sicurezza; test Vitest `vercel.test.ts`.
+
+**Da sapere**
+
+- Per ordine del supervisore (T038): in `DOCS/legale/README.md` c'è la domanda 14 per il consulente sulla
+  sparizione delle prenotazioni passate insieme all'account.
+
 ### Sessione agenti — 2026-10-24 — ciclo 20261024-03 — T025, T026, T027, T031, T034, T037
 
 **Fatto**

@@ -7,7 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261024-03 (T025, T026, T027, T031, T034, T037).
+> 20261024-09 (T038 account eliminabile, T043 import dei controlli, T042 elenchi oltre 1000 righe, T029
+> righe con errori in CSV, T028 guida per creare l'officina, T036 intestazioni di sicurezza).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
@@ -19,8 +20,8 @@
   di violazione e di cancellazione) e farle rivedere a un consulente con le domande di
   `DOCS/legale/README.md`; solo dopo si fanno le pagine nell'app e si firma il DPA con LA SANTI GOMME
 - [ ] P17: decidere quali misure di "Da fare prima del lancio" (`DOCS/legale/README.md`) fare prima del
-  pilota (registro accessi del personale, esportazione dati, cancellazione account, 2FA, intestazioni di
-  sicurezza, procedura per le violazioni, copie di sicurezza)
+  pilota (registro accessi del personale, esportazione dati, 2FA, copie di sicurezza; fatte: cancellazione
+  account T038, intestazioni di sicurezza T036, bozza della procedura per le violazioni T037)
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, pulizia delle
   notifiche vecchie, preferenze, annullare un import
 - [ ] P23: quale **dominio di TyreCare** usare per le email e quando configurarne i DNS su Resend
@@ -28,8 +29,8 @@
 
 **1 — Lavoro di Claude (da scegliere con il titolare)**
 
-- [ ] P8: **import dei controlli** dal CSV (una riga per pneumatico misurato) — prima decidere come
-  montare gli pneumatici storici (vedi `IMPLEMENTAZIONI.md`)
+- [~] P8: **import dei controlli** dal CSV — database fatto (T043, 2026-10-24, regole in `NOTES.md`);
+  restano la schermata nell'app (anteprima, caricamento) e i test e2e
 - [x] P22: **import con mappatura delle colonne** — fatta (T008–T012, 2026-10-20/21): logica in `importa.ts`,
   lettura di .xls/.xlsx/.ods, schermata "Associa le colonne", associazioni salvate per officina
 - [ ] Fase 5: **email di riserva** — dopo l'email dal dominio di TyreCare (P23, vedi "Rimandati")

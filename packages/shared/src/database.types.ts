@@ -227,11 +227,15 @@ export type Database = {
         Row: {
           clienti_aggiornati: number;
           clienti_nuovi: number;
+          controlli_gia_presenti: number;
+          controlli_nuovi: number;
           created_at: string;
           eseguito_da: string | null;
           id: string;
+          misure_nuove: number;
           nome_file: string;
           officina_id: string;
+          pneumatici_nuovi: number;
           righe_importate: number;
           righe_scartate: number;
           tipo: string;
@@ -241,11 +245,15 @@ export type Database = {
         Insert: {
           clienti_aggiornati?: number;
           clienti_nuovi?: number;
+          controlli_gia_presenti?: number;
+          controlli_nuovi?: number;
           created_at?: string;
           eseguito_da?: string | null;
           id?: string;
+          misure_nuove?: number;
           nome_file?: string;
           officina_id: string;
+          pneumatici_nuovi?: number;
           righe_importate: number;
           righe_scartate?: number;
           tipo?: string;
@@ -255,11 +263,15 @@ export type Database = {
         Update: {
           clienti_aggiornati?: number;
           clienti_nuovi?: number;
+          controlli_gia_presenti?: number;
+          controlli_nuovi?: number;
           created_at?: string;
           eseguito_da?: string | null;
           id?: string;
+          misure_nuove?: number;
           nome_file?: string;
           officina_id?: string;
+          pneumatici_nuovi?: number;
           righe_importate?: number;
           righe_scartate?: number;
           tipo?: string;
@@ -938,6 +950,7 @@ export type Database = {
       };
       crea_promemoria_appuntamenti: { Args: { p_adesso?: string }; Returns: number };
       crea_promemoria_pneumatici: { Args: { p_adesso?: string }; Returns: number };
+      elimina_account: { Args: Record<PropertyKey, never>; Returns: undefined };
       fasce_aperte: {
         Args: { p_giorno: string; p_orari: Json };
         Returns: Database['public']['Enums']['fascia_oraria'][];
@@ -951,6 +964,16 @@ export type Database = {
       };
       giorni_prenotabili: { Args: Record<PropertyKey, never>; Returns: number };
       importa_clienti_veicoli: {
+        Args: {
+          p_nome_file?: string;
+          p_officina_id: string;
+          p_righe: Json;
+          p_righe_scartate?: number;
+          p_simula?: boolean;
+        };
+        Returns: Json;
+      };
+      importa_controlli: {
         Args: {
           p_nome_file?: string;
           p_officina_id: string;

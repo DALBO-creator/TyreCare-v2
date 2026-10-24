@@ -18,6 +18,7 @@
 | [`IMPLEMENTAZIONI.md`](IMPLEMENTAZIONI.md) | Idee e implementazioni future | Man mano che emergono |
 | [`legale/`](legale/README.md) | Bozze di informativa privacy, termini di servizio, DPA per le officine e registro dei trattamenti; domande per il consulente | Dopo la revisione del consulente |
 | [`pilota/guida-avvio.md`](pilota/guida-avvio.md) | Guida di una pagina per l'officina pilota (LA SANTI GOMME): dall'accesso alle notifiche | Pilota (Fase 6) |
+| [`pilota/crea-officina.md`](pilota/crea-officina.md) | Passi per Davide: creare l'account e l'officina del titolare, attivarla dopo il DPA, password dimenticata | Pilota (Fase 6) |
 | [`LICENSE.md`](LICENSE.md) | Licenza proprietaria | Raramente |
 | [`first-prompt.md`](first-prompt.md) | Prompt originale del progetto | Mai (archivio) |
 
@@ -467,7 +468,7 @@ documento dedicato.
 | 3 — Cliente | Garage cliente, stato salute pneumatico, storico e report controllo | 🟨 iniziata il 2026-10-09: garage con i veicoli uniti per targa tra le officine, scheda in sola lettura con cruscotto, avviso, storico e officine; il cliente vede anche le officine non attive di cui è cliente. Il 2026-10-09 (sessione 11) report del singolo controllo con stampa/PDF (link pubblico rimandato) e stato di salute del singolo pneumatico (grafico, consumo, stima, età dal DOT). Il 2026-10-10 (sessione 12) **rivendicazione dei veicoli con l'invito via email dall'officina** (decisione del titolare). Resta il link pubblico del report, rimandato |
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | 🟨 iniziata il 2026-10-12 (sessione 14): catalogo dei servizi (titolare), elenco e scheda delle officine attive, richiesta con giorno e fascia, conferma con l'ora / proposta di un altro orario / rifiuto, annullamento del cliente, completato / non presentato; poi calendario dell'officina, editor degli orari con chiusure straordinarie; "Prenota" dal garage con il veicolo già scelto e cliente/veicolo creati dalla richiesta (sessione 15). Il 2026-10-23 dati e posizione dell'officina, «Vicino a me» (distanza), capienza per fascia (T018–T021). Restano: slot automatici |
 | 5 — Notifiche | Web Push, reminder schedulati, fallback email | 🟨 iniziata il 2026-10-14 (sessione 16): **notifiche nell'app** per i cambi di stato delle prenotazioni (tabella scritta da un trigger, badge in tempo reale, pagina `/notifiche`). Lo stesso giorno **Web Push** (Edge Function `invia-notifica`, pg_net). Il 2026-10-14 (sessione 17) **promemoria del giorno prima** e **promemoria degli pneumatici** (esito del controllo, cambio stagionale; pg_cron). Resta l'email (P21), dal dominio di TyreCare (P23) |
-| 6 — Pilota | 2–3 gommisti reali, feedback, Lighthouse, privacy/legale | 🟨 preparazione: kit del pilota (commenti dall'app, guida di avvio, 2026-10-22), bozze legali da rivedere; funzione per creare l'officina del pilota (T027) |
+| 6 — Pilota | 2–3 gommisti reali, feedback, Lighthouse, privacy/legale | 🟨 preparazione: kit del pilota (commenti dall'app, guida di avvio, 2026-10-22), bozze legali da rivedere; funzione per creare l'officina del pilota (T027) e guida per Davide (T028), cancellazione dell'account nel database (T038), intestazioni di sicurezza del sito (T036) |
 | 7 — Commerciale | Stripe abbonamenti, onboarding officine, intervento su strada | ⬜ |
 
 ## 7. Domande aperte

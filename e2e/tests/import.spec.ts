@@ -231,3 +231,32 @@ test('il titolare salva l’associazione delle colonne e al file successivo va d
   await expect(page.getByRole('heading', { name: 'Associa le colonne' })).toBeFocused();
   await expect(page.getByLabel("Usa un'associazione salvata")).toHaveCount(0);
 });
+
+test('il titolare scarica le righe con errori in un CSV da correggere', async ({ page }) => {
+  const id = Date.now().toString(36).toUpperCase().slice(-6);
+  const csv = Buffer.from(
+    [
+      'Codice;Nome;Cognome;Telefono;Targa;Marca;Modello;Anno',
+      `E${id};Anna;Prova;333 1234567;G${id};Fiat;Panda;2019`,
+      `F${id};Luca;Prova;333 1234567;SBAGLIATA${id};Fiat;500;19`,
+    ].join('\r\n'),
+    'latin1',
+  );
+  const file = { name: `errori-${id}.csv`, mimeType: 'text/csv', buffer: csv };
+
+  await accedi(page, 'titolare@tyrecare.test');
+  await page.goto('/clienti/importa');
+  await page.getByLabel(/File CSV/).setInputFiles(file);
+  await expect(page.getByRole('heading', { name: `Anteprima di «${file.name}»` })).toBeFocused();
+
+  // Nessun import confermato: si scarica soltanto il file con la riga sbagliata
+  const download = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Scarica le righe con errori' }).click();
+  const scaricato = await download;
+  expect(scaricato.suggestedFilename()).toBe('tyrecare-righe-con-errori.csv');
+  const { readFile } = await import('node:fs/promises');
+  const testo = await readFile((await scaricato.path())!, 'utf8');
+  expect(testo).toContain(`SBAGLIATA${id}`);
+  expect(testo).not.toContain(`G${id}`);
+  expect(testo.split('\r\n')[0]).toMatch(/;errore$/);
+});

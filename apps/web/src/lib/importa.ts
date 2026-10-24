@@ -8,6 +8,7 @@ import {
 } from '@tyrecare/shared';
 import { leggiExcel } from './excel';
 import { conRiprova } from './rete';
+import { scaricaCsv } from './scarica';
 import { getSupabase } from './supabase';
 
 // Import di clienti e veicoli dal CSV standard (PLAN P8). Il file lo controlla `controllaImport` di
@@ -149,14 +150,7 @@ export async function eliminaMappatura(id: string): Promise<void> {
   if (error) throw error;
 }
 
-/** Scarica il modello CSV. Il BOM iniziale fa aprire a Excel il file in UTF-8 (accenti corretti). */
+/** Scarica il modello CSV. */
 export function scaricaModello(): void {
-  const url = URL.createObjectURL(
-    new Blob([`\uFEFF${modelloCsv()}\r\n`], { type: 'text/csv;charset=utf-8' }),
-  );
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'tyrecare-clienti-veicoli.csv';
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  scaricaCsv('tyrecare-clienti-veicoli.csv', `${modelloCsv()}\r\n`);
 }

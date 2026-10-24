@@ -2,6 +2,7 @@ import { Download, FileUp } from 'lucide';
 import {
   applicaMappatura,
   controllaTabella,
+  csvRigheConErrori,
   erroriMappatura,
   mappaturaAutomatica,
   MAX_RIGHE_IMPORT,
@@ -24,6 +25,7 @@ import {
   type MappaturaSalvata,
 } from '../lib/importa';
 import { caricaContestoOfficina, eTitolare } from '../lib/officina';
+import { scaricaCsv } from '../lib/scarica';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
@@ -366,6 +368,11 @@ async function mostraAnteprima(
   box.querySelector<HTMLElement>('#tc-anteprima')!.focus();
   cambia();
   box
+    .querySelector('[data-scarica-errori]')
+    ?.addEventListener('click', () =>
+      scaricaCsv('tyrecare-righe-con-errori.csv', csvRigheConErrori(tabella, errori)),
+    );
+  box
     .querySelector<HTMLButtonElement>('[data-importa]')
     ?.addEventListener('click', (e) =>
       importa(e.currentTarget as HTMLButtonElement, box, righe, file.name, scartate, officinaId),
@@ -450,7 +457,10 @@ function elencoErrori(errori: { numero: number; messaggio: string }[], scartate:
             E altri ${errori.length - mostrati.length} errori.
           </p>`
         : ''
-    }`;
+    }
+    <button type="button" class="btn btn-outline-light w-100" data-scarica-errori>
+      ${icona(Download)} Scarica le righe con errori
+    </button>`;
 }
 
 const FORMATO_QUANDO = new Intl.DateTimeFormat('it-IT', {
