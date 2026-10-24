@@ -1590,6 +1590,8 @@ titolare deve già esistere). La funzione crea l'officina `IN_ATTESA`, porta il 
 (un ADMIN resta ADMIN) e inserisce il TITOLARE. Possono chiamarla solo un admin o chi non ha un utente (editor
 SQL). Errori: `ACCOUNT_NON_TROVATO`, `PARTITA_IVA_GIA_PRESENTE`, `42501`. Dopo la firma del DPA:
 `update public.officine set stato_affiliazione = 'ATTIVA' where id = '<id>';`. Provata con 14 test pgTAP.
+I passi completi per Davide sono in `DOCS/pilota/crea-officina.md`; la password dimenticata si reimposta
+con `update auth.users … crypt(…)` nell'editor SQL, finché non c'è il dominio.
 
 ---
 
@@ -1635,3 +1637,83 @@ salvataggio si va a `/cliente/invito?id=`. Vale per `?da=clienti` e per il perco
 La casella `invita` è nel solo modulo di `mostraNuovoCliente`, non in `campiCliente` (condiviso con la
 modifica). `ClienteSchema` non cambia: zod scarta il campo, e il gestore lo legge dal form prima di
 `creaCliente`.
+
+---
+
+## Eliminare l'account (database, T038)
+
+**File coinvolti:** `supabase/migrations/` (nuova migrazione `elimina_account`), `supabase/tests/database/`
+(test pgTAP, 17 test), `packages/shared/src/database.types.ts`.
+**Come funziona:** `elimina_account()` (security definer) cancella l'account di chi la chiama. Rifiuta gli
+ADMIN (`ACCOUNT_AMMINISTRATORE`), i titolari di un'officina (`TITOLARE_DI_OFFICINA`) e chi ha prenotazioni
+RICHIESTA, PROPOSTA o CONFERMATA (`PRENOTAZIONI_IN_CORSO`); altrimenti fa `delete from auth.users`.
+Con l'account spariscono, a cascata, profilo, `officina_utenti`, **le prenotazioni fatte come cliente
+(anche quelle passate)**, notifiche, iscrizioni push e commenti. Restano all'officina, scollegati
+(`set null`): `clienti_officina`, veicoli, controlli, inviti e import. Per ora esiste solo la funzione nel
+database, senza pulsante nell'app. La sparizione delle prenotazioni passate è una domanda per il consulente
+(`DOCS/legale/README.md`, domanda 14).
+
+---
+
+## Import dei controlli (database, T043)
+
+**File coinvolti:** `supabase/migrations/` (nuova migrazione `importa_controlli`: funzione, 4 colonne di
+`import_log`, tipo CONTROLLI), `supabase/tests/database/` (20 test pgTAP), `database.types.ts`.
+**Come funziona:** `importa_controlli` riceve le righe del CSV (una per pneumatico misurato) e crea
+controlli e misure. Simula con TCSIM e non manda notifiche (origine IMPORT).
+
+### Codice complesso
+Le sei regole con cui la funzione decide cosa fare:
+
+1. Le righe sono ordinate per data, documento e posizione prima di essere elaborate, così un file in ordine
+   non cronologico dà lo stesso risultato.
+2. Il veicolo si trova per targa; se manca, la targa finisce in `targhe_non_trovate`.
+3. Se il documento esiste già, le sue righe sono saltate e contate in `controlli_gia_presenti`.
+4. "Stessa gomma" = misura + marca + DOT confrontati con `lower(btrim(…))`; una cella vuota vale uguale.
+5. Pneumatico della posizione alla data d: se la stessa gomma è già montata e copre d, si usa quella; se
+   nello storico c'è un pneumatico con `smontato_il`, il montaggio successivo è quello giusto; se c'è uno
+   smontaggio con nuovo montaggio in d, si usa il nuovo; altrimenti la riga è saltata.
+6. Stagione: quella del file, poi quella dell'ultima misura della posizione, poi dal mese (novembre–marzo
+   INVERNALE, altrimenti ESTIVA).
+
+---
+
+## Lettura a pagine (oltre 1000 righe) (T042)
+
+**File coinvolti:** `apps/web/src/lib/a-pagine.ts`, `caricaVeicoli`, `caricaClienti`, `caricaElencoClienti`.
+**Come funziona:** PostgREST restituisce al massimo 1000 righe per richiesta (`max_rows`). `leggiTutte(pagina,
+dimensione = 1000)` chiama `.range(da, a)` pagina dopo pagina finché una pagina torna più corta della
+dimensione e lancia il primo errore incontrato. Gli elenchi dell'officina (veicoli, clienti, elenco clienti)
+la usano, quindi oltre 1000 righe non spariscono più.
+
+### Codice complesso
+Per non perdere né ripetere righe tra una pagina e l'altra serve un `.order()` stabile prima del range:
+`targa` per i veicoli, `id` per i clienti.
+
+---
+
+## Import: righe con errori in CSV (T029)
+
+**File coinvolti:** `packages/shared/src/importa.ts` (`scriviCsv`, `csvRigheConErrori`),
+`apps/web/src/lib/scarica.ts` (`scaricaCsv`, `scaricaJson`), `apps/web/src/pagine/importa.ts`.
+**Come funziona:** nell'anteprima dell'import il pulsante "Scarica le righe con errori" scarica
+`tyrecare-righe-con-errori.csv`. Il file ha le colonne originali più `errore` (messaggi uniti da " / ") e si
+può correggere e reimportare. `scaricaModello` usa ora `scaricaCsv`.
+
+### Codice complesso
+`scriviCsv` scrive con `;` e `\r\n` e mette le virgolette solo quando servono. `scaricaCsv` antepone il BOM
+UTF-8, così Excel legge bene le lettere accentate.
+
+---
+
+## Sito — intestazioni di sicurezza (T036)
+
+**File coinvolti:** `apps/web/vercel.json`, `apps/web/src/vercel.test.ts` (Vitest).
+**Come funziona:** la regola `/(.*)` aggiunge `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`,
+`Referrer-Policy: strict-origin-when-cross-origin` e `Permissions-Policy` (camera, microfono e pagamenti
+vietati; geolocalizzazione solo `self`, per "Vicino a me"). HSTS dura 2 anni, senza `includeSubDomains` né
+`preload` perché il dominio non è ancora scelto (P23). Le regole di cache restano.
+
+### Codice complesso
+La CSP è `Content-Security-Policy-Report-Only`: il browser segnala le violazioni in console senza bloccare
+nulla. Si rende obbligatoria dopo averle controllate sul sito pubblicato.

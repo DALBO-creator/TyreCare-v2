@@ -58,8 +58,9 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
   cosa offre il piano scelto (copie giornaliere, ripristino a un momento preciso) e scriverlo nel DPA §9.
 - [ ] **Esportazione dei dati** in formato leggibile da computer: per la restituzione all'officina a fine
   contratto (DPA §13) e per la portabilità dei clienti. Oggi non esiste: solo a mano su richiesta.
-- [ ] **Cancellazione dell'account** dall'app e **cancellazione automatica** dei dati scaduti (notifiche,
-  prenotazioni passate) secondo i tempi di conservazione che si decideranno: oggi nulla si cancella da sé.
+- [~] **Cancellazione dell'account** dall'app: fatta (T038, `elimina_account()`; domanda 14). Manca la
+  **cancellazione automatica** dei dati scaduti (notifiche, prenotazioni passate) secondo i tempi di
+  conservazione che si decideranno: oggi nulla si cancella da sé.
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
   quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
   rivedere; restano da completare i contatti e il termine del DPA §12.1.
@@ -122,3 +123,7 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 13. **Procedura per le violazioni** (`procedura-violazioni.md`): i passi tecnici e i tempi di avviso
     (officine senza ingiustificato ritardo e entro il termine del DPA; Garante entro 72 ore per i dati di cui
     TyreCare è titolare) sono adeguati? Il registro delle violazioni ha i campi giusti?
+14. **Prenotazioni passate e cancellazione dell'account** (T038): chi elimina il proprio account dall'app
+    perde anche le prenotazioni passate fatte come cliente (cancellazione a cascata), mentre clienti,
+    veicoli e controlli restano all'officina, scollegati dall'account. La sparizione delle prenotazioni
+    passate è compatibile con gli obblighi di conservazione (dell'officina e di TyreCare)?
