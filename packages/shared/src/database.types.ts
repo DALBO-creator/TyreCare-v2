@@ -1116,6 +1116,15 @@ export type Database = {
       };
       report_pubblico: { Args: { p_codice: string }; Returns: Json };
       revoca_link_report: { Args: { p_controllo_id: string }; Returns: undefined };
+      richiedi_affiliazione: {
+        Args: {
+          p_citta: string;
+          p_partita_iva: string;
+          p_ragione_sociale: string;
+          p_telefono?: string;
+        };
+        Returns: string;
+      };
       richiedi_prenotazione: {
         Args: {
           p_fascia: Database['public']['Enums']['fascia_oraria'];
