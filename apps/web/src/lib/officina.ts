@@ -447,6 +447,25 @@ export async function modificaControllo(id: string, dati: NuovoControllo): Promi
   if (error) throw error;
 }
 
+const ERRORI_UNIONE: Record<string, string> = {
+  ACCOUNT_DIVERSI:
+    "I due clienti sono collegati ad account diversi dell'app: non si possono unire.",
+  CLIENTI_NON_VALIDI: 'Uno dei due clienti non esiste più: ricarica la pagina.',
+};
+
+/**
+ * Unisce due anagrafiche (solo TITOLARE): `da` sparisce e i suoi veicoli passano a `in_`.
+ * Nessuna riprova automatica: se l'unione fosse già riuscita, la seconda chiamata darebbe
+ * CLIENTI_NON_VALIDI.
+ */
+export async function unisciClienti(da: string, in_: string): Promise<void> {
+  const { error } = await getSupabase().rpc('unisci_clienti', { p_da: da, p_in: in_ });
+  if (error) {
+    const testo = ERRORI_UNIONE[error.message];
+    throw testo ? new ErroreModulo(testo, undefined, error.message) : error;
+  }
+}
+
 /** Elimina un controllo con le sue misure (TITOLARE e OPERATORE). */
 export const eliminaControllo = (id: string) =>
   elimina('controlli', id, 'Non hai i permessi per eliminare questo controllo.');

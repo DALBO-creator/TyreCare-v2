@@ -83,13 +83,29 @@ export async function mostraClienti(app: HTMLElement): Promise<void> {
 }
 
 /** Testo in cui cercare: nome, contatti e targhe (senza spazi, come le salva il database). */
-const testoRicerca = (c: ClienteConVeicoli): string =>
+export const testoRicerca = (c: ClienteConVeicoli): string =>
   [nominativo(c), c.nome, c.cognome, c.email ?? '', ...c.veicoli.map((v) => v.targa)]
     .join(' ')
     .toLowerCase();
 
 /** Solo le cifre del telefono: "333 123 4567" si trova anche scrivendo "3331234567". */
-const cifre = (testo: string) => testo.replace(/\D/g, '');
+export const cifre = (testo: string) => testo.replace(/\D/g, '');
+
+/** Clienti che corrispondono a `testo` (nome, contatti, targa, telefono per cifre); vuoto = tutti. */
+export function filtraClienti(clienti: ClienteConVeicoli[], testo: string): ClienteConVeicoli[] {
+  const t = testo.trim().toLowerCase();
+  if (!t) return clienti;
+  const targa = normalizzaTarga(t.toUpperCase()).toLowerCase();
+  const numero = cifre(t);
+  return clienti.filter((c) => {
+    const dove = testoRicerca(c);
+    return (
+      dove.includes(t) ||
+      (targa !== '' && dove.includes(targa)) ||
+      (numero.length >= 3 && cifre(c.telefono ?? '').includes(numero))
+    );
+  });
+}
 
 function collegaElenco(app: HTMLElement, clienti: ClienteConVeicoli[]): void {
   const elenco = app.querySelector<HTMLElement>('[data-elenco]')!;
@@ -98,17 +114,7 @@ function collegaElenco(app: HTMLElement, clienti: ClienteConVeicoli[]): void {
 
   const disegna = () => {
     const testo = cerca.value.trim().toLowerCase();
-    const targa = normalizzaTarga(testo.toUpperCase()).toLowerCase();
-    const numero = cifre(testo);
-    const trovati = clienti.filter((c) => {
-      if (!testo) return true;
-      const dove = testoRicerca(c);
-      return (
-        dove.includes(testo) ||
-        (targa !== '' && dove.includes(targa)) ||
-        (numero.length >= 3 && cifre(c.telefono ?? '').includes(numero))
-      );
-    });
+    const trovati = filtraClienti(clienti, testo);
 
     conteggio.textContent =
       trovati.length === 1 ? '1 cliente trovato' : `${trovati.length} clienti trovati`;
