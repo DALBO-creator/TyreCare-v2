@@ -19,6 +19,7 @@ import {
   importaClientiVeicoli,
   leggiTabella,
   salvaMappatura,
+  scaricaClientiVeicoli,
   scaricaModello,
   type ConteggiImport,
   type ImportPassato,
@@ -113,9 +114,35 @@ export async function mostraImporta(app: HTMLElement): Promise<void> {
       <div data-anteprima aria-live="polite"></div>
 
       ${registro(passati)}
+
+      <section aria-labelledby="tc-esporta">
+        <h2 id="tc-esporta" class="tc-etichetta">Esporta i dati</h2>
+        <p class="text-body-secondary">
+          Scarica tutti i clienti e i veicoli nel formato del modello: si apre con Excel e si può reimportare.
+        </p>
+        <div data-errore-esporta aria-live="polite"></div>
+        <button type="button" class="btn btn-outline-light w-100" data-esporta>
+          ${icona(Download)} Scarica clienti e veicoli
+        </button>
+      </section>
     </div>`);
 
   app.querySelector('[data-modello]')!.addEventListener('click', scaricaModello);
+  const esporta = app.querySelector<HTMLButtonElement>('[data-esporta]')!;
+  const erroreEsporta = app.querySelector<HTMLElement>('[data-errore-esporta]')!;
+  esporta.addEventListener('click', async () => {
+    erroreEsporta.innerHTML = '';
+    esporta.disabled = true;
+    esporta.textContent = 'Preparazione…';
+    try {
+      await scaricaClientiVeicoli(officinaId);
+    } catch (e) {
+      erroreEsporta.innerHTML = avvisoErrore(messaggioErrore(e));
+    } finally {
+      esporta.disabled = false;
+      esporta.innerHTML = `${icona(Download)} Scarica clienti e veicoli`;
+    }
+  });
   const input = app.querySelector<HTMLInputElement>('#tc-file')!;
   const anteprima = app.querySelector<HTMLElement>('[data-anteprima]')!;
   // Scegliendo un altro file mentre si carica l'anteprima, quella vecchia non va più mostrata

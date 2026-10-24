@@ -3,6 +3,9 @@ import {
   applicaMappatura,
   controllaImport,
   controllaTabella,
+  csvClientiVeicoli,
+  type ClienteDaEsportare,
+  type VeicoloDaEsportare,
   csvRigheConErrori,
   erroriMappatura,
   leggiCsv,
@@ -304,5 +307,124 @@ describe('csvRigheConErrori', () => {
 
   it("senza errori restituisce solo l'intestazione", () => {
     expect(csvRigheConErrori(t, [])).toBe('targa;marca;anno;errore');
+  });
+});
+
+describe('csvClientiVeicoli', () => {
+  const cliente = (id: string, altro: Partial<ClienteDaEsportare> = {}): ClienteDaEsportare => ({
+    id,
+    codice_gestionale: `C-${id}`,
+    nome: 'Mario',
+    cognome: 'Rossi',
+    ragione_sociale: null,
+    telefono: '333 1234567',
+    email: 'mario@esempio.it',
+    ...altro,
+  });
+  const veicolo = (
+    cliente_officina_id: string | null,
+    targa: string,
+    altro: Partial<VeicoloDaEsportare> = {},
+  ): VeicoloDaEsportare => ({
+    cliente_officina_id,
+    targa,
+    marca: 'Fiat',
+    modello: 'Panda',
+    anno: 2019,
+    telaio: null,
+    ...altro,
+  });
+  const righeDi = (testo: string) => leggiCsv(testo).map((r) => r.celle);
+
+  it("l'intestazione è quella del modello", () => {
+    expect(csvClientiVeicoli([], []).split('\r\n')[0]).toBe(modelloCsv().split('\r\n')[0]);
+  });
+
+  it('andata e ritorno: il file esportato si reimporta senza errori', () => {
+    const f = csvClientiVeicoli(
+      [
+        cliente('1'),
+        cliente('2', {
+          codice_gestionale: 'C2',
+          nome: '',
+          cognome: '',
+          ragione_sociale: 'Trasporti; "Bianchi" Srl',
+          email: null,
+        }),
+      ],
+      [
+        veicolo('1', 'AB123CD'),
+        veicolo('1', 'EF456GH', { anno: null, telaio: 'ZCFC135A005123456' }),
+        veicolo('2', 'IJ789KL', { marca: 'Iveco', modello: 'Daily' }),
+      ],
+    );
+    const t = tabellaDaCsv(f)!;
+    const esito = controllaTabella(t, mappaturaAutomatica(t.intestazioni));
+    expect(esito.ok).toBe(true);
+    if (!esito.ok) return;
+    expect(esito.errori).toEqual([]);
+    expect(esito.righe).toHaveLength(3);
+    expect(esito.righe.map((r) => r.veicolo?.targa)).toEqual(['AB123CD', 'EF456GH', 'IJ789KL']);
+  });
+
+  it('un cliente senza veicoli ha una riga con le colonne del veicolo vuote', () => {
+    const righe = righeDi(csvClientiVeicoli([cliente('1')], []));
+    expect(righe[1]).toEqual([
+      'C-1',
+      'Mario',
+      'Rossi',
+      '',
+      '333 1234567',
+      'mario@esempio.it',
+      '',
+      '',
+      '',
+      '',
+      '',
+    ]);
+  });
+
+  it('un veicolo senza cliente ha le colonne del cliente vuote', () => {
+    const righe = righeDi(csvClientiVeicoli([], [veicolo(null, 'AB123CD')]));
+    expect(righe[1]).toEqual(['', '', '', '', '', '', 'AB123CD', 'Fiat', 'Panda', '2019', '']);
+  });
+
+  it("l'anno nullo diventa una cella vuota", () => {
+    const righe = righeDi(
+      csvClientiVeicoli([cliente('1')], [veicolo('1', 'AB123CD', { anno: null })]),
+    );
+    expect(righe[1]![9]).toBe('');
+  });
+
+  it('ordina per nominativo e targa, con i veicoli senza cliente in fondo', () => {
+    const righe = righeDi(
+      csvClientiVeicoli(
+        [
+          cliente('1', { cognome: 'Verdi', nome: 'Anna' }),
+          cliente('2', { cognome: 'Èsposito', nome: 'Carlo' }),
+          cliente('3', { cognome: 'Bianchi', nome: 'Luca' }),
+        ],
+        [
+          veicolo(null, 'AA000AA'),
+          veicolo('1', 'ZZ999ZZ'),
+          veicolo('1', 'BB111BB'),
+          veicolo('2', 'CC222CC'),
+        ],
+      ),
+    );
+    expect(righe.slice(1).map((r) => r[6])).toEqual([
+      '',
+      'CC222CC',
+      'BB111BB',
+      'ZZ999ZZ',
+      'AA000AA',
+    ]);
+  });
+
+  it('punto e virgola, virgolette e a capo nei campi restano integri', () => {
+    const c = cliente('1', { ragione_sociale: 'A; "B"\nC', nome: '', cognome: '' });
+    const righe = righeDi(csvClientiVeicoli([c], [veicolo('1', 'AB123CD', { modello: 'Pa;nda' })]));
+    expect(righe[1]![3]).toBe('A; "B"\nC');
+    expect(righe[1]![8]).toBe('Pa;nda');
   });
 });
