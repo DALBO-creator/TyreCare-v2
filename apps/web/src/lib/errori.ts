@@ -6,6 +6,7 @@ export class ErroreModulo extends Error {
   constructor(
     messaggio: string,
     readonly campo?: string,
+    readonly codice?: string,
   ) {
     super(messaggio);
     this.name = 'ErroreModulo';
