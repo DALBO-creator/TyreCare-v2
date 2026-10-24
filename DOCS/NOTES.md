@@ -1612,6 +1612,23 @@ rifiuterebbero finché esistono due righe con lo stesso valore. Le altre chiavi 
 
 ---
 
+## Unisci con un altro cliente (T032)
+
+**File coinvolti:** `apps/web/src/pagine/unisci-cliente.ts` (nuovo, rotta `/cliente/unisci`),
+`apps/web/src/pagine/clienti.ts` (`filtraClienti`), la scheda cliente, `unisciClienti()` nel livello dati.
+**Come funziona:** solo il titolare (`eTitolare`) vede il link nella scheda cliente, che porta a
+`/cliente/unisci?id=<attuale>`. La pagina elenca gli altri clienti dell'officina filtrati con `filtraClienti`;
+dopo la scelta `chiediConferma` e poi `unisciClienti(scelto, attuale)` chiama la rpc `unisci_clienti` (T031).
+A unione riuscita `vaiConConferma` mostra "Clienti uniti.". `ACCOUNT_DIVERSI` e `CLIENTI_NON_VALIDI` sono
+`ErroreModulo` con messaggio per l'utente.
+
+### Codice complesso
+`filtraClienti` è la ricerca dell'elenco clienti estratta e esportata da `pagine/clienti.ts`, insieme a
+`testoRicerca` e `cifre`: le due pagine usano le stesse regole (4 test). `unisciClienti` non usa `conRiprova`:
+una riprova dopo un'unione già riuscita darebbe `CLIENTI_NON_VALIDI`.
+
+---
+
 ## Prenota: fascia riempita durante la compilazione (T025)
 
 **File coinvolti:** `apps/web/src/lib/prenotazioni.ts`, `apps/web/src/pagine/officine.ts` (`mostraPrenota`),
@@ -1703,6 +1720,25 @@ può correggere e reimportare. `scaricaModello` usa ora `scaricaCsv`.
 ### Codice complesso
 `scriviCsv` scrive con `;` e `\r\n` e mette le virgolette solo quando servono. `scaricaCsv` antepone il BOM
 UTF-8, così Excel legge bene le lettere accentate.
+
+---
+
+## Esportazione di clienti e veicoli (CSV) (T030)
+
+**File coinvolti:** `packages/shared/src/importa.ts` (`csvClientiVeicoli`), `apps/web/src/pagine/importa.ts`,
+`apps/web/src/lib/scarica.ts`, test unitari in shared ed e2e `esporta.spec.ts`.
+**Come funziona:** in fondo a `/clienti/importa` la sezione "Esporta i dati" scarica un CSV con clienti e
+veicoli dell'officina nelle stesse colonne del modello di import, quindi il file si reimporta senza
+modifiche. Il pulsante resta disabilitato con "Preparazione…" finché i dati non sono letti.
+
+### Codice complesso
+`csvClientiVeicoli` usa `scriviCsv` e `COLONNE_IMPORT`. Una riga per veicolo con i dati del cliente; i veicoli
+senza cliente hanno le colonne cliente vuote e vanno in fondo; i clienti senza veicoli hanno le colonne
+veicolo vuote. Ordine per nominativo (`localeCompare('it')`), poi per targa. Un cliente senza codice e senza
+veicoli esce senza chiavi e quindi non si reimporta.
+`caricaPerEsportazione` legge `clienti_officina` e `veicoli` con `leggiTutte` (`.eq('officina_id')`,
+`.order('id')`, `.range`), così oltre 1000 righe non si perdono. `scaricaCsv` antepone il BOM e il file
+finisce con `\r\n`.
 
 ---
 

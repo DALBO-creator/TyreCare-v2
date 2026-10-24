@@ -56,9 +56,11 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
   servizio o la console di Supabase legge tutto senza traccia nell'app (DPA §8; domanda 9).
 - [ ] **Cifratura a riposo, copie di sicurezza e ripristino:** dipendono dal piano Supabase; verificare
   cosa offre il piano scelto (copie giornaliere, ripristino a un momento preciso) e scriverlo nel DPA §9.
-- [ ] **Esportazione dei dati** in formato leggibile da computer: per la restituzione all'officina a fine
-  contratto (DPA §13) e per la portabilità dei clienti. Oggi non esiste: solo a mano su richiesta.
-- [~] **Cancellazione dell'account** dall'app: fatta (T038, `elimina_account()`; domanda 14). Manca la
+- [~] **Esportazione dei dati** in formato leggibile da computer: per la restituzione all'officina a fine
+  contratto (DPA §13) e per la portabilità dei clienti. In parte: clienti e veicoli si esportano da
+  `/clienti/importa` (T030, stesso formato dell'import); i controlli ancora no (T041).
+- [~] **Cancellazione dell'account** dall'app: in parte. La funzione SQL esiste (T038, `elimina_account()`;
+  domanda 14) ma manca il pulsante nel profilo (T039). Manca anche la
   **cancellazione automatica** dei dati scaduti (notifiche, prenotazioni passate) secondo i tempi di
   conservazione che si decideranno: oggi nulla si cancella da sé.
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro

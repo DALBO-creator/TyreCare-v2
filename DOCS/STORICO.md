@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-24 — ciclo 20261024-21 — T030 T032
+
+**Fatto**
+
+- T030: esportazione di clienti e veicoli in CSV, nello stesso formato del modello di import (DPA §13);
+  sezione "Esporta i dati" in fondo a `/clienti/importa`; `csvClientiVeicoli` in shared con 7 test unitari e
+  test e2e `esporta.spec.ts`.
+- T032: dalla scheda cliente il titolare apre "Unisci con un altro cliente" (`/cliente/unisci`), sceglie il
+  doppione con la ricerca dell'elenco clienti e conferma; `unisciClienti()` chiama la rpc `unisci_clienti`
+  (T031) senza riprova; la ricerca è estratta in `filtraClienti` con 4 test.
+
+**Da sapere**
+
+- Correzione di documentazione (T077): cancellazione dell'account e intestazioni di sicurezza sono "in
+  parte" (manca il pulsante nel profilo, T039; la CSP è solo Report-Only); l'export dei controlli manca
+  ancora (T041).
+
 ### Sessione agenti — 2026-10-24 — ciclo 20261024-18 — T049 T054
 
 **Fatto**
