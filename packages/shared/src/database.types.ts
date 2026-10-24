@@ -938,6 +938,7 @@ export type Database = {
       };
       crea_promemoria_appuntamenti: { Args: { p_adesso?: string }; Returns: number };
       crea_promemoria_pneumatici: { Args: { p_adesso?: string }; Returns: number };
+      elimina_account: { Args: Record<PropertyKey, never>; Returns: undefined };
       fasce_aperte: {
         Args: { p_giorno: string; p_orari: Json };
         Returns: Database['public']['Enums']['fascia_oraria'][];
