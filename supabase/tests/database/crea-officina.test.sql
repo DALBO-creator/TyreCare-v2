@@ -67,17 +67,17 @@ select is(
 );
 select throws_ok(
   $$select public.crea_officina_con_titolare('Altra', '22222222222', 'nessuno@tyrecare.test')$$,
-  'ACCOUNT_NON_TROVATO', null,
+  'P0001', 'ACCOUNT_NON_TROVATO',
   'email inesistente'
 );
 select throws_ok(
   $$select public.crea_officina_con_titolare('Altra', '01234567890', 'titolare2@tyrecare.test')$$,
-  'PARTITA_IVA_GIA_PRESENTE', null,
+  'P0001', 'PARTITA_IVA_GIA_PRESENTE',
   'partita IVA di Gomme Rossi già presente'
 );
 select throws_ok(
   $$select public.crea_officina_con_titolare('Altra', '11111111111', 'titolare2@tyrecare.test')$$,
-  'PARTITA_IVA_GIA_PRESENTE', null,
+  'P0001', 'PARTITA_IVA_GIA_PRESENTE',
   'partita IVA appena creata già presente'
 );
 select lives_ok(
