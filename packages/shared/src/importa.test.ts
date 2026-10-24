@@ -3,10 +3,12 @@ import {
   applicaMappatura,
   controllaImport,
   controllaTabella,
+  csvRigheConErrori,
   erroriMappatura,
   leggiCsv,
   mappaturaAutomatica,
   modelloCsv,
+  scriviCsv,
   separatoreCsv,
   tabellaDaCsv,
   type Mappatura,
@@ -251,5 +253,56 @@ describe('mappatura delle colonne', () => {
     expect(controllaTabella(t, mappaturaAutomatica(t.intestazioni))).toEqual(
       controllaImport(testo),
     );
+  });
+});
+
+describe('scriviCsv', () => {
+  it('rilegge le stesse celle con punto e virgola, virgolette e a capo dentro una cella', () => {
+    const celle = [
+      ['a', 'b;c', 'd'],
+      ['dice "ciao"', 'riga1\nriga2', 'x\r\ny'],
+      ['semplice', '', 'è ù'],
+    ];
+    const csv = scriviCsv(celle);
+    expect(csv).toContain('"b;c"');
+    expect(csv).toContain('"dice ""ciao"""');
+    expect(leggiCsv(csv).map((r) => r.celle)).toEqual(celle);
+  });
+
+  it('separa le righe con \\r\\n e non mette virgolette alle celle semplici', () => {
+    expect(
+      scriviCsv([
+        ['a', 'b'],
+        ['c', 'd'],
+      ]),
+    ).toBe('a;b\r\nc;d');
+  });
+});
+
+describe('csvRigheConErrori', () => {
+  const t = tabellaDaCsv(
+    [
+      'targa;marca;anno',
+      'AB123CD;Fiat;2019',
+      'XX;Fiat;19',
+      'EF456GH;Iveco', // più corta dell'intestazione: completata con una cella vuota
+    ].join('\r\n'),
+  )!;
+
+  it('contiene solo le righe errate, con la colonna errore', () => {
+    const csv = csvRigheConErrori(t, [
+      { numero: 3, messaggio: 'Targa non valida' },
+      { numero: 3, messaggio: "Controlla l'anno" },
+      { numero: 4, messaggio: 'Manca qualcosa' },
+    ]);
+    expect(leggiCsv(csv).map((r) => r.celle)).toEqual([
+      ['targa', 'marca', 'anno', 'errore'],
+      ['XX', 'Fiat', '19', "Targa non valida / Controlla l'anno"],
+      ['EF456GH', 'Iveco', '', 'Manca qualcosa'],
+    ]);
+  });
+
+  it("senza errori restituisce solo l'intestazione", () => {
+    expect(csvRigheConErrori(t, [])).toBe('targa;marca;anno;errore');
   });
 });

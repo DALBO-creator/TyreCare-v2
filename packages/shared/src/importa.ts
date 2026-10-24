@@ -190,6 +190,29 @@ export function tabellaDaCsv(testo: string): Tabella | null {
   return { intestazioni: intestazione.celle, righe };
 }
 
+/** Scrive righe di celle come CSV per Excel in italiano: `;` tra le celle, `\r\n` tra le righe. */
+export function scriviCsv(righe: readonly (readonly string[])[]): string {
+  const cella = (c: string) => (/[;"\r\n]/.test(c) ? `"${c.replaceAll('"', '""')}"` : c);
+  return righe.map((r) => r.map(cella).join(';')).join('\r\n');
+}
+
+/**
+ * Le righe del file con almeno un errore, da correggere e reimportare: stesse colonne del file più
+ * `errore` (i messaggi della riga uniti da " / "), nell'ordine del file.
+ */
+export function csvRigheConErrori(t: Tabella, errori: readonly ErroreImport[]): string {
+  const perRiga = new Map<number, string[]>();
+  for (const e of errori) perRiga.set(e.numero, [...(perRiga.get(e.numero) ?? []), e.messaggio]);
+  const colonne = t.intestazioni.length;
+  const righe = t.righe
+    .filter((r) => perRiga.has(r.numero))
+    .map((r) => [
+      ...Array.from({ length: colonne }, (_, i) => r.celle[i] ?? ''),
+      perRiga.get(r.numero)!.join(' / '),
+    ]);
+  return scriviCsv([[...t.intestazioni, 'errore'], ...righe]);
+}
+
 /** Colonna di TyreCare → intestazione del file (testo esatto come nel file). */
 export type Mappatura = Partial<Record<ColonnaImport, string>>;
 
