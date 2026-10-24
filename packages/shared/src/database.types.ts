@@ -439,6 +439,61 @@ export type Database = {
           },
         ];
       };
+      link_report: {
+        Row: {
+          codice_hash: string;
+          controllo_id: string;
+          created_at: string;
+          creato_da: string | null;
+          id: string;
+          officina_id: string;
+          revocato_il: string | null;
+          scade_il: string;
+        };
+        Insert: {
+          codice_hash: string;
+          controllo_id: string;
+          created_at?: string;
+          creato_da?: string | null;
+          id?: string;
+          officina_id: string;
+          revocato_il?: string | null;
+          scade_il: string;
+        };
+        Update: {
+          codice_hash?: string;
+          controllo_id?: string;
+          created_at?: string;
+          creato_da?: string | null;
+          id?: string;
+          officina_id?: string;
+          revocato_il?: string | null;
+          scade_il?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'link_report_controllo_id_fkey';
+            columns: ['controllo_id'];
+            isOneToOne: false;
+            referencedRelation: 'controlli';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'link_report_creato_da_fkey';
+            columns: ['creato_da'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'link_report_officina_id_fkey';
+            columns: ['officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'officine';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       misure_pneumatico: {
         Row: {
           battistrada_mm: number;
@@ -951,6 +1006,7 @@ export type Database = {
           scade_il: string;
         }[];
       };
+      crea_link_report: { Args: { p_controllo_id: string }; Returns: string };
       crea_officina_con_titolare: {
         Args: { p_email_titolare: string; p_partita_iva: string; p_ragione_sociale: string };
         Returns: string;
@@ -1058,6 +1114,8 @@ export type Database = {
         };
         Returns: string;
       };
+      report_pubblico: { Args: { p_codice: string }; Returns: Json };
+      revoca_link_report: { Args: { p_controllo_id: string }; Returns: undefined };
       richiedi_prenotazione: {
         Args: {
           p_fascia: Database['public']['Enums']['fascia_oraria'];
