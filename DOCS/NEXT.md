@@ -7,8 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261024-09 (T038 account eliminabile, T043 import dei controlli, T042 elenchi oltre 1000 righe, T029
-> righe con errori in CSV, T028 guida per creare l'officina, T036 intestazioni di sicurezza).
+> 20261024-18 (T049 pulizia notturna delle notifiche, T054 accettazione dei termini nel database).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
@@ -22,8 +21,7 @@
 - [ ] P17: decidere quali misure di "Da fare prima del lancio" (`DOCS/legale/README.md`) fare prima del
   pilota (registro accessi del personale, esportazione dati, 2FA, copie di sicurezza; fatte: cancellazione
   account T038, intestazioni di sicurezza T036, bozza della procedura per le violazioni T037)
-- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, pulizia delle
-  notifiche vecchie, preferenze, annullare un import
+- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, preferenze, annullare un import
 - [ ] P23: quale **dominio di TyreCare** usare per le email e quando configurarne i DNS su Resend
   (SPF/DKIM), una volta sola
 
@@ -36,6 +34,8 @@
 - [ ] Fase 5: **email di riserva** — dopo l'email dal dominio di TyreCare (P23, vedi "Rimandati")
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
+- [ ] Promemoria: la registrazione web deve passare `termini_versione` nei metadati di `signUp` (T056,
+  corsia C3); T054 ha fatto solo il database, senza questo il profilo nuovo resta senza termini accettati
 
 Per l'avvio dell'ambiente vedi "Sessioni nel cloud" o "Solo per i PC di Davide" (sotto).
 

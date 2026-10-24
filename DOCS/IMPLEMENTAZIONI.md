@@ -45,7 +45,7 @@
 | ~~**Promemoria del giorno prima**~~ ("Domani hai un appuntamento") | ✅ | Fatto nella sessione 17 (2026-10-14): job orario di Supabase Cron, dalle 18 del giorno prima, tipo `PROMEMORIA` (anche push). |
 | ~~**Esito del controllo** e **cambio stagionale**~~ | ✅ | Fatti nella sessione 17 (2026-10-14): notifica al cliente dopo un controllo con gomme gialle/rosse; promemoria stagionale dal 15 ottobre e dal 15 marzo. |
 | **Promemoria gomme vecchie** (DOT oltre i 5 anni) | 🟠 | Scartato per ora dal titolare (2026-10-14). Stesso schema di `crea_promemoria_pneumatici()`, chiave per pneumatico. |
-| **Pulizia delle notifiche vecchie** (es. lette da più di 6 mesi) | 🟢 | Job periodico; oggi l'app ne mostra solo le ultime 50. |
+| ~~Pulizia delle notifiche vecchie~~ | ✅ | Fatta il 2026-10-24 (T049): job notturno `pulizia-notifiche`. |
 | **Preferenze delle notifiche** (quali ricevere, su quali canali) | 🟢 | PLAN P5; utile quando arrivano push ed email. |
 | ~~**Prenota dal garage**~~: pulsante "Prenota" nella carta dell'officina del veicolo, con targa già scelta | ✅ | Fatto il 2026-10-13 (sessione 15); nel report la carta resta senza "Prenota". |
 | ~~**Officine vicine** (distanza dalla posizione del telefono)~~ | ✅ | Fatto il 2026-10-23 (T019): «Vicino a me» ordina per distanza; PLAN P14. |

@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-24 — ciclo 20261024-18 — T049 T054
+
+**Fatto**
+
+- T049: job notturno `pulizia-notifiche` (1:40 UTC) che cancella le notifiche lette da 180 giorni e tutte
+  quelle di oltre 365 (R6).
+- T054: `profiles` ha `termini_versione` e `termini_accettati_il`; il trigger di registrazione
+  `crea_profilo_nuovo_utente` li compila dai metadati `termini_versione`; `accetta_termini(p_versione)` serve
+  per riaccettare.
+
+**Da sapere**
+
+- Il coordinatore C1 ha scritto il codice da solo (sottoagente senza Agent); gate del supervisore approvato
+  con revisione profonda e verifica della logica su Postgres 16 locale. pgTAP e cron non sono stati eseguiti
+  nel cloud: li verifica la CI `database`.
+- La registrazione web deve ancora passare `termini_versione` nei metadati (T056, corsia C3).
+
 ### Sessione agenti — 2026-10-24 — ciclo 20261024-09 — T038 T043 T042 T029 T028 T036
 
 **Fatto**

@@ -806,6 +806,8 @@ export type Database = {
           nome: string;
           ruolo: Database['public']['Enums']['ruolo'];
           telefono: string | null;
+          termini_accettati_il: string | null;
+          termini_versione: string | null;
           updated_at: string;
         };
         Insert: {
@@ -815,6 +817,8 @@ export type Database = {
           nome?: string;
           ruolo?: Database['public']['Enums']['ruolo'];
           telefono?: string | null;
+          termini_accettati_il?: string | null;
+          termini_versione?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -824,6 +828,8 @@ export type Database = {
           nome?: string;
           ruolo?: Database['public']['Enums']['ruolo'];
           telefono?: string | null;
+          termini_accettati_il?: string | null;
+          termini_versione?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -935,6 +941,7 @@ export type Database = {
     };
     Functions: {
       accetta_invito: { Args: { p_codice: string }; Returns: string };
+      accetta_termini: { Args: { p_versione: string }; Returns: undefined };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
       crea_invito_cliente: {
@@ -1029,6 +1036,7 @@ export type Database = {
       };
       oggi_in_italia: { Args: Record<PropertyKey, never>; Returns: string };
       orari_validi: { Args: { p_orari: Json }; Returns: boolean };
+      pulisci_notifiche: { Args: { p_adesso?: string }; Returns: number };
       registra_cliente_da_prenotazione: {
         Args: {
           p_cliente_id: string;
