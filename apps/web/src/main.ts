@@ -29,6 +29,7 @@ import { mostraGarageVeicolo } from './pagine/garage-veicolo';
 import { mostraHome } from './pagine/home';
 import { mostraImporta } from './pagine/importa';
 import { mostraInvitaCliente } from './pagine/invita-cliente';
+import { mostraUnisciCliente } from './pagine/unisci-cliente';
 import { mostraInvito } from './pagine/invito';
 import { mostraModificaCliente } from './pagine/modifica-cliente';
 import { mostraModificaControllo } from './pagine/modifica-controllo';
@@ -177,6 +178,12 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: "Invita nell'app",
     mostra: mostraInvitaCliente,
+  },
+  {
+    percorso: '/cliente/unisci',
+    accesso: 'utente',
+    titolo: 'Unisci clienti',
+    mostra: mostraUnisciCliente,
   },
   // Import di clienti e veicoli dal gestionale (CSV standard, solo TITOLARE)
   {

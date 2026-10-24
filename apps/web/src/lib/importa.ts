@@ -1,11 +1,16 @@
 import {
+  csvClientiVeicoli,
   modelloCsv,
+  oggiInItalia,
+  type ClienteDaEsportare,
+  type VeicoloDaEsportare,
   type Mappatura,
   tabellaDaCsv,
   type RigaImport,
   type Tabella,
   type Tables,
 } from '@tyrecare/shared';
+import { leggiTutte } from './a-pagine';
 import { leggiExcel } from './excel';
 import { conRiprova } from './rete';
 import { scaricaCsv } from './scarica';
@@ -153,4 +158,38 @@ export async function eliminaMappatura(id: string): Promise<void> {
 /** Scarica il modello CSV. */
 export function scaricaModello(): void {
   scaricaCsv('tyrecare-clienti-veicoli.csv', `${modelloCsv()}\r\n`);
+}
+
+/** Tutti i clienti e i veicoli dell'officina, letti a pagine di 1000 (limite di PostgREST). */
+export async function caricaPerEsportazione(
+  officinaId: string,
+): Promise<{ clienti: ClienteDaEsportare[]; veicoli: VeicoloDaEsportare[] }> {
+  const [clienti, veicoli] = await Promise.all([
+    leggiTutte<ClienteDaEsportare>((da, a) =>
+      getSupabase()
+        .from('clienti_officina')
+        .select('id, codice_gestionale, nome, cognome, ragione_sociale, telefono, email')
+        .eq('officina_id', officinaId)
+        .order('id')
+        .range(da, a),
+    ),
+    leggiTutte<VeicoloDaEsportare & { id: string }>((da, a) =>
+      getSupabase()
+        .from('veicoli')
+        .select('id, cliente_officina_id, targa, marca, modello, anno, telaio')
+        .eq('officina_id', officinaId)
+        .order('id')
+        .range(da, a),
+    ),
+  ]);
+  return { clienti, veicoli };
+}
+
+/** Scarica tutti i clienti e i veicoli nel formato del modello (`tyrecare-clienti-veicoli-AAAA-MM-GG.csv`). */
+export async function scaricaClientiVeicoli(officinaId: string): Promise<void> {
+  const { clienti, veicoli } = await caricaPerEsportazione(officinaId);
+  scaricaCsv(
+    `tyrecare-clienti-veicoli-${oggiInItalia()}.csv`,
+    `${csvClientiVeicoli(clienti, veicoli)}\r\n`,
+  );
 }

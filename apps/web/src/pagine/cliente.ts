@@ -1,9 +1,10 @@
-import { Mail, MailCheck, Pencil, Phone, Plus, Send, Smartphone } from 'lucide';
+import { GitMerge, Mail, MailCheck, Pencil, Phone, Plus, Send, Smartphone } from 'lucide';
 import { esc } from '../lib/html';
 import { annullaInvito, caricaInvitoInCorso, type InvitoInCorso } from '../lib/inviti';
 import {
   caricaCliente,
   caricaVeicoli,
+  eTitolare,
   nominativo,
   type SchedaCliente,
   type VeicoloInElenco,
@@ -33,6 +34,7 @@ export async function mostraCliente(app: HTMLElement): Promise<void> {
   let cliente: SchedaCliente | null = null;
   let veicoli: VeicoloInElenco[] = [];
   let invito: InvitoInCorso | null = null;
+  let titolare = false;
   try {
     if (idValido(id)) {
       const [c, v, utente, i] = await Promise.all([
@@ -48,6 +50,7 @@ export async function mostraCliente(app: HTMLElement): Promise<void> {
       if (c && utente.officine.some((o) => o.officina.id === c.officina_id)) {
         cliente = c;
         veicoli = ordinaPerUrgenza(v);
+        titolare = eTitolare(utente.officine, c.officina_id);
       }
     }
   } catch (errore) {
@@ -109,6 +112,13 @@ export async function mostraCliente(app: HTMLElement): Promise<void> {
       <a class="btn btn-outline-light btn-lg w-100" href="/clienti/modifica?id=${cliente.id}">
         ${icona(Pencil)} Modifica dati del cliente
       </a>
+      ${
+        titolare
+          ? `<a class="btn btn-outline-light w-100" href="/cliente/unisci?id=${cliente.id}">
+              ${icona(GitMerge)} Unisci con un altro cliente
+            </a>`
+          : ''
+      }
     </div>`);
 
   collegaAnnullaInvito(app, cliente.id);
