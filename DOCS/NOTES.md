@@ -1816,3 +1816,31 @@ dà `42501`. La tabella è leggibile solo dai membri (RLS), senza scritture dire
 (`apps/web/src/lib/report.ts`; lo pneumatico solo con i campi principali) oppure `null` se il codice è
 sbagliato, scaduto o disattivato. Non escono cliente, `cliente_officina_id` né telaio; le note del
 controllo sì.
+
+## Clienti: filtro Senza app (T033)
+
+**File coinvolti:** `apps/web/src/pagine/clienti.ts`, `apps/web/src/styles/_prenotazioni.scss`,
+`e2e/tests/clienti-filtro.spec.ts`.
+**Come funziona:** `caricaElencoClienti` legge anche `profile_id`: un cliente senza app ha `profile_id`
+nullo. La logica pura sta in `pagine/clienti.ts`: `senzaApp(clienti)` per il conteggio e
+`filtraClienti(clienti, testo, soloSenzaApp)`, che applica prima il filtro e poi la ricerca. Le righe dei
+clienti senza app riportano "Non usa l'app". Lo stile riusa `.tc-vista__voce`, che ora vale anche per i
+`<button>` con `aria-pressed`.
+
+### Codice complesso
+`collegaElenco` tiene lo stato `soloSenzaApp` nella chiusura; i pulsanti `[data-senza-app]` aggiornano
+`aria-pressed` e ridisegnano; "Mostra tutti i clienti" azzera anche il filtro. `data-conteggio` riflette il
+risultato combinato; il "(n)" del pulsante è calcolato una volta sull'elenco completo.
+
+## Calendario: occupazione delle fasce (T035)
+
+**File coinvolti:** `apps/web/src/lib/calendario.ts`, `apps/web/src/pagine/calendario.ts`.
+**Come funziona:** `caricaOrariECapienza` (al posto di `caricaOrari`) legge `orari` e `capienza_fascia`
+insieme, a ogni apertura del calendario. L'h3 della fascia riceve "· n su c richieste" (e "· piena" se
+n ≥ c) solo se la capienza non è nulla.
+
+### Codice complesso
+`occupazioneFascia(prenotazioni, data, fascia)` in `lib/calendario.ts` replica `occupazione_fascia()` del
+database: RICHIESTA conta per `giorno`/`fascia` chiesti anche se ha già un `appuntamento`; PROPOSTA e
+CONFERMATA per giorno e fascia dell'appuntamento (`posizioneInAgenda`, ora italiana, dalle 13:00
+POMERIGGIO); senza appuntamento non contano; gli altri stati no.

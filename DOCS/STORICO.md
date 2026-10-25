@@ -4,6 +4,27 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-25 — ciclo 20261025-03 — T033 T035
+
+**Fatto**
+
+- T033: nell'elenco clienti il filtro "Tutti" / "Senza app (n)" mostra i clienti senza `profile_id`, da
+  invitare, e si combina con la ricerca; le loro righe riportano "Non usa l'app". Nuovi e2e
+  `clienti-filtro.spec.ts` e 3 test unitari.
+- T035: il calendario dell'officina mostra per ogni fascia le richieste rispetto alla capienza ("Mattina · 2
+  su 4 richieste", "· piena" al limite), con la funzione pura `occupazioneFascia` che ha le regole di
+  `occupazione_fascia()` del database, sulle prenotazioni della settimana già caricate.
+
+**Verifiche**
+
+- 204 test unitari verdi, con `format:check`, lint, typecheck e build (Node 22). L'e2e
+  `clienti-filtro.spec.ts` non è stato eseguito in locale: lo verifica la CI.
+
+**Da sapere**
+
+- Idee accodate: T089 (stato vuoto per "Senza app" senza ricerca: oggi compare "Nessun cliente per «»"),
+  T090 (invito con un tocco dalla riga "Non usa l'app"; conteggio "Senza app" nella home dell'officina).
+
 ### Sessione agenti — 2026-10-25 — ciclo 20261025-00 — T059 T063
 
 **Fatto**

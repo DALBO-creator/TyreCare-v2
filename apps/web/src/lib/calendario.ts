@@ -45,6 +45,22 @@ export function posizioneInAgenda(p: InAgenda): {
   return { data: p.giorno, fascia: p.fascia, ora: null };
 }
 
+/**
+ * Richieste che occupano una fascia, con le regole di `occupazione_fascia()` del database: RICHIESTA
+ * conta per il giorno e la fascia chiesti (anche se ha già un appuntamento); PROPOSTA e CONFERMATA per
+ * il giorno e la fascia dell'appuntamento (senza appuntamento non contano); gli altri stati no.
+ */
+export function occupazioneFascia(prenotazioni: InAgenda[], data: string, fascia: Fascia): number {
+  return prenotazioni.filter((p) => {
+    if (p.stato === 'RICHIESTA') return p.giorno === data && p.fascia === fascia;
+    if ((p.stato === 'PROPOSTA' || p.stato === 'CONFERMATA') && p.appuntamento) {
+      const pos = posizioneInAgenda(p);
+      return pos.data === data && pos.fascia === fascia;
+    }
+    return false;
+  }).length;
+}
+
 /** Appuntamenti di un giorno, per fascia: prima quelli con l'ora (in ordine), poi quelli da fissare. */
 export function agendaDelGiorno<T extends InAgenda>(
   prenotazioni: T[],
@@ -93,13 +109,15 @@ export async function caricaSettimana(officinaId: string, lunedi: string): Promi
   return data;
 }
 
-/** Orari di apertura dell'officina (anche se non è ancora attiva). */
-export async function caricaOrari(officinaId: string): Promise<unknown> {
+/** Orari di apertura e capienza per fascia (nulla = nessun limite) dell'officina. */
+export async function caricaOrariECapienza(
+  officinaId: string,
+): Promise<{ orari: unknown; capienza: number | null }> {
   const { data, error } = await getSupabase()
     .from('officine')
-    .select('orari')
+    .select('orari, capienza_fascia')
     .eq('id', officinaId)
     .single();
   if (error) throw error;
-  return data.orari;
+  return { orari: data.orari, capienza: data.capienza_fascia };
 }

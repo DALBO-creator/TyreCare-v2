@@ -7,7 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261025-00 (T059 richiesta di affiliazione dell'officina, T063 link pubblico del report; solo database).
+> 20261025-03 (T033 filtro "Senza app" nei clienti, T035 occupazione delle fasce nel calendario).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
