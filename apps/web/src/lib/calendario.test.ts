@@ -4,6 +4,7 @@ import {
   contaPerGiorno,
   giorniSettimana,
   lunediDi,
+  occupazioneFascia,
   posizioneInAgenda,
 } from './calendario';
 
@@ -74,5 +75,53 @@ describe('agenda', () => {
       p('c', { stato: 'RIFIUTATA' }),
     ]);
     expect(Object.fromEntries(conta)).toEqual({ '2026-10-13': 1, '2026-10-15': 1 });
+  });
+});
+
+describe('occupazioneFascia', () => {
+  const g = '2026-11-10';
+  const mat = (l: P[]) => occupazioneFascia(l, g, 'MATTINA');
+  const pom = (l: P[]) => occupazioneFascia(l, g, 'POMERIGGIO');
+
+  it('RICHIESTA conta nel giorno e nella fascia chiesti', () => {
+    const l = [p('a', { giorno: g })];
+    expect(mat(l)).toBe(1);
+    expect(pom(l)).toBe(0);
+  });
+
+  it('RICHIESTA con appuntamento su un altro giorno conta nel giorno chiesto', () => {
+    const l = [p('a', { giorno: g, appuntamento: '2026-11-12T09:00:00Z' })];
+    expect(mat(l)).toBe(1);
+    expect(occupazioneFascia(l, '2026-11-12', 'MATTINA')).toBe(0);
+  });
+
+  it('CONFERMATA spostata conta nel giorno nuovo, non in quello chiesto', () => {
+    const l = [p('a', { stato: 'CONFERMATA', giorno: g, appuntamento: '2026-11-12T09:00:00Z' })];
+    expect(mat(l)).toBe(0);
+    expect(occupazioneFascia(l, '2026-11-12', 'MATTINA')).toBe(1);
+  });
+
+  it('PROPOSTA: 13:00 ora italiana è pomeriggio, 12:59 è mattina', () => {
+    const l = [
+      p('a', { stato: 'PROPOSTA', appuntamento: '2026-11-10T12:00:00Z' }),
+      p('b', { stato: 'PROPOSTA', appuntamento: '2026-11-10T11:59:00Z' }),
+    ];
+    expect(pom(l)).toBe(1);
+    expect(mat(l)).toBe(1);
+  });
+
+  it('PROPOSTA o CONFERMATA senza appuntamento non contano', () => {
+    const l = [
+      p('a', { stato: 'PROPOSTA', giorno: g }),
+      p('b', { stato: 'CONFERMATA', giorno: g }),
+    ];
+    expect(mat(l)).toBe(0);
+  });
+
+  it('COMPLETATA, NON_PRESENTATO, ANNULLATA e RIFIUTATA non contano', () => {
+    const l = (['COMPLETATA', 'NON_PRESENTATO', 'ANNULLATA', 'RIFIUTATA'] as const).map(
+      (stato, i) => p(String(i), { stato, giorno: g, appuntamento: '2026-11-10T09:00:00Z' }),
+    );
+    expect(mat(l)).toBe(0);
   });
 });
