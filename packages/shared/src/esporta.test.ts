@@ -86,6 +86,21 @@ describe('csvControlli', () => {
     ]);
   });
 
+  it('con due documenti della stessa targa e data le righe di un documento restano vicine', () => {
+    const d = (codice: string, posizione: MisuraDaEsportare['posizione']) =>
+      misura({ codice_documento: codice, posizione });
+    const csv = csvControlli([
+      d('B', 'ANT_SX'),
+      d('A', 'ANT_DX'),
+      d('B', 'ANT_DX'),
+      d('A', 'ANT_SX'),
+    ]);
+    const ordine = righeDi(csv)
+      .slice(1)
+      .map((r) => `${r[0]} ${r[4]}`);
+    expect(ordine).toEqual(['A ANT_SX', 'A ANT_DX', 'B ANT_SX', 'B ANT_DX']);
+  });
+
   it('un timestamp prende la data italiana, anche a cavallo della mezzanotte', () => {
     // 23:30 UTC del 14 settembre = 01:30 del 15 in Italia (ora legale)
     const estate = righeDi(csvControlli([misura({ eseguito_il: '2026-09-14T23:30:00Z' })]))[1]!;

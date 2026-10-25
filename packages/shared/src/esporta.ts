@@ -41,8 +41,8 @@ const conVirgola = (n: number | null): string => (n == null ? '' : String(n).rep
 
 /**
  * Tutte le misure nel formato dell'import dei controlli (stessa intestazione di `COLONNE_CONTROLLI`).
- * Decimali con la virgola, valori nulli vuoti, data `AAAA-MM-GG`. Ordine: data, targa, posizione
- * (anteriore sinistra, anteriore destra, posteriore sinistra, posteriore destra, scorta), poi codice documento.
+ * Decimali con la virgola, valori nulli vuoti, data `AAAA-MM-GG`. Ordine: data, targa, codice documento (le righe di un documento restano vicine), posizione
+ * (anteriore sinistra, anteriore destra, posteriore sinistra, posteriore destra, scorta).
  */
 export function csvControlli(righe: readonly MisuraDaEsportare[]): string {
   const ordinePosizione = (p: Posizione) => PosizioneSchema.options.indexOf(p);
@@ -51,8 +51,8 @@ export function csvControlli(righe: readonly MisuraDaEsportare[]): string {
     (a, b) =>
       a.data.localeCompare(b.data) ||
       a.r.targa.localeCompare(b.r.targa, 'it') ||
-      ordinePosizione(a.r.posizione) - ordinePosizione(b.r.posizione) ||
-      (a.r.codice_documento ?? '').localeCompare(b.r.codice_documento ?? '', 'it'),
+      (a.r.codice_documento ?? '').localeCompare(b.r.codice_documento ?? '', 'it') ||
+      ordinePosizione(a.r.posizione) - ordinePosizione(b.r.posizione),
   );
   const corpo = voci.map(({ r, data }) => [
     r.codice_documento ?? '',
