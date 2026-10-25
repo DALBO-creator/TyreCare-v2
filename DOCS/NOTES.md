@@ -1898,6 +1898,38 @@ vuote sono saltate e contate in `ignorate`. Con `soloUltimo` resta il documento 
 
 ---
 
+## Import dei controlli: la pagina (T047)
+
+**File coinvolti:** `apps/web/src/pagine/importa-controlli.ts`, `apps/web/src/lib/importa-controlli.ts`,
+rotta `pigra` in `apps/web/src/main.ts`, `e2e/tests/import-controlli.spec.ts`.
+**Come funziona:** `/clienti/importa-controlli` (solo titolare) legge il file con `leggiTabella` e lo
+controlla con `controllaTabellaControlli`: le righe con errori sono scartate una per una. L'anteprima
+chiama `importaControlli({ simula: true })`; l'import vero usa gli stessi dati con `simula: false`.
+
+### Codice complesso
+- `leggiConteggiControlli` valida il JSON della RPC (targhe non trovate: al massimo 50).
+- Con 0 controlli nuovi non c'è il pulsante. L'anteprima avvisa che le righe con errori non si aggiungono
+  reimportando (T094). Il pulsante si disabilita subito, contro il doppio clic.
+- Il link dalla pagina dell'import arriva con T052.
+
+---
+
+## Esportazione dei controlli (T041)
+
+**File coinvolti:** `packages/shared/src/esporta.ts`, `apps/web/src/pagine/importa.ts` (pulsante).
+**Come funziona:** `csvControlli(righe)` scrive l'intestazione da `COLONNE_CONTROLLI`, quindi il file si
+reimporta con `controllaTabellaControlli`. Una riga per pneumatico misurato, in ordine data, targa, codice
+documento, posizione (ANT_SX, ANT_DX, POST_SX, POST_DX, SCORTA). Il pulsante "Scarica i controlli" è in
+`/clienti/importa`.
+
+### Codice complesso
+- Decimali con la virgola, nulli vuoti, data `AAAA-MM-GG` (un timestamp diventa il giorno italiano).
+- Il web legge `misure_pneumatico` con `leggiTutte` ordinando su `controllo_id`, `pneumatico_id` (chiave
+  primaria) e FK composte esplicite (`controlli!…`, `pneumatici!…`, `veicoli!…`).
+- Un `codice_documento` nullo (controllo fatto in app) resta vuoto e quella riga non si reimporta (R11).
+
+---
+
 ## Pagine pigre (`lib/pigra.ts`) (T046)
 
 **File coinvolti:** `apps/web/src/lib/pigra.ts`, `apps/web/src/main.ts` (rotte).

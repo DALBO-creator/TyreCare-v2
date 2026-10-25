@@ -1,8 +1,10 @@
 import {
   csvClientiVeicoli,
+  csvControlli,
   modelloCsv,
   oggiInItalia,
   type ClienteDaEsportare,
+  type MisuraDaEsportare,
   type VeicoloDaEsportare,
   type Mappatura,
   tabellaDaCsv,
@@ -192,4 +194,47 @@ export async function scaricaClientiVeicoli(officinaId: string): Promise<void> {
     `tyrecare-clienti-veicoli-${oggiInItalia()}.csv`,
     `${csvClientiVeicoli(clienti, veicoli)}\r\n`,
   );
+}
+
+/** Tutte le misure dei controlli dell'officina, lette a pagine di 1000 (chiave primaria: controllo + pneumatico). */
+export async function caricaControlliPerEsportazione(
+  officinaId: string,
+): Promise<MisuraDaEsportare[]> {
+  const righe = await leggiTutte((da, a) =>
+    getSupabase()
+      .from('misure_pneumatico')
+      .select(
+        `battistrada_mm, pressione_bar, usura, danni,
+        controlli!misure_pneumatico_controllo_id_veicolo_id_fkey(codice_documento, eseguito_il, km, note),
+        pneumatici!misure_pneumatico_pneumatico_id_veicolo_id_fkey(posizione, stagione, misura, marca, modello, dot),
+        veicoli!misure_pneumatico_veicolo_id_officina_id_fkey(targa)`,
+      )
+      .eq('officina_id', officinaId)
+      .order('controllo_id')
+      .order('pneumatico_id')
+      .range(da, a),
+  );
+  return righe.map((r) => ({
+    codice_documento: r.controlli.codice_documento,
+    targa: r.veicoli.targa,
+    eseguito_il: r.controlli.eseguito_il,
+    km: r.controlli.km,
+    posizione: r.pneumatici.posizione,
+    battistrada_mm: r.battistrada_mm,
+    pressione_bar: r.pressione_bar,
+    usura: r.usura,
+    danni: r.danni,
+    stagione: r.pneumatici.stagione,
+    misura: r.pneumatici.misura,
+    marca: r.pneumatici.marca,
+    modello: r.pneumatici.modello,
+    dot: r.pneumatici.dot,
+    note: r.controlli.note,
+  }));
+}
+
+/** Scarica tutte le misure dei controlli nel formato dell'import (`tyrecare-controlli-AAAA-MM-GG.csv`). */
+export async function scaricaControlli(officinaId: string): Promise<void> {
+  const misure = await caricaControlliPerEsportazione(officinaId);
+  scaricaCsv(`tyrecare-controlli-${oggiInItalia()}.csv`, `${csvControlli(misure)}\r\n`);
 }
