@@ -4,6 +4,8 @@
  * la pagina si ricarica una volta sola per prendere la versione nuova.
  */
 
+import { ancoraAttuale, visualizzazioneCorrente } from './router';
+
 const CHIAVE_RICARICA = 'tc-ricarica-pagina';
 
 const MESSAGGI_IMPORT = [
@@ -54,6 +56,8 @@ export function pigra<M, K extends keyof M>(
   nome: M[K] extends Pagina ? K : never,
 ): (app: HTMLElement) => Promise<void> {
   return async (app) => {
+    // Se nel frattempo l'utente cambia pagina, questa non deve disegnarsi sopra l'altra
+    const n = visualizzazioneCorrente();
     let modulo: M;
     try {
       modulo = await carica();
@@ -68,6 +72,7 @@ export function pigra<M, K extends keyof M>(
     }
     // Import riuscito: un deploy successivo potrà ricaricare di nuovo
     togliFlag();
+    if (!ancoraAttuale(n)) return;
     await (modulo[nome] as Pagina)(app);
   };
 }
