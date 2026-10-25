@@ -4,6 +4,29 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-25 — ciclo 20261025-18 — T047 T041
+
+**Fatto**
+
+- T047: pagina `/clienti/importa-controlli` (solo titolare): legge il file, controlla le righe, mostra
+  l'anteprima in simulazione e importa con `importa_controlli`. Unit test della lettura della risposta e
+  due e2e (`import-controlli.spec.ts`).
+- T041: esportazione dei controlli: `csvControlli` in `packages/shared/src/esporta.ts` (una riga per
+  pneumatico misurato, decimali con la virgola) e pulsante "Scarica i controlli" in `/clienti/importa`.
+  Test di andata e ritorno con l'import.
+
+**Verifiche**
+
+- 262 test unitari verdi, con `format:check`, lint, typecheck e build (Node 22). E2e non eseguiti in
+  locale: li verifica la CI.
+
+**Da sapere**
+
+- decisione R11: un `codice_documento` nullo (controllo fatto in app) resta vuoto nel file esportato e
+  quella riga non si reimporta.
+- Idee accodate: T096, T097, T098.
+- Il link alla nuova pagina dalla pagina dell'import arriva con T052.
+
 ### Sessione agenti — 2026-10-25 — ciclo 20261025-15 — T044 T046
 
 **Fatto**

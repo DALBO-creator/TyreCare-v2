@@ -7,7 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261025-15 (T044 lettura e controllo del file dei controlli, T046 pagine pigre).
+> 20261025-18 (T047 pagina dell'import dei controlli, T041 esportazione dei controlli).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
@@ -23,16 +23,16 @@
   cancellazione account (T038 database, T039 pulsante nel profilo); intestazioni di
   sicurezza (T036), la CSP è solo Report-Only; fatta la bozza della procedura per le violazioni T037;
   esportazione: clienti e veicoli da `/clienti/importa` (T030), i dati personali dal profilo (T040), i
-  controlli ancora no (T041))
+  controlli da `/clienti/importa` (T041))
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, preferenze, annullare un import
 - [ ] P23: quale **dominio di TyreCare** usare per le email e quando configurarne i DNS su Resend
   (SPF/DKIM), una volta sola
 
 **1 — Lavoro di Claude (da scegliere con il titolare)**
 
-- [~] P8: **import dei controlli** dal CSV — database fatto (T043, 2026-10-24, regole in `NOTES.md`);
-  lettura e controllo del file fatti (T044, 2026-10-25,
-  `importa-controlli.ts`); restano la schermata nell'app (anteprima, caricamento) e i test e2e
+- [~] P8: **import dei controlli** dal CSV — fatti database (T043), lettura e controllo del file (T044),
+  pagina `/clienti/importa-controlli` (T047, 2026-10-25) ed esportazione (T041); resta il link dalla
+  pagina dell'import (T052)
 - [x] P22: **import con mappatura delle colonne** — fatta (T008–T012, 2026-10-20/21): logica in `importa.ts`,
   lettura di .xls/.xlsx/.ods, schermata "Associa le colonne", associazioni salvate per officina
 - [ ] Fase 5: **email di riserva** — dopo l'email dal dominio di TyreCare (P23, vedi "Rimandati")
