@@ -34,7 +34,7 @@ test('il titolare importa i controlli di un veicolo e reimportarli non li duplic
     'note',
   ].join(';');
   const riga = (doc: string, data: string, km: number, posizione: string, mm: string) =>
-    [doc, targa, data, km, posizione, mm, '2,2', 'REGOLARE', '', 'ESTIVA'].join(';') +
+    [doc, targa, data, km, posizione, mm, '2,2', 'REGOLARE', '', 'ESTIVO'].join(';') +
     ';205/55 R16;Pirelli;Cinturato;2321;';
   const csv = Buffer.from(
     [
