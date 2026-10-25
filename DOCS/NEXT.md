@@ -7,7 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261025-18 (T047 pagina dell'import dei controlli, T041 esportazione dei controlli).
+> 20261026-00 (T074 import dei controlli con valori mancanti, T078 termini protetti dagli update diretti).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
