@@ -1,6 +1,7 @@
 import { isAuthError } from '@supabase/supabase-js';
 import type { ModificaProfilo, Tables } from '@tyrecare/shared';
-import { sessioneCorrente } from './auth';
+import { messaggioErrore, sessioneCorrente } from './auth';
+import { ErroreModulo } from './errori';
 import { conRiprova } from './rete';
 import { getSupabase } from './supabase';
 
@@ -75,4 +76,30 @@ export async function salvaProfilo(dati: ModificaProfilo): Promise<void> {
     getSupabase().from('profiles').update(dati).eq('id', utente.id).select('id').single(),
   );
   if (error) throw error;
+}
+
+const ERRORI_ELIMINAZIONE: Record<string, string> = {
+  TITOLARE_DI_OFFICINA:
+    "Sei il titolare di un'officina: scrivici con «Invia un commento» per chiudere l'officina e l'account.",
+  PRENOTAZIONI_IN_CORSO: 'Hai appuntamenti in corso: annullali da «Appuntamenti» e riprova.',
+  ACCOUNT_AMMINISTRATORE: "L'account amministratore non si elimina dall'app.",
+};
+
+/** Messaggio italiano per la chiave d'errore di `elimina_account`; `undefined` se non è una di quelle note. */
+export const messaggioEliminazione = (codice: string | undefined): string | undefined =>
+  codice === undefined ? undefined : ERRORI_ELIMINAZIONE[codice];
+
+/**
+ * Elimina l'account dell'utente autenticato (la funzione del database cancella anche profilo,
+ * notifiche e commenti). Nessuna riprova automatica: dopo il successo l'utente non esiste più.
+ * Dopo questa chiamata la pagina deve fare `esci()`.
+ */
+export async function eliminaAccount(): Promise<void> {
+  const { error } = await getSupabase().rpc('elimina_account');
+  if (error) {
+    const testo = messaggioEliminazione(error.message);
+    throw testo
+      ? new ErroreModulo(testo, undefined, error.message)
+      : new Error(messaggioErrore(error));
+  }
 }

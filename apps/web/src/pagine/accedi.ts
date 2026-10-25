@@ -3,13 +3,14 @@ import { accedi } from '../lib/auth';
 import { esc } from '../lib/html';
 import { paginaAuth } from '../ui/layout';
 import { RIQUADRO_ERRORE, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
-import { parametro } from './comune';
+import { avvisoConferma, parametro } from './comune';
 
 export function mostraAccedi(app: HTMLElement): void {
   app.innerHTML = paginaAuth({
     titolo: 'Accedi',
     sottotitolo: 'Lo stato dei tuoi pneumatici, sempre sotto controllo.',
     corpo: `
+      ${avvisoConferma()}
       <form class="tc-auth__modulo" novalidate>
         ${RIQUADRO_ERRORE}
         ${campo({

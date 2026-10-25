@@ -9,6 +9,7 @@ import {
   Mail,
   Phone,
   ShieldCheck,
+  Trash2,
   UserPen,
   Wrench,
 } from 'lucide';
@@ -115,6 +116,7 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
             'Invia un commento su TyreCare',
             `/commento?da=${encodeURIComponent(paginaPrecedente())}`,
           )}
+          ${link(Trash2, 'Elimina il tuo account', '/profilo/elimina')}
         </nav>
       </section>
 
