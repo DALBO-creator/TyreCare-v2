@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-26 — ciclo 20261026-00 — T074 T078
+
+**Fatto**
+
+- T074: l'import dei controlli considera "stessa gomma" anche un valore mancante nel database (DOT nullo,
+  marca o misura vuote): una gomma montata dall'app senza DOT non viene più smontata né duplicata.
+  Migrazione `create or replace` e pgTAP `import-controlli-mancanti` (9 test).
+- T078: versione dei termini e data di accettazione si cambiano solo con `accetta_termini` (trigger nuovo
+  `profiles_proteggi_termini`); un `update` diretto del proprio profilo dà 42501. `termini.test.sql` con
+  21 test, tra cui i casi negati e "entrambi nulli" diviso per colonna.
+
+**Verifiche**
+
+- Corsia C1 coordinata dal direttore con 2 esecutori-senior; gate approvati al primo giro.
+- Test pgTAP non eseguiti in locale: li verifica la CI.
+
 ### Sessione agenti — 2026-10-25 — ciclo 20261025-18 — T047 T041
 
 **Fatto**

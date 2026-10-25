@@ -1945,3 +1945,37 @@ condividono un solo chunk. Il service worker precarica comunque tutti i chunk (p
 - Corsa tra navigazioni: se l'utente cambia pagina durante l'import, la pagina in ritardo non si disegna
   (`visualizzazioneCorrente` / `ancoraAttuale`).
 - Il router non gestisce ancora gli errori di caricamento (idea T095).
+
+---
+
+## Import dei controlli: valori mancanti = stessa gomma (T074)
+
+**File coinvolti:** `supabase/migrations/20261026000100_import_controlli_mancanti.sql`,
+`supabase/tests/database/import-controlli-mancanti.test.sql`.
+**Come funziona:** la ricerca "1) stessa gomma" di `importa_controlli` confronta misura, marca e DOT senza
+badare a maiuscole e spazi. Un valore vuoto conta come uguale da entrambe le parti: cella vuota del file
+(T043) oppure valore vuoto o nullo nel database (T074). Così una gomma montata dall'app senza DOT non viene
+più smontata né duplicata.
+
+### Codice complesso
+- Una gomma con tutti e tre i valori vuoti corrisponde a qualunque riga della sua posizione; se più
+  pneumatici coprono la data vale il più recente (`order by montato_il desc`).
+- La migrazione ricopia il corpo di T043 cambiando solo le tre condizioni (`create or replace`): firma e
+  permessi invariati.
+- La misura con gli indici ("205/55 R16 91V") resta una gomma diversa da "205/55 R16".
+
+---
+
+## Termini accettati: protetti dagli update diretti (T078)
+
+**File coinvolti:** `supabase/migrations/20261026000200_termini_protetti.sql`,
+`supabase/tests/database/termini.test.sql`.
+**Come funziona:** la policy "profiles: modifica propria o admin" lascia all'utente il suo profilo, ma il
+trigger `profiles_proteggi_termini` (funzione `proteggi_termini`) blocca con 42501 ogni cambio di
+`termini_versione` e `termini_accettati_il`. Restano liberi admin, service role (`auth.uid()` nullo) e
+`accetta_termini`; la registrazione non cambia (`crea_profilo_nuovo_utente` fa un insert).
+
+### Codice complesso
+- `accetta_termini` apre il permesso con `set_config('tyrecare.accetta_termini','si',true)` e lo richiude
+  subito dopo il suo `update`, così la data resta `now()` del database (P17).
+- Limite: con una connessione SQL diretta il permesso si apre da sé, via API no.
