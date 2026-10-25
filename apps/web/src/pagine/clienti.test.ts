@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filtraClienti } from './clienti';
+import { filtraClienti, senzaApp } from './clienti';
 import type { ClienteConVeicoli } from '../lib/officina';
 
 const cliente = (o: Partial<ClienteConVeicoli> & { id: string }): ClienteConVeicoli =>
@@ -9,6 +9,7 @@ const cliente = (o: Partial<ClienteConVeicoli> & { id: string }): ClienteConVeic
     ragione_sociale: null,
     telefono: null,
     email: null,
+    profile_id: null,
     veicoli: [],
     ...o,
   }) as ClienteConVeicoli;
@@ -38,5 +39,26 @@ describe('filtraClienti', () => {
   });
   it('nessun risultato', () => {
     expect(filtraClienti(elenco, 'zzz')).toEqual([]);
+  });
+});
+
+describe('filtro "Senza app"', () => {
+  const misti = [
+    cliente({ id: '1', nome: 'Giulia', cognome: 'Verdi', profile_id: 'p1' }),
+    cliente({ id: '2', nome: 'Franco', cognome: 'Gialli' }),
+    cliente({ id: '3', nome: 'Gianni', cognome: 'Neri' }),
+  ];
+  it('conta e mostra solo i clienti senza account', () => {
+    expect(senzaApp(misti).map((c) => c.id)).toEqual(['2', '3']);
+    expect(filtraClienti(misti, '', true).map((c) => c.id)).toEqual(['2', '3']);
+  });
+  it('si combina con la ricerca', () => {
+    expect(filtraClienti(misti, 'gian', true).map((c) => c.id)).toEqual(['3']);
+    expect(filtraClienti(misti, 'giulia', true)).toEqual([]);
+    expect(filtraClienti(misti, 'giulia').map((c) => c.id)).toEqual(['1']);
+  });
+  it('lista vuota', () => {
+    expect(senzaApp([])).toEqual([]);
+    expect(filtraClienti([], '', true)).toEqual([]);
   });
 });
