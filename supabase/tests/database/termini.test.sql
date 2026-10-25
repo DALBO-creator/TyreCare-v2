@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(20);
+select plan(21);
 
 insert into auth.users (instance_id, id, aud, role, email, email_confirmed_at, raw_user_meta_data)
 values
@@ -140,6 +140,10 @@ select lives_ok(
   'l''amministratore può correggere la versione'
 );
 reset role;
+select is(
+  (select termini_versione from public.profiles where id = 'a0000000-0000-4000-8000-0000000000e2'),
+  'corretta-da-admin', 'la correzione dell''amministratore è salvata'
+);
 
 select * from finish();
 rollback;
