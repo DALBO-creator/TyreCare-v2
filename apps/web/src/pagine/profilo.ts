@@ -2,6 +2,7 @@ import {
   ChevronRight,
   ClipboardList,
   Clock,
+  Download,
   MapPin,
   KeyRound,
   LogOut,
@@ -9,13 +10,16 @@ import {
   Mail,
   Phone,
   ShieldCheck,
+  Trash2,
   UserPen,
   Wrench,
 } from 'lucide';
 import { esci, messaggioErrore } from '../lib/auth';
 import { esc } from '../lib/html';
+import { nomeFileMieiDati, raccogliMieiDati } from '../lib/miei-dati';
 import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
 import { ancoraAttuale, paginaPrecedente, visualizzazioneCorrente } from '../lib/router';
+import { scaricaJson } from '../lib/scarica';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import {
@@ -115,7 +119,12 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
             'Invia un commento su TyreCare',
             `/commento?da=${encodeURIComponent(paginaPrecedente())}`,
           )}
+          ${link(Trash2, 'Elimina il tuo account', '/profilo/elimina')}
         </nav>
+        <div class="tc-avviso tc-avviso--rosso mt-3" data-errore-dati role="alert" tabindex="-1" hidden></div>
+        <button type="button" class="btn btn-outline-light btn-lg w-100 mt-3" data-scarica-dati>
+          ${icona(Download)} Scarica i tuoi dati
+        </button>
       </section>
 
       <section class="tc-azione">
@@ -125,6 +134,27 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
         </button>
       </section>
     </div>`);
+
+  const scaricaDati = app.querySelector<HTMLButtonElement>('[data-scarica-dati]');
+  scaricaDati?.addEventListener('click', async () => {
+    const box = app.querySelector<HTMLElement>('[data-errore-dati]');
+    if (box) box.hidden = true;
+    const html = scaricaDati.innerHTML;
+    scaricaDati.disabled = true;
+    scaricaDati.textContent = 'Preparazione…';
+    try {
+      scaricaJson(nomeFileMieiDati(), await raccogliMieiDati());
+    } catch (errore) {
+      if (box) {
+        box.innerHTML = `<p class="mb-0">${esc(messaggioErrore(errore))}</p>`;
+        box.hidden = false;
+        box.focus();
+      }
+    } finally {
+      scaricaDati.innerHTML = html;
+      scaricaDati.disabled = false;
+    }
+  });
 
   app.querySelector('[data-esci]')?.addEventListener('click', async () => {
     try {

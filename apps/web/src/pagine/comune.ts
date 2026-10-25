@@ -150,6 +150,14 @@ export function vaiConConferma(
   vaiA(percorso, opzioni);
 }
 
+/**
+ * Imposta la conferma da mostrare sulla prossima pagina senza cambiare pagina (es. prima di
+ * `esci()`: il cambio lo fa main.ts su SIGNED_OUT).
+ */
+export function impostaConferma(messaggio: string): void {
+  conferma = messaggio;
+}
+
 /** Avviso verde con la conferma in attesa, se c'è (poi viene dimenticata). */
 export function avvisoConferma(): string {
   const messaggio = conferma;
