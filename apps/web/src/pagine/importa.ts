@@ -20,6 +20,7 @@ import {
   leggiTabella,
   salvaMappatura,
   scaricaClientiVeicoli,
+  scaricaControlli,
   scaricaModello,
   type ConteggiImport,
   type ImportPassato,
@@ -118,31 +119,44 @@ export async function mostraImporta(app: HTMLElement): Promise<void> {
       <section aria-labelledby="tc-esporta">
         <h2 id="tc-esporta" class="tc-etichetta">Esporta i dati</h2>
         <p class="text-body-secondary">
-          Scarica tutti i clienti e i veicoli nel formato del modello: si apre con Excel e si può reimportare.
+          Scarica tutti i clienti e i veicoli nel formato del modello, oppure le misure di tutti i controlli: si aprono con Excel e si possono reimportare.
         </p>
         <div data-errore-esporta aria-live="polite"></div>
-        <button type="button" class="btn btn-outline-light w-100" data-esporta>
-          ${icona(Download)} Scarica clienti e veicoli
-        </button>
+        <div class="d-grid gap-2">
+          <button type="button" class="btn btn-outline-light w-100" data-esporta>
+            ${icona(Download)} Scarica clienti e veicoli
+          </button>
+          <button type="button" class="btn btn-outline-light w-100" data-esporta-controlli>
+            ${icona(Download)} Scarica i controlli
+          </button>
+        </div>
       </section>
     </div>`);
 
   app.querySelector('[data-modello]')!.addEventListener('click', scaricaModello);
-  const esporta = app.querySelector<HTMLButtonElement>('[data-esporta]')!;
   const erroreEsporta = app.querySelector<HTMLElement>('[data-errore-esporta]')!;
-  esporta.addEventListener('click', async () => {
-    erroreEsporta.innerHTML = '';
-    esporta.disabled = true;
-    esporta.textContent = 'Preparazione…';
-    try {
-      await scaricaClientiVeicoli(officinaId);
-    } catch (e) {
-      erroreEsporta.innerHTML = avvisoErrore(messaggioErrore(e));
-    } finally {
-      esporta.disabled = false;
-      esporta.innerHTML = `${icona(Download)} Scarica clienti e veicoli`;
-    }
-  });
+  const pulsantiEsporta = [
+    ...app.querySelectorAll<HTMLButtonElement>('[data-esporta], [data-esporta-controlli]'),
+  ];
+  for (const pulsante of pulsantiEsporta) {
+    const scarica = pulsante.hasAttribute('data-esporta-controlli')
+      ? scaricaControlli
+      : scaricaClientiVeicoli;
+    const contenuto = pulsante.innerHTML;
+    pulsante.addEventListener('click', async () => {
+      erroreEsporta.innerHTML = '';
+      for (const p of pulsantiEsporta) p.disabled = true;
+      pulsante.textContent = 'Preparazione…';
+      try {
+        await scarica(officinaId);
+      } catch (e) {
+        erroreEsporta.innerHTML = avvisoErrore(messaggioErrore(e));
+      } finally {
+        for (const p of pulsantiEsporta) p.disabled = false;
+        pulsante.innerHTML = contenuto;
+      }
+    });
+  }
   const input = app.querySelector<HTMLInputElement>('#tc-file')!;
   const anteprima = app.querySelector<HTMLElement>('[data-anteprima]')!;
   // Scegliendo un altro file mentre si carica l'anteprima, quella vecchia non va più mostrata
