@@ -155,7 +155,7 @@ export async function caricaClienti(officinaId: string): Promise<ClienteInElenco
 
 export type ClienteConVeicoli = Pick<
   Tables<'clienti_officina'>,
-  'id' | 'nome' | 'cognome' | 'ragione_sociale' | 'telefono' | 'email'
+  'id' | 'nome' | 'cognome' | 'ragione_sociale' | 'telefono' | 'email' | 'profile_id'
 > & { veicoli: Pick<Tables<'veicoli'>, 'targa'>[] };
 
 /** Clienti dell'officina con contatti e targhe, per l'elenco dei clienti (ordinati per nome). */
@@ -163,7 +163,7 @@ export async function caricaElencoClienti(officinaId: string): Promise<ClienteCo
   const data = await leggiTutte((da, a) =>
     getSupabase()
       .from('clienti_officina')
-      .select('id, nome, cognome, ragione_sociale, telefono, email, veicoli (targa)')
+      .select('id, nome, cognome, ragione_sociale, telefono, email, profile_id, veicoli (targa)')
       .eq('officina_id', officinaId)
       .order('targa', { referencedTable: 'veicoli' })
       .order('id')

@@ -57,7 +57,15 @@ export async function mostraClienti(app: HTMLElement): Promise<void> {
         </h2>
         ${
           clienti.length > 0
-            ? `<div class="tc-ricerca">
+            ? `<div class="tc-vista" role="group" aria-label="Filtra i clienti">
+                <button type="button" class="tc-vista__voce" data-senza-app="no" aria-pressed="true">
+                  Tutti
+                </button>
+                <button type="button" class="tc-vista__voce" data-senza-app="si" aria-pressed="false">
+                  Senza app (${senzaApp(clienti).length})
+                </button>
+              </div>
+              <div class="tc-ricerca">
                 <label class="form-label" for="tc-cerca">Cerca per nome, telefono, email o targa</label>
                 <div class="tc-ricerca__campo">
                   ${icona(Search)}
@@ -91,8 +99,20 @@ export const testoRicerca = (c: ClienteConVeicoli): string =>
 /** Solo le cifre del telefono: "333 123 4567" si trova anche scrivendo "3331234567". */
 export const cifre = (testo: string) => testo.replace(/\D/g, '');
 
-/** Clienti che corrispondono a `testo` (nome, contatti, targa, telefono per cifre); vuoto = tutti. */
-export function filtraClienti(clienti: ClienteConVeicoli[], testo: string): ClienteConVeicoli[] {
+/** Clienti che non hanno ancora collegato un account dell'app (da invitare). */
+export const senzaApp = (clienti: ClienteConVeicoli[]): ClienteConVeicoli[] =>
+  clienti.filter((c) => c.profile_id === null);
+
+/**
+ * Clienti che corrispondono a `testo` (nome, contatti, targa, telefono per cifre); vuoto = tutti.
+ * Con `soloSenzaApp` restano solo quelli senza account, combinato con la ricerca.
+ */
+export function filtraClienti(
+  clienti: ClienteConVeicoli[],
+  testo: string,
+  soloSenzaApp = false,
+): ClienteConVeicoli[] {
+  if (soloSenzaApp) clienti = senzaApp(clienti);
   const t = testo.trim().toLowerCase();
   if (!t) return clienti;
   const targa = normalizzaTarga(t.toUpperCase()).toLowerCase();
@@ -111,10 +131,12 @@ function collegaElenco(app: HTMLElement, clienti: ClienteConVeicoli[]): void {
   const elenco = app.querySelector<HTMLElement>('[data-elenco]')!;
   const conteggio = app.querySelector<HTMLElement>('[data-conteggio]')!;
   const cerca = app.querySelector<HTMLInputElement>('#tc-cerca')!;
+  const pulsanti = [...app.querySelectorAll<HTMLButtonElement>('[data-senza-app]')];
+  let soloSenzaApp = false;
 
   const disegna = () => {
     const testo = cerca.value.trim().toLowerCase();
-    const trovati = filtraClienti(clienti, testo);
+    const trovati = filtraClienti(clienti, testo, soloSenzaApp);
 
     conteggio.textContent =
       trovati.length === 1 ? '1 cliente trovato' : `${trovati.length} clienti trovati`;
@@ -125,9 +147,19 @@ function collegaElenco(app: HTMLElement, clienti: ClienteConVeicoli[]): void {
   };
 
   cerca.addEventListener('input', disegna);
+  for (const p of pulsanti) {
+    p.addEventListener('click', () => {
+      soloSenzaApp = p.dataset.senzaApp === 'si';
+      for (const altro of pulsanti)
+        altro.setAttribute('aria-pressed', String(altro.dataset.senzaApp === p.dataset.senzaApp));
+      disegna();
+    });
+  }
   elenco.addEventListener('click', (e) => {
     if (!(e.target as Element).closest('[data-mostra-tutti]')) return;
     cerca.value = '';
+    soloSenzaApp = false;
+    for (const p of pulsanti) p.setAttribute('aria-pressed', String(p.dataset.senzaApp === 'no'));
     disegna();
     cerca.focus();
   });
@@ -150,6 +182,7 @@ function rigaCliente(c: ClienteConVeicoli): string {
       <span class="tc-lista__testo">
         ${esc(nominativo(c))}
         <small>${esc(dettagli.join(' · '))}</small>
+        ${c.profile_id === null ? '<small>Non usa l’app</small>' : ''}
       </span>
     </a>`;
 }
