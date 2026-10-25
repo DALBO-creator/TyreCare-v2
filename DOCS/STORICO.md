@@ -4,6 +4,30 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-25 — ciclo 20261025-15 — T044 T046
+
+**Fatto**
+
+- T044: `packages/shared/src/importa-controlli.ts`, lettura e controllo nel browser del file dei controlli
+  (CSV/Excel, date e decimali all'italiana). Le righe valide hanno il formato di `importa_controlli` (T043)
+  e non ne violano i vincoli; quelle con errori restano fuori e sono riportate per riga.
+- T046: le pagine si scaricano solo quando si aprono (`pigra` con `import()` dinamico, `lib/pigra.ts`):
+  `index-*.js` iniziale da 315 kB a 20 kB (gzip 89 → 6 kB). Se l'import fallisce per un deploy nuovo la
+  pagina si ricarica una volta sola.
+
+**Verifiche**
+
+- 246 test unitari verdi, con `format:check`, lint, typecheck e build (Node 22). E2e non eseguiti in
+  locale: li verifica la CI.
+
+**Da sapere**
+
+- Idee accodate: T094 (scartare tutto il documento se una riga è in errore), T095 (messaggio "Pagina non
+  disponibile" con "Riprova" quando l'import di una pagina fallisce).
+- Un numero di 1-5 cifre nella colonna data è letto come seriale Excel ("2024" diventa 1905-07-17).
+- Controlli parziali (documento con alcune righe in errore): attenzione aggiunta a T047.
+- Il service worker precarica comunque tutti i chunk (precache da 21 a 110 voci, da 1060 a 1092 KiB).
+
 ### Sessione agenti — 2026-10-25 — ciclo 20261025-09 — T039 T040
 
 **Fatto**

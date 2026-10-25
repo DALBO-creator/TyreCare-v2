@@ -7,7 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261025-09 (T039 "Elimina il tuo account" nel profilo, T040 "Scarica i tuoi dati").
+> 20261025-15 (T044 lettura e controllo del file dei controlli, T046 pagine pigre).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
@@ -31,7 +31,8 @@
 **1 — Lavoro di Claude (da scegliere con il titolare)**
 
 - [~] P8: **import dei controlli** dal CSV — database fatto (T043, 2026-10-24, regole in `NOTES.md`);
-  restano la schermata nell'app (anteprima, caricamento) e i test e2e
+  lettura e controllo del file fatti (T044, 2026-10-25,
+  `importa-controlli.ts`); restano la schermata nell'app (anteprima, caricamento) e i test e2e
 - [x] P22: **import con mappatura delle colonne** — fatta (T008–T012, 2026-10-20/21): logica in `importa.ts`,
   lettura di .xls/.xlsx/.ods, schermata "Associa le colonne", associazioni salvate per officina
 - [ ] Fase 5: **email di riserva** — dopo l'email dal dominio di TyreCare (P23, vedi "Rimandati")

@@ -7,3 +7,4 @@ export * from './prenotazioni';
 export type * from './database.types';
 export * from './importa';
 export * from './commenti';
+export * from './importa-controlli';
