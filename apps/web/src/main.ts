@@ -21,6 +21,7 @@ import {
   mostraRifiuta,
 } from './pagine/appuntamenti';
 import { mostraCalendario } from './pagine/calendario';
+import { mostraEliminaAccount } from './pagine/elimina-account';
 import { mostraCambiaPassword } from './pagine/cambia-password';
 import { mostraCommento } from './pagine/commento';
 import { mostraCliente } from './pagine/cliente';
@@ -70,6 +71,12 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: 'Cambia password',
     mostra: mostraCambiaPassword,
+  },
+  {
+    percorso: '/profilo/elimina',
+    accesso: 'utente',
+    titolo: 'Elimina il tuo account',
+    mostra: mostraEliminaAccount,
   },
   // Garage del cliente: i suoi veicoli uniti per targa tra le officine
   {
