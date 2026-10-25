@@ -202,6 +202,12 @@ const ROTTE: Rotta[] = [
     mostra: pigra(() => import('./pagine/importa'), 'mostraImporta'),
   },
   {
+    percorso: '/clienti/importa-controlli',
+    accesso: 'utente',
+    titolo: 'Importa i controlli',
+    mostra: pigra(() => import('./pagine/importa-controlli'), 'mostraImportaControlli'),
+  },
+  {
     percorso: '/clienti/nuovo',
     accesso: 'utente',
     titolo: 'Nuovo cliente',
