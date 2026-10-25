@@ -1844,3 +1844,35 @@ n ≥ c) solo se la capienza non è nulla.
 database: RICHIESTA conta per `giorno`/`fascia` chiesti anche se ha già un `appuntamento`; PROPOSTA e
 CONFERMATA per giorno e fascia dell'appuntamento (`posizioneInAgenda`, ora italiana, dalle 13:00
 POMERIGGIO); senza appuntamento non contano; gli altri stati no.
+
+## Elimina il tuo account (T039)
+
+**File coinvolti:** `apps/web/src/lib/profilo.ts`, `apps/web/src/pagine/elimina-account.ts`,
+`apps/web/src/pagine/comune.ts`, `apps/web/src/pagine/accedi.ts`, `e2e/tests/elimina-account.spec.ts`.
+**Come funziona:** da Profilo → "Elimina il tuo account" (`/profilo/elimina`) si legge la spiegazione e si
+conferma con "Sì, elimina". `eliminaAccount()` (`lib/profilo.ts`) chiama la funzione SQL `elimina_account`.
+Le chiavi di rifiuto `TITOLARE_DI_OFFICINA`, `PRENOTAZIONI_IN_CORSO` e `ACCOUNT_AMMINISTRATORE` le traduce
+`messaggioEliminazione` e le mostra il dialogo di `chiediConferma`. Il link è visibile a tutti: i casi
+vietati li decide il database.
+
+### Codice complesso
+Dopo il successo `impostaConferma` (`pagine/comune.ts`) memorizza il messaggio senza navigare, poi `esci()`
+fa scattare `SIGNED_OUT`, `main.ts` porta a `/accedi` e `accedi.ts` stampa `avvisoConferma()`. Non si usa
+`vaiConConferma`: con la sessione ancora attiva la rotta da ospite rimanda alla home. L'ordine
+`impostaConferma` prima di `esci()` è voluto.
+
+## Scarica i tuoi dati (T040)
+
+**File coinvolti:** `apps/web/src/lib/miei-dati.ts`, `apps/web/src/pagine/profilo.ts`,
+`e2e/tests/miei-dati.spec.ts`.
+**Come funziona:** Profilo → "Scarica i tuoi dati" produce un JSON `versione: 1` con profilo, email, schede
+nelle officine, garage, prenotazioni, notifiche, commenti, officine in cui si lavora e numero di iscrizioni
+push (portabilità, art. 20 GDPR). Nome file `tyrecare-i-miei-dati-AAAA-MM-GG.json` con `oggiInItalia()`.
+Restano fuori `inviti_cliente`, `import_*` e `link_report` (audit dell'officina).
+
+### Codice complesso
+`raccogliMieiDati` legge con le query normali e filtri espliciti sull'id dell'utente: chi lavora in
+officina vedrebbe per RLS anche le righe dei clienti. Le liste a pagine usano `leggiTutte` con
+`.order('id')` (`officina_utenti` per `officina_id`, unica sotto il filtro); il garage viene da
+`caricaGarage`. `componiMieiDati` (pura, testata) compone il file; delle push esce solo il conteggio:
+`endpoint`, `p256dh` e `auth` non escono mai.

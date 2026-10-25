@@ -4,6 +4,29 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-25 — ciclo 20261025-09 — T039 T040
+
+**Fatto**
+
+- T039: Profilo → "Elimina il tuo account" (`/profilo/elimina`): spiegazione, pulsante di pericolo, conferma
+  "Sì, elimina" e `rpc elimina_account`; poi uscita e avviso "Il tuo account è stato eliminato." sulla pagina
+  di accesso, che ora mostra la conferma in sospeso. E2e `elimina-account.spec.ts`.
+- T040: Profilo → "Scarica i tuoi dati": un JSON con profilo, email, schede nelle officine, garage,
+  prenotazioni, notifiche, commenti, officine in cui si lavora e numero di iscrizioni push (portabilità,
+  art. 20 GDPR). Funzione pura `componiMieiDati` testata e e2e `miei-dati.spec.ts`.
+
+**Verifiche**
+
+- 208 test unitari verdi, con `format:check`, lint, typecheck e build (Node 22). Gli e2e
+  `elimina-account.spec.ts` e `miei-dati.spec.ts` non sono stati eseguiti in locale: li verifica la CI.
+
+**Da sapere**
+
+- Idee accodate: T091 (eliminazione: `esci()` fallito dopo l'eliminazione, uscita forzata e conferma
+  pulita), T092 (`avvisoConferma()` anche nelle altre pagine ospite), T093 (export dati: valutare
+  `inviti_cliente` e `link_report`).
+- Il link "Elimina il tuo account" è in fondo alla navigazione Account, dopo "Invia un commento".
+
 ### Sessione agenti — 2026-10-25 — ciclo 20261025-03 — T033 T035
 
 **Fatto**

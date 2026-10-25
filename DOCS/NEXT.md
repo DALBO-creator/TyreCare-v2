@@ -7,7 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261025-03 (T033 filtro "Senza app" nei clienti, T035 occupazione delle fasce nel calendario).
+> 20261025-09 (T039 "Elimina il tuo account" nel profilo, T040 "Scarica i tuoi dati").
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
@@ -20,9 +20,10 @@
   `DOCS/legale/README.md`; solo dopo si fanno le pagine nell'app e si firma il DPA con LA SANTI GOMME
 - [ ] P17: decidere quali misure di "Da fare prima del lancio" (`DOCS/legale/README.md`) fare prima del
   pilota (registro accessi del personale, esportazione dati, 2FA, copie di sicurezza; fatte solo in parte:
-  cancellazione account, la funzione c'è (T038) ma manca il pulsante nel profilo (T039); intestazioni di
+  cancellazione account (T038 database, T039 pulsante nel profilo); intestazioni di
   sicurezza (T036), la CSP è solo Report-Only; fatta la bozza della procedura per le violazioni T037;
-  esportazione: clienti e veicoli da `/clienti/importa` (T030), i controlli ancora no (T041))
+  esportazione: clienti e veicoli da `/clienti/importa` (T030), i dati personali dal profilo (T040), i
+  controlli ancora no (T041))
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, preferenze, annullare un import
 - [ ] P23: quale **dominio di TyreCare** usare per le email e quando configurarne i DNS su Resend
   (SPF/DKIM), una volta sola
