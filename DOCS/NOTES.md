@@ -1876,3 +1876,40 @@ officina vedrebbe per RLS anche le righe dei clienti. Le liste a pagine usano `l
 `.order('id')` (`officina_utenti` per `officina_id`, unica sotto il filtro); il garage viene da
 `caricaGarage`. `componiMieiDati` (pura, testata) compone il file; delle push esce solo il conteggio:
 `endpoint`, `p256dh` e `auth` non escono mai.
+
+---
+
+## Import controlli: controllo del file (`importa-controlli.ts`) (T044)
+
+**File coinvolti:** `packages/shared/src/importa-controlli.ts` (e il suo test).
+**Come funziona:** `controllaTabellaControlli(t, m, {oggi, soloUltimo})` legge nel browser la tabella del
+file (CSV/Excel) con la mappatura `m` e restituisce `righe` valide (nel formato di `importa_controlli`,
+T043), `errori` per riga, `lette` e `ignorate`. Una riga con errori non entra mai in `righe`; le righe
+vuote sono saltate e contate in `ignorate`. Con `soloUltimo` resta il documento più recente di ogni targa.
+
+### Codice complesso
+- Date: ISO, `GG/MM/AAAA`, `GG-MM-AAAA`, `GG.MM.AAAA` e seriale Excel (giorni dal 1899-12-30, in UTC);
+  data inesistente o futura = errore. Un numero di 1-5 cifre è letto come seriale ("2024" = 1905-07-17).
+- Posizione, stagione e usura sono riconosciute senza maiuscole, spazi, `_`, `-` e accenti; i km accettano
+  il punto delle migliaia.
+- Un documento ha stessa targa e data in tutte le righe (riferimento: la prima) e ogni posizione una sola
+  volta.
+- `soloUltimo`: a parità di data vince il codice documento maggiore.
+
+---
+
+## Pagine pigre (`lib/pigra.ts`) (T046)
+
+**File coinvolti:** `apps/web/src/lib/pigra.ts`, `apps/web/src/main.ts` (rotte).
+**Come funziona:** ogni rotta tranne `accedi`, `registrati`, `home` e `non-trovata` usa
+`mostra: pigra(() => import('./pagine/x'), 'mostraX')`: la pagina si scarica solo alla prima apertura
+(`index-*.js` iniziale da 315 a 20 kB). Le rotte nuove devono usare `pigra`; più rotte dello stesso modulo
+condividono un solo chunk. Il service worker precarica comunque tutti i chunk (precache 21 → 110 voci).
+
+### Codice complesso
+- Se l'import fallisce con i messaggi noti (Chrome, Safari, Firefox: tipico dopo un deploy nuovo) e
+  `sessionStorage['tc-ricarica-pagina']` non c'è, `pigra` scrive il flag e ricarica; altrimenti rilancia
+  l'errore. La decisione è in `deveRicaricare()` (pura, testata); il flag si toglie a ogni import riuscito.
+- Corsa tra navigazioni: se l'utente cambia pagina durante l'import, la pagina in ritardo non si disegna
+  (`visualizzazioneCorrente` / `ancoraAttuale`).
+- Il router non gestisce ancora gli errori di caricamento (idea T095).
