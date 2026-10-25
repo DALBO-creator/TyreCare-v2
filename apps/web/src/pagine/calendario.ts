@@ -11,7 +11,8 @@ import {
 } from '@tyrecare/shared';
 import {
   agendaDelGiorno,
-  caricaOrari,
+  caricaOrariECapienza,
+  occupazioneFascia,
   caricaSettimana,
   contaPerGiorno,
   giorniSettimana,
@@ -65,14 +66,15 @@ export async function mostraCalendario(app: HTMLElement): Promise<void> {
   let officinaId: string;
   let officina: string;
   let orari: unknown;
+  let capienza: number | null;
   let prenotazioni: Prenotazione[];
   let chiusure: ChiusuraOfficina[];
   try {
     const contesto = await caricaContestoOfficina();
     officinaId = contesto.attiva.officina.id;
     officina = contesto.attiva.officina.ragione_sociale;
-    [orari, prenotazioni, chiusure] = await Promise.all([
-      caricaOrari(officinaId),
+    [{ orari, capienza }, prenotazioni, chiusure] = await Promise.all([
+      caricaOrariECapienza(officinaId),
       caricaSettimana(officinaId, lunediDi(giorno)),
       caricaChiusure(officinaId, lunediDi(giorno)),
     ]);
@@ -150,9 +152,14 @@ export async function mostraCalendario(app: HTMLElement): Promise<void> {
     const fascia = (f: Fascia) => {
       const elenco = delGiorno[f];
       if (!elenco.length && !aperte.includes(f)) return '';
+      const occupate = capienza === null ? 0 : occupazioneFascia(prenotazioni, giorno, f);
+      const conteggio =
+        capienza === null
+          ? ''
+          : ` · ${occupate} su ${capienza} richieste${occupate >= capienza ? ' · piena' : ''}`;
       return `
         <section aria-labelledby="tc-fascia-${f}">
-          <h3 id="tc-fascia-${f}" class="tc-etichetta">${ETICHETTE_FASCIA[f]}</h3>
+          <h3 id="tc-fascia-${f}" class="tc-etichetta">${ETICHETTE_FASCIA[f]}${conteggio}</h3>
           ${
             elenco.length
               ? `<div class="tc-lista">${elenco.map(rigaAgenda).join('')}</div>`
