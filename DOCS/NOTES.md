@@ -1979,3 +1979,34 @@ trigger `profiles_proteggi_termini` (funzione `proteggi_termini`) blocca con 425
 - `accetta_termini` apre il permesso con `set_config('tyrecare.accetta_termini','si',true)` e lo richiude
   subito dopo il suo `update`, così la data resta `now()` del database (P17).
 - Limite: con una connessione SQL diretta il permesso si apre da sé, via API no.
+
+---
+
+## Periodo delle date nell'anteprima dell'import controlli (T096)
+
+**File coinvolti:** `apps/web/src/lib/importa-controlli.ts`, `apps/web/src/pagine/importa-controlli.ts`.
+**Come funziona:** la pagina calcola il periodo sulle righe pronte da importare, lo formatta con
+`formattaData` di `pagine/comune.ts` e mostra "Controlli dal X al Y" (o "Controlli del X" se la data è una
+sola) in `[data-periodo]`, sotto `[data-conteggi]`. Serve a notare una colonna data letta male (es. un
+numero di Excel).
+
+### Codice complesso
+- `periodoDate(righe)` in `lib/importa-controlli.ts` restituisce `{ da, a }` in formato ISO oppure `null`.
+- Minimo e massimo si trovano confrontando le stringhe ISO, che si ordinano come le date; le date vuote
+  sono ignorate.
+
+---
+
+## Clienti: testi dello stato vuoto (T089)
+
+**File coinvolti:** `apps/web/src/pagine/clienti.ts`.
+**Come funziona:** `testoVuoto(testo, soloSenzaApp, haClienti)` sceglie titolo e sotto-testo dell'elenco
+quando non c'è nulla da mostrare. Con "Senza app" attivo e ricerca vuota dice "Tutti i clienti usano già
+l'app."; con ricerca e filtro insieme aggiunge "tra chi non usa l'app".
+
+### Codice complesso
+- La funzione è pura e restituisce testi non escapati: il chiamante usa `esc`, perché la ricerca è input
+  dell'utente.
+- La ricerca si considera dopo `trim()`, come in `filtraClienti`.
+- Disegna sia "nessun risultato" sia "Ancora nessun cliente" (una sola fonte): un nuovo filtro dell'elenco
+  si aggiunge qui, non nel template.

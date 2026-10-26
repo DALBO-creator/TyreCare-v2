@@ -4,6 +4,24 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-26 — ciclo 20261026-03 — T096 T089
+
+**Fatto**
+
+- T096: il testo dell'esportazione non promette più che tutto si reimporta (clienti e veicoli sì; un
+  cliente senza codice gestionale e senza veicoli no; i controlli inseriti dall'app vengono segnalati come
+  righe con errori); "1 già presente" al singolare; l'anteprima dell'import dei controlli mostra il periodo
+  delle date.
+- T089: nell'elenco clienti lo stato vuoto è scelto da `testoVuoto`; con "Senza app" attivo e ricerca vuota
+  dice "Tutti i clienti usano già l'app."; con ricerca e filtro insieme aggiunge "tra chi non usa l'app".
+
+**Verifiche**
+
+- Corsia C2 coordinata dal direttore con 2 esecutori Sonnet; revisione di T096 al primo giro, di T089 al
+  secondo; gate del supervisore approvati al primo giro.
+- Prova d'insieme verde: 270 test su 29 file, con `format:check`, lint, typecheck e build (Node 22). E2e
+  non eseguiti in locale: li esegue la CI.
+
 ### Sessione agenti — 2026-10-26 — ciclo 20261026-00 — T074 T078
 
 **Fatto**
@@ -19,6 +37,7 @@
 
 - Corsia C1 coordinata dal direttore con 2 esecutori-senior; gate approvati al primo giro.
 - Test pgTAP non eseguiti in locale: li verifica la CI.
+- CI verde al primo giro (check, database con pgTAP, e2e); unita in main con la PR #27.
 
 ### Sessione agenti — 2026-10-25 — ciclo 20261025-18 — T047 T041
 
