@@ -1,0 +1,17 @@
+import { expect, test } from '@playwright/test';
+
+// Informativa e termini si leggono senza account; finché sono bozze un avviso lo dice.
+
+const AVVISO = 'Testo in bozza: la versione definitiva arriverà dopo la revisione legale.';
+
+for (const [percorso, titolo] of [
+  ['/privacy', 'Informativa sul trattamento dei dati personali — TyreCare'],
+  ['/termini', 'Termini di servizio — TyreCare'],
+] as const) {
+  test(`senza accesso ${percorso} mostra l'avviso di bozza e il titolo`, async ({ page }) => {
+    await page.goto(percorso);
+    await expect(page.getByRole('heading', { level: 1, name: titolo })).toBeVisible();
+    await expect(page.getByText(AVVISO)).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Torna indietro' })).toBeVisible();
+  });
+}

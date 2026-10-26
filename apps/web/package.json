@@ -17,6 +17,7 @@
     "@tyrecare/shared": "^0.0.0",
     "bootstrap": "^5.3.8",
     "lucide": "^1.52.0",
+    "marked": "18.1.2",
     "zod": "^4.6.5"
   },
   "devDependencies": {
