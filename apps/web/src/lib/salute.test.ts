@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { dataSoglia, formattaEta, mesiDalDot, tendenza } from './salute';
+import {
+  MESI_GOMMA_VECCHIA,
+  dataSoglia,
+  formattaEta,
+  gommeVecchie,
+  mesiDalDot,
+  tendenza,
+} from './salute';
 
 describe('mesiDalDot', () => {
   it("calcola l'età dalla settimana e dall'anno", () => {
@@ -64,5 +71,25 @@ describe('tendenza e dataSoglia', () => {
   it('senza km il consumo per 10.000 km non c’è', () => {
     const t = tendenza(punti.map((p) => ({ ...p, km: null })))!;
     expect(t.mmOgni10000km).toBeNull();
+  });
+});
+
+describe('gommeVecchie', () => {
+  const oggi = '2026-10-09';
+
+  it('senza DOT o con DOT recente non conta nulla', () => {
+    expect(gommeVecchie([], oggi)).toBe(0);
+    expect(gommeVecchie([{ dot: null }, { dot: '' }], oggi)).toBe(0);
+    expect(gommeVecchie([{ dot: '3823' }], oggi)).toBe(0);
+  });
+
+  it('conta una gomma di 6 anni', () => {
+    expect(gommeVecchie([{ dot: '3820' }], oggi)).toBe(1);
+  });
+
+  it('conta due vecchie su quattro, bordo dei 60 mesi compreso', () => {
+    expect(mesiDalDot('3821', oggi)).toBe(MESI_GOMMA_VECCHIA);
+    const gomme = [{ dot: '3821' }, { dot: '3823' }, { dot: '1015' }, { dot: null }];
+    expect(gommeVecchie(gomme, oggi)).toBe(2);
   });
 });

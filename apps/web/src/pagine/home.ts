@@ -3,11 +3,12 @@ import { formattaTarga } from '@tyrecare/shared';
 import { caricaGarage, type VeicoloGarage } from '../lib/garage';
 import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
 import { esc } from '../lib/html';
+import { gommeVecchie } from '../lib/salute';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import { STATI, badgeStato } from '../ui/stato';
-import { ETICHETTE_AREA, avvisoConferma, conData, gestisciErroreCaricamento } from './comune';
+import { ETICHETTE_AREA, avvisoConferma, conData, gestisciErroreCaricamento, oggi } from './comune';
 import { mostraHomeOfficina } from './home-officina';
 
 /** Home dopo l'accesso: per chi lavora in un'officina l'elenco dei veicoli, per il cliente il garage. */
@@ -64,6 +65,7 @@ function sezioneVeicoli(garage: VeicoloGarage[]): string {
 /** Un veicolo del garage: tutta la carta è un solo collegamento alla sua scheda. */
 function cartaVeicolo(v: VeicoloGarage): string {
   const ultimo = v.controlli[0];
+  const vecchie = gommeVecchie(v.pneumatici, oggi());
   const classe = v.stato ? ` tc-garage__carta--${STATI[v.stato].classe}` : '';
   return `
     <a class="tc-garage__carta${classe}" href="/garage/veicolo?targa=${encodeURIComponent(v.targa)}">
@@ -83,6 +85,11 @@ function cartaVeicolo(v: VeicoloGarage): string {
             ? `<small>Controllo ${esc(conData('del', ultimo.eseguito_il))}${
                 ultimo.officina ? ` · ${esc(ultimo.officina)}` : ''
               }</small>`
+            : ''
+        }
+        ${
+          vecchie > 0
+            ? `<small>${vecchie === 1 ? '1 gomma ha' : `${vecchie} gomme hanno`} più di 5 anni</small>`
             : ''
         }
       </span>
