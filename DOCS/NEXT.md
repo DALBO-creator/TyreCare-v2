@@ -7,7 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261026-15 (T088 e2e con movimento ridotto, T099 rotte segnaposto delle pagine del lancio).
+> 20261026-18 (T091 uscita forzata dopo l'eliminazione dell'account, T050 avviso delle gomme vecchie nel
+> garage).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
