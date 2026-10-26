@@ -2010,3 +2010,32 @@ l'app."; con ricerca e filtro insieme aggiunge "tra chi non usa l'app".
 - La ricerca si considera dopo `trim()`, come in `filtraClienti`.
 - Disegna sia "nessun risultato" sia "Ancora nessun cliente" (una sola fonte): un nuovo filtro dell'elenco
   si aggiunge qui, non nel template.
+
+---
+
+## e2e: movimento ridotto (T088)
+
+**File coinvolti:** `e2e/playwright.config.ts`.
+**Come funziona:** la config imposta `use.reducedMotion: 'reduce'`. L'app attiva l'animazione `tc-entra`
+solo con `prefers-reduced-motion: no-preference` (`_componenti.scss`), quindi nei test l'animazione è
+spenta come per un utente con "riduci movimento" e non sposta i pulsanti sotto il clic.
+
+### Codice complesso
+- I contesti creati con `browser.newContext()` ereditano l'opzione (Playwright Test unisce le opzioni di
+  `use` in `runBeforeCreateBrowserContext`), salvo un contesto che passi la sua `reducedMotion`.
+
+---
+
+## Rotte segnaposto del lancio (T099)
+
+**File coinvolti:** `apps/web/src/main.ts`, `apps/web/src/pagine/legale.ts`, `registra-officina.ts`,
+`admin-officine.ts`, `admin-commenti.ts`, `per-le-officine.ts`, `report-pubblico.ts`, `abbonamento.ts`.
+**Come funziona:** 8 rotte caricate con `pigra` (un chunk ciascuno). Pubbliche (`paginaAuth`): `/privacy`,
+`/termini`, `/per-le-officine`, `/r`. Per utente (`paginaApp` + `intestazioneSottopagina`):
+`/officina/registra`, `/officina/abbonamento`, `/admin/officine`, `/admin/commenti`. Ogni segnaposto mostra
+titolo, "Pagina in preparazione." e il link alla home.
+
+### Codice complesso
+- I compiti successivi riscrivono solo il corpo mantenendo il nome della funzione esportata, senza
+  toccare `main.ts`; `legale.ts` esporta `mostraPrivacy` e `mostraTermini` (un chunk).
+- Le rotte `/admin/*` richiedono solo l'utente: il controllo admin lato database spetta a T061 e T103.

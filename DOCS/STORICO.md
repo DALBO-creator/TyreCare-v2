@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-26 — ciclo 20261026-15 — T088 T099
+
+**Fatto**
+
+- T088: gli e2e girano con `reducedMotion: 'reduce'` (config Playwright), così l'animazione `tc-entra`
+  non sposta i pulsanti sotto il clic; il fallimento di `[telefono] › unisci-clienti.spec.ts:7` (treni
+  #22, #23, #25) dovrebbe sparire.
+- T099: 8 rotte delle pagine nuove del lancio in `main.ts` con segnaposto caricati con `pigra` (un chunk
+  ciascuno); T055, T060–T062, T064, T068, T103 riscrivono solo i loro file.
+
+**Verifiche**
+
+- Corsia C5 coordinata dal direttore con 2 esecutori Sonnet; revisione e gate del supervisore approvati
+  al primo giro per entrambi i compiti.
+- Prova d'insieme verde: 270 test, con `format:check`, lint, typecheck e build (Node 22). E2e non
+  eseguiti in locale (manca Docker): li esegue la CI.
+
 ### Sessione agenti — 2026-10-26 — ciclo 20261026-03 — T096 T089
 
 **Fatto**
