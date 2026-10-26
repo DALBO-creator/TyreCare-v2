@@ -2065,3 +2065,39 @@ titolo, "Pagina in preparazione." e il link alla home.
 - I compiti successivi riscrivono solo il corpo mantenendo il nome della funzione esportata, senza
   toccare `main.ts`; `legale.ts` esporta `mostraPrivacy` e `mostraTermini` (un chunk).
 - Le rotte `/admin/*` richiedono solo l'utente: il controllo admin lato database spetta a T061 e T103.
+
+---
+
+## PWA: libreria Excel fuori dal precache (T045)
+
+**File coinvolti:** `apps/web/vite.config.ts`, `apps/web/src/lib/excel.ts`.
+**Come funziona:** `workbox.globIgnores` esclude `**/xlsx-*.js`, il chunk che Rollup crea da
+`await import('@e965/xlsx')` in `lib/excel.ts`. Serve solo al titolare per l'import: chi installa l'app
+(clienti dal telefono) non scarica ~490 kB inutili. Una regola `runtimeCaching` `CacheFirst` (RegExp
+`/\/assets\/xlsx-.*\.js$/`, cache `tc-excel`, `maxEntries: 2`) salva il file al primo uso: poi l'import
+funziona anche offline e le versioni vecchie spariscono dopo un aggiornamento. Il primo import offline
+non funziona.
+
+### Codice complesso
+- Se il nome del chunk cambia vanno aggiornati sia `globIgnores` sia la RegExp.
+- Verifica: `grep -o 'url:"assets/xlsx[^"]*"' apps/web/dist/sw.js` deve essere vuoto.
+
+---
+
+## Pagine legali (informativa e termini) (T055)
+
+**File coinvolti:** `apps/web/src/pagine/legale.ts`, `apps/web/src/lib/legale.ts`,
+`DOCS/legale/informativa-privacy.md`, `DOCS/legale/termini-di-servizio.md`, `e2e/tests/legale.spec.ts`.
+**Come funziona:** `pagine/legale.ts` importa i due testi da `DOCS/legale/` con `?raw` di Vite: finiscono
+nel chunk lazy `legale` insieme a `marked`. `legaleInHtml` (`lib/legale.ts`) li converte in HTML; l'avviso
+giallo di bozza resta finché `TESTI_LEGALI_DEFINITIVI` è `false`. Per aggiornare i testi basta modificare
+i due file in `DOCS/legale/`.
+
+### Codice complesso
+- `lib/legale.ts` — `riscriviLink` riscrive i link ai file `.md` (informativa → `/privacy`, termini →
+  `/termini`, altri `.md` → solo testo; link esterni e ancore invariati) e `tabindex="-1"` va sull'unico
+  `h1` (il titolo del file). L'HTML viene solo dai file del repository, mai da dati degli utenti: per
+  questo va in `innerHTML`.
+- Dopo la revisione legale si mette `TESTI_LEGALI_DEFINITIVI = true` (sparisce l'avviso) e si aggiorna
+  l'e2e `e2e/tests/legale.spec.ts`, che controlla il testo dell'avviso.
+- Se cambiano i termini si aggiorna `VERSIONE_TERMINI`, che T056 salva alla registrazione.

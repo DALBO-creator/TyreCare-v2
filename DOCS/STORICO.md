@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-26 — ciclo 20261026-21 — T045 T055
+
+**Fatto**
+
+- T045: la libreria Excel (chunk `xlsx-*.js`, ~490 kB) è fuori dal precache della PWA e si salva in cache
+  al primo uso. Precache da 1114 a 634 KiB (119 voci); l'import funziona offline dopo il primo utilizzo.
+- T055: le pagine `/privacy` e `/termini` mostrano i testi di `DOCS/legale/` (importati con `?raw` e
+  convertiti con `marked` 18.1.2), con avviso giallo di bozza e link "Torna indietro". `lib/legale.ts`
+  espone `TESTI_LEGALI_DEFINITIVI = false` e `VERSIONE_TERMINI = '2026-10-bozza'` (la usa T056).
+
+**Verifiche**
+
+- Revisione T055: un giro di correzione (lockfile rigenerato con npm 11); gate del supervisore 2/2
+  approvati al primo giro.
+- Prova d'insieme verde: format, lint, typecheck; 277 test su 30 file; build ok (precache 119 voci,
+  703.51 KiB). E2e non eseguiti nel sandbox: li esegue la CI.
+
 ### Sessione agenti — 2026-10-26 — ciclo 20261026-18 — T091 T050
 
 **Fatto**
