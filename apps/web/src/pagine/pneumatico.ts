@@ -6,6 +6,7 @@ import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import {
   caricaPneumatico,
   dataSoglia,
+  MESI_GOMMA_VECCHIA,
   formattaEta,
   mesiDalDot,
   tendenza,
@@ -187,7 +188,7 @@ function sezioneDati(p: SchedaPneumatico): string {
             .join('')}
         </dl>
         ${
-          mesi !== null && mesi >= 60
+          mesi !== null && mesi >= MESI_GOMMA_VECCHIA
             ? `<p class="tc-ruota__pneumatico">Oltre i 5 anni la gomma indurisce anche con molto
                 battistrada: chiedi alla tua officina di controllarla.</p>`
             : ''
