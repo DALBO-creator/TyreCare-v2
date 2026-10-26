@@ -145,6 +145,31 @@ const ROTTE: Rotta[] = [
     titolo: "Dati dell'officina",
     mostra: pigra(() => import('./pagine/dati-officina'), 'mostraDatiOfficina'),
   },
+  // Pagine nuove del lancio (segnaposto, le riempiono i loro compiti): officina e amministratore
+  {
+    percorso: '/officina/registra',
+    accesso: 'utente',
+    titolo: 'Registra la tua officina',
+    mostra: pigra(() => import('./pagine/registra-officina'), 'mostraRegistraOfficina'),
+  },
+  {
+    percorso: '/officina/abbonamento',
+    accesso: 'utente',
+    titolo: 'Abbonamento',
+    mostra: pigra(() => import('./pagine/abbonamento'), 'mostraAbbonamento'),
+  },
+  {
+    percorso: '/admin/officine',
+    accesso: 'utente',
+    titolo: 'Officine',
+    mostra: pigra(() => import('./pagine/admin-officine'), 'mostraAdminOfficine'),
+  },
+  {
+    percorso: '/admin/commenti',
+    accesso: 'utente',
+    titolo: 'Commenti degli utenti',
+    mostra: pigra(() => import('./pagine/admin-commenti'), 'mostraAdminCommenti'),
+  },
   {
     percorso: '/officina/chiusura',
     accesso: 'utente',
@@ -281,6 +306,31 @@ const ROTTE: Rotta[] = [
     accesso: 'pubblica',
     titolo: 'Invito',
     mostra: pigra(() => import('./pagine/invito'), 'mostraInvito'),
+  },
+  // Pagine nuove del lancio (segnaposto, le riempiono i loro compiti): pubbliche
+  {
+    percorso: '/privacy',
+    accesso: 'pubblica',
+    titolo: 'Informativa privacy',
+    mostra: pigra(() => import('./pagine/legale'), 'mostraPrivacy'),
+  },
+  {
+    percorso: '/termini',
+    accesso: 'pubblica',
+    titolo: 'Termini di servizio',
+    mostra: pigra(() => import('./pagine/legale'), 'mostraTermini'),
+  },
+  {
+    percorso: '/per-le-officine',
+    accesso: 'pubblica',
+    titolo: 'TyreCare per le officine',
+    mostra: pigra(() => import('./pagine/per-le-officine'), 'mostraPerLeOfficine'),
+  },
+  {
+    percorso: '/r',
+    accesso: 'pubblica',
+    titolo: 'Report del controllo',
+    mostra: pigra(() => import('./pagine/report-pubblico'), 'mostraReportPubblico'),
   },
   // Pagina di riferimento del design system, con dati finti
   {
