@@ -119,7 +119,7 @@ export async function mostraImporta(app: HTMLElement): Promise<void> {
       <section aria-labelledby="tc-esporta">
         <h2 id="tc-esporta" class="tc-etichetta">Esporta i dati</h2>
         <p class="text-body-secondary">
-          Scarica tutti i clienti e i veicoli nel formato del modello, oppure le misure di tutti i controlli: si aprono con Excel e si possono reimportare.
+          Scarica tutti i clienti e i veicoli nel formato del modello, oppure le misure di tutti i controlli: si aprono con Excel. Clienti e veicoli si possono reimportare; un cliente senza codice gestionale e senza veicoli no. I controlli inseriti dall'app non hanno un codice documento: se reimporti il file dei controlli, vengono segnalati come righe con errori.
         </p>
         <div data-errore-esporta aria-live="polite"></div>
         <div class="d-grid gap-2">

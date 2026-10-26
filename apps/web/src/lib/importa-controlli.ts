@@ -76,3 +76,15 @@ export async function importaControlli({
   if (error) throw error;
   return leggiConteggiControlli(data);
 }
+
+/** Primo e ultimo giorno (AAAA-MM-GG) delle righe: serve a notare una colonna data letta male. */
+export function periodoDate(righe: { data: string }[]): { da: string; a: string } | null {
+  let da = '';
+  let a = '';
+  for (const { data } of righe) {
+    if (!data) continue;
+    if (!da || data < da) da = data;
+    if (!a || data > a) a = data;
+  }
+  return da ? { da, a } : null;
+}

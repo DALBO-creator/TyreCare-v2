@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { leggiConteggiControlli } from './importa-controlli';
+import { leggiConteggiControlli, periodoDate } from './importa-controlli';
 
 const valido = {
   controlli_nuovi: 2,
@@ -44,5 +44,25 @@ describe('leggiConteggiControlli', () => {
     expect(() => leggiConteggiControlli({ ...valido, targhe_non_trovate: 'AB' })).toThrow(
       /targhe_non_trovate/,
     );
+  });
+});
+
+describe('periodoDate', () => {
+  it('senza righe è null', () => {
+    expect(periodoDate([])).toBeNull();
+  });
+  it('con una riga da e a coincidono', () => {
+    expect(periodoDate([{ data: '2026-03-05' }])).toEqual({ da: '2026-03-05', a: '2026-03-05' });
+  });
+  it('trova minimo e massimo con righe in disordine', () => {
+    const righe = [{ data: '2026-05-01' }, { data: '2025-12-31' }, { data: '2026-09-14' }];
+    expect(periodoDate(righe)).toEqual({ da: '2025-12-31', a: '2026-09-14' });
+  });
+  it('ignora le date vuote', () => {
+    expect(periodoDate([{ data: '' }, { data: '2026-02-02' }])).toEqual({
+      da: '2026-02-02',
+      a: '2026-02-02',
+    });
+    expect(periodoDate([{ data: '' }])).toBeNull();
   });
 });
