@@ -228,3 +228,50 @@
     color: $tc-testo;
   }
 }
+
+// --- Pagine legali (informativa e termini) ---------------------------------------------------
+.tc-legale {
+  &__testo {
+    width: 100%;
+    max-width: 44rem;
+    margin: 1.5rem auto 0;
+    padding-bottom: 2rem;
+    line-height: 1.65;
+    overflow-wrap: anywhere;
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 1.75rem;
+    }
+
+    h2 {
+      margin-top: 2rem;
+      font-size: 1.3rem;
+    }
+
+    h3 {
+      margin-top: 1.5rem;
+      font-size: 1.1rem;
+    }
+
+    table {
+      display: block;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    th,
+    td {
+      padding: 0.375rem 0.75rem;
+      vertical-align: top;
+    }
+  }
+
+  &__indietro {
+    font-size: 0.9375rem;
+  }
+
+  .tc-avviso {
+    margin-bottom: 1.5rem;
+  }
+}
