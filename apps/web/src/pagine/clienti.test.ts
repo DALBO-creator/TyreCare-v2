@@ -71,7 +71,9 @@ describe('testoVuoto', () => {
     expect(testoVuoto('  Rossi ', false).titolo).toBe('Nessun cliente per «Rossi»');
   });
   it('solo filtro "Senza app" con ricerca vuota', () => {
-    expect(testoVuoto('   ', true).titolo).toBe('Tutti i clienti usano già l’app.');
+    const v = testoVuoto('   ', true);
+    expect(v.titolo).toBe('Tutti i clienti usano già l’app.');
+    expect(v.testo).toBe('Qui compaiono i clienti che non hanno ancora l’app.');
   });
   it('filtro e ricerca insieme', () => {
     expect(testoVuoto('Rossi', true).titolo).toBe(

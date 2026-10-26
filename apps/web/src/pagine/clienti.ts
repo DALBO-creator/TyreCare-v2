@@ -75,14 +75,7 @@ export async function mostraClienti(app: HTMLElement): Promise<void> {
               </div>
               <p class="visually-hidden" aria-live="polite" data-conteggio></p>
               <div data-elenco></div>`
-            : `<div class="tc-vuoto">
-                <span class="tc-vuoto__icona">${icona(Users)}</span>
-                <p class="tc-vuoto__titolo">Ancora nessun cliente</p>
-                <p class="tc-vuoto__testo">
-                  Aggiungi il primo cliente con "Nuovo cliente", oppure registralo insieme al suo
-                  veicolo.
-                </p>
-              </div>`
+            : statoNessunCliente()
         }
       </section>
     </div>`);
@@ -207,12 +200,21 @@ export function testoVuoto(
   if (!t && soloSenzaApp)
     return {
       titolo: 'Tutti i clienti usano già l’app.',
-      testo: 'Tocca «Tutti» per vedere l’elenco completo.',
+      testo: 'Qui compaiono i clienti che non hanno ancora l’app.',
     };
   return {
     titolo: `Nessun cliente per «${t}»${soloSenzaApp ? ' tra chi non usa l’app' : ''}`,
     testo: 'Prova con il cognome, il numero di telefono o la targa di un suo veicolo.',
   };
+}
+
+function statoNessunCliente(): string {
+  const vuoto = testoVuoto('', false, false);
+  return `<div class="tc-vuoto">
+                <span class="tc-vuoto__icona">${icona(Users)}</span>
+                <p class="tc-vuoto__titolo">${esc(vuoto.titolo)}</p>
+                <p class="tc-vuoto__testo">${esc(vuoto.testo)}</p>
+              </div>`;
 }
 
 function nessunRisultato(testo: string, soloSenzaApp: boolean): string {
