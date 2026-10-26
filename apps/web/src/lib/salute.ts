@@ -26,6 +26,14 @@ export function mesiDalDot(dot: string | null, oggi: string): number | null {
   return mesi >= 0 ? mesi : null;
 }
 
+/** Oltre questa età (in mesi, 5 anni) una gomma è da far controllare anche con molto battistrada. */
+export const MESI_GOMMA_VECCHIA = 60;
+
+/** Quante gomme hanno almeno `MESI_GOMMA_VECCHIA` mesi dal DOT a `oggi` (senza DOT valido non contano). */
+export function gommeVecchie(pneumatici: { dot: string | null }[], oggi: string): number {
+  return pneumatici.filter((p) => (mesiDalDot(p.dot, oggi) ?? 0) >= MESI_GOMMA_VECCHIA).length;
+}
+
 /** 0 → "meno di un mese", 14 → "1 anno e 2 mesi", 36 → "3 anni". */
 export function formattaEta(mesi: number): string {
   if (mesi < 1) return 'meno di un mese';

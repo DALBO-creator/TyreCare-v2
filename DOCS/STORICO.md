@@ -4,6 +4,24 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-26 — ciclo 20261026-18 — T091 T050
+
+**Fatto**
+
+- T091: l'eliminazione dell'account arriva sempre a `/accedi` con "Il tuo account è stato eliminato.",
+  anche se `esci()` fallisce (signOut locale e `vaiA` di riserva).
+- T050: la carta del veicolo nel garage avvisa se una o più gomme montate hanno più di 5 anni dal DOT;
+  soglia condivisa con la scheda pneumatico.
+
+**Verifiche**
+
+- Corsia C3 coordinata dal direttore con 2 esecutori Sonnet; revisione e gate del supervisore approvati
+  al primo giro per entrambi i compiti.
+- Prova d'insieme verde: 273 test, con `format:check`, lint, typecheck e build (Node 22). E2e non
+  eseguiti in locale (manca Docker): li esegue la CI.
+- Limite residuo T091: con la rete caduta `signOut` non cancella la sessione locale e `/accedi` rimanda
+  alla home (raro, dichiarato).
+
 ### Sessione agenti — 2026-10-26 — ciclo 20261026-15 — T088 T099
 
 **Fatto**

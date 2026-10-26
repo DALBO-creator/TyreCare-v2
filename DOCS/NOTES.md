@@ -311,6 +311,19 @@ ricodificato come `password_attuale_errata` per mostrare "La password attuale no
 `lib/profilo.ts` → `salvaProfilo()` usa `.select('id').single()` — un `update` bloccato dalla RLS non dà
 errore, aggiorna 0 righe; chiedendo la riga aggiornata, 0 righe diventano un errore (`PGRST116`).
 
+## Elimina account: uscita forzata
+
+**File coinvolti:** `apps/web/src/pagine/elimina-account.ts`, `apps/web/src/lib/profilo.ts`
+(`eliminaAccount`), `apps/web/src/lib/auth.ts` (`esci`, `sessioneCorrente`), `apps/web/src/main.ts`
+**Come funziona:** dopo `eliminaAccount()` la pagina chiama `esci()`; il ritorno a `/accedi` lo fa `main.ts`
+su SIGNED_OUT. L'utente arriva sempre a `/accedi` con "Il tuo account è stato eliminato.", anche se `esci()`
+fallisce. Gli errori di `eliminaAccount()` restano nel dialogo.
+
+### Codice complesso
+`pagine/elimina-account.ts` — se `esci()` lancia e `sessioneCorrente()` non è nulla, la pagina riprova
+`signOut({ scope: 'local' })` dentro un try e poi fa `vaiA('/accedi', { sostituisci: true })`. Limite noto
+(raro): con la rete caduta la sessione locale resta e `/accedi`, vedendola attiva, rimanda alla home.
+
 ## Email in italiano (Fase 1)
 
 **File coinvolti:** `supabase/templates/{conferma,recupero,cambio-email,password-cambiata}.html`,
@@ -613,6 +626,19 @@ arrivano già normalizzate dal trigger del database, quindi basta raggrupparle.
 `cruscotto(controllo, officina?)` aggiunge l'officina alla nota; `sezioneStorico(controlli, { correggi })`
 mostra "Correggi o elimina" solo all'officina e il nome dell'officina se la voce ce l'ha.
 `gruppiPneumatici()` e `descrizionePneumatico()` restano in `pagine/veicolo.ts`, esportate.
+
+## Avviso gomme vecchie nel garage
+
+**File coinvolti:** `apps/web/src/lib/salute.ts` (+ test), `apps/web/src/pagine/home.ts`,
+`apps/web/src/pagine/comune.ts`
+**Come funziona:** la carta del veicolo nel garage mostra un `<small>` in `tc-garage__piede` se una o più
+gomme montate hanno più di 5 anni dal DOT (singolare/plurale); se il numero è 0 non compare nulla. La soglia
+è la stessa della scheda pneumatico (`pagine/pneumatico.ts`).
+
+### Codice complesso
+`lib/salute.ts` — `MESI_GOMMA_VECCHIA = 60` è l'unica soglia dei 5 anni. `gommeVecchie(pneumatici, oggi)`
+conta le gomme montate con età dal DOT >= 60 mesi (il bordo conta); senza DOT valido o con DOT nel futuro
+non contano. `cartaVeicolo` in `home.ts` riceve `oggi` dall'helper di `pagine/comune.ts`.
 
 ## Cliente — report del singolo controllo (Fase 3)
 
