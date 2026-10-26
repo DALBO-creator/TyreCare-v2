@@ -14,13 +14,13 @@ import {
 import { codiceErrore } from '../lib/errori';
 import { esc } from '../lib/html';
 import { leggiTabella } from '../lib/importa';
-import { importaControlli, type ConteggiControlli } from '../lib/importa-controlli';
+import { importaControlli, periodoDate, type ConteggiControlli } from '../lib/importa-controlli';
 import { caricaContestoOfficina, eTitolare } from '../lib/officina';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { scaricaCsv } from '../lib/scarica';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
-import { gestisciErroreCaricamento, intestazioneSottopagina } from './comune';
+import { formattaData, gestisciErroreCaricamento, intestazioneSottopagina } from './comune';
 
 // Import dei controlli dal gestionale (T023): `/clienti/importa-controlli`, solo per il TITOLARE.
 // 1. si sceglie il file (CSV o Excel, letto nel browser) e lo si controlla riga per riga;
@@ -176,7 +176,7 @@ async function leggiEMostra(
           scartate ? `, ${plurale(scartate, 'con errori', 'con errori')}` : ''
         }.
       </p>
-      ${conteggi ? riepilogoAnteprima(conteggi) : ''}
+      ${conteggi ? riepilogoAnteprima(conteggi, periodoDate(righe)) : ''}
       ${conteggi ? avvisoTarghe(conteggi.targhe_non_trovate) : ''}
       ${errori.length ? elencoErrori(errori, scartate) : ''}
       ${
@@ -210,15 +210,24 @@ async function leggiEMostra(
 function frase(c: ConteggiControlli): string {
   return [
     plurale(c.controlli_nuovi, 'controllo nuovo', 'controlli nuovi'),
-    `${c.controlli_gia_presenti} già presenti`,
+    plurale(c.controlli_gia_presenti, 'già presente', 'già presenti'),
     plurale(c.pneumatici_nuovi, 'pneumatico nuovo', 'pneumatici nuovi'),
     plurale(c.misure_nuove, 'misura', 'misure'),
   ].join(' · ');
 }
 
-function riepilogoAnteprima(c: ConteggiControlli): string {
+function riepilogoAnteprima(
+  c: ConteggiControlli,
+  periodo: { da: string; a: string } | null,
+): string {
+  const testoPeriodo = !periodo
+    ? ''
+    : periodo.da === periodo.a
+      ? `Controlli del ${formattaData(periodo.da)}`
+      : `Controlli dal ${formattaData(periodo.da)} al ${formattaData(periodo.a)}`;
   return `
     <p class="mb-0 fw-semibold" data-conteggi>${esc(frase(c))}</p>
+    ${testoPeriodo ? `<p class="text-body-secondary small mb-0" data-periodo>${esc(testoPeriodo)}</p>` : ''}
     ${
       c.misure_saltate > 0
         ? `<p class="text-body-secondary small mb-0">
