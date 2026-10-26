@@ -143,7 +143,7 @@ function collegaElenco(app: HTMLElement, clienti: ClienteConVeicoli[]): void {
     elenco.innerHTML =
       trovati.length > 0
         ? `<div class="tc-lista">${trovati.map(rigaCliente).join('')}</div>`
-        : nessunRisultato(testo);
+        : nessunRisultato(testo, soloSenzaApp);
   };
 
   cerca.addEventListener('input', disegna);
@@ -187,14 +187,41 @@ function rigaCliente(c: ClienteConVeicoli): string {
     </a>`;
 }
 
-function nessunRisultato(testo: string): string {
+/**
+ * Titolo e sottotesto dello stato vuoto (testi non escapati: vanno passati a `esc`).
+ * `testo` è la ricerca grezza (si considera dopo `trim()`); `haClienti` è falso se l'officina
+ * non ha ancora nessun cliente.
+ */
+export function testoVuoto(
+  testo: string,
+  soloSenzaApp: boolean,
+  haClienti = true,
+): { titolo: string; testo: string } {
+  if (!haClienti)
+    return {
+      titolo: 'Ancora nessun cliente',
+      testo:
+        'Aggiungi il primo cliente con "Nuovo cliente", oppure registralo insieme al suo veicolo.',
+    };
+  const t = testo.trim();
+  if (!t && soloSenzaApp)
+    return {
+      titolo: 'Tutti i clienti usano già l’app.',
+      testo: 'Tocca «Tutti» per vedere l’elenco completo.',
+    };
+  return {
+    titolo: `Nessun cliente per «${t}»${soloSenzaApp ? ' tra chi non usa l’app' : ''}`,
+    testo: 'Prova con il cognome, il numero di telefono o la targa di un suo veicolo.',
+  };
+}
+
+function nessunRisultato(testo: string, soloSenzaApp: boolean): string {
+  const vuoto = testoVuoto(testo, soloSenzaApp);
   return `
     <div class="tc-vuoto">
       <span class="tc-vuoto__icona">${icona(Search)}</span>
-      <p class="tc-vuoto__titolo">Nessun cliente per «${esc(testo)}»</p>
-      <p class="tc-vuoto__testo">
-        Prova con il cognome, il numero di telefono o la targa di un suo veicolo.
-      </p>
+      <p class="tc-vuoto__titolo">${esc(vuoto.titolo)}</p>
+      <p class="tc-vuoto__testo">${esc(vuoto.testo)}</p>
       <button type="button" class="btn btn-outline-light mt-3" data-mostra-tutti>
         Mostra tutti i clienti
       </button>
