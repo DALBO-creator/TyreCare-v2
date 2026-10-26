@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { filtraClienti, senzaApp } from './clienti';
+import { filtraClienti, senzaApp, testoVuoto } from './clienti';
 import type { ClienteConVeicoli } from '../lib/officina';
 
 const cliente = (o: Partial<ClienteConVeicoli> & { id: string }): ClienteConVeicoli =>
@@ -60,5 +60,24 @@ describe('filtro "Senza app"', () => {
   it('lista vuota', () => {
     expect(senzaApp([])).toEqual([]);
     expect(filtraClienti([], '', true)).toEqual([]);
+  });
+});
+
+describe('testoVuoto', () => {
+  it('nessun cliente in officina', () => {
+    expect(testoVuoto('', false, false).titolo).toBe('Ancora nessun cliente');
+  });
+  it('ricerca senza risultati', () => {
+    expect(testoVuoto('  Rossi ', false).titolo).toBe('Nessun cliente per «Rossi»');
+  });
+  it('solo filtro "Senza app" con ricerca vuota', () => {
+    const v = testoVuoto('   ', true);
+    expect(v.titolo).toBe('Tutti i clienti usano già l’app.');
+    expect(v.testo).toBe('Qui compaiono i clienti che non hanno ancora l’app.');
+  });
+  it('filtro e ricerca insieme', () => {
+    expect(testoVuoto('Rossi', true).titolo).toBe(
+      'Nessun cliente per «Rossi» tra chi non usa l’app',
+    );
   });
 });
