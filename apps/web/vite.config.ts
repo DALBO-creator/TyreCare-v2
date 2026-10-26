@@ -43,7 +43,16 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}', '**/*-latin-wght-normal-*.woff2'],
         // Notifiche push (Fase 5): gestori `push` e `notificationclick` in public/sw-push.js
         importScripts: ['sw-push.js'],
-        globIgnores: ['**/sw-push.js'],
+        // La libreria Excel (~490 kB) serve solo al titolare per l'import: fuori dal precache,
+        // si scarica al primo uso e resta in cache (regola sotto), anche offline
+        globIgnores: ['**/sw-push.js', '**/xlsx-*.js'],
+        runtimeCaching: [
+          {
+            urlPattern: /\/assets\/xlsx-.*\.js$/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'tc-excel', expiration: { maxEntries: 2 } },
+          },
+        ],
       },
       // Service worker attivo anche in `npm run dev`, per provare la PWA in locale (classico, non
       // "module": `importScripts` funziona solo nei service worker classici)
