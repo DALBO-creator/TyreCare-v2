@@ -19,6 +19,9 @@ export default defineConfig({
     serviceWorkers: 'block',
     locale: 'it-IT',
     timezoneId: 'Europe/Rome',
+    // "Riduci movimento" è un comportamento reale dell'app: senza animazione d'entrata (`tc-entra`)
+    // gli elementi non spostano i pulsanti sotto il clic del test (instabile sul telefono)
+    reducedMotion: 'reduce',
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
   },
