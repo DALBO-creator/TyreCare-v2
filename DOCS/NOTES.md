@@ -2101,3 +2101,33 @@ i due file in `DOCS/legale/`.
 - Dopo la revisione legale si mette `TESTI_LEGALI_DEFINITIVI = true` (sparisce l'avviso) e si aggiorna
   l'e2e `e2e/tests/legale.spec.ts`, che controlla il testo dell'avviso.
 - Se cambiano i termini si aggiorna `VERSIONE_TERMINI`, che T056 salva alla registrazione.
+
+## Report pubblico e officine sospese (T083)
+
+**File coinvolti:** `supabase/migrations/20261028000100_report_pubblico_sospese.sql`,
+`supabase/tests/database/` (test pgTAP del report pubblico), `packages/shared/src/database.types.ts`.
+**Come funziona:** `report_pubblico(codice)` restituisce il report solo se il link esiste, non è scaduto né
+revocato e l'officina del controllo non è SOSPESA (IN_ATTESA e ATTIVA vanno bene). La sospensione non revoca i
+link: li spegne finché dura; riattivata l'officina, i link non scaduti tornano a funzionare.
+
+### Codice complesso
+- `report_pubblico` è `security definer` e `sql stable`: chi apre il link è anon e non legge le tabelle. Il
+  controllo sull'officina usa una join `oc` separata dalla sottoquery che cerca l'officina del veicolo: sono due
+  officine diverse (quella del controllo e quella del veicolo) e non vanno confuse.
+- Chi apre il link vede null in ogni caso: non distingue un codice sbagliato da un'officina sospesa.
+
+## Attivare e sospendere un'officina (T100)
+
+**File coinvolti:** `supabase/migrations/` (funzioni `attiva_officina` e `sospendi_officina`),
+`supabase/tests/database/` (27 test pgTAP), `packages/shared/src/database.types.ts`.
+**Come funziona:** `attiva_officina(id)` mette l'officina ATTIVA e promuove a OFFICINA i titolari ancora
+CLIENTE (un ADMIN resta ADMIN). `sospendi_officina(id)` la mette SOSPESA, così sparisce ai clienti (la lettura
+pubblica vuole ATTIVA), e lascia i ruoli invariati (R14). Stato e ruoli cambiano in una sola transazione; le
+funzioni sono ripetibili.
+
+### Codice complesso
+- Possono chiamarle solo un admin o chi non ha un utente (service role); gli altri ricevono 42501 e anon non ha
+  EXECUTE. Officina inesistente -> `OFFICINA_NON_TROVATA`, ma solo dopo il controllo admin, così non si rivela
+  se un'officina esiste.
+- In `security definer` `auth.uid()` resta quello del chiamante: il trigger `proteggi_campi_riservati` vede
+  l'admin e lascia passare il cambio di ruolo dei titolari.

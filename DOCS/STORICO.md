@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-28 — ciclo 20261028-06 — T083 T100
+
+**Fatto**
+
+- T083: `report_pubblico` restituisce null se l'officina del controllo è SOSPESA (IN_ATTESA e ATTIVA
+  funzionano, R12). Migrazione `20261028000100_report_pubblico_sospese`; test pgTAP nuovi (un'altra officina
+  non legge i link, anon esegue la funzione, SOSPESA -> IN_ATTESA -> ATTIVA).
+- T100: nuove funzioni dell'admin `attiva_officina` e `sospendi_officina`: stato e ruolo dei titolari cambiano
+  in una sola transazione; la sospensione non toglie il ruolo (R14). 27 test pgTAP, con i casi negati.
+
+**Verifiche**
+
+- Controlli veloci verdi (277 test). I test pgTAP li esegue la CI (job `database`).
+
 ### Sessione agenti — 2026-10-26 — ciclo 20261026-21 — T045 T055
 
 **Fatto**
