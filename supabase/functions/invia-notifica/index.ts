@@ -7,8 +7,15 @@
 //
 // Segreti (supabase secrets set): VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, PUSH_SEGRETO.
 // SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY li fornisce Supabase.
+//
+// Email di riserva (T066), facoltativa e spenta finché non c'è il dominio di TyreCare: se nessuna push
+// è partita e EMAIL_NOTIFICHE=si, la notifica va per email (Resend) all'indirizzo del destinatario.
+// Variabili facoltative: EMAIL_NOTIFICHE ('si' per accendere), RESEND_API_KEY, EMAIL_MITTENTE
+// (es. "TyreCare <notifiche@dominio>"), SITO_URL (es. https://dominio). Senza EMAIL_NOTIFICHE=si il
+// comportamento è quello di prima e la risposta ha `email: false`.
 import { createClient } from 'npm:@supabase/supabase-js@2.117.2';
 import webpush from 'npm:web-push@3.6.7';
+import { componiEmailNotifica } from './email.ts';
 
 const env = (nome: string): string => {
   const valore = Deno.env.get(nome);
@@ -72,5 +79,48 @@ Deno.serve(async (richiesta) => {
       }
     }),
   );
-  return Response.json({ inviate, dispositivi: iscrizioni?.length ?? 0 });
+
+  let email = false;
+  if (inviate === 0 && Deno.env.get('EMAIL_NOTIFICHE') === 'si') {
+    try {
+      email = await inviaEmailDiRiserva(notifica);
+    } catch (e) {
+      console.error('Email non inviata', (e as Error).message);
+    }
+  }
+  return Response.json({ inviate, dispositivi: iscrizioni?.length ?? 0, email });
 });
+
+// Manda la notifica per email con Resend; `true` solo se Resend l'ha accettata. Non lancia per
+// configurazione mancante o destinatario senza email: scrive l'errore e restituisce `false`.
+async function inviaEmailDiRiserva(notifica: {
+  destinatario_id: string;
+  titolo: string;
+  testo: string;
+  link: string | null;
+}): Promise<boolean> {
+  const chiave = Deno.env.get('RESEND_API_KEY');
+  const mittente = Deno.env.get('EMAIL_MITTENTE');
+  const sitoUrl = Deno.env.get('SITO_URL');
+  if (!chiave || !mittente || !sitoUrl) {
+    console.error('Email di riserva: mancano RESEND_API_KEY, EMAIL_MITTENTE o SITO_URL');
+    return false;
+  }
+  const { data, error } = await supabase.auth.admin.getUserById(notifica.destinatario_id);
+  if (error) {
+    console.error('Email di riserva: utente non letto', error.message);
+    return false;
+  }
+  const indirizzo = data.user?.email;
+  if (!indirizzo) return false;
+
+  const { oggetto, testo, html } = componiEmailNotifica(notifica, sitoUrl);
+  const risposta = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: 'Bearer ' + chiave, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: mittente, to: [indirizzo], subject: oggetto, text: testo, html }),
+  });
+  if (!risposta.ok) console.error('Email di riserva: Resend ha risposto', risposta.status);
+  await risposta.body?.cancel(); // il corpo non serve: chiuderlo evita risorse aperte in Deno
+  return risposta.ok;
+}

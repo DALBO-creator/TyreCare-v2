@@ -7,6 +7,7 @@ export default defineConfig({
       { test: { name: 'shared', root: 'packages/shared', environment: 'node' } },
       { test: { name: 'api', root: 'apps/api', environment: 'node' } },
       { test: { name: 'web', root: 'apps/web', environment: 'node', passWithNoTests: true } },
+      { test: { name: 'funzioni', root: 'supabase/functions', environment: 'node' } },
     ],
   },
 });
