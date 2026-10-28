@@ -1646,7 +1646,8 @@ rifiuterebbero finché esistono due righe con lo stesso valore. Le altre chiavi 
 `/cliente/unisci?id=<attuale>`. La pagina elenca gli altri clienti dell'officina filtrati con `filtraClienti`;
 dopo la scelta `chiediConferma` e poi `unisciClienti(scelto, attuale)` chiama la rpc `unisci_clienti` (T031).
 A unione riuscita `vaiConConferma` mostra "Clienti uniti.". `ACCOUNT_DIVERSI` e `CLIENTI_NON_VALIDI` sono
-`ErroreModulo` con messaggio per l'utente.
+`ErroreModulo` con messaggio per l'utente. L'errore dell'unione lo mostra solo `chiediConferma`: il dialogo
+resta aperto e la pagina non ha un secondo avviso (T081).
 
 ### Codice complesso
 `filtraClienti` è la ricerca dell'elenco clienti estratta e esportata da `pagine/clienti.ts`, insieme a
@@ -1936,7 +1937,21 @@ chiama `importaControlli({ simula: true })`; l'import vero usa gli stessi dati c
 - `leggiConteggiControlli` valida il JSON della RPC (targhe non trovate: al massimo 50).
 - Con 0 controlli nuovi non c'è il pulsante. L'anteprima avvisa che le righe con errori non si aggiungono
   reimportando (T094). Il pulsante si disabilita subito, contro il doppio clic.
-- Il link dalla pagina dell'import arriva con T052.
+- Il link dalla pagina dell'import c'è da T052 (vedi la voce sotto).
+
+---
+
+## Import: collegamento ai controlli (T052)
+
+**File coinvolti:** `apps/web/src/pagine/importa.ts`, `e2e/tests/import.spec.ts`.
+**Come funziona:** in `/clienti/importa`, tra il registro degli import e "Esporta i dati", c'è la sezione
+`tc-storico-controlli` con il riquadro "Hai anche lo storico dei controlli?" e il link a
+`/clienti/importa-controlli`. La vede solo il titolare. Flusso consigliato: prima clienti e veicoli, poi i
+controlli (che si agganciano ai veicoli già importati).
+
+### Codice complesso
+Il link è un normale `<a href>`: lo gestisce il router, senza codice di navigazione. L'e2e controlla che il
+clic porti alla pagina dell'import dei controlli.
 
 ---
 

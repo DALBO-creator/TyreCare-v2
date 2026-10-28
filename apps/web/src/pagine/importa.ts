@@ -116,6 +116,14 @@ export async function mostraImporta(app: HTMLElement): Promise<void> {
 
       ${registro(passati)}
 
+      <section aria-labelledby="tc-storico-controlli">
+        <h2 id="tc-storico-controlli" class="tc-etichetta">Hai anche lo storico dei controlli?</h2>
+        <p class="text-body-secondary">
+          Dopo clienti e veicoli puoi importare le misure degli pneumatici.
+        </p>
+        <a class="btn btn-outline-light w-100" href="/clienti/importa-controlli">Importa i controlli</a>
+      </section>
+
       <section aria-labelledby="tc-esporta">
         <h2 id="tc-esporta" class="tc-etichetta">Esporta i dati</h2>
         <p class="text-body-secondary">

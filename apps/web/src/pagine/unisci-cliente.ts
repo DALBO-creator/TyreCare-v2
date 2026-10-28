@@ -1,7 +1,5 @@
 import { GitMerge, Search, UserRound } from 'lucide';
 import { formattaTarga } from '@tyrecare/shared';
-import { messaggioErrore } from '../lib/auth';
-import { ErroreModulo } from '../lib/errori';
 import { esc } from '../lib/html';
 import {
   caricaCliente,
@@ -83,7 +81,6 @@ export async function mostraUnisciCliente(app: HTMLElement): Promise<void> {
         Scegli il doppione: i suoi veicoli e i suoi dati passano a questa scheda e la sua scheda viene
         eliminata.
       </p>
-      <div class="tc-avviso tc-avviso--rosso" data-errore role="alert" hidden></div>
       ${
         altri.length > 0
           ? `<div class="tc-ricerca">
@@ -105,8 +102,6 @@ export async function mostraUnisciCliente(app: HTMLElement): Promise<void> {
   const elenco = app.querySelector<HTMLElement>('[data-elenco]')!;
   const conteggio = app.querySelector<HTMLElement>('[data-conteggio]')!;
   const cerca = app.querySelector<HTMLInputElement>('#tc-cerca')!;
-  const errore = app.querySelector<HTMLElement>('[data-errore]')!;
-  let inCorso = false;
 
   const disegna = () => {
     const trovati = filtraClienti(altri, cerca.value);
@@ -122,7 +117,7 @@ export async function mostraUnisciCliente(app: HTMLElement): Promise<void> {
   elenco.addEventListener('click', (e) => {
     const pulsante = (e.target as Element).closest<HTMLElement>('[data-scelto]');
     const scelto = altri.find((x) => x.id === pulsante?.dataset.scelto);
-    if (!pulsante || !scelto || inCorso) return;
+    if (!pulsante || !scelto) return;
     const nomeScelto = nominativo(scelto);
     chiediConferma({
       titolo: 'Unire i due clienti?',
@@ -132,19 +127,7 @@ export async function mostraUnisciCliente(app: HTMLElement): Promise<void> {
       inCorso: 'Unione…',
       origine: pulsante,
       azione: async () => {
-        if (inCorso) return;
-        inCorso = true;
-        errore.hidden = true;
-        try {
-          await unisciClienti(scelto.id, attuale.id);
-        } catch (err) {
-          inCorso = false;
-          errore.innerHTML = `<p class="mb-0">${esc(
-            err instanceof ErroreModulo ? err.message : messaggioErrore(err),
-          )}</p>`;
-          errore.hidden = false;
-          throw err;
-        }
+        await unisciClienti(scelto.id, attuale.id);
         vaiConConferma(indietro, 'Clienti uniti.');
       },
     });

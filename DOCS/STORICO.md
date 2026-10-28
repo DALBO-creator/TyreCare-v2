@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-28 — ciclo 20261028-21 — T052 T081
+
+**Fatto**
+
+- T052: la pagina `/clienti/importa` ha il riquadro "Hai anche lo storico dei controlli?" con il link a
+  `/clienti/importa-controlli`, così l'import dei controlli si trova dal flusso normale. Nuovo e2e in
+  `import.spec.ts`.
+- T081: nell'unione dei clienti l'errore compare solo nel dialogo di conferma (che resta aperto), non più
+  anche nella pagina. Tolti l'avviso duplicato, il flag `inCorso` e il try/catch (i pulsanti sono già
+  disabilitati da `chiediConferma`).
+
+**Verifiche**
+
+- Format, lint, typecheck, 287 test unitari e build verdi. L'e2e nuovo di T052 lo verifica la CI.
+- Corsia C2 coordinata dal direttore (`create_session` assente): 2 esecutori Sonnet in parallelo.
+  Gate del supervisore 2/2 approvati al primo giro.
+
 ### Sessione agenti — 2026-10-28 — ciclo 20261028-18 — T067 T066
 
 **Fatto**
