@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(14);
+select plan(22);
 
 -- Simula una richiesta dal client con il JWT dell'utente indicato (null = anonimo).
 create function pg_temp.come(p_utente uuid) returns void language plpgsql as $$
@@ -121,6 +121,71 @@ select results_eq(
     where controllo_id = pg_temp.controllo()$$,
   $$values (2, 1)$$,
   'titolare: legge i link della sua officina (quello scaduto non viene revocato)'
+);
+
+-- Caso negato (T083): un'officina non vede i link di un'altra, anche se nella tabella ce ne sono.
+select pg_temp.come('a0000000-0000-4000-8000-000000000005');
+select is(
+  (select count(*) from public.link_report
+   where officina_id = 'b0000000-0000-4000-8000-000000000001')::int,
+  0,
+  'titolare di un''altra officina: non legge i link di Gomme Rossi'
+);
+
+-- ---------------------------------------------------------------- officina sospesa (T083, R12)
+reset role;
+select ok(
+  has_function_privilege('anon', 'public.report_pubblico(text)', 'execute'),
+  'anon: può ancora eseguire report_pubblico'
+);
+
+-- Un codice nuovo e valido: 'primo' è stato disattivato più in alto.
+select pg_temp.come('a0000000-0000-4000-8000-000000000002');
+insert into dati values ('sospesa', public.crea_link_report(pg_temp.controllo()));
+
+select pg_temp.come('a0000000-0000-4000-8000-000000000001');
+update public.officine set stato_affiliazione = 'SOSPESA'
+where id = 'b0000000-0000-4000-8000-000000000001';
+select is(
+  (select stato_affiliazione::text from public.officine
+   where id = 'b0000000-0000-4000-8000-000000000001'),
+  'SOSPESA',
+  'admin: Gomme Rossi è sospesa'
+);
+select pg_temp.come(null);
+select is(
+  public.report_pubblico(pg_temp.codice('sospesa')), null,
+  'officina SOSPESA: il link valido non mostra il report'
+);
+
+select pg_temp.come('a0000000-0000-4000-8000-000000000001');
+update public.officine set stato_affiliazione = 'IN_ATTESA'
+where id = 'b0000000-0000-4000-8000-000000000001';
+select is(
+  (select stato_affiliazione::text from public.officine
+   where id = 'b0000000-0000-4000-8000-000000000001'),
+  'IN_ATTESA',
+  'admin: Gomme Rossi è in attesa'
+);
+select pg_temp.come(null);
+select is(
+  public.report_pubblico(pg_temp.codice('sospesa'))->'veicolo'->>'targa', 'AB123CD',
+  'officina IN_ATTESA: il report si legge (R12)'
+);
+
+select pg_temp.come('a0000000-0000-4000-8000-000000000001');
+update public.officine set stato_affiliazione = 'ATTIVA'
+where id = 'b0000000-0000-4000-8000-000000000001';
+select is(
+  (select stato_affiliazione::text from public.officine
+   where id = 'b0000000-0000-4000-8000-000000000001'),
+  'ATTIVA',
+  'admin: Gomme Rossi è di nuovo attiva'
+);
+select pg_temp.come(null);
+select is(
+  public.report_pubblico(pg_temp.codice('sospesa'))->'veicolo'->>'targa', 'AB123CD',
+  'officina di nuovo ATTIVA: il report torna'
 );
 
 select * from finish();

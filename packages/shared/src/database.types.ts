@@ -999,6 +999,7 @@ export type Database = {
       accetta_termini: { Args: { p_versione: string }; Returns: undefined };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
+      attiva_officina: { Args: { p_officina_id: string }; Returns: undefined };
       crea_invito_cliente: {
         Args: { p_cliente_id: string; p_email: string };
         Returns: {
@@ -1144,6 +1145,7 @@ export type Database = {
         Returns: undefined;
       };
       rispondi_proposta: { Args: { p_accetta: boolean; p_id: string }; Returns: undefined };
+      sospendi_officina: { Args: { p_officina_id: string }; Returns: undefined };
       stato_battistrada: {
         Args: { p_mm: number; p_stagione: Database['public']['Enums']['stagione'] };
         Returns: string;
