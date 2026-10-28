@@ -260,3 +260,11 @@ test('il titolare scarica le righe con errori in un CSV da correggere', async ({
   expect(testo).not.toContain(`G${id}`);
   expect(testo.split('\r\n')[0]).toMatch(/;errore$/);
 });
+
+test("dalla pagina dell'import si arriva a quella dei controlli", async ({ page }) => {
+  await accedi(page, 'titolare@tyrecare.test');
+  await page.goto('/clienti/importa');
+  await page.getByRole('link', { name: 'Importa i controlli' }).click();
+  await expect(page).toHaveURL(/\/clienti\/importa-controlli$/);
+  await expect(page.getByRole('heading', { name: 'Importa i controlli', level: 1 })).toBeVisible();
+});
