@@ -4,6 +4,25 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-28 — ciclo 20261028-18 — T067 T066
+
+**Fatto**
+
+- T067: tabella `abbonamenti` (piano STARTER/PRO/PILOTA, stato PROVA/ATTIVO/SCADUTO/ANNULLATO,
+  `prova_fino_al`, id Stripe), creata in automatico per ogni officina (trigger) e per quelle già esistenti.
+  RLS: legge il titolare, scrive solo l'admin o il service role. Migrazione `20261028000300_abbonamenti`;
+  pgTAP `abbonamenti.test.sql` (26 test, non eseguito in locale).
+- T066: email di riserva per le notifiche. Se nessuna push parte e `EMAIL_NOTIFICHE=si`, `invia-notifica`
+  manda la notifica per email con Resend. È spenta finché non c'è il dominio di TyreCare (R3, D3); la
+  composizione è in `supabase/functions/invia-notifica/email.ts` con 10 unit test (nuovo project vitest
+  `funzioni`).
+
+**Verifiche**
+
+- Corsia C1 coordinata dal direttore (`create_session` assente): 2 esecutori-senior Opus in parallelo.
+  Revisione al primo giro; gate del supervisore 2/2 approvati al primo giro.
+- Prova d'insieme verde (287 test). I test pgTAP non sono stati eseguiti in locale: li esegue la CI.
+
 ### Sessione agenti — 2026-10-28 — ciclo 20261028-06 — T083 T100
 
 **Fatto**

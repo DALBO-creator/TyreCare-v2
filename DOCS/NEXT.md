@@ -7,8 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261028-06 (T083 il report pubblico si spegne per le officine sospese, T100 funzioni dell'admin per
-> attivare e sospendere un'officina).
+> 20261028-18 (T067 tabella `abbonamenti` creata per ogni officina, T066 email di riserva per le notifiche,
+> spenta finché non c'è il dominio).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
@@ -36,7 +36,8 @@
   pagina dell'import (T052)
 - [x] P22: **import con mappatura delle colonne** — fatta (T008–T012, 2026-10-20/21): logica in `importa.ts`,
   lettura di .xls/.xlsx/.ods, schermata "Associa le colonne", associazioni salvate per officina
-- [ ] Fase 5: **email di riserva** — dopo l'email dal dominio di TyreCare (P23, vedi "Rimandati")
+- [~] Fase 5: **email di riserva** — fatta nel codice (T066, 2026-10-28) ma spenta; resta accenderla dopo
+  l'email dal dominio di TyreCare (P23): comando in `NOTES.md` → "Notifiche: email di riserva (T066)"
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
 - [ ] Promemoria: la registrazione web deve passare `termini_versione` nei metadati di `signUp` (T056,

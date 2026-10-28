@@ -2131,3 +2131,43 @@ funzioni sono ripetibili.
   se un'officina esiste.
 - In `security definer` `auth.uid()` resta quello del chiamante: il trigger `proteggi_campi_riservati` vede
   l'admin e lascia passare il cambio di ruolo dei titolari.
+
+## Abbonamenti delle officine (T067)
+
+**File coinvolti:** `supabase/migrations/20261028000300_abbonamenti.sql`,
+`supabase/tests/database/abbonamenti.test.sql` (26 test pgTAP), `packages/shared/src/database.types.ts`.
+**Come funziona:** ogni officina ha una riga in `public.abbonamenti` (chiave `officina_id`, 1:1, cancellata
+con l'officina). La crea il trigger `officine_crea_abbonamento` su ogni insert in `officine`, comprese
+`richiedi_affiliazione` e `crea_officina_con_titolare`: piano STARTER, stato PROVA, prova fino a oggi + 30
+giorni. Le officine già esistenti ricevono la riga dalla migrazione. RLS: select per il titolare e l'admin
+(l'operatore non la vede); insert, update e delete solo per l'admin; il webhook Stripe (Fase 7, T071)
+scriverà con il service role. Anon non ha permessi.
+
+### Codice complesso
+- `crea_abbonamento_officina` è `security definer` con EXECUTE tolto a tutti: i trigger non controllano il
+  permesso, quindi la funzione non è chiamabile da nessuno a mano.
+- `piano` e `stato` sono text con check, non enum: per aggiungere un valore basta cambiare il check.
+- Il titolare legge anche le colonne `stripe_*` (eventualmente da nascondere con una vista).
+
+## Notifiche: email di riserva (T066)
+
+**File coinvolti:** `supabase/functions/invia-notifica/index.ts`, `supabase/functions/invia-notifica/email.ts`
+(+ test), `vitest.config.ts` (project `funzioni`).
+**Come funziona:** in `index.ts`, dopo le push, se `inviate === 0` ed `EMAIL_NOTIFICHE=si` legge l'email del
+destinatario con `auth.admin.getUserById` e compone il messaggio con `componiEmailNotifica` di `email.ts`.
+Invio: POST a `https://api.resend.com/emails` con fetch (nessun SDK). La risposta aggiunge
+`email: true|false`; un errore va solo in `console.error`. Variabili tutte facoltative: `EMAIL_NOTIFICHE`
+(`si` per accendere), `RESEND_API_KEY`, `EMAIL_MITTENTE` (es. `TyreCare <notifiche@dominio>`), `SITO_URL`
+(es. `https://dominio`).
+**Per accenderla** (con il dominio verificato su Resend): `supabase secrets set EMAIL_NOTIFICHE=si
+RESEND_API_KEY=<chiave-resend> EMAIL_MITTENTE="TyreCare <notifiche@<dominio>>" SITO_URL=https://<dominio>`.
+**Perché è spenta (R3):** senza dominio verificato Resend non invia a indirizzi qualsiasi e un mittente non
+verificato finirebbe nello spam; senza `EMAIL_NOTIFICHE=si` il comportamento è identico a prima.
+
+### Codice complesso
+- `componiEmailNotifica`: oggetto `TyreCare · <titolo>`; testo semplice e HTML con link assoluto
+  `SITO_URL + link` (barre normalizzate, link vuoto -> home); `& < > " '` protetti; pulsante "Apri TyreCare";
+  piede che spiega perché arriva.
+- L'email parte anche quando ci sono dispositivi ma tutte le push falliscono (es. iscrizioni scadute).
+- ESLint ignora `supabase/functions/**` e Deno non è nella CI: `index.ts` non è coperto da test,
+  solo `email.ts`.
