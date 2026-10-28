@@ -2189,7 +2189,7 @@ verificato finirebbe nello spam; senza `EMAIL_NOTIFICHE=si` il comportamento è 
 
 ## Router: pagina non disponibile (T095)
 
-**File coinvolti:** `apps/web/src/router.ts`, `apps/web/src/router.test.ts`.
+**File coinvolti:** `apps/web/src/lib/router.ts`, `apps/web/src/lib/router.test.ts`.
 **Come funziona:** `mostraPagina` esegue `rotta.mostra` in un `try/catch`. Se il codice della pagina non arriva
 o la pagina va in errore, l'errore va in `console.error`; se la navigazione è ancora quella attuale il
 contenitore mostra `riquadroPaginaNonDisponibile(url)` ("Pagina non disponibile" con "Riprova"). "Riprova" è un
@@ -2214,4 +2214,3 @@ non si escludono: si corregge la pagina con i token del design system.
   misurato a metà transizione (falso positivo). Le animazioni finite con `fill: both` restano in
   `getAnimations()`, quindi si controlla lo stato e non la presenza.
 - Un'animazione infinita su una pagina pubblica farebbe andare l'attesa in timeout.
-
