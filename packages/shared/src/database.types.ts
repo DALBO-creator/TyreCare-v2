@@ -23,6 +23,47 @@ export type Database = {
   };
   public: {
     Tables: {
+      abbonamenti: {
+        Row: {
+          created_at: string;
+          officina_id: string;
+          piano: string;
+          prova_fino_al: string;
+          stato: string;
+          stripe_customer_id: string | null;
+          stripe_subscription_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          created_at?: string;
+          officina_id: string;
+          piano?: string;
+          prova_fino_al?: string;
+          stato?: string;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          created_at?: string;
+          officina_id?: string;
+          piano?: string;
+          prova_fino_al?: string;
+          stato?: string;
+          stripe_customer_id?: string | null;
+          stripe_subscription_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'abbonamenti_officina_id_fkey';
+            columns: ['officina_id'];
+            isOneToOne: true;
+            referencedRelation: 'officine';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       chiusure_officina: {
         Row: {
           al: string;

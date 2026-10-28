@@ -98,7 +98,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **GitHub Actions** | — | ✅ | `.github/workflows/ci.yml`: ad ogni push su `main` e ad ogni PR esegue formattazione, lint, tipi, test e build (job `check`), i test pgTAP con i tipi del database (`database`) e i test end-to-end (`e2e`). |
 | **ESLint** | 10.12 | ✅ | Configurazione "flat" in `eslint.config.js` con `typescript-eslint`; `eslint-config-prettier` disattiva le regole di stile gestite da Prettier; `globals` definisce le variabili di browser e Node. |
 | **Prettier** | 3.9 | ✅ | Formattazione (`.prettierrc.json`: apici singoli, 100 colonne, fine riga LF). `DOCS/` è esclusa. |
-| **Vitest** | 5.0 | ✅ | Test di tutto il monorepo con un solo comando: un "project" per workspace in `vitest.config.ts`. |
+| **Vitest** | 5.0 | ✅ | Test di tutto il monorepo con un solo comando: un "project" per workspace in `vitest.config.ts`, più il project `funzioni` (`supabase/functions`). |
 | **Playwright** (`@playwright/test`) | 1.64 | ✅ | Test end-to-end nel browser (Chromium, schermo da telefono) contro Supabase locale, workspace `e2e/`. Le email di conferma si leggono dall'API di **Mailpit**. Browser da scaricare una volta: `npx playwright install chromium`. In CI nel job `e2e`. |
 | **Lighthouse** | — | 🟡 | Audit PWA/performance/accessibilità (manuale, poi in CI). |
 | **EditorConfig** | — | ✅ | `.editorconfig`: UTF-8, 2 spazi, LF per tutti gli editor. |
