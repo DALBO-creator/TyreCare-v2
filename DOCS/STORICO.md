@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-29 — ciclo 20261029-00 — T095 T051
+
+**Fatto**
+
+- T095: quando il codice di una pagina non arriva o la pagina va in errore, il router mostra "Pagina non
+  disponibile" con il pulsante "Riprova" (prima restava la pagina precedente con il titolo nuovo). Nuovo
+  `router.test.ts` con 4 test.
+- T051: nuovo e2e `accessibilita.spec.ts` con axe-core (WCAG 2 A/AA) su `/accedi`, `/registrati` e
+  `/password-dimenticata`: la CI fallisce con violazioni critical o serious. L'unico falso positivo di
+  contrasto veniva dalla dissolvenza d'ingresso, ora attesa prima dell'analisi.
+
+**Verifiche**
+
+- Format, lint, typecheck, 291 test unitari e build verdi. L'e2e nuovo (axe) lo verifica la CI; prova locale
+  di axe con Chromium: 0 violazioni gravi a pagina ferma sulle 3 pagine.
+
 ### Sessione agenti — 2026-10-28 — ciclo 20261028-21 — T052 T081
 
 **Fatto**

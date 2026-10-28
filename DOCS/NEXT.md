@@ -7,8 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261028-21 (T052 link all'import dei controlli dalla pagina dell'import, T081 errore dell'unione clienti
-> mostrato una sola volta).
+> 20261029-00 (T095 pagina "non disponibile" del router, T051 controllo di accessibilità axe negli e2e).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.

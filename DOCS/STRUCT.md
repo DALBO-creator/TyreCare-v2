@@ -100,6 +100,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **Prettier** | 3.9 | ✅ | Formattazione (`.prettierrc.json`: apici singoli, 100 colonne, fine riga LF). `DOCS/` è esclusa. |
 | **Vitest** | 5.0 | ✅ | Test di tutto il monorepo con un solo comando: un "project" per workspace in `vitest.config.ts`, più il project `funzioni` (`supabase/functions`). |
 | **Playwright** (`@playwright/test`) | 1.64 | ✅ | Test end-to-end nel browser (Chromium, schermo da telefono) contro Supabase locale, workspace `e2e/`. Le email di conferma si leggono dall'API di **Mailpit**. Browser da scaricare una volta: `npx playwright install chromium`. In CI nel job `e2e`. |
+| **@axe-core/playwright** | 4.14.0 | ✅ | Controllo di accessibilità WCAG 2 A/AA negli e2e (`e2e/tests/accessibilita.spec.ts`). Porta `axe-core` 4.14.0 (licenza MPL-2.0). DevDependency di `@tyrecare/e2e`, non nel bundle. |
 | **Lighthouse** | — | 🟡 | Audit PWA/performance/accessibilità (manuale, poi in CI). |
 | **EditorConfig** | — | ✅ | `.editorconfig`: UTF-8, 2 spazi, LF per tutti gli editor. |
 
