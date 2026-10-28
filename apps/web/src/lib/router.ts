@@ -3,6 +3,8 @@
  * Ogni rotta dichiara chi può vederla; il router reindirizza chi non ha accesso.
  */
 
+import { esc } from './html';
+
 /** `pubblica`: tutti · `ospite`: solo senza login (accedi, registrati) · `utente`: solo con login. */
 export type Accesso = 'pubblica' | 'ospite' | 'utente';
 
@@ -66,6 +68,18 @@ export function vaiA(destinazione: string, { sostituisci = false } = {}): void {
   void mostraPagina();
 }
 
+/** Riquadro mostrato quando una pagina non si carica; "Riprova" è un link all'URL attuale. */
+export function riquadroPaginaNonDisponibile(url: string): string {
+  return `
+    <main class="tc-auth">
+      <div class="tc-auth__contenuto">
+        <h1 class="tc-auth__titolo" tabindex="-1">Pagina non disponibile</h1>
+        <p class="tc-auth__sottotitolo">Pagina non disponibile: controlla la connessione e riprova.</p>
+        <a class="btn btn-primary btn-lg w-100" href="${esc(url)}">Riprova</a>
+      </div>
+    </main>`;
+}
+
 /** Mostra la pagina dell'URL attuale, applicando le regole di accesso. */
 export async function mostraPagina(): Promise<void> {
   if (!opzioni || !contenitore) return;
@@ -82,9 +96,18 @@ export async function mostraPagina(): Promise<void> {
   }
 
   generazione++;
+  const n = generazione;
   document.title = rotta.titolo ? `${rotta.titolo} · TyreCare` : 'TyreCare';
   window.scrollTo(0, 0);
-  await rotta.mostra(contenitore);
+  try {
+    await rotta.mostra(contenitore);
+  } catch (err) {
+    console.error(err);
+    // Solo se nel frattempo non è partita un'altra navigazione
+    if (ancoraAttuale(n)) {
+      contenitore.innerHTML = riquadroPaginaNonDisponibile(location.pathname + location.search);
+    }
+  }
 
   // Per chi usa un lettore di schermo: dopo un cambio di pagina il focus va sul titolo, così la
   // nuova pagina viene annunciata (al primo caricamento no, il browser parte già dall'inizio)
