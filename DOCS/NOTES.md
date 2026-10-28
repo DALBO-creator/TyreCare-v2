@@ -2186,3 +2186,32 @@ verificato finirebbe nello spam; senza `EMAIL_NOTIFICHE=si` il comportamento è 
 - L'email parte anche quando ci sono dispositivi ma tutte le push falliscono (es. iscrizioni scadute).
 - ESLint ignora `supabase/functions/**` e Deno non è nella CI: `index.ts` non è coperto da test,
   solo `email.ts`.
+
+## Router: pagina non disponibile (T095)
+
+**File coinvolti:** `apps/web/src/router.ts`, `apps/web/src/router.test.ts`.
+**Come funziona:** `mostraPagina` esegue `rotta.mostra` in un `try/catch`. Se il codice della pagina non arriva
+o la pagina va in errore, l'errore va in `console.error`; se la navigazione è ancora quella attuale il
+contenitore mostra `riquadroPaginaNonDisponibile(url)` ("Pagina non disponibile" con "Riprova"). "Riprova" è un
+link all'URL attuale: il router lo intercetta e richiama `mostraPagina`. `pigra` resta com'è (ricarica una volta).
+
+### Codice complesso
+- `ancoraAttuale(n)`: se nel frattempo l'utente è andato altrove, il riquadro non si scrive e la pagina nuova
+  non si tocca.
+- L'URL nel riquadro passa da `esc()`.
+- I test usano `vi.stubGlobal` con oggetti finti, perché l'ambiente `web` dei test è node.
+
+## Controllo automatico di accessibilità (axe) (T051)
+
+**File coinvolti:** `e2e/tests/accessibilita.spec.ts`, `e2e/package.json`.
+**Come funziona:** lo spec apre le pagine pubbliche (`/accedi`, `/registrati`, `/password-dimenticata`) e le
+analizza con `@axe-core/playwright` e i tag `wcag2a`/`wcag2aa`. Fallisce con almeno una violazione critical o
+serious e il messaggio elenca `id` e selettori. Per una pagina nuova si aggiunge una voce a `PAGINE`. Le regole
+non si escludono: si corregge la pagina con i token del design system.
+
+### Codice complesso
+- Prima di analizzare si attende che nessuna animazione sia `running`: durante `tc-entra` il contrasto è
+  misurato a metà transizione (falso positivo). Le animazioni finite con `fill: both` restano in
+  `getAnimations()`, quindi si controlla lo stato e non la presenza.
+- Un'animazione infinita su una pagina pubblica farebbe andare l'attesa in timeout.
+
