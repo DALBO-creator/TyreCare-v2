@@ -37,7 +37,7 @@ test("dall'import dell'officina al garage del cliente", async ({ page, browser }
   await expect(
     page.getByRole('heading', { name: `Anteprima di «${fileClienti.name}»` }),
   ).toBeFocused();
-  await page.getByRole('button', { name: /^Importa \d+ righ/ }).click();
+  await page.getByRole('button', { name: 'Importa 1 riga' }).click();
   await expect(
     page.getByText(/^Import completato: 1 cliente nuovo, 1 veicolo nuovo/),
   ).toBeVisible();
