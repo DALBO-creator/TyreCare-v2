@@ -133,6 +133,11 @@ h6 {
 }
 
 // --- Barra superiore ---------------------------------------------------------------------
+// "CARE" piccolo sul nero: il rosso brand non arriva a 4,5:1, serve il rosso chiaro (contrasto AA)
+.tc-appbar .tc-marchio span {
+  color: var(--tc-rosso-chiaro);
+}
+
 .tc-appbar {
   position: sticky;
   top: 0;

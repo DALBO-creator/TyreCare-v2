@@ -7,8 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261029-18 (T065 filtri "Cambio di stagione" e "Da ricontrollare" nella home dell'officina, T068 pagina
-> `/officina/abbonamento`).
+> 20261029-21 (T057 e2e del percorso del pilota, T069 accessibilità su 7 pagine con accesso).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.

@@ -2201,19 +2201,23 @@ link all'URL attuale: il router lo intercetta e richiama `mostraPagina`. `pigra`
 - L'URL nel riquadro passa da `esc()`.
 - I test usano `vi.stubGlobal` con oggetti finti, perché l'ambiente `web` dei test è node.
 
-## Controllo automatico di accessibilità (axe) (T051)
+## Test di accessibilità (`e2e/tests/accessibilita.spec.ts`) (T051, T069)
 
 **File coinvolti:** `e2e/tests/accessibilita.spec.ts`, `e2e/package.json`.
-**Come funziona:** lo spec apre le pagine pubbliche (`/accedi`, `/registrati`, `/password-dimenticata`) e le
-analizza con `@axe-core/playwright` e i tag `wcag2a`/`wcag2aa`. Fallisce con almeno una violazione critical o
-serious e il messaggio elenca `id` e selettori. Per una pagina nuova si aggiunge una voce a `PAGINE`. Le regole
-non si escludono: si corregge la pagina con i token del design system.
+**Come funziona:** lo spec analizza con `@axe-core/playwright` (tag `wcag2a`/`wcag2aa`) le pagine pubbliche
+(`/accedi`, `/registrati`, `/password-dimenticata`) e 7 pagine con accesso: home, veicolo Panda e officine del
+cliente; home officina, clienti, appuntamenti e calendario del titolare. `controllaAccessibilita(page,
+percorso)` attende la fine delle animazioni, lancia axe e fallisce con violazioni critical o serious (il
+messaggio elenca `id` e selettori), senza escludere regole: si corregge la pagina con i token del design
+system. Un test per pagina, divisi in ospite, cliente e titolare; ogni test aspetta l'h1 visibile. Una pagina
+nuova si aggiunge agli array `PAGINE*`.
 
 ### Codice complesso
 - Prima di analizzare si attende che nessuna animazione sia `running`: durante `tc-entra` il contrasto è
   misurato a metà transizione (falso positivo). Le animazioni finite con `fill: both` restano in
   `getAnimations()`, quindi si controlla lo stato e non la presenza.
-- Un'animazione infinita su una pagina pubblica farebbe andare l'attesa in timeout.
+- Un'animazione infinita su una pagina farebbe andare l'attesa in timeout.
+- Gli h1 dinamici si riconoscono con regex (`/^Ciao/`, `/Panda/`).
 
 ## Registra la tua officina (R7)
 
@@ -2295,3 +2299,17 @@ disattivato fino a Stripe (D8). Dalla pagina "Dati dell'officina" c'è il link.
 `packages/shared/src/abbonamenti.ts` — `giorniDiProva(provaFinoAl, oggi)` tratta `prova_fino_al` come ultimo
 giorno incluso: (fine - oggi) + 1, minimo 0, con `Date.UTC`. Con il default della migrazione
 (`current_date + 30`) il primo giorno mostra 31 giorni (da decidere: default +29 o "31 giorni").
+
+## e2e: il percorso del pilota (T057)
+
+**File coinvolti:** `e2e/tests/percorso-pilota.spec.ts`.
+**Come funziona:** un test unico (timeout 180 s) copre il flusso di LA SANTI GOMME: import di clienti e
+veicoli, import dei controlli, invito, registrazione del cliente, garage con lo stato rosso e storico delle
+misure dello pneumatico. Il cliente usa un contesto nuovo: registrazione con i termini, conferma da Mailpit,
+"Collega i miei veicoli". Le misure si contano con `.tc-misure__riga`.
+
+### Codice complesso
+- L'import non restituisce l'id del cliente: lo si cerca in `/clienti` e si legge `?id=` dalla scheda.
+- Nel CSV dei controlli stagione esplicita e date passate; stessa misura/marca/modello/dot per posizione,
+  così le 2 misure finiscono sullo stesso pneumatico.
+- 1,5 mm su ANT_SX dà lo stato "Da sostituire" (sotto 1,6 di legge; 2,5 mm su estivo è giallo).

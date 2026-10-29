@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-29 — ciclo 20261029-21 — T057 T069
+
+**Fatto**
+
+- T057: nuovo e2e `e2e/tests/percorso-pilota.spec.ts`: import di clienti, veicoli e controlli, invito,
+  registrazione del cliente, garage rosso e storico delle misure dello pneumatico.
+- T069: il controllo di accessibilità (axe, critical/serious) copre anche 7 pagine con accesso, di cliente e
+  titolare. Nessuna correzione al codice.
+
+**Verifiche**
+
+- e2e da verificare in CI.
+
 ### Sessione agenti — 2026-10-29 — ciclo 20261029-18 — T065 T068
 
 **Fatto**
