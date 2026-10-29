@@ -6,6 +6,7 @@ import type {
   RecuperoPassword,
   Registrazione,
 } from '@tyrecare/shared';
+import { VERSIONE_TERMINI } from '@tyrecare/shared';
 import { erroreDiRete } from './rete';
 import { destinazioneDopoAccesso } from './router';
 import { getSupabase } from './supabase';
@@ -39,7 +40,8 @@ export async function accedi({ email, password }: Accesso): Promise<void> {
 }
 
 /**
- * Crea l'account. Nome e cognome vanno nei metadati: il trigger del database li copia nel profilo.
+ * Crea l'account. Nome, cognome e versione dei termini accettati vanno nei metadati:
+ * il trigger del database li copia nel profilo.
  * Il link di conferma riporta alla pagina richiesta (`?dopo=`, es. l'invito dell'officina).
  * Restituisce `true` se l'utente è già dentro, `false` se deve prima confermare l'email.
  */
@@ -48,7 +50,7 @@ export async function registrati({ nome, cognome, email, password }: Registrazio
     email,
     password,
     options: {
-      data: { nome, cognome },
+      data: { nome, cognome, termini_versione: VERSIONE_TERMINI },
       emailRedirectTo: `${location.origin}${destinazioneDopoAccesso()}`,
     },
   });

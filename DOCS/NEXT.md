@@ -7,7 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261029-00 (T095 pagina "non disponibile" del router, T051 controllo di accessibilità axe negli e2e).
+> 20261029-03 (T060 pagina "Registra la tua officina", T056 accettazione dei termini alla registrazione).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
@@ -39,8 +39,8 @@
   l'email dal dominio di TyreCare (P23): comando in `NOTES.md` → "Notifiche: email di riserva (T066)"
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
-- [ ] Promemoria: la registrazione web deve passare `termini_versione` nei metadati di `signUp` (T056,
-  corsia C3); T054 ha fatto solo il database, senza questo il profilo nuovo resta senza termini accettati
+- [x] Promemoria: la registrazione web passa `termini_versione` nei metadati di `signUp` — fatto (T056,
+  2026-10-29): la spunta dei termini è obbligatoria e il trigger (T054) copia la versione nel profilo
 
 Per l'avvio dell'ambiente vedi "Sessioni nel cloud" o "Solo per i PC di Davide" (sotto).
 
