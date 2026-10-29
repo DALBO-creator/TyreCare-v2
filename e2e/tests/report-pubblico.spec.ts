@@ -30,6 +30,7 @@ test('il titolare condivide il report, chi lo apre lo vede e dopo la revoca no',
   const pagina = await ospite.newPage();
   await pagina.goto(link);
   await expect(pagina.getByText(TARGA).first()).toBeVisible();
+  await expect(pagina.locator('a[href^="/pneumatico"]')).toHaveCount(0);
   await expect(pagina.getByRole('button', { name: 'Stampa o salva in PDF' })).toBeVisible();
   await expect(pagina.getByRole('link', { name: /Correggi o elimina/ })).toHaveCount(0);
   await expect(pagina.getByRole('button', { name: 'Condividi il report' })).toHaveCount(0);

@@ -115,7 +115,7 @@ export function htmlReport(
         ${auto ? `<span>${esc(auto)}${veicolo.anno ? ` · ${veicolo.anno}` : ''}</span>` : ''}
         <span>${report.km !== null ? formattaKm(report.km) : 'Km non indicati'}</span>
       </p>
-      ${cruscotto(report, '', { ultimo: false })}
+      ${cruscotto(report, '', { ultimo: false, collegamenti: !pubblico })}
     </section>
 
     <div class="tc-contenuto">

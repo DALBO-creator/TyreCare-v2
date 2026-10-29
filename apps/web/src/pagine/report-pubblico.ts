@@ -33,7 +33,7 @@ export async function mostraReportPubblico(app: HTMLElement): Promise<void> {
   if (!report) {
     app.innerHTML = pagina(
       messaggio(
-        'Link non valido o scaduto',
+        'Report non disponibile',
         "Link non valido o scaduto. Chiedi all'officina un link nuovo.",
       ),
     );
@@ -49,6 +49,7 @@ export async function mostraReportPubblico(app: HTMLElement): Promise<void> {
 /** Contenitore senza menu né notifiche: chi apre il link non ha un account. */
 function pagina(corpo: string): string {
   return `
+    <a class="tc-salta" href="#tc-principale">Salta al contenuto</a>
     <header class="tc-appbar">
       <a class="text-decoration-none" href="/" aria-label="TyreCare, home">
         <span class="tc-marchio">Tyre<span>Care</span></span></a>
