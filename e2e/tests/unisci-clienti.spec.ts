@@ -13,6 +13,15 @@ test('il titolare unisce due clienti e vede il veicolo sulla scheda rimasta', as
   await creaVeicolo(page, secondo, { targa, marca: 'Fiat', modello: 'Panda' });
 
   await page.goto(`/cliente?id=${primo}`);
+  // Un cognome lungo senza spazi non deve allargare la scheda oltre lo schermo: sul telefono la
+  // vista si rimpicciolirebbe e i clic finirebbero su altri elementi. (innerWidth cresce insieme
+  // alla pagina rimpicciolita, clientWidth resta la larghezza dello schermo.)
+  await expect(page.getByRole('heading', { level: 1, name: `Primo${id} Unisci` })).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+    ),
+  ).toBe(true);
   await page.getByRole('link', { name: 'Unisci con un altro cliente' }).click();
   await expect(page.getByText(`Resta questa scheda: Primo${id} Unisci`)).toBeVisible();
   await page.getByLabel('Cerca per nome, telefono, email o targa').fill(`Secondo${id}`);
