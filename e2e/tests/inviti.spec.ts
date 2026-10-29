@@ -38,6 +38,7 @@ test("il cliente crea l'account dall'invito e trova i veicoli nel garage", async
   await cliente.getByLabel('Nome', { exact: true }).fill('Elena');
   await cliente.getByLabel('Cognome', { exact: true }).fill('Prova');
   await cliente.getByLabel('Password', { exact: true }).fill(PASSWORD);
+  await cliente.getByLabel(/Ho letto l'informativa privacy/).check();
   await cliente.getByRole('button', { name: 'Crea account' }).click();
   await expect(cliente.getByRole('heading', { name: 'Controlla la posta' })).toBeVisible();
 

@@ -6,8 +6,8 @@ import { marked } from 'marked';
  */
 export const TESTI_LEGALI_DEFINITIVI = false;
 
-/** Versione dei termini che l'utente accetta alla registrazione (la usa T056). */
-export const VERSIONE_TERMINI = '2026-10-bozza';
+// La costante vive in `shared` (leggera): `lib/auth.ts` è nel file iniziale e non deve portarsi `marked`
+export { VERSIONE_TERMINI } from '@tyrecare/shared';
 
 export const AVVISO_BOZZA =
   'Testo in bozza: la versione definitiva arriverà dopo la revisione legale.';
