@@ -39,14 +39,13 @@ Le copie contengono dati personali dei clienti delle officine:
 **ATTENZIONE: il ripristino si prova SOLO sul database locale, mai sul progetto cloud.** Un ripristino
 sul cloud sovrascriverebbe i dati veri delle officine.
 
-1. Avvia Supabase in locale (`supabase start`) e azzera il database locale: `supabase db reset`.
-2. `psql "<url del database locale>" -f schema.sql`
-3. `psql "<url del database locale>" -f dati.sql`
+1. `supabase start`, poi `supabase db reset --no-seed`: crea la struttura dalle migrazioni del repository,
+   senza dati di prova. Le migrazioni devono essere le stesse della produzione: usa il commit già pubblicato.
+2. `psql "<url del database locale>" --single-transaction -v ON_ERROR_STOP=1 -c "SET session_replication_role = replica" -f dati.sql`
+3. `schema.sql` non si carica sopra le migrazioni: serve per ripristinare su un progetto nuovo e vuoto.
+   Nella prova basta controllare che il file esista e non sia vuoto.
 4. Controlla a campione: numero di clienti e veicoli, l'ultima prenotazione, un accesso di prova.
 5. Segna quanto tempo è servito dall'inizio alla fine.
-
-Se `schema.sql` dà errori perché `db reset` ha già creato le tabelle, ripeti da un database vuoto e annota
-come hai fatto: serve a chi dovrà farlo con fretta.
 
 ## Dopo la prima prova
 
