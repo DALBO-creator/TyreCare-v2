@@ -10,3 +10,4 @@ export * from './importa';
 export * from './commenti';
 export * from './importa-controlli';
 export * from './esporta';
+export * from './stagioni';
