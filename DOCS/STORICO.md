@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-29 — ciclo 20261029-18 — T065 T068
+
+**Fatto**
+
+- T065: home dell'officina con due filtri nuovi, "Cambio di stagione" e "Da ricontrollare", combinati con la
+  ricerca. `gommeFuoriStagione` e `daRicontrollare` in `packages/shared/src/stagioni.ts`, con test sulle date
+  di confine. `caricaVeicoli` legge le stagioni delle gomme montate, scorta esclusa.
+- T068: pagina `/officina/abbonamento` per il titolare: piano attuale, giorni di prova, carte Starter
+  (29 EUR/mese) e Pro (49 EUR/mese), pulsante "Attiva l'abbonamento" disattivato fino a Stripe. `PIANI` e
+  `giorniDiProva` in `packages/shared/src/abbonamenti.ts`; link dalla pagina "Dati dell'officina"; unit ed
+  e2e `abbonamento.spec.ts`.
+
+**Verifiche**
+
+- Format, lint, typecheck, 321 test unitari e build verdi; e2e in CI.
+
 ### Sessione agenti — 2026-10-29 — ciclo 20261029-15 — T048 T061
 
 **Fatto**

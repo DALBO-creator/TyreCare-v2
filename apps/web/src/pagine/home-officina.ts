@@ -1,5 +1,20 @@
-import { CalendarClock, ChevronRight, CircleDashed, Plus, Search } from 'lucide';
-import { formattaTarga, normalizzaTarga, oggiInItalia, type StatoSalute } from '@tyrecare/shared';
+import {
+  CalendarClock,
+  ChevronRight,
+  CircleDashed,
+  Plus,
+  Search,
+  Snowflake,
+  type IconNode,
+} from 'lucide';
+import {
+  daRicontrollare,
+  formattaTarga,
+  gommeFuoriStagione,
+  normalizzaTarga,
+  oggiInItalia,
+  type StatoSalute,
+} from '@tyrecare/shared';
 import { esc } from '../lib/html';
 import {
   caricaVeicoli,
@@ -20,7 +35,7 @@ import {
   gestisciErroreCaricamento,
 } from './comune';
 
-type Filtro = 'TUTTI' | 'ROSSO' | 'GIALLO';
+type Filtro = 'TUTTI' | 'ROSSO' | 'GIALLO' | 'STAGIONE' | 'RICONTROLLO';
 
 // Ordine dell'elenco: prima i veicoli che hanno bisogno dell'officina, in fondo quelli mai controllati
 const URGENZA: Record<StatoSalute | 'NESSUNO', number> = {
@@ -63,6 +78,7 @@ export async function mostraHomeOfficina(
 
   ordinaPerUrgenza(veicoli);
   const conta = (s: StatoSalute) => veicoli.filter((v) => v.stato === s).length;
+  const oggi = oggiInItalia();
 
   app.innerHTML = paginaApp(`
     <section class="tc-hero">
@@ -101,6 +117,18 @@ export async function mostraHomeOfficina(
         ${voceRiepilogo('TUTTI', veicoli.length, 'Veicoli')}
         ${voceRiepilogo('ROSSO', conta('ROSSO'), STATI.ROSSO.etichetta)}
         ${voceRiepilogo('GIALLO', conta('GIALLO'), STATI.GIALLO.etichetta)}
+        ${voceRiepilogo(
+          'STAGIONE',
+          veicoli.filter((v) => gommeFuoriStagione(v.stagioni, oggi)).length,
+          'Cambio di stagione',
+          Snowflake,
+        )}
+        ${voceRiepilogo(
+          'RICONTROLLO',
+          veicoli.filter((v) => daRicontrollare(v.ultimoControllo, oggi)).length,
+          'Da ricontrollare',
+          CalendarClock,
+        )}
       </div>
 
       <a class="btn btn-primary btn-lg w-100" href="/veicoli/nuovo">${icona(Plus)} Nuovo veicolo</a>
@@ -136,7 +164,7 @@ export async function mostraHomeOfficina(
     scegliOfficina((e.target as HTMLSelectElement).value);
     void mostraPagina();
   });
-  if (veicoli.length > 0) collegaElenco(app, veicoli);
+  if (veicoli.length > 0) collegaElenco(app, veicoli, oggi);
 }
 
 function sceltaOfficina({ officine }: DatiUtente, attivaId: string): string {
@@ -155,18 +183,25 @@ function sceltaOfficina({ officine }: DatiUtente, attivaId: string): string {
     </div>`;
 }
 
-function voceRiepilogo(filtro: Filtro, numero: number, etichetta: string): string {
-  const stato = filtro === 'TUTTI' ? undefined : STATI[filtro];
+function voceRiepilogo(
+  filtro: Filtro,
+  numero: number,
+  etichetta: string,
+  iconaFiltro?: IconNode,
+): string {
+  // Solo ROSSO e GIALLO sono stati di salute: colore e icona vengono da lì
+  const stato = filtro === 'ROSSO' || filtro === 'GIALLO' ? STATI[filtro] : undefined;
+  const simbolo = stato ? stato.icona : iconaFiltro;
   return `
     <button type="button" class="tc-riepilogo__voce${stato ? ` tc-riepilogo__voce--${stato.classe}` : ''}"
       data-filtro="${filtro}" aria-pressed="${filtro === 'TUTTI'}">
       <span class="tc-riepilogo__numero">${numero}</span>
-      <span class="tc-riepilogo__etichetta">${stato ? icona(stato.icona) : ''}${esc(etichetta)}</span>
+      <span class="tc-riepilogo__etichetta">${simbolo ? icona(simbolo) : ''}${esc(etichetta)}</span>
     </button>`;
 }
 
-/** Filtro per stato e ricerca: l'elenco si ridisegna nel browser, senza ricaricare i dati. */
-function collegaElenco(app: HTMLElement, veicoli: VeicoloInElenco[]): void {
+/** Filtro e ricerca: l'elenco si ridisegna nel browser, senza ricaricare i dati. */
+function collegaElenco(app: HTMLElement, veicoli: VeicoloInElenco[], oggi: string): void {
   const elenco = app.querySelector<HTMLElement>('[data-elenco]')!;
   const conteggio = app.querySelector<HTMLElement>('[data-conteggio]')!;
   const cerca = app.querySelector<HTMLInputElement>('#tc-cerca')!;
@@ -178,7 +213,7 @@ function collegaElenco(app: HTMLElement, veicoli: VeicoloInElenco[]): void {
     const targa = normalizzaTarga(testo.toUpperCase());
     const trovati = veicoli.filter(
       (v) =>
-        (filtro === 'TUTTI' || v.stato === filtro) &&
+        corrisponde(v, filtro, oggi) &&
         (!testo ||
           (targa !== '' && v.targa.includes(targa)) ||
           `${v.cliente} ${v.marca} ${v.modello}`.toLowerCase().includes(testo)),
@@ -189,7 +224,7 @@ function collegaElenco(app: HTMLElement, veicoli: VeicoloInElenco[]): void {
     elenco.innerHTML =
       trovati.length > 0
         ? `<div class="tc-lista">${trovati.map((v) => rigaVeicolo(v)).join('')}</div>`
-        : nessunRisultato(testo);
+        : nessunRisultato(cerca.value.trim(), filtro);
   };
 
   const impostaFiltro = (nuovo: Filtro) => {
@@ -212,6 +247,19 @@ function collegaElenco(app: HTMLElement, veicoli: VeicoloInElenco[]): void {
     cerca.focus();
   });
   disegna();
+}
+
+function corrisponde(v: VeicoloInElenco, filtro: Filtro, oggi: string): boolean {
+  switch (filtro) {
+    case 'TUTTI':
+      return true;
+    case 'STAGIONE':
+      return gommeFuoriStagione(v.stagioni, oggi);
+    case 'RICONTROLLO':
+      return daRicontrollare(v.ultimoControllo, oggi);
+    default:
+      return v.stato === filtro;
+  }
 }
 
 /** Riga di un veicolo nell'elenco; `senzaCliente` per la scheda del cliente, dove il nome è già sopra. */
@@ -238,16 +286,29 @@ export function rigaVeicolo(v: VeicoloInElenco, senzaCliente = false): string {
     </a>`;
 }
 
-function nessunRisultato(testo: string): string {
+// Senza testo cercato, il messaggio dice quale filtro non ha trovato niente
+const VUOTO_PER_FILTRO: Record<Filtro, string> = {
+  TUTTI: 'Nessun veicolo',
+  ROSSO: 'Nessun veicolo in questo stato',
+  GIALLO: 'Nessun veicolo in questo stato',
+  STAGIONE: 'Nessun veicolo con le gomme fuori stagione',
+  RICONTROLLO: 'Nessun veicolo da ricontrollare',
+};
+
+/** `testo` è quello digitato (con `trim()`, non in minuscolo): si mostra così com'è. */
+function nessunRisultato(testo: string, filtro: Filtro): string {
   return `
     <div class="tc-vuoto">
       <span class="tc-vuoto__icona">${icona(Search)}</span>
       <p class="tc-vuoto__titolo">
-        ${testo ? `Nessun veicolo per «${esc(testo)}»` : 'Nessun veicolo in questo stato'}
+        ${testo ? `Nessun veicolo per «${esc(testo)}»` : VUOTO_PER_FILTRO[filtro]}
       </p>
       <p class="tc-vuoto__testo">
-        Controlla la targa o prova con il cognome del cliente. Se il veicolo è nuovo, registralo con
-        "Nuovo veicolo".
+        ${
+          testo
+            ? 'Controlla la targa o prova con il cognome del cliente. Se il veicolo è nuovo, registralo con "Nuovo veicolo".'
+            : 'Quando un veicolo rientra in questo filtro lo trovi qui.'
+        }
       </p>
       <button type="button" class="btn btn-outline-light mt-3" data-mostra-tutti>
         Mostra tutti i veicoli

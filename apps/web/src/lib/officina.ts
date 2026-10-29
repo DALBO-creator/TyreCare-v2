@@ -4,6 +4,7 @@ import {
   type Cliente,
   type MontaPneumatici,
   type NuovoControllo,
+  type Stagione,
   type StatoSalute,
   type Tables,
   type Veicolo,
@@ -80,6 +81,8 @@ export interface VeicoloInElenco {
   ultimoControllo: string | null;
   /** Stato peggiore tra le misure dell'ultimo controllo. */
   stato: StatoSalute | null;
+  /** Stagioni degli pneumatici montati ora (la ruota di scorta non conta). */
+  stagioni: Stagione[];
 }
 
 /**
@@ -101,9 +104,12 @@ export async function caricaVeicoli(
       .select(
         `id, targa, marca, modello,
        cliente:clienti_officina (nome, cognome, ragione_sociale),
-       controlli (eseguito_il, misure_pneumatico (battistrada_mm, pneumatico:pneumatici (stagione)))`,
+       controlli (eseguito_il, misure_pneumatico (battistrada_mm, pneumatico:pneumatici (stagione))),
+       montati:pneumatici (stagione, posizione)`,
       )
       .eq(colonna, valore)
+      // Filtra le righe incorporate (gli pneumatici montati), non i veicoli
+      .is('montati.smontato_il', null)
       // Solo l'ultimo controllo di ogni veicolo
       .order('eseguito_il', { referencedTable: 'controlli', ascending: false })
       .order('created_at', { referencedTable: 'controlli', ascending: false })
@@ -128,6 +134,7 @@ export async function caricaVeicoli(
             ),
           )
         : null,
+      stagioni: v.montati.filter((p) => p.posizione !== 'SCORTA').map((p) => p.stagione),
     };
   });
 }
