@@ -70,7 +70,7 @@ test("dall'import dell'officina al garage del cliente", async ({ page, browser }
       ...posizioni.map((p) => riga(`D1${id}`, '15/01/2026', 40000, p, '5,0')),
       // Nel secondo controllo l'anteriore sinistra è sotto il limite di legge (1,6 mm)
       ...posizioni.map((p) =>
-        riga(`D2${id}`, '20/03/2026', 45000, p, p === 'ANT_SX' ? '2,5' : '4,9'),
+        riga(`D2${id}`, '20/03/2026', 45000, p, p === 'ANT_SX' ? '1,5' : '4,9'),
       ),
     ].join('\r\n'),
     'utf8',
@@ -109,16 +109,16 @@ test("dall'import dell'officina al garage del cliente", async ({ page, browser }
   await cliente.getByRole('button', { name: 'Collega i miei veicoli' }).click();
   await expect(cliente).toHaveURL(/\/$/);
 
-  // Garage: il veicolo ha lo stato rosso; dal cruscotto si apre lo pneumatico da 2,5 mm
+  // Garage: il veicolo ha lo stato rosso; dal cruscotto si apre lo pneumatico da 1,5 mm
   const carta = cliente.getByRole('link', { name: /Panda/ });
   await expect(carta).toContainText('Da sostituire');
   await carta.click();
   await expect(cliente).toHaveURL(/\/garage\/veicolo\?targa=/);
-  await cliente.getByRole('link', { name: /^Anteriore sinistro: 2,5 mm/ }).click();
+  await cliente.getByRole('link', { name: /^Anteriore sinistro: 1,5 mm/ }).click();
   await expect(cliente).toHaveURL(/\/pneumatico\?id=/);
 
   // Storico: le 2 misure dei 2 controlli importati
   await expect(cliente.getByRole('heading', { name: 'Misure (2)' })).toBeVisible();
   await expect(cliente.locator('.tc-misure__riga')).toHaveCount(2);
-  await expect(cliente.locator('.tc-misure__riga').first()).toContainText('2,5 mm');
+  await expect(cliente.locator('.tc-misure__riga').first()).toContainText('1,5 mm');
 });
