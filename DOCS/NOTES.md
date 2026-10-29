@@ -2263,3 +2263,35 @@ Nel Profilo dell'ADMIN la sezione "Amministrazione" mostra "Officine da attivare
 ### Come si diventa ADMIN in produzione (voce D9)
 Dall'editor SQL di Supabase: `update public.profiles set ruolo = 'ADMIN' where id = '<uuid dell'utente>';`
 (eseguito senza utente, il trigger dei campi riservati lo permette). Non c'è una schermata per farlo.
+
+## Home officina: filtri Cambio di stagione e Da ricontrollare (T065)
+
+**File coinvolti:** `packages/shared/src/stagioni.ts`, `apps/web/src/lib/officina.ts`,
+`apps/web/src/pagine/home-officina.ts`.
+**Come funziona:** `caricaVeicoli` legge anche `montati:pneumatici (stagione, posizione)`, filtrato con
+`.is('montati.smontato_il', null)`: il filtro agisce sulle righe incorporate, non sui veicoli. Il campo
+`stagioni` esclude la SCORTA, come il promemoria. In `home-officina.ts` `corrisponde(v, filtro, oggi)` combina
+il filtro scelto con la ricerca; `nessunRisultato(testo, filtro)` sceglie il messaggio del vuoto (anche nel
+caso "solo filtro"). L'aria-label del gruppo resta "Filtra i veicoli per stato" perché lo usa un e2e.
+
+### Codice complesso
+`packages/shared/src/stagioni.ts` — `gommeFuoriStagione(stagioni, oggi)` confronta `oggi.slice(5)` (MM-DD):
+dal 15/10 al 14/03 sono fuori stagione le ESTIVO, dal 15/03 al 14/10 le INVERNALE, le QUATTRO_STAGIONI mai.
+La finestra è più larga di quella del promemoria (che finisce al 31/05): all'officina serve tutto l'anno.
+`daRicontrollare` è vero oltre 365 giorni dall'ultimo controllo (`Date.UTC` su date pure); mai controllato
+vale falso.
+
+## Pagina Abbonamento (T068)
+
+**File coinvolti:** `packages/shared/src/abbonamenti.ts`, `apps/web/src/lib/abbonamento.ts`,
+`apps/web/src/pagine/abbonamento.ts`, `apps/web/src/pagine/dati-officina.ts`.
+**Come funziona:** piani e prezzi stanno solo in `PIANI`. La pagina carica il contesto e legge `abbonamenti`
+solo se l'utente è titolare: l'operatore vede "Solo il titolare vede l'abbonamento." (l'RLS gliela nasconde
+comunque). Il piano PILOTA mostra "Officina pilota: gratuito" prima dello stato; se la riga manca, rimanda a
+«Invia un commento». La data di oggi viene da `oggiInItalia()`. Il pulsante "Attiva l'abbonamento" resta
+disattivato fino a Stripe (D8). Dalla pagina "Dati dell'officina" c'è il link.
+
+### Codice complesso
+`packages/shared/src/abbonamenti.ts` — `giorniDiProva(provaFinoAl, oggi)` tratta `prova_fino_al` come ultimo
+giorno incluso: (fine - oggi) + 1, minimo 0, con `Date.UTC`. Con il default della migrazione
+(`current_date + 30`) il primo giorno mostra 31 giorni (da decidere: default +29 o "31 giorni").
