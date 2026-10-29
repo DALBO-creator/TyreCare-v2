@@ -40,7 +40,8 @@ export async function accedi({ email, password }: Accesso): Promise<void> {
 }
 
 /**
- * Crea l'account. Nome, cognome e versione dei termini accettati vanno nei metadati: il trigger del database li copia nel profilo.
+ * Crea l'account. Nome, cognome e versione dei termini accettati vanno nei metadati:
+ * il trigger del database li copia nel profilo.
  * Il link di conferma riporta alla pagina richiesta (`?dopo=`, es. l'invito dell'officina).
  * Restituisce `true` se l'utente è già dentro, `false` se deve prima confermare l'email.
  */
