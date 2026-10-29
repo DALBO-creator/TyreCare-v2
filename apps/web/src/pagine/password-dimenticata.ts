@@ -5,6 +5,7 @@ import { esc } from '../lib/html';
 import { icona } from '../ui/icone';
 import { paginaAuth } from '../ui/layout';
 import { RIQUADRO_ERRORE, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
+import { avvisoConferma } from './comune';
 
 export function mostraPasswordDimenticata(app: HTMLElement): void {
   app.innerHTML = paginaAuth({
@@ -12,6 +13,7 @@ export function mostraPasswordDimenticata(app: HTMLElement): void {
     sottotitolo:
       "Inserisci l'email del tuo account: ti invieremo un link per sceglierne una nuova.",
     corpo: `
+      ${avvisoConferma()}
       <form class="tc-auth__modulo" novalidate>
         ${RIQUADRO_ERRORE}
         ${campo({ nome: 'email', etichetta: 'Email', tipo: 'email', autocomplete: 'email' })}
