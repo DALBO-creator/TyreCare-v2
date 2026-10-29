@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-29 — ciclo 20261029-15 — T048 T061
+
+**Fatto**
+
+- T048: due bozze. `DOCS/legale/registro-accessi.md`: chi del personale può accedere ai dati delle officine,
+  quando, cosa annotare, con la tabella vuota. `DOCS/pilota/copie-di-sicurezza.md`: copia a mano con la CLI,
+  conservazione su disco cifrato, prova di ripristino solo in locale con `db reset --no-seed` e i soli dati.
+- T061: pagina `/admin/officine`: l'amministratore vede le officine (quelle in attesa per prime) con titolare
+  e stato e le attiva o sospende con conferma, tramite le rpc `attiva_officina` e `sospendi_officina`. Nel
+  Profilo dell'ADMIN la sezione "Amministrazione" con "Officine da attivare (n)". Unit test su ordinamento e
+  conteggio, e2e `admin-officine.spec.ts`.
+
+**Verifiche**
+
+- Format, lint, typecheck, 305 test unitari e build verdi; e2e e pgTAP in CI.
+
 ### Sessione agenti — 2026-10-29 — ciclo 20261029-03 — T060 T056
 
 **Fatto**

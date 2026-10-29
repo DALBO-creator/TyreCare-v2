@@ -7,7 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261029-03 (T060 pagina "Registra la tua officina", T056 accettazione dei termini alla registrazione).
+> 20261029-15 (T048 bozze del registro accessi e delle copie di sicurezza, T061 pagina `/admin/officine`).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
@@ -20,6 +20,8 @@
   `DOCS/legale/README.md`; solo dopo si fanno le pagine nell'app e si firma il DPA con LA SANTI GOMME
 - [ ] P17: decidere quali misure di "Da fare prima del lancio" (`DOCS/legale/README.md`) fare prima del
   pilota (registro accessi del personale, esportazione dati, 2FA, copie di sicurezza; fatte solo in parte:
+  bozze del registro accessi e delle copie di sicurezza (T048, `DOCS/legale/registro-accessi.md`,
+  `DOCS/pilota/copie-di-sicurezza.md`);
   cancellazione account (T038 database, T039 pulsante nel profilo); intestazioni di
   sicurezza (T036), la CSP è solo Report-Only; fatta la bozza della procedura per le violazioni T037;
   esportazione: clienti e veicoli da `/clienti/importa` (T030), i dati personali dal profilo (T040), i
