@@ -126,6 +126,7 @@ export async function mostraDatiOfficina(app: HTMLElement): Promise<void> {
           ${icona(LocateFixed)} Usa la posizione attuale
         </button>
         ${pulsanteInvio('Salva dati', 'Salvataggio…')}
+        <a class="btn btn-outline-light btn-lg w-100" href="/officina/abbonamento">Abbonamento</a>
         <a class="btn btn-outline-light btn-lg w-100" href="/profilo">Annulla</a>
       </form>
     </div>`);
