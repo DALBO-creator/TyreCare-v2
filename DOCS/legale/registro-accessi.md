@@ -33,7 +33,7 @@ Fuori da questi casi non si accede ai dati delle officine.
 
 ## Cosa annotare ogni volta
 
-Subito, non a fine mese: data e ora, chi ha acceso, per quale officina, il motivo, quali dati sono stati
+Subito, non a fine mese: data e ora, chi ha avuto accesso, per quale officina, il motivo, quali dati sono stati
 consultati o modificati (tabelle e tipo di dati, **mai** copiarne il contenuto nel registro), se c'era la
 richiesta dell'officina, il riferimento (email, numero di ticket, incidente).
 
@@ -46,5 +46,5 @@ richiesta dell'officina, il riferimento (email, numero di ticket, incidente).
 ## Conservazione e controllo
 
 Il registro si conserva [DA COMPLETARE: dove e per quanto tempo]. È una bozza di tabella: ogni riga
-contiene dati personali di chi ha acceso, quindi il file con le righe vere non va nel repository pubblico.
+contiene dati personali di chi ha avuto accesso, quindi il file con le righe vere non va nel repository pubblico.
 [DA COMPLETARE: controllo periodico del registro e di chi ha ancora accesso alla console]
