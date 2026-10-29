@@ -1,10 +1,10 @@
-import { PIANI, giorniDiProva, type Piano } from '@tyrecare/shared';
+import { PIANI, giorniDiProva, oggiInItalia, type Piano } from '@tyrecare/shared';
 import { caricaAbbonamento, type AbbonamentoOfficina } from '../lib/abbonamento';
 import { esc } from '../lib/html';
 import { caricaContestoOfficina, eTitolare } from '../lib/officina';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { caricamento, paginaApp } from '../ui/layout';
-import { formattaData, gestisciErroreCaricamento, intestazioneSottopagina, oggi } from './comune';
+import { formattaData, gestisciErroreCaricamento, intestazioneSottopagina } from './comune';
 
 // "Abbonamento" (solo il TITOLARE): piano attuale, giorni di prova e piani disponibili. Il pagamento online
 // arriverà con Stripe: per ora il pulsante è disattivato.
@@ -16,7 +16,7 @@ function testoStato(a: AbbonamentoOfficina): string {
   if (a.piano === 'PILOTA') return 'Officina pilota: gratuito';
   switch (a.stato) {
     case 'PROVA': {
-      const giorni = giorniDiProva(a.prova_fino_al, oggi());
+      const giorni = giorniDiProva(a.prova_fino_al, oggiInItalia());
       if (giorni === 0) return 'La prova è finita';
       const quanti = giorni === 1 ? 'manca 1 giorno' : `mancano ${giorni} giorni`;
       return `Prova gratuita: ${quanti} (fino al ${formattaData(a.prova_fino_al)})`;
