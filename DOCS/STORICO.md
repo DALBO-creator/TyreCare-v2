@@ -4,6 +4,17 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-29 — ciclo 20261029-03 — T060 T056
+
+**Fatto**
+
+- T060: pagina "Registra la tua officina" (`/officina/registra`) con `RichiestaAffiliazioneSchema` (P.IVA con
+  cifra di controllo), rpc `richiedi_affiliazione` ed errori tradotti; link dalla home del cliente senza
+  officina; unit test ed e2e.
+- T056: la registrazione richiede la spunta "Ho letto l'informativa privacy e accetto i termini di servizio"
+  (link a `/privacy` e `/termini`); `registrati()` salva `termini_versione` nei metadati e il trigger la copia
+  nel profilo.
+
 ### Sessione agenti — 2026-10-29 — ciclo 20261029-00 — T095 T051
 
 **Fatto**

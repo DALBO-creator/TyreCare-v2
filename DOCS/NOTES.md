@@ -2214,3 +2214,35 @@ non si escludono: si corregge la pagina con i token del design system.
   misurato a metà transizione (falso positivo). Le animazioni finite con `fill: both` restano in
   `getAnimations()`, quindi si controlla lo stato e non la presenza.
 - Un'animazione infinita su una pagina pubblica farebbe andare l'attesa in timeout.
+
+## Registra la tua officina (R7)
+
+**File coinvolti:** `packages/shared/src/affiliazione.ts`, `packages/shared/src/index.ts`,
+`apps/web/src/lib/affiliazione.ts`, `apps/web/src/pagine/registra-officina.ts`, `apps/web/src/pagine/home.ts`,
+`e2e/tests/registra-officina.spec.ts`.
+**Come funziona:** dalla home il cliente senza officina vede il link a `/officina/registra`. Il modulo è
+validato da `RichiestaAffiliazioneSchema`; `lib/affiliazione.ts` chiama la rpc `richiedi_affiliazione` senza
+riprova (non è idempotente) e traduce gli errori P0001 in `ErroreModulo`: `PARTITA_IVA_GIA_PRESENTE` sotto il
+campo, `GIA_IN_OFFICINA` nel riquadro. Il telefono vuoto non viene passato. Dopo l'invio `caricaDatiUtente()`
+aggiorna `membroOfficina` e la home mostra l'area officina con "Officina in attesa".
+
+### Codice complesso
+`packages/shared/src/affiliazione.ts` — `partitaIvaValida`: 11 cifre più cifra di controllo (le cifre in
+posizione pari si raddoppiano, −9 se > 9; controllo = (10 − somma % 10) % 10); gli spazi vengono tolti prima.
+
+## Accettazione dei termini alla registrazione
+
+**File coinvolti:** `packages/shared/src/auth.ts`, `apps/web/src/lib/auth.ts`, `apps/web/src/lib/legale.ts`,
+`apps/web/src/pagine/registrati.ts`, `e2e/tests/registrazione.spec.ts`, `e2e/tests/inviti.spec.ts`.
+**Come funziona:** il modulo di registrazione ha la spunta "Ho letto l'informativa privacy e accetto i
+termini di servizio" con link a `/privacy` e `/termini`. `registrati()` salva `termini_versione`
+(`VERSIONE_TERMINI`) nei metadati di `signUp` e il trigger del database la copia nel
+profilo. `accetto` non va nei metadati.
+
+### Codice complesso
+- `RegistrazioneSchema.accetto` è `z.preprocess(v => v === true || v === 'on', z.literal(true))` perché
+  `FormData.get` dà `'on'` o `''`.
+- La casella usa `id="campo-accetto"` e `#campo-accetto-errore` (convenzione di `modulo.ts`): `collegaModulo`
+  mostra errore e `aria-invalid` senza codice nuovo.
+- `VERSIONE_TERMINI` sta in `packages/shared/src/auth.ts` perché `lib/auth.ts` è nel file iniziale, mentre
+  `lib/legale.ts` importa `marked`; `legale.ts` la ri-esporta.
