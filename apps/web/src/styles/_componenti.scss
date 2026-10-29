@@ -202,6 +202,8 @@ h6 {
     letter-spacing: -0.045em;
     line-height: 1;
     color: $tc-bianco;
+    // Un cognome lungo senza spazi non deve allargare la pagina oltre lo schermo
+    overflow-wrap: anywhere;
   }
 
   &__dettagli {
