@@ -2246,3 +2246,20 @@ profilo. `accetto` non va nei metadati.
   mostra errore e `aria-invalid` senza codice nuovo.
 - `VERSIONE_TERMINI` sta in `packages/shared/src/auth.ts` perché `lib/auth.ts` è nel file iniziale, mentre
   `lib/legale.ts` importa `marked`; `legale.ts` la ri-esporta.
+
+## Amministratore: attivare e sospendere le officine (T061)
+
+**File coinvolti:** `apps/web/src/lib/admin.ts`, `apps/web/src/pagine/admin-officine.ts`,
+`apps/web/src/pagine/profilo.ts`, `e2e/tests/admin-officine.spec.ts`.
+**Come funziona:** `lib/admin.ts` legge `officine` con `officina_utenti(ruolo, profiles(nome, cognome))` via
+`leggiTutte` (ordine `created_at`, `id`); l'admin vede tutto per RLS e il titolare si filtra lato client.
+`ordinaOfficineAdmin` mette IN_ATTESA per prime, poi `created_at` decrescente. Attivazione e sospensione
+passano solo da `rpc('attiva_officina' | 'sospendi_officina')`, che controllano il ruolo nel database: la
+pagina controlla `profilo.ruolo` solo per non mostrare una pagina inutilizzabile. L'errore dell'azione resta
+nel dialogo di `chiediConferma`; quello della ricarica dell'elenco va a `gestisciErroreCaricamento`.
+Nel Profilo dell'ADMIN la sezione "Amministrazione" mostra "Officine da attivare (n)": il conteggio usa
+`count: 'exact', head: true`; se la richiesta fallisce il link compare senza numero.
+
+### Come si diventa ADMIN in produzione (voce D9)
+Dall'editor SQL di Supabase: `update public.profiles set ruolo = 'ADMIN' where id = '<uuid dell'utente>';`
+(eseguito senza utente, il trigger dei campi riservati lo permette). Non c'è una schermata per farlo.

@@ -13,7 +13,9 @@ import {
   Trash2,
   UserPen,
   Wrench,
+  Building2,
 } from 'lucide';
+import { contaOfficineInAttesa } from '../lib/admin';
 import { esci, messaggioErrore } from '../lib/auth';
 import { esc } from '../lib/html';
 import { nomeFileMieiDati, raccogliMieiDati } from '../lib/miei-dati';
@@ -63,6 +65,9 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
     await gestisciErroreCaricamento(app, n, errore);
     return;
   }
+  // Solo l'amministratore: quante officine aspettano l'attivazione (se la query fallisce, link senza numero)
+  const inAttesa =
+    dati.profilo.ruolo === 'ADMIN' ? await contaOfficineInAttesa().catch(() => null) : null;
   if (!ancoraAttuale(n)) return;
 
   const { email, profilo, officine } = dati;
@@ -104,6 +109,17 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
                       link(MapPin, "Dati dell'officina", '/officina/dati')
                     : ''
                 }
+              </nav>
+            </section>`
+          : ''
+      }
+
+      ${
+        profilo.ruolo === 'ADMIN'
+          ? `<section aria-labelledby="tc-admin">
+              <h2 id="tc-admin" class="tc-etichetta">Amministrazione</h2>
+              <nav class="tc-lista" aria-labelledby="tc-admin">
+                ${link(Building2, `Officine da attivare${inAttesa === null ? '' : ` (${inAttesa})`}`, '/admin/officine')}
               </nav>
             </section>`
           : ''
