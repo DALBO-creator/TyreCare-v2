@@ -32,6 +32,15 @@ export function mostraRegistrati(app: HTMLElement): void {
           autocomplete: 'new-password',
           aiuto: `Almeno ${PASSWORD_MIN} caratteri.`,
         })}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" name="accetto" id="campo-accetto"
+            aria-describedby="campo-accetto-errore" />
+          <label class="form-check-label" for="campo-accetto">
+            Ho letto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a>
+            e accetto i <a href="/termini" target="_blank" rel="noopener">termini di servizio</a>
+          </label>
+          <div id="campo-accetto-errore" class="tc-campo__errore" hidden></div>
+        </div>
         ${pulsanteInvio('Crea account', 'Creazione in corso…')}
       </form>`,
     // Il passaggio tra accesso e registrazione conserva `?dopo=` ed `?email=` (es. dall'invito)

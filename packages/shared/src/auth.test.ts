@@ -12,6 +12,7 @@ describe('RegistrazioneSchema', () => {
     cognome: 'Verdi',
     email: ' giulia@esempio.it ',
     password: 'abcdefgh',
+    accetto: true,
   };
 
   it('accetta dati validi e toglie gli spazi', () => {
@@ -20,7 +21,22 @@ describe('RegistrazioneSchema', () => {
       cognome: 'Verdi',
       email: 'giulia@esempio.it',
       password: 'abcdefgh',
+      accetto: true,
     });
+  });
+
+  it('accetta la casella spuntata del modulo (on)', () => {
+    expect(RegistrazioneSchema.parse({ ...valida, accetto: 'on' }).accetto).toBe(true);
+  });
+
+  it('rifiuta la registrazione senza accettare i termini', () => {
+    const senza: Partial<typeof valida> = { ...valida };
+    delete senza.accetto;
+    for (const dati of [senza, { ...valida, accetto: '' }, { ...valida, accetto: false }]) {
+      const r = RegistrazioneSchema.safeParse(dati);
+      expect(r.error?.issues[0]?.path).toEqual(['accetto']);
+      expect(r.error?.issues[0]?.message).toBe("Per creare l'account devi accettare i termini");
+    }
   });
 
   it('rifiuta una password troppo corta', () => {

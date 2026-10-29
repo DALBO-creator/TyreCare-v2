@@ -30,11 +30,19 @@ export const AccessoSchema = z.object({
 });
 export type Accesso = z.infer<typeof AccessoSchema>;
 
+/** Versione dei termini che l'utente accetta alla registrazione (finisce nel suo profilo). */
+export const VERSIONE_TERMINI = '2026-10-bozza';
+
 export const RegistrazioneSchema = z.object({
   nome: nome('nome'),
   cognome: nome('cognome'),
   email,
   password: nuovaPassword,
+  // La casella spuntata arriva dal modulo come 'on', non spuntata come ''
+  accetto: z.preprocess(
+    (v) => v === true || v === 'on',
+    z.literal(true, { error: "Per creare l'account devi accettare i termini" }),
+  ),
 });
 export type Registrazione = z.infer<typeof RegistrazioneSchema>;
 
