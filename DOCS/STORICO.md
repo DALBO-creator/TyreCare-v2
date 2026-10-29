@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-30 — ciclo 20261030-00 — T064 T092
+
+**Fatto**
+
+- T064: "Condividi il report" nel report del controllo (link `/r?c=…` con copia e WhatsApp, revoca dei
+  link) e pagina pubblica `/r` che riusa `htmlReport` senza account né menu e senza link alle pagine
+  private. Aggiunti `creaLinkReport`, `revocaLinkReport` e `caricaReportPubblico`, 2 test unitari e l'e2e
+  `report-pubblico.spec.ts`.
+- T092: la conferma in sospeso (es. "Il tuo account è stato eliminato.") si vede anche su Registrati e
+  Password dimenticata, oltre che su Accedi; la schermata "Controlla la posta" non la richiama.
+
+**Verifiche**
+
+- 323 test unitari verdi (37 file); e2e `report-pubblico.spec.ts` da verificare in CI (manca Docker).
+
 ### Sessione agenti — 2026-10-29 — ciclo 20261029-21 — T057 T069
 
 **Fatto**

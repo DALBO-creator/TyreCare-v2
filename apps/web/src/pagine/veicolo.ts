@@ -214,7 +214,9 @@ export function gruppiPneumatici(pneumatici: Pneumatico[]): GruppoPneumatici[] {
 }
 
 /** "Michelin Alpin 6 · 175/65 R14 82T · Invernali · DOT 3823 · dal 10 novembre 2025". */
-export function descrizionePneumatico(p: Pneumatico): string {
+export function descrizionePneumatico(
+  p: Pick<Pneumatico, 'marca' | 'modello' | 'misura' | 'stagione' | 'dot' | 'montato_il'>,
+): string {
   return [
     `${p.marca} ${p.modello}`.trim(),
     p.misura,

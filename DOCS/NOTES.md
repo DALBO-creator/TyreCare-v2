@@ -666,8 +666,8 @@ non contano. `cartaVeicolo` in `home.ts` riceve `oggi` dall'helper di `pagine/co
   pagina nero su bianco senza sfondi, toglie barre e pulsanti, mette le ruote due per riga, stampa il
   telefono dell'officina al posto di "Chiama" e aggiunge in fondo "Report di TyreCare · stampato il …".
   Lo stato resta leggibile da icona ed etichetta; contagiri e auto (SVG) tengono i loro colori.
-- **Condivisione con link pubblico: rimandata** (vedi `IMPLEMENTAZIONI.md`): oggi il report si apre solo
-  con l'accesso. Il PDF si può già mandare via WhatsApp o email.
+- **Condivisione con link pubblico:** fatta con T064 (vedi "Report condiviso con link pubblico (T064)"). Il
+  PDF si può già mandare via WhatsApp o email.
 
 Provato nel browser (Chrome headless, 390 px e stampa A4 emulata) come cliente, titolare, operatore e
 titolare di un'altra officina: 25 verifiche verdi; screenshot a video e in stampa controllati.
@@ -1844,6 +1844,25 @@ dà `42501`. La tabella è leggibile solo dai membri (RLS), senza scritture dire
 sbagliato, scaduto o disattivato. Non escono cliente, `cliente_officina_id` né telaio; le note del
 controllo sì.
 
+## Report condiviso con link pubblico (T064)
+
+**File coinvolti:** `apps/web/src/lib/report.ts`, `apps/web/src/pagine/report.ts`,
+`apps/web/src/pagine/report-pubblico.ts`, `apps/web/src/ui/cruscotto.ts`, `e2e/tests/report-pubblico.spec.ts`.
+**Come funziona:** `lib/report.ts` ha le tre rpc di T063 (`crea_link_report`, `revoca_link_report`,
+`report_pubblico`) e due funzioni pure, `linkReport` e `linkWhatsApp`. Nel report del controllo chi lavora
+in officina apre il riquadro "Condividi il report": ogni apertura crea un link nuovo `/r?c=…` (la funzione
+SQL li accumula), con "Copia" e WhatsApp; "Disattiva i link" li revoca tutti. La pagina `/r`
+(`pagine/report-pubblico.ts`) legge il codice, chiama `caricaReportPubblico` e disegna lo stesso report. Ha
+un contenitore senza menu (con "Salta al contenuto"), non chiama `caricaDatiUtente` né le notifiche; il
+tipo `PneumaticoReport` è un Pick dei campi esposti dal jsonb pubblico.
+
+### Codice complesso
+`pagine/report.ts` — `htmlReport(report, { membro, pubblico })` è usato sia da `mostraReport` sia da `/r`:
+con `pubblico` toglie modifica, condivisione e "Torna al veicolo" e ogni link alle pagine private.
+`cruscotto(..., { collegamenti: false })` disegna i contagiri come immagini invece che come link a
+`/pneumatico`. Il `document.title` è impostato sia in `report.ts` sia in `report-pubblico.ts` (duplicato
+noto). Il codice resta nell'URL: chi ha il link vede il report fino a scadenza o revoca.
+
 ## Clienti: filtro Senza app (T033)
 
 **File coinvolti:** `apps/web/src/pagine/clienti.ts`, `apps/web/src/styles/_prenotazioni.scss`,
@@ -1887,6 +1906,19 @@ Dopo il successo `impostaConferma` (`pagine/comune.ts`) memorizza il messaggio s
 fa scattare `SIGNED_OUT`, `main.ts` porta a `/accedi` e `accedi.ts` stampa `avvisoConferma()`. Non si usa
 `vaiConConferma`: con la sessione ancora attiva la rotta da ospite rimanda alla home. L'ordine
 `impostaConferma` prima di `esci()` è voluto.
+
+## Conferma in sospeso sulle pagine ospite (T092)
+
+**File coinvolti:** `apps/web/src/pagine/comune.ts`, `apps/web/src/pagine/accedi.ts`,
+`apps/web/src/pagine/registrati.ts`, `apps/web/src/pagine/password-dimenticata.ts`.
+**Come funziona:** `impostaConferma()` e `vaiConConferma()` di `pagine/comune.ts` salvano un messaggio
+(es. "Il tuo account è stato eliminato."). La prima pagina ospite disegnata (`accedi`, `registrati`,
+`password-dimenticata`) lo mostra con `avvisoConferma()` sopra il modulo e lo consuma. Le schermate
+"Controlla la posta" non lo richiamano.
+
+### Codice complesso
+Un errore del modulo non ridisegna la pagina, quindi non riconsuma né perde l'avviso già mostrato. Per
+l'ordine `impostaConferma` prima di `esci()` vedi "Elimina il tuo account (T039)".
 
 ## Scarica i tuoi dati (T040)
 

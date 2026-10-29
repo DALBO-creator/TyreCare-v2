@@ -32,9 +32,14 @@ export const statoMisura = (m: Misura): StatoSalute =>
  * se ne manca qualcuna il cruscotto non si mostra (le misure restano nello storico).
  * `officina` (garage del cliente) si aggiunge alla nota sotto: "… · Gomme Rossi". Nel report del
  * controllo la data è già nel titolo: con `ultimo: false` niente nota e un'etichetta diversa.
- * Ogni contagiri è un collegamento allo stato di salute del suo pneumatico (`/pneumatico?id=…`).
+ * Ogni contagiri è un collegamento allo stato di salute del suo pneumatico (`/pneumatico?id=…`); con
+ * `collegamenti: false` (report pubblico, senza accesso) è un'immagine senza collegamento.
  */
-export function cruscotto(controllo: Controllo, officina = '', { ultimo = true } = {}): string {
+export function cruscotto(
+  controllo: Controllo,
+  officina = '',
+  { ultimo = true, collegamenti = true } = {},
+): string {
   const misura = (p: Posizione) => controllo.misure.find((m) => m.pneumatico.posizione === p);
   const angoli = Object.entries(ANGOLI).map(([angolo, p]) => ({ angolo, p, m: misura(p) }));
   if (angoli.some((a) => !a.m)) return '';
@@ -52,17 +57,18 @@ export function cruscotto(controllo: Controllo, officina = '', { ultimo = true }
         .map(
           ({ angolo, p, m }) => `
         <div class="tc-cruscotto__${angolo}">
-          <a class="tc-cruscotto__link" href="/pneumatico?id=${m!.pneumatico.id}"
+          <${collegamenti ? 'a' : 'div'} class="tc-cruscotto__link"
+            ${collegamenti ? `href="/pneumatico?id=${m!.pneumatico.id}"` : 'role="img"'}
             aria-label="${POSIZIONI[p].nome}: ${formattaDecimale(m!.battistrada_mm)} mm, ${STATI[
               statoMisura(m!)
-            ].etichetta.toLowerCase()}. Stato di salute dello pneumatico">
+            ].etichetta.toLowerCase()}${collegamenti ? '. Stato di salute dello pneumatico' : ''}">
             ${indicatoreBattistrada({
               posizione: POSIZIONI[p].nome,
               sigla: POSIZIONI[p].sigla,
               mm: m!.battistrada_mm,
               stato: statoMisura(m!),
             })}
-          </a>
+          </${collegamenti ? 'a' : 'div'}>
         </div>`,
         )
         .join('')}

@@ -5,13 +5,14 @@ import { esc } from '../lib/html';
 import { icona } from '../ui/icone';
 import { paginaAuth } from '../ui/layout';
 import { RIQUADRO_ERRORE, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
-import { parametro } from './comune';
+import { avvisoConferma, parametro } from './comune';
 
 export function mostraRegistrati(app: HTMLElement): void {
   app.innerHTML = paginaAuth({
     titolo: 'Crea il tuo account',
     sottotitolo: 'Tieni sotto controllo gomme, controlli e appuntamenti in officina.',
     corpo: `
+      ${avvisoConferma()}
       <form class="tc-auth__modulo" novalidate>
         ${RIQUADRO_ERRORE}
         <div class="tc-auth__coppia">

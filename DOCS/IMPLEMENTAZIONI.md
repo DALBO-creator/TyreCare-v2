@@ -70,5 +70,6 @@
 | **Lighthouse CI** in GitHub Actions | 🟠 | |
 | **Sentry** monitoraggio errori | 🟠 | |
 | **Dashboard ADMIN** con metriche (officine attive, prenotazioni, churn) | 🟠 | |
+| **Ambiente DOM (happy-dom/jsdom) per i test unitari delle pagine ospite** | 🟢 | Oggi `accedi`, `registrati` e `password-dimenticata` (T092) e la pagina `/r` (T064) si provano solo con l'e2e; un ambiente DOM nei test unitari li renderebbe veloci. Aggiunge una dipendenza (voce in `STRUCT.md`). |
 | **Ricerca veicoli lato server** (paginazione, indice trigram) | 🟢 | Oggi l'elenco si carica tutto e si filtra nel browser: va bene fino a qualche migliaio di veicoli. |
 | **Controllo offline in piazzale** (bozza salvata nel browser, invio alla riconnessione) | 🟠 | Alternativa leggera a PowerSync per il modulo "Nuovo controllo". |
