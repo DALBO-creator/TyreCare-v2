@@ -62,7 +62,7 @@ README, "Da fare prima del lancio"]
 | Dati | Email, password (cifrata), nome, cognome, telefono (facoltativo), ruolo nell'app, ruolo nell'officina (titolare/operatore), date di creazione e modifica (tabelle `auth.users`, `profiles`, `officina_utenti`) |
 | Destinatari | L'utente stesso; i colleghi della stessa officina (nome e ruolo); l'amministratore di TyreCare (profili); sub-responsabili: Supabase (database, autenticazione), Resend (email di conferma e recupero), Vercel (hosting dell'app) |
 | Trasferimenti extra UE | Database nell'UE; Vercel e Resend sono società USA [DA COMPLETARE: regione e garanzie — README, domanda 5] |
-| Conservazione | Finché l'account è attivo; dopo la richiesta di cancellazione [DA COMPLETARE: entro quanti giorni]. Oggi la cancellazione si fa su richiesta via email |
+| Conservazione | Finché l'account è attivo; dopo la richiesta di cancellazione [DA COMPLETARE: entro quanti giorni]. L'utente elimina l'account dal Profilo («Elimina il tuo account») |
 | Misure | M1–M6; il ruolo nell'app e lo stato delle officine li cambia solo l'amministratore |
 
 ## A2. Notifiche nell'app
@@ -75,7 +75,7 @@ README, "Da fare prima del lancio"]
 | Dati | Destinatario, tipo, titolo, testo, collegamento, data di lettura (tabella `notifiche`); i testi possono citare targa, officina, data dell'appuntamento |
 | Destinatari | Solo il destinatario (M1); sub-responsabile Supabase (database, job pianificati `pg_cron`) |
 | Trasferimenti extra UE | Nessuno per il database (UE) |
-| Conservazione | [DA COMPLETARE: periodo, es. N mesi]. Oggi non c'è cancellazione automatica |
+| Conservazione | Il job notturno `pulizia-notifiche` cancella le lette dopo 180 giorni e tutte dopo 365 [DA COMPLETARE: confermare i tempi] |
 | Misure | M1–M4; l'utente può solo leggere e segnare come lette le proprie notifiche, non crearle |
 
 ## A3. Iscrizioni alle notifiche push
@@ -133,7 +133,8 @@ dell'accordo firmato]
 - **trasferimenti extra UE:** nessuno per i dati conservati (database nell'UE); [DA COMPLETARE: Vercel e,
   per i promemoria push, i servizi push dei browser — README, domande 4 e 5];
 - **conservazione:** quella decisa dall'officina; alla fine del contratto restituzione o cancellazione
-  entro [DA COMPLETARE: N giorni] (DPA §13). Oggi non c'è cancellazione automatica;
+  entro [DA COMPLETARE: N giorni] (DPA §13), con la copia scaricabile dall'officina. Cancellazione
+  automatica solo per le notifiche (A2); le prenotazioni passate non si cancellano da sole;
 - **misure:** M1–M6. L'amministratore di TyreCare nell'app non vede questi dati.
 
 ## B1. Anagrafica dei clienti dell'officina

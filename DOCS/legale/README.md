@@ -14,11 +14,13 @@
 | [`termini-di-servizio.md`](termini-di-servizio.md) | Condizioni d'uso del servizio, account e ruoli, prenotazioni, responsabilità, abbonamento | Tutti gli utenti |
 | [`dpa-officine.md`](dpa-officine.md) | Accordo di nomina a responsabile del trattamento (art. 28 GDPR): istruzioni, misure di sicurezza, sub-responsabili, data breach, fine del contratto, audit | Ogni officina affiliata (da firmare prima di caricare dati veri) |
 | [`registro-trattamenti.md`](registro-trattamenti.md) | Registro dei trattamenti (art. 30): parte A TyreCare titolare, parte B TyreCare responsabile per le officine | Uso interno; da mostrare al Garante se lo chiede |
+| [`registro-accessi.md`](registro-accessi.md) | Registro degli accessi del personale di TyreCare ai dati delle officine (DPA §8–§9): chi può accedere, cosa si annota, controlli periodici | Uso interno; da mostrare alle officine se lo chiedono |
 | [`procedura-violazioni.md`](procedura-violazioni.md) | Procedura per le violazioni dei dati: esempi, primi passi tecnici, chi avvisa chi e quando (artt. 33–34), registro delle violazioni (art. 33.5) | Uso interno; l'avviso alle officine segue il DPA §12 |
 
 Le bozze di DPA e registro sono state aggiunte il 2026-10-22 (compito T014), quella della procedura per le
-violazioni il 2026-10-24 (compito T037). Da fare in seguito: contratto
-di abbonamento per le officine (P19), a cui il DPA rimanda.
+violazioni il 2026-10-24 (compito T037), quella del registro degli accessi con le istruzioni sulle copie di
+sicurezza ([`../pilota/copie-di-sicurezza.md`](../pilota/copie-di-sicurezza.md)) con T048. Da fare in
+seguito: contratto di abbonamento per le officine (P19), a cui il DPA rimanda.
 
 ## Come sono state scritte
 
@@ -27,8 +29,9 @@ di abbonamento per le officine (P19), a cui il DPA rimanda.
   l'informativa va aggiornata.
 - L'archiviazione locale è stata verificata nel codice (`apps/web/src`): nessun cookie, nessuno strumento
   di analisi o di profilazione, nessun font o script caricato da siti terzi.
-- Non si promettono funzioni che l'app non ha: ad esempio l'esportazione dei dati e la cancellazione
-  dell'account oggi si chiedono **via email**, non con un pulsante.
+- Non si promettono funzioni che l'app non ha: si scrive come fatto solo ciò che è sul ramo `main`
+  (aggiornato con T058: «Scarica i tuoi dati» ed «Elimina il tuo account» nel Profilo, esportazione per
+  l'officina, pulizia delle notifiche). Le prenotazioni passate, invece, non si cancellano ancora da sole.
 
 ## Cosa manca (da completare prima di darle al consulente)
 
@@ -52,18 +55,22 @@ accessi negati), accessi per ruolo, HTTPS, database Supabase in eu-west-1, passw
 inviti come impronta SHA-256, chiave di servizio solo nella funzione sul server. Queste invece **mancano**
 o non si possono verificare dal repository, e non vanno scritte come già fatte finché non lo sono:
 
-- [ ] **Registro degli accessi del personale di TyreCare** ai dati delle officine: chi usa la chiave di
-  servizio o la console di Supabase legge tutto senza traccia nell'app (DPA §8; domanda 9).
-- [ ] **Cifratura a riposo, copie di sicurezza e ripristino:** dipendono dal piano Supabase; verificare
-  cosa offre il piano scelto (copie giornaliere, ripristino a un momento preciso) e scriverlo nel DPA §9.
-- [~] **Esportazione dei dati** in formato leggibile da computer: per la restituzione all'officina a fine
-  contratto (DPA §13) e per la portabilità dei clienti. In parte: clienti e veicoli si esportano da
-  `/clienti/importa` (T030, stesso formato dell'import); i controlli ancora no (T041).
-- [~] **Cancellazione dell'account** dall'app: in parte. La funzione SQL esiste (T038, `elimina_account()`;
-  domanda 14) ma manca il pulsante nel profilo (T039). Manca anche la
-  **cancellazione automatica** dei dati scaduti (notifiche, prenotazioni passate) secondo i tempi di
-  conservazione che si decideranno: oggi lo fa solo per le notifiche (T049, job notturno
-  `pulisci_notifiche`: le lette dopo 180 giorni, tutte dopo 365); il resto non si cancella da sé.
+- [~] **Registro degli accessi del personale di TyreCare** ai dati delle officine: chi usa la chiave di
+  servizio o la console di Supabase legge tutto senza traccia nell'app (DPA §8; domanda 9). Bozza pronta
+  (T048, [`registro-accessi.md`](registro-accessi.md)): finché non è in uso, il DPA non dice che gli
+  accessi sono registrati.
+- [~] **Cifratura a riposo, copie di sicurezza e ripristino:** dipendono dal piano Supabase. Bozza pronta
+  (T048, [`../pilota/copie-di-sicurezza.md`](../pilota/copie-di-sicurezza.md)): resta da verificare cosa
+  offre il piano scelto e da provare il ripristino, poi scriverlo nel DPA §9.
+- [x] **Esportazione dei dati** in formato leggibile da computer: fatto. Per l'officina (restituzione a fine
+  contratto, DPA §13): «Scarica clienti e veicoli» (T030, stesso formato dell'import) e «Scarica i
+  controlli» (T041) in `/clienti/importa`. Per l'utente (portabilità): «Scarica i tuoi dati» nel Profilo
+  (T040, file JSON; senza inviti e link dei report, scelta R13).
+- [x] **Cancellazione dell'account** dall'app: fatto. Funzione SQL `elimina_account()` (T038) e pulsante
+  «Elimina il tuo account» nel Profilo (T039); domanda 14 ancora aperta.
+- [~] **Cancellazione automatica** dei dati scaduti secondo i tempi di conservazione: in parte. Notifiche
+  (T049, job notturno `pulisci_notifiche`: le lette dopo 180 giorni, tutte dopo 365; scelta R6) sì;
+  prenotazioni passate ancora no.
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
   quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
   rivedere; restano da completare i contatti e il termine del DPA §12.1.
@@ -116,8 +123,9 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
    non vede i dati dei clienti delle officine (PLAN §P12), ma chi gestisce il sistema può accedervi dal
    server con le chiavi di servizio. Come va regolato nel DPA (persone autorizzate, registro degli
    accessi)?
-10. **Cancellazione dell'account:** oggi si fa su richiesta via email. È sufficiente o serve una funzione
-    nell'app prima del lancio?
+10. **Cancellazione dell'account:** ora si fa dal Profilo («Elimina il tuo account», T038–T039): la
+    funzione rifiuta gli amministratori, i titolari di un'officina e chi ha prenotazioni in corso. Basta
+    questa funzione, o serve anche una procedura per chi non riesce ad accedere (richiesta via email)?
 11. **Archiviazione locale:** il salvataggio della sessione nel `localStorage` e il service worker sono
     "strettamente necessari" e quindi senza banner dei cookie? Va bene un'informativa breve senza banner?
 12. **Termini di servizio:** limitazioni di responsabilità sulle misure degli pneumatici e sulle
