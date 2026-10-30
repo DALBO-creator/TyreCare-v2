@@ -8,7 +8,7 @@ import {
   modelloCsvControlli,
   type MappaturaControlli,
 } from './importa-controlli';
-import { tabellaDaCsv } from './importa';
+import { csvRigheConErrori, tabellaDaCsv } from './importa';
 
 const OGGI = '2026-10-25';
 const INT = COLONNE_CONTROLLI.join(';');
@@ -223,23 +223,27 @@ describe('controllaTabellaControlli: documenti', () => {
       riga({ posizione: 'ANT_DX', targa: 'ZZ999ZZ' }),
       riga({ posizione: 'POST_SX' }),
     ]);
-    expect(r.righe.map((x) => x.numero)).toEqual([2, 4]);
+    // il documento entra intero o per niente: anche le righe 2 e 4 escono
+    expect(r.righe).toEqual([]);
     expect(r.errori).toEqual([
+      { numero: 2, messaggio: "Documento «D1» non importato: un'altra sua riga ha un errore." },
       { numero: 3, messaggio: 'Il documento D1 ha una targa diversa da quella della riga 2.' },
+      { numero: 4, messaggio: "Documento «D1» non importato: un'altra sua riga ha un errore." },
     ]);
   });
 
   it('un documento con due date: errore sulle righe diverse dalla prima', () => {
     const r = controlla([riga(), riga({ posizione: 'ANT_DX', data: '2026-09-01' })]);
-    expect(r.righe).toHaveLength(1);
-    expect(r.errori[0]).toMatchObject({ numero: 3 });
-    expect(r.errori[0]!.messaggio).toMatch(/data diversa/);
+    expect(r.righe).toHaveLength(0);
+    expect(r.errori.map((e) => e.numero)).toEqual([2, 3]);
+    expect(r.errori[1]!.messaggio).toMatch(/data diversa/);
   });
 
   it('posizione doppia: errore sulla seconda', () => {
     const r = controlla([riga(), riga({ posizione: 'AS' })]);
-    expect(r.righe.map((x) => x.numero)).toEqual([2]);
+    expect(r.righe).toEqual([]);
     expect(r.errori).toEqual([
+      { numero: 2, messaggio: "Documento «D1» non importato: un'altra sua riga ha un errore." },
       { numero: 3, messaggio: 'La posizione è ripetuta nel documento D1.' },
     ]);
   });
@@ -281,6 +285,65 @@ describe('soloUltimo', () => {
     const r = controlla(righe);
     expect(r.righe).toHaveLength(5);
     expect(r.ignorate).toBe(0);
+  });
+});
+
+describe('documento intero', () => {
+  const MSG = (d: string) => `Documento «${d}» non importato: un'altra sua riga ha un errore.`;
+  const posizioni = ['ANT_SX', 'ANT_DX', 'POST_SX', 'POST_DX'];
+  const doc4 = (codice: string, erratoIn = -1, extra: Record<string, string> = {}) =>
+    posizioni.map((posizione, i) =>
+      riga({
+        codice_documento: codice,
+        posizione,
+        ...extra,
+        ...(i === erratoIn ? { battistrada_mm: 'abc' } : {}),
+      }),
+    );
+
+  it('4 righe con 1 errata: nessuna riga valida e 4 errori', () => {
+    const r = controlla(doc4('D1', 2));
+    expect(r.righe).toEqual([]);
+    expect(r.errori.map((e) => e.numero)).toEqual([2, 3, 4, 5]);
+    expect(r.errori[0]!.messaggio).toBe(MSG('D1'));
+    expect(r.errori[2]!.messaggio).toMatch(/battistrada/i);
+  });
+
+  it('due documenti, uno errato: restano le righe dell altro', () => {
+    const r = controlla([...doc4('D1', 0), ...doc4('D2', -1, { data: '2026-02-01' })]);
+    expect(r.righe.map((x) => x.codice_documento)).toEqual(['D2', 'D2', 'D2', 'D2']);
+    expect(r.errori.map((e) => e.numero)).toEqual([2, 3, 4, 5]);
+  });
+
+  it('senza errori è invariato', () => {
+    const r = controlla(doc4('D1'));
+    expect(r.righe).toHaveLength(4);
+    expect(r.errori).toEqual([]);
+  });
+
+  it('con soloUltimo un documento errato non fa sparire il precedente completo', () => {
+    const r = controlla(
+      [
+        riga({ codice_documento: 'D1', data: '2026-01-10' }),
+        riga({ codice_documento: 'D2', data: '2026-06-10' }),
+        riga({ codice_documento: 'D2', data: '2026-06-10', posizione: 'ANT_DX', usura: 'xx' }),
+      ],
+      true,
+    );
+    expect(r.righe.map((x) => x.codice_documento)).toEqual(['D1']);
+    expect(r.ignorate).toBe(0);
+    expect(r.errori.map((e) => e.numero)).toEqual([3, 4]);
+  });
+
+  it('la riga tolta è nel CSV da correggere con il suo messaggio', () => {
+    const t = tabellaDaCsv([INT, ...doc4('D1', 1)].join('\n'))!;
+    const r = controllaTabellaControlli(t, mappaturaAutomaticaControlli(t.intestazioni), {
+      oggi: OGGI,
+    });
+    if (!r.ok) throw new Error(r.messaggio);
+    const csv = csvRigheConErrori(t, r.errori);
+    expect(csv.split('\r\n')).toHaveLength(5);
+    expect(csv).toContain(MSG('D1'));
   });
 });
 

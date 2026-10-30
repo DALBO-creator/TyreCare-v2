@@ -7,7 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261030-03 (T053 guida completa per le officine, T062 pagina pubblica `/per-le-officine`).
+> 20261030-15 (T073 l'unione di due clienti annulla gli inviti inutili, T094 import controlli: documento
+> intero o niente).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.

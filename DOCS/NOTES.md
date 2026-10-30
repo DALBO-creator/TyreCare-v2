@@ -1636,6 +1636,14 @@ L'eliminazione di `p_da` precede la copia di codice gestionale e account su `p_i
 rifiuterebbero finché esistono due righe con lo stesso valore. Le altre chiavi esterne verso
 `clienti_officina` sono solo veicoli e inviti (verificato), quindi basta spostare quelle.
 
+### Inviti dopo l'unione (T073)
+Dalla migrazione `20261030150000_unisci_clienti_inviti.sql`, alla fine dell'unione la funzione annulla
+(`annullato_il = now()`) gli inviti ancora aperti della scheda rimasta (non usati, non annullati, non
+scaduti), compresi quelli arrivati dalla scheda eliminata. Con un account collegato (coalesce dei due
+`profile_id`) li annulla tutti, perché accettarli darebbe errore; senza, lascia aperto solo il più recente
+(`created_at`, a parità `id`), come quando si crea un invito nuovo. Inviti usati o scaduti non cambiano. Il
+resto della funzione è identico a T031. Test: `unisci-clienti-inviti.test.sql`.
+
 ---
 
 ## Unisci con un altro cliente (T032)
@@ -1954,6 +1962,12 @@ vuote sono saltate e contate in `ignorate`. Con `soloUltimo` resta il documento 
 - Un documento ha stessa targa e data in tutte le righe (riferimento: la prima) e ogni posizione una sola
   volta.
 - `soloUltimo`: a parità di data vince il codice documento maggiore.
+- Documento intero o niente (T094): `controllaTabellaControlli` raccoglie in un `Set` i `codice_documento`
+  con almeno una riga in errore (le righe con più colonne dell'intestazione non contano: celle sfasate).
+  Dopo il ciclo e prima di `soloUltimo` le righe valide di quei documenti escono da `righe` e diventano
+  errori "Documento «…» non importato…" con il loro numero di riga, così un documento scartato non fa
+  sparire il precedente completo. Gli errori sono ordinati per riga; `csvRigheConErrori` include anche le
+  righe tolte; il conteggio `scartate` della pagina cresce da solo.
 
 ---
 
@@ -1967,8 +1981,9 @@ chiama `importaControlli({ simula: true })`; l'import vero usa gli stessi dati c
 
 ### Codice complesso
 - `leggiConteggiControlli` valida il JSON della RPC (targhe non trovate: al massimo 50).
-- Con 0 controlli nuovi non c'è il pulsante. L'anteprima avvisa che le righe con errori non si aggiungono
-  reimportando (T094). Il pulsante si disabilita subito, contro il doppio clic.
+- Con 0 controlli nuovi non c'è il pulsante. L'anteprima avvisa che i documenti con righe sbagliate
+  vengono saltati per intero e si reimportano dopo aver corretto il file (T094). Il pulsante si
+  disabilita subito, contro il doppio clic.
 - Il link dalla pagina dell'import c'è da T052 (vedi la voce sotto).
 
 ---

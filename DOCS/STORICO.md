@@ -4,6 +4,25 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-30 — ciclo 20261030-15 — T073 T094
+
+**Fatto**
+
+- T073: dopo l'unione di due clienti, `unisci_clienti` annulla gli inviti aperti diventati inutili: se la
+  scheda rimasta ha un account li annulla tutti, altrimenti resta aperto solo il più recente. Migrazione
+  `20261030150000_unisci_clienti_inviti.sql` e pgTAP `unisci-clienti-inviti.test.sql` (pgTAP verificato
+  dalla CI).
+- T094: l'import dei controlli salta per intero i documenti con almeno una riga errata (le righe valide
+  diventano errori "Documento «…» non importato…"), così si corregge il file e si reimporta senza
+  documenti a metà. Aggiornati il testo dell'anteprima e le attese di 3 test esistenti (cambio voluto,
+  approvato dal supervisore); 5 test nuovi (328 test in tutto).
+- Correzione al treno precedente: nella voce del ciclo 20261030-03 la parte su T062 elencava `main.ts` e
+  `lib/auth.ts`, che non erano cambiati; tolti.
+
+**Gate**
+
+- Il supervisore ha approvato entrambi i compiti al primo giro; corsia C1 coordinata dal direttore.
+
 ### Sessione agenti — 2026-10-30 — ciclo 20261030-03 — T053 T062
 
 **Fatto**
@@ -13,7 +32,7 @@
   pagamento dell'abbonamento e Primi passi. Collegata dall'indice di `PLAN.md`.
 - T062: pagina pubblica `/per-le-officine` (4 vantaggi, 3 passi, pulsante verso
   `/registrati?dopo=/officina/registra`), link dal piede di `/accedi`, 3 e2e. File:
-  `pagine/per-le-officine.ts`, `main.ts`, `lib/auth.ts`, `pagine/accedi.ts`.
+  `pagine/per-le-officine.ts`, `pagine/accedi.ts`, `styles/_pagine.scss`.
 
 **Verifiche**
 
