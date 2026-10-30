@@ -1,0 +1,48 @@
+# Lista di controllo del lancio
+
+Pagina per Davide. **Bozza**: spunta le caselle nell'ordine; ogni voce rimanda al documento da seguire.
+Le voci D3, D5, D7, D8 e D9 sono le azioni che gli agenti ti hanno lasciato da fare. Nessun dato reale qui.
+Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
+
+## Prima di creare l'officina (Fase 6 — Pilota)
+
+- [ ] **Dominio e email (D3).** Scegli e compra il dominio di TyreCare (verifica prima che il marchio sia
+  libero) e passalo agli agenti: preparano i record da copiare in Resend e Supabase. Serve per accendere le
+  email di riserva (P23). Guida: [`../PLAN.md`](../PLAN.md) §7 (domanda sul nome).
+- [ ] **Dati del titolare (D5).** Scrivi ragione sociale, indirizzo, partita IVA e contatti di chi è
+  titolare del trattamento, così le bozze legali non hanno più `[DA COMPLETARE]` sui tuoi dati. Guida:
+  [`../legale/README.md`](../legale/README.md).
+- [ ] **Revisione legale (D7).** Dai al consulente le bozze e le sue domande; correggi i testi con le sue
+  risposte. Guida: [`../legale/README.md`](../legale/README.md) → "Domande per il consulente" e "Da fare
+  prima del lancio".
+- [ ] **Decisioni da confermare.** `[DA COMPLETARE: decisioni R1–R15 da confermare]`
+- [ ] **DPA firmato.** Fai firmare all'officina l'accordo sul trattamento dei dati, nella versione rivista.
+  Documento: [`../legale/dpa-officine.md`](../legale/dpa-officine.md). Senza, niente dati veri dei clienti.
+- [ ] **Account ADMIN in produzione (D9).** Rendi amministratore il tuo account nel progetto Supabase di
+  produzione: così usi la pagina "Officine da attivare" senza scrivere SQL (a
+  oggi la riga SQL per farlo non è in questo repository: chiedila agli agenti).
+- [ ] **Procedura per le violazioni.** Rileggi e completa contatti e termini. Documento:
+  [`../legale/procedura-violazioni.md`](../legale/procedura-violazioni.md).
+- [ ] **Registro degli accessi.** Tienilo pronto per annotare quando entri nei dati dell'officina.
+  Documento: [`../legale/registro-accessi.md`](../legale/registro-accessi.md).
+- [ ] **Copie di sicurezza provate.** Fai una copia a mano e prova il ripristino in locale. Documento:
+  [`copie-di-sicurezza.md`](copie-di-sicurezza.md).
+
+## Avvio con LA SANTI GOMME (Fase 6 — Pilota)
+
+- [ ] **Officina creata.** Account del titolare e officina in produzione. Documento:
+  [`crea-officina.md`](crea-officina.md).
+- [ ] **Officina attivata**, dopo il DPA firmato: da admin, voce "Officine da attivare" del Profilo
+  (oppure l'`update` di [`crea-officina.md`](crea-officina.md), punto 4). Prima i clienti non la vedono.
+- [ ] **Import dei dati dell'officina.** Con il titolare, clienti e veicoli dal gestionale. Documento:
+  [`guida-avvio.md`](guida-avvio.md) passo 4; dettagli in [`guida-officina.md`](guida-officina.md) §5.
+- [ ] **Primo cliente invitato** e collegato (ha accettato l'invito). Documento:
+  [`guida-avvio.md`](guida-avvio.md) passo 6.
+- [ ] **Incontro di avvio fatto** e telefonata settimanale fissata. Documento:
+  [`piano-pilota.md`](piano-pilota.md) §4–5.
+
+## Solo per la Fase 7 — Commerciale
+
+- [ ] **Stripe in prova (D8).** Apri un account Stripe in modalità test (nessun pagamento vero): gli agenti
+  potranno provare l'abbonamento e il webhook (T071). Da fare solo dopo che il pilota è riuscito
+  ([`piano-pilota.md`](piano-pilota.md) §6).
