@@ -1,6 +1,8 @@
 import {
   CalendarClock,
   ChevronRight,
+  Circle,
+  CircleCheck,
   CircleDashed,
   Plus,
   Search,
@@ -18,10 +20,18 @@ import {
 import { esc } from '../lib/html';
 import {
   caricaVeicoli,
+  eTitolare,
   officinaAttiva,
   scegliOfficina,
   type VeicoloInElenco,
 } from '../lib/officina';
+import {
+  leggiStatoPrimiPassi,
+  nascondi,
+  nascosta,
+  passiPrimiPassi,
+  type PassoPrimiPassi,
+} from '../lib/primi-passi';
 import { contaRichiesteDaConfermare } from '../lib/prenotazioni';
 import type { DatiUtente } from '../lib/profilo';
 import { ancoraAttuale, mostraPagina } from '../lib/router';
@@ -64,11 +74,16 @@ export async function mostraHomeOfficina(
 
   let veicoli: VeicoloInElenco[];
   let richieste: number;
+  let passi: PassoPrimiPassi[] | null;
   try {
-    [veicoli, richieste] = await Promise.all([
+    [veicoli, richieste, passi] = await Promise.all([
       caricaVeicoli({ officinaId: attiva.officina.id }),
       // Solo un avviso: se non si legge, la home si mostra lo stesso
       contaRichiesteDaConfermare(attiva.officina.id, oggiInItalia()).catch(() => 0),
+      // Solo per il titolare, ed è un aiuto: se non si legge, la home si mostra senza la carta
+      eTitolare(dati.officine, attiva.officina.id)
+        ? leggiStatoPrimiPassi(attiva.officina.id).then(passiPrimiPassi, () => null)
+        : Promise.resolve(null),
     ]);
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
@@ -99,6 +114,11 @@ export async function mostraHomeOfficina(
 
     <div class="tc-contenuto">
       ${avvisoConferma()}
+      ${
+        passi && passi.some((p) => !p.fatto) && !nascosta(attiva.officina.id)
+          ? cartaPrimiPassi(passi)
+          : ''
+      }
       ${dati.officine.length > 1 ? sceltaOfficina(dati, attiva.officina.id) : ''}
       ${
         richieste
@@ -164,7 +184,38 @@ export async function mostraHomeOfficina(
     scegliOfficina((e.target as HTMLSelectElement).value);
     void mostraPagina();
   });
+  app.querySelector('[data-nascondi-primi-passi]')?.addEventListener('click', () => {
+    nascondi(attiva.officina.id);
+    app.querySelector('[data-primi-passi]')?.remove();
+  });
   if (veicoli.length > 0) collegaElenco(app, veicoli, oggi);
+}
+
+function cartaPrimiPassi(passi: PassoPrimiPassi[]): string {
+  const fatti = passi.filter((p) => p.fatto).length;
+  return `
+    <section aria-labelledby="tc-primi-passi" data-primi-passi>
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 id="tc-primi-passi" class="tc-etichetta mb-0">Primi passi</h2>
+        <button type="button" class="btn btn-sm btn-outline-light" data-nascondi-primi-passi>
+          Nascondi
+        </button>
+      </div>
+      <p class="mb-2">${fatti} di ${passi.length} fatti</p>
+      <div class="tc-lista">
+        ${passi
+          .map(
+            (p) => `
+          <a class="tc-lista__riga" href="${p.href}">
+            ${icona(p.fatto ? CircleCheck : Circle)}
+            <span class="tc-lista__testo">${esc(p.testo)}</span>
+            <span class="visually-hidden">${p.fatto ? 'fatto' : 'da fare'}</span>
+            ${icona(ChevronRight)}
+          </a>`,
+          )
+          .join('')}
+      </div>
+    </section>`;
 }
 
 function sceltaOfficina({ officine }: DatiUtente, attivaId: string): string {
