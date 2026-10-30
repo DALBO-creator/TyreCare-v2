@@ -60,6 +60,18 @@ const PAGINE_TITOLARE = [
   { percorso: '/clienti', titolo: 'Clienti' },
   { percorso: '/appuntamenti', titolo: 'Appuntamenti' },
   { percorso: '/appuntamenti/calendario', titolo: 'Calendario' },
+  // Moduli dell'officina. Cliente e veicolo del seed: Giulia (c0…01) e la sua Panda (d0…01, con
+  // pneumatici montati: senza, /veicolo/controllo rimanda a /veicolo/pneumatici)
+  { percorso: '/clienti/nuovo', titolo: 'Nuovo cliente' },
+  {
+    percorso: '/veicoli/nuovo?cliente=c0000000-0000-4000-8000-000000000001',
+    titolo: 'Nuovo veicolo',
+  },
+  {
+    percorso: '/veicolo/controllo?id=d0000000-0000-4000-8000-000000000001',
+    titolo: 'Nuovo controllo',
+  },
+  { percorso: '/clienti/importa', titolo: 'Importa clienti e veicoli' },
 ];
 
 test.describe('titolare (Gomme Rossi)', () => {
@@ -71,4 +83,16 @@ test.describe('titolare (Gomme Rossi)', () => {
       await controllaAccessibilita(page, percorso);
     });
   }
+
+  // Modulo vuoto inviato: errori visibili sotto i campi (aria-invalid, messaggi in aria-describedby)
+  test('/clienti/nuovo con gli errori mostrati: nessuna violazione di accessibilità grave', async ({
+    page,
+  }) => {
+    await accedi(page, 'titolare@tyrecare.test');
+    await page.goto('/clienti/nuovo');
+    await expect(page.getByRole('heading', { level: 1, name: 'Nuovo cliente' })).toBeVisible();
+    await page.getByRole('button', { name: 'Salva cliente' }).click();
+    await expect(page.locator('[aria-invalid="true"]').first()).toBeVisible();
+    await controllaAccessibilita(page, '/clienti/nuovo (con errori)');
+  });
 });
