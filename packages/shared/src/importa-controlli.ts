@@ -292,6 +292,9 @@ const LIMITI_TESTO: [ColonnaControlli, number][] = [
  * Controlla le righe di una tabella secondo la mappatura data. Un problema del file intero (mappatura
  * sbagliata, nessuna riga, troppe righe) dà `ok: false`; altrimenti le righe valide e, a parte, gli
  * errori delle altre (una riga con errori non finisce mai in `righe`).
+ * - un documento (`codice_documento`) entra completo o non entra: se una sua riga ha un errore, anche le
+ *   sue righe valide escono da `righe` e diventano errori ("Documento «…» non importato…"); si corregge il
+ *   file e lo si reimporta. Gli errori sono in ordine di riga.
  *
  * - `oggi` (`AAAA-MM-GG`): le date dopo `oggi` sono un errore.
  * - `soloUltimo`: per ogni targa resta solo il documento più recente; a parità di data vince il
@@ -327,6 +330,8 @@ export function controllaTabellaControlli(
   let righe: RigaControlloImport[] = [];
   const errori: ErroreImport[] = [];
   let ignorate = 0;
+  // Documenti con almeno una riga in errore: escono per intero (vedi sotto)
+  const documentiConErrori = new Set<string>();
   // Per ogni documento: targa e data della prima riga leggibile e posizioni già usate
   const documenti = new Map<
     string,
@@ -474,6 +479,9 @@ export function controllaTabellaControlli(
 
     if (messaggi.length > 0) {
       for (const msg of new Set(messaggi)) errori.push({ numero: n, messaggio: msg });
+      // (le righe con più colonne dell'intestazione sono già uscite sopra: hanno le celle sfasate e il
+      // loro codice documento non è affidabile, quindi non fanno scartare nessun documento)
+      if (documento !== '') documentiConErrori.add(documento);
       continue;
     }
     documenti.get(documento)!.posizioni.add(posizione!);
@@ -495,6 +503,23 @@ export function controllaTabellaControlli(
       dot,
       note: v('note'),
     });
+  }
+
+  // Un documento entra completo o non entra: le righe valide di un documento con una riga in errore
+  // diventano errori. Prima di `soloUltimo`, così un documento scartato non fa sparire il precedente
+  // completo.
+  if (documentiConErrori.size > 0) {
+    const restanti: RigaControlloImport[] = [];
+    for (const r of righe) {
+      if (documentiConErrori.has(r.codice_documento)) {
+        errori.push({
+          numero: r.numero,
+          messaggio: `Documento «${r.codice_documento}» non importato: un'altra sua riga ha un errore.`,
+        });
+      } else restanti.push(r);
+    }
+    righe = restanti;
+    errori.sort((a, b) => a.numero - b.numero);
   }
 
   if (soloUltimo) {
