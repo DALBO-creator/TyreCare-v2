@@ -18,6 +18,7 @@
 | [`IMPLEMENTAZIONI.md`](IMPLEMENTAZIONI.md) | Idee e implementazioni future | Man mano che emergono |
 | [`legale/`](legale/README.md) | Bozze di informativa privacy, termini di servizio, DPA per le officine e registro dei trattamenti; domande per il consulente | Dopo la revisione del consulente |
 | [`pilota/guida-avvio.md`](pilota/guida-avvio.md) | Guida di una pagina per l'officina pilota (LA SANTI GOMME): dall'accesso alle notifiche | Pilota (Fase 6) |
+| [`pilota/guida-officina.md`](pilota/guida-officina.md) | Guida completa per le officine: ogni funzione con i nomi esatti di pulsanti e voci | Pilota (Fase 6) |
 | [`pilota/crea-officina.md`](pilota/crea-officina.md) | Passi per Davide: creare l'account e l'officina del titolare, attivarla dopo il DPA, password dimenticata | Pilota (Fase 6) |
 | [`legale/registro-accessi.md`](legale/registro-accessi.md) | Bozza: chi del personale accede ai dati delle officine, quando, cosa annotare | Dopo la revisione del consulente |
 | [`pilota/copie-di-sicurezza.md`](pilota/copie-di-sicurezza.md) | Bozza: copia a mano con la CLI, conservazione, prova di ripristino in locale | Pilota (Fase 6) |
