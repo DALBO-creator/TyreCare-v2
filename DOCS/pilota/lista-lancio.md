@@ -19,8 +19,11 @@ Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
 - [ ] **DPA firmato.** Fai firmare all'officina l'accordo sul trattamento dei dati, nella versione rivista.
   Documento: [`../legale/dpa-officine.md`](../legale/dpa-officine.md). Senza, niente dati veri dei clienti.
 - [ ] **Account ADMIN in produzione (D9).** Rendi amministratore il tuo account nel progetto Supabase di
-  produzione: così usi la pagina "Officine da attivare" senza scrivere SQL (a
-  oggi la riga SQL per farlo non è in questo repository: chiedila agli agenti).
+  produzione, così usi la pagina "Officine da attivare" senza scrivere SQL ogni volta:
+  1. registrati nell'app pubblicata con la tua email;
+  2. Supabase → progetto di produzione → Authentication → Users: copia l'UID del tuo account;
+  3. SQL Editor: `update public.profiles set ruolo = 'ADMIN' where id = '<UID del tuo account>';`
+  4. esci e rientra: nel Profilo compare "Officine da attivare".
 - [ ] **Procedura per le violazioni.** Rileggi e completa contatti e termini. Documento:
   [`../legale/procedura-violazioni.md`](../legale/procedura-violazioni.md).
 - [ ] **Registro degli accessi.** Tienilo pronto per annotare quando entri nei dati dell'officina.

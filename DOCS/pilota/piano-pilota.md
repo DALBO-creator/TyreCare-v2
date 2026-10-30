@@ -63,7 +63,7 @@ con gli stessi passi, partendo da [`crea-officina.md`](crea-officina.md).
 
 - **Dati esposti o persi, accesso non autorizzato:** segui subito
   [`../legale/procedura-violazioni.md`](../legale/procedura-violazioni.md) (chi avvisare, entro quanto,
-  registro). Non aspettare la telefonata del venerdì.
+  registro). Non aspettare la telefonata settimanale.
 - **L'app non funziona:** controlla lo stato di Supabase e di Vercel, poi riprova; annota ora e sintomo.
 - **Dati dell'officina da rimettere a posto:** copia di sicurezza in
   [`copie-di-sicurezza.md`](copie-di-sicurezza.md).
