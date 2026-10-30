@@ -308,6 +308,31 @@ describe('csvRigheConErrori', () => {
   it("senza errori restituisce solo l'intestazione", () => {
     expect(csvRigheConErrori(t, [])).toBe('targa;marca;anno;errore');
   });
+
+  it("riga con celle in più: le celle finiscono nell'errore", () => {
+    const lunga = tabellaDaCsv('targa;marca\r\nAB123CD;Fiat;x;y')!;
+    expect(csvRigheConErrori(lunga, [{ numero: 2, messaggio: 'Troppe colonne' }])).toBe(
+      'targa;marca;errore\r\nAB123CD;Fiat;Troppe colonne (celle in più: «x», «y»)',
+    );
+  });
+
+  it('celle in più con ; e " sono escapate come il resto del CSV', () => {
+    const lunga = tabellaDaCsv('a;b\r\n1;2;"x;y";"z""w"')!;
+    const csv = csvRigheConErrori(lunga, [{ numero: 2, messaggio: 'Errore' }]);
+    expect(csv).toBe('a;b;errore\r\n1;2;"Errore (celle in più: «x;y», «z""w»)"');
+    expect(leggiCsv(csv)[1]!.celle[2]).toBe('Errore (celle in più: «x;y», «z"w»)');
+  });
+
+  it('celle in più vuote o di soli spazi non aggiungono nulla', () => {
+    const lunga = tabellaDaCsv('a;b\r\n1;2;;  ')!;
+    expect(csvRigheConErrori(lunga, [{ numero: 2, messaggio: 'Errore' }])).toBe(
+      'a;b;errore\r\n1;2;Errore',
+    );
+    const mista = tabellaDaCsv('a;b\r\n1;2;;k')!;
+    expect(csvRigheConErrori(mista, [{ numero: 2, messaggio: 'Errore' }])).toBe(
+      'a;b;errore\r\n1;2;Errore (celle in più: «k»)',
+    );
+  });
 });
 
 describe('csvClientiVeicoli', () => {

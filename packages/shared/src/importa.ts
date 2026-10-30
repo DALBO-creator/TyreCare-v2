@@ -198,7 +198,8 @@ export function scriviCsv(righe: readonly (readonly string[])[]): string {
 
 /**
  * Le righe del file con almeno un errore, da correggere e reimportare: stesse colonne del file più
- * `errore` (i messaggi della riga uniti da " / "), nell'ordine del file.
+ * `errore` (i messaggi della riga uniti da " / "), nell'ordine del file. Le celle oltre l'intestazione
+ * non vanno perse: sono elencate in fondo all'errore.
  */
 export function csvRigheConErrori(t: Tabella, errori: readonly ErroreImport[]): string {
   const perRiga = new Map<number, string[]>();
@@ -206,10 +207,17 @@ export function csvRigheConErrori(t: Tabella, errori: readonly ErroreImport[]): 
   const colonne = t.intestazioni.length;
   const righe = t.righe
     .filter((r) => perRiga.has(r.numero))
-    .map((r) => [
-      ...Array.from({ length: colonne }, (_, i) => r.celle[i] ?? ''),
-      perRiga.get(r.numero)!.join(' / '),
-    ]);
+    .map((r) => {
+      // Celle oltre l'intestazione (vuote o di soli spazi escluse): finiscono nel testo dell'errore,
+      // senza colonne nuove, così non si perdono.
+      const inPiu = r.celle.slice(colonne).filter((c) => c.trim() !== '');
+      const suffisso =
+        inPiu.length > 0 ? ` (celle in più: ${inPiu.map((c) => `«${c}»`).join(', ')})` : '';
+      return [
+        ...Array.from({ length: colonne }, (_, i) => r.celle[i] ?? ''),
+        perRiga.get(r.numero)!.join(' / ') + suffisso,
+      ];
+    });
   return scriviCsv([[...t.intestazioni, 'errore'], ...righe]);
 }
 
