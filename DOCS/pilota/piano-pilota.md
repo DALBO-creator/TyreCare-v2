@@ -67,5 +67,6 @@ con gli stessi passi, partendo da [`crea-officina.md`](crea-officina.md).
 - **L'app non funziona:** controlla lo stato di Supabase e di Vercel, poi riprova; annota ora e sintomo.
 - **Dati dell'officina da rimettere a posto:** copia di sicurezza in
   [`copie-di-sicurezza.md`](copie-di-sicurezza.md).
-- **L'officina vuole smettere:** si ferma e si restituiscono i dati (esportazione da "Importa dal gestionale"
-  → clienti e veicoli) secondo il DPA ([`../legale/dpa-officine.md`](../legale/dpa-officine.md)).
+- **L'officina vuole smettere:** si ferma e si restituiscono i dati (da "Importa dal gestionale":
+  «Scarica clienti e veicoli» e «Scarica i controlli») secondo il DPA
+  ([`../legale/dpa-officine.md`](../legale/dpa-officine.md)).
