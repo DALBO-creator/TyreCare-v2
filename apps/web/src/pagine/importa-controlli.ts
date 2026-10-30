@@ -255,7 +255,8 @@ function elencoErrori(errori: ErroreImport[], scartate: number): string {
       <p class="mb-0">
         ${plurale(scartate, 'riga ha', 'righe hanno')} errori e
         ${scartate === 1 ? 'verrà saltata' : 'verranno saltate'}: le righe con errori non vengono
-        importate e non si potranno aggiungere reimportando il file.
+        importate. I documenti con righe sbagliate vengono saltati per intero: correggi il file e
+        reimportalo.
         Se vuoi che il controllo sia completo, correggi il file prima di importare.
       </p>
     </div>
