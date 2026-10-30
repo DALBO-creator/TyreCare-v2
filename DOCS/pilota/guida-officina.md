@@ -206,7 +206,6 @@ Non ancora disponibili: non ci sono istruzioni.
 
 - Pagamento online dell'abbonamento: la pagina "Abbonamento" mostra il piano, ma "Attiva l'abbonamento"
   non è ancora attivo.
-- Pagina pubblica "TyreCare per le officine" (per ora "Pagina in preparazione").
 - "Primi passi": percorso guidato per le nuove officine.
 
 ---
