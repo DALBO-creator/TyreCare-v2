@@ -4,6 +4,16 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-31 — ciclo 20261031-00 — T101 T075
+
+**Fatto**
+
+- T101: carta "Primi passi" nella home del titolare, con 5 passi che si spuntano dallo stato reale
+  dell'officina; si può nascondere (memoria nel browser); unit ed e2e. L'e2e `primi-passi` non è stato
+  eseguito in locale (manca Docker): da verificare nella CI del treno.
+- T075: il CSV delle righe con errori non perde più le celle oltre l'intestazione: finiscono in fondo
+  alla colonna `errore` come "(celle in più: «a», «b»)", senza colonne nuove.
+
 ### Sessione agenti — 2026-10-30 — ciclo 20261030-21 — T058 T102
 
 **Fatto**

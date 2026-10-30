@@ -2442,3 +2442,33 @@ accessi, copie, officina, import, primo cliente e D8.
 ### Codice complesso
 Soglie e decisioni R1–R15 sono `[DA COMPLETARE]`. I commenti partono dalla console Supabase finché T103
 non è su main: quando entra, aggiornare le due bozze.
+
+## Primi passi nella home officina (T101)
+
+**File coinvolti:** `apps/web/src/lib/primi-passi.ts`, la home dell'officina in `apps/web/src/pagine/`,
+`e2e/tests/` (spec `primi-passi`).
+**Come funziona:** nella home del titolare una carta elenca 5 passi che si spuntano dallo stato reale
+dell'officina, ciascuno con testo e link. Compare se almeno un passo è da fare e la carta non è nascosta;
+"Nascondi" toglie la carta dal DOM e ricorda la scelta nel browser.
+
+### Codice complesso
+`lib/primi-passi.ts` — `passiPrimiPassi(stato)` è pura: dallo stato produce i 5 passi con testo, link e
+`fatto`. `leggiStatoPrimiPassi(officinaId)` fa 4 query leggere: `officine` (latitudine e orari) e i
+conteggi `head: true` di `servizi_officina`, `clienti_officina` e dei clienti con `profile_id` non nullo.
+Posizione fatta = latitudine non nulla; orari fatti = `jsonb` non vuoto. La home legge lo stato in
+parallelo solo per il titolare; se la lettura fallisce la carta non compare. "Nascondi" salva
+`tc-primi-passi-nascosti-<officinaId>` in `localStorage` (con try/catch). Dopo `remove()` il focus non è
+spostato: idea in coda.
+
+## CSV delle righe con errori: celle in più (T075)
+
+**File coinvolti:** `packages/shared/src/importa.ts` (`csvRigheConErrori`, `scriviCsv`).
+**Come funziona:** il CSV delle righe con errori non perde più le celle oltre l'intestazione: finiscono in
+fondo alla colonna `errore` come "(celle in più: «a», «b»)", senza colonne nuove. Vale anche per il CSV dei
+controlli (stessa funzione).
+
+### Codice complesso
+`importa.ts` — `csvRigheConErrori` taglia ancora le celle alla lunghezza dell'intestazione (modello del
+file invariato); le celle oltre, se non vuote (`trim() !== ''`), vanno tra «» unite da ", " nel suffisso
+` (celle in più: …)` di `errore`. Il suffisso dipende solo dalla riga. L'escape di `;` e `"` lo fa
+`scriviCsv` sull'intera cella.
