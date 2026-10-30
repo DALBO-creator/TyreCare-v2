@@ -2345,3 +2345,30 @@ misure dello pneumatico. Il cliente usa un contesto nuovo: registrazione con i t
 - Nel CSV dei controlli stagione esplicita e date passate; stessa misura/marca/modello/dot per posizione,
   così le 2 misure finiscono sullo stesso pneumatico.
 - 1,5 mm su ANT_SX dà lo stato "Da sostituire" (sotto 1,6 di legge; 2,5 mm su estivo è giallo).
+
+## Guida all'uso per le officine (T053)
+
+**File coinvolti:** `DOCS/pilota/guida-officina.md`, `DOCS/PLAN.md` (indice).
+**Come funziona:** documento unico per le officine, con una sezione per funzione. In fondo "In arrivo":
+pagamento dell'abbonamento e Primi passi; quando escono, la voce diventa una sezione.
+
+### Codice complesso
+- Ogni nome tra virgolette esiste tale e quale nel codice: si controlla con
+  `grep -rn "<testo>" apps/web/src`.
+- I testi con numeri o `plurale()` sono scritti come "Importa N righe".
+- Quando cambia una voce in `pagine/` o `ui/`, la guida va aggiornata.
+
+## Pagina pubblica per le officine (T062)
+
+**File coinvolti:** `apps/web/src/pagine/per-le-officine.ts`, `apps/web/src/main.ts`,
+`apps/web/src/lib/auth.ts`, `apps/web/src/pagine/accedi.ts`, `e2e/tests/per-le-officine.spec.ts`.
+**Come funziona:** `/per-le-officine` presenta TyreCare alle officine: 4 vantaggi, 3 passi e un pulsante
+verso `/registrati?dopo=/officina/registra`. Dal piede di `/accedi` c'è il link. Niente prezzi: arrivano
+con l'abbonamento.
+
+### Codice complesso
+`pagine/per-le-officine.ts` — usa `paginaAuth` (h1 = titolo, corpo `.tc-officine`, piede con privacy e
+termini); vantaggi e passi sono le costanti `VANTAGGI` e `PASSI`, icone lucide con `icona()`.
+`lib/auth.ts` — pulsante e "Accedi" portano `?dopo=/officina/registra`; `destinazioneDopoAccesso()` manda
+al modulo di registrazione, anche dopo la conferma email (`emailRedirectTo`). In `main.ts` la pagina è un
+chunk separato con `pigra`.
