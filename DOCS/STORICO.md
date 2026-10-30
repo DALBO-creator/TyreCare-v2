@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-30 — ciclo 20261030-03 — T053 T062
+
+**Fatto**
+
+- T053: scritta la guida completa per le officine, `DOCS/pilota/guida-officina.md`: una sezione per
+  funzione, con i nomi esatti di pulsanti e voci di menu verificati nel codice. In fondo "In arrivo":
+  pagamento dell'abbonamento e Primi passi. Collegata dall'indice di `PLAN.md`.
+- T062: pagina pubblica `/per-le-officine` (4 vantaggi, 3 passi, pulsante verso
+  `/registrati?dopo=/officina/registra`), link dal piede di `/accedi`, 3 e2e. File:
+  `pagine/per-le-officine.ts`, `main.ts`, `lib/auth.ts`, `pagine/accedi.ts`.
+
+**Verifiche**
+
+- 323 test unitari verdi; gli e2e della pagina sono affidati alla CI (manca Docker).
+
 ### Sessione agenti — 2026-10-30 — ciclo 20261030-00 — T064 T092
 
 **Fatto**
