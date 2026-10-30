@@ -2036,6 +2036,24 @@ condividono un solo chunk. Il service worker precarica comunque tutti i chunk (p
 
 ---
 
+## Soglia sulla dimensione del codice iniziale (T070)
+
+**File coinvolti:** `apps/web/scripts/dimensioni.mjs`, `apps/web/package.json` (script `build`),
+`eslint.config.js`.
+**Come funziona:** dopo `vite build`, `dimensioni.mjs` legge `dist/index.html`, prende `<script
+type="module">`, i `modulepreload` e gli stylesheet, somma la dimensione gzip (`zlib.gzipSync`, 1 kB = 1000
+byte) e stampa una riga coi numeri. Soglie: JS 70 kB (60,7 misurati il 2026-10-30, +15%), CSS 40 kB. I chunk
+delle pagine ed Excel (import dinamici) non contano. Se supera: exit 1 e messaggio con cosa supera. Gira
+anche in CI, che esegue `npm run build`.
+
+### Codice complesso
+- Prima si riduce il codice (`pigra()` in `main.ts`, niente import statici di `pagine/` da `main.ts` o
+  `lib/`); per alzare la soglia si cambiano `SOGLIA_JS_KB`/`SOGLIA_CSS_KB` aggiornando data e misura nel
+  commento, con il motivo nel messaggio di commit.
+- Lo script `.mjs` è coperto da ESLint con i globali Node.
+
+---
+
 ## Import dei controlli: valori mancanti = stessa gomma (T074)
 
 **File coinvolti:** `supabase/migrations/20261026000100_import_controlli_mancanti.sql`,
@@ -2265,6 +2283,20 @@ nuova si aggiunge agli array `PAGINE*`.
   `getAnimations()`, quindi si controlla lo stato e non la presenza.
 - Un'animazione infinita su una pagina farebbe andare l'attesa in timeout.
 - Gli h1 dinamici si riconoscono con regex (`/^Ciao/`, `/Panda/`).
+
+## Accessibilità: moduli dell'officina (T105)
+
+**File coinvolti:** `e2e/tests/accessibilita.spec.ts`, `apps/web/src/ui/modulo.ts`.
+**Come funziona:** `PAGINE_TITOLARE` ha 4 pagine di modulo: `/clienti/nuovo`,
+`/veicoli/nuovo?cliente=<Giulia c0…01>`, `/veicolo/controllo?id=<Panda d0…01>`, `/clienti/importa`. Il test
+con gli errori preme "Salva cliente" a modulo vuoto e attende `[aria-invalid="true"]` prima di
+`controllaAccessibilita`.
+
+### Codice complesso
+- Gli errori li gestisce `collegaModulo` in `ui/modulo.ts`: `aria-invalid`, messaggio in
+  `#campo-<nome>-errore` collegato con `aria-describedby`, colore `--tc-rosso-testo`.
+- `/veicolo/controllo` serve un veicolo con pneumatici montati, altrimenti rimanda a `/veicolo/pneumatici`
+  (la Panda del seed ne ha 4; nessun e2e li smonta).
 
 ## Registra la tua officina (R7)
 
