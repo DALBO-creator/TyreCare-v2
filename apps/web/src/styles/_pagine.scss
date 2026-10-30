@@ -275,3 +275,69 @@
     margin-bottom: 1.5rem;
   }
 }
+
+// --- Pagina pubblica "TyreCare per le officine" ---------------------------------------------
+.tc-officine {
+  display: grid;
+  gap: 1.5rem;
+
+  &__vantaggi,
+  &__passi {
+    margin: 0;
+    padding: 0;
+  }
+
+  &__vantaggi {
+    display: grid;
+    gap: 1rem;
+    list-style: none;
+  }
+
+  &__vantaggio {
+    display: flex;
+    gap: 0.875rem;
+    align-items: flex-start;
+  }
+
+  &__icona {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    background: var(--tc-superficie-alta);
+    color: var(--tc-rosso-chiaro);
+  }
+
+  &__vantaggio-titolo {
+    margin: 0;
+    font-weight: 600;
+    color: $tc-bianco;
+    overflow-wrap: anywhere;
+  }
+
+  &__vantaggio-testo {
+    margin: 0.125rem 0 0;
+    color: var(--bs-secondary-color);
+  }
+
+  &__sezione {
+    margin: 0.5rem 0 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: $tc-bianco;
+  }
+
+  &__passi {
+    padding-left: 1.25rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  &__accedi {
+    margin: 0;
+    text-align: center;
+    color: var(--bs-secondary-color);
+  }
+}
