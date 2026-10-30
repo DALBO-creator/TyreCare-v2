@@ -22,6 +22,8 @@
 | [`pilota/crea-officina.md`](pilota/crea-officina.md) | Passi per Davide: creare l'account e l'officina del titolare, attivarla dopo il DPA, password dimenticata | Pilota (Fase 6) |
 | [`legale/registro-accessi.md`](legale/registro-accessi.md) | Bozza: chi del personale accede ai dati delle officine, quando, cosa annotare | Dopo la revisione del consulente |
 | [`pilota/copie-di-sicurezza.md`](pilota/copie-di-sicurezza.md) | Bozza: copia a mano con la CLI, conservazione, prova di ripristino in locale | Pilota (Fase 6) |
+| [`pilota/piano-pilota.md`](pilota/piano-pilota.md) | Bozza: piano del pilota con LA SANTI GOMME (8 settimane), cosa misurare, criteri per passare alla Fase 7 | Pilota (Fase 6) |
+| [`pilota/lista-lancio.md`](pilota/lista-lancio.md) | Bozza: lista di controllo del lancio in ordine (D3, D5, D7, D9, DPA, copie, officina, import, Stripe) | Pilota (Fase 6) |
 | [`LICENSE.md`](LICENSE.md) | Licenza proprietaria | Raramente |
 | [`first-prompt.md`](first-prompt.md) | Prompt originale del progetto | Mai (archivio) |
 

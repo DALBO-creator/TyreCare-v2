@@ -217,7 +217,9 @@ sicurezza (art. 32), le valutazioni d'impatto (art. 35) e la consultazione preve
 
 1. Alla fine del Contratto l'Officina sceglie, entro [DA COMPLETARE: N giorni], se ricevere una **copia**
    dei Dati dell'Officina in un formato leggibile da computer (ad esempio CSV) o la loro sola
-   **cancellazione**.
+   **cancellazione**. La copia l'Officina la scarica da sé dall'app (pagina di importazione dei clienti):
+   **«Scarica clienti e veicoli»** e **«Scarica i controlli»**, file CSV che si aprono con Excel. Non
+   comprendono prenotazioni, inviti e registro delle importazioni [DA COMPLETARE: da richiedere a TyreCare?].
 2. Dopo la restituzione o la scelta, TyreCare **cancella** i Dati dell'Officina entro
    [DA COMPLETARE: N giorni] e dalle copie di sicurezza entro [DA COMPLETARE: N giorni, secondo il ciclo
    delle copie], salvo che la legge ne imponga la conservazione; ne dà conferma scritta su richiesta.

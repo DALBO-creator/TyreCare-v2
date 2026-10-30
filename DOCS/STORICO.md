@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-30 — ciclo 20261030-21 — T058 T102
+
+**Fatto**
+
+- T058: bozze legali (README, informativa §4 §6, DPA §13, registro A1 A2 B) allineate a main:
+  «Scarica i tuoi dati», «Elimina il tuo account», esportazione per l'officina, pulizia notifiche 180/365
+  giorni (R6), bozze T048. Restano: pulizia delle prenotazioni passate e tempi da confermare.
+- T102: in `DOCS/pilota/` il piano del pilota (8 settimane, 4 misure, avvio, cadenza, criteri Fase 7,
+  problemi) e la lista di controllo del lancio (D3, D5, D7, decisioni, DPA, D9 con i passi, violazioni,
+  registro accessi, copie, officina, import, primo cliente, D8); 2 righe nell'indice di `PLAN.md`.
+- Correzione chiesta dal supervisore: in `piano-pilota.md` §7, "L'officina vuole smettere", la
+  restituzione cita ora entrambi i file, «Scarica clienti e veicoli» e «Scarica i controlli» (da
+  "Importa dal gestionale"), come nel DPA §13.
+
 ### Sessione agenti — 2026-10-30 — ciclo 20261030-18 — T070 T105
 
 **Fatto**

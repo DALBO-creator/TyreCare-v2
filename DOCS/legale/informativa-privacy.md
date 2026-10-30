@@ -129,12 +129,14 @@ l'officina possa contattarti.
 
 ## 4. Per quanto tempo conserviamo i dati
 
-Oggi l'app **non cancella i dati in automatico**: restano finché non vengono eliminati dall'officina, su
-richiesta dell'interessato o alla chiusura dell'account. I tempi previsti sono:
+L'app cancella da sola **solo le notifiche** (vedi sotto): gli altri dati restano finché non vengono
+eliminati dall'officina, dall'interessato o alla chiusura dell'account. I tempi previsti sono:
 
 - **account e profilo**: finché l'account è attivo; dopo la richiesta di cancellazione
   [DA COMPLETARE: entro quanti giorni];
-- **prenotazioni e notifiche**: [DA COMPLETARE: periodo, es. N mesi dopo l'appuntamento];
+- **notifiche nell'app**: un job notturno cancella quelle lette da più di 180 giorni e tutte quelle più
+  vecchie di un anno (365 giorni) [DA COMPLETARE: confermare i tempi con il consulente];
+- **prenotazioni**: non si cancellano da sole [DA COMPLETARE: periodo, es. N mesi dopo l'appuntamento];
 - **iscrizioni push**: finché non disattivi le notifiche push nell'app o dal browser (in quel caso
   l'iscrizione viene eliminata);
 - **dati caricati dall'officina** (clienti, veicoli, pneumatici, controlli, inviti, registro import): per
@@ -144,10 +146,10 @@ richiesta dell'interessato o alla chiusura dell'account. I tempi previsti sono:
   documenti fiscali) [DA COMPLETARE: confermare];
 - **dati tecnici dei fornitori**: per i tempi indicati dai fornitori [DA COMPLETARE].
 
-Se chiedi la cancellazione del tuo account vengono eliminati anche le tue richieste di appuntamento, le
-tue notifiche e le tue iscrizioni push. I dati dei tuoi veicoli caricati da un'officina restano
-all'officina (titolare), che li gestisce secondo le sue regole: il collegamento con il tuo account viene
-tolto.
+Se elimini il tuo account vengono eliminati anche il tuo profilo, le tue prenotazioni (anche quelle
+passate), le tue notifiche, le tue iscrizioni push e i tuoi commenti. Le schede cliente, i veicoli, i
+controlli, gli inviti e i registri di importazione caricati da un'officina restano all'officina (titolare),
+che li gestisce secondo le sue regole: il collegamento con il tuo account viene tolto.
 
 ## 5. A chi comunichiamo i dati
 
@@ -192,10 +194,21 @@ Hai diritto di:
 - **revocare il consenso**, quando il trattamento si basa sul consenso, senza conseguenze sui trattamenti
   già fatti (ad esempio: puoi disattivare le notifiche push dall'app o dalle impostazioni del browser).
 
-**Come fare:** scrivi a [DA COMPLETARE: email per le richieste privacy] indicando l'email del tuo account.
-Oggi l'esportazione dei dati e la cancellazione dell'account si fanno **su richiesta via email**: l'app non
-ha ancora un pulsante per farlo da sé. Rispondiamo entro un mese (art. 12 GDPR). Potremmo chiederti di
-confermare la richiesta dall'email del tuo account per verificare che sia tu.
+**Come fare:** dal tuo **Profilo** nell'app.
+
+- **«Scarica i tuoi dati»**: un file (JSON) con il tuo profilo, la tua email, le tue schede nelle officine,
+  il garage, le prenotazioni, le notifiche, i commenti, le officine in cui lavori e il numero di
+  dispositivi con le notifiche push attive. **Non** contiene gli inviti dell'officina che hai usato né i
+  link dei report che hai creato: sono registri dell'officina, non dati che hai fornito tu
+  [DA COMPLETARE: confermare con il consulente]. Non contiene nemmeno i dati tecnici delle iscrizioni push.
+- **«Elimina il tuo account»**: cancella l'account, con quanto indicato nella sezione 4. Non si può
+  eliminare se sei un amministratore, se sei titolare di un'officina o se hai prenotazioni in corso
+  (richieste, proposte o confermate): prima vanno concluse o annullate.
+
+Per ciò che non puoi fare dall'app, o se non riesci ad accedere, scrivi a
+[DA COMPLETARE: email per le richieste privacy] indicando l'email del tuo account. Rispondiamo entro un
+mese (art. 12 GDPR). Potremmo chiederti di confermare la richiesta dall'email del tuo account per
+verificare che sia tu.
 
 Per i dati caricati da un'officina (sezione 1.b) rivolgiti all'officina; se scrivi a noi, giriamo la
 richiesta all'officina e la aiutiamo a rispondere.

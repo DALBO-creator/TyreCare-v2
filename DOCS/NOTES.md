@@ -2419,3 +2419,26 @@ termini); vantaggi e passi sono le costanti `VANTAGGI` e `PASSI`, icone lucide c
 `lib/auth.ts` — pulsante e "Accedi" portano `?dopo=/officina/registra`; `destinazioneDopoAccesso()` manda
 al modulo di registrazione, anche dopo la conferma email (`emailRedirectTo`). In `main.ts` la pagina è un
 chunk separato con `pigra`.
+
+## Bozze legali allineate al codice (T058)
+
+**File coinvolti:** `DOCS/legale/README.md`, `DOCS/legale/informativa-privacy.md`,
+`DOCS/legale/dpa-officine.md`, `DOCS/legale/registro-trattamenti.md` (A1, A2, B).
+**Come funziona:** nelle bozze si scrive come fatto solo ciò che è su main. Ogni funzione nuova di
+esportazione, cancellazione o pulizia va riportata in README "Da fare prima del lancio", informativa §4
+e §6, DPA §13 e registro. La pulizia automatica riguarda solo `notifiche` (180/365 giorni, R6).
+
+### Codice complesso
+Il file «Scarica i tuoi dati» esclude gli inviti e i link dei report (R13): sono dati di altri o
+segreti di accesso, non dati dell'interessato.
+
+## Piano del pilota e lista di controllo del lancio (T102)
+
+**File coinvolti:** `DOCS/pilota/piano-pilota.md`, `DOCS/pilota/lista-lancio.md`, `DOCS/PLAN.md` (indice).
+**Come funziona:** due bozze per Davide. Il piano copre 8 settimane, 4 misure, avvio, cadenza, criteri per
+la Fase 7 e problemi; la lista di controllo copre D3, D5, D7, decisioni, DPA, D9, violazioni, registro
+accessi, copie, officina, import, primo cliente e D8.
+
+### Codice complesso
+Soglie e decisioni R1–R15 sono `[DA COMPLETARE]`. I commenti partono dalla console Supabase finché T103
+non è su main: quando entra, aggiornare le due bozze.
