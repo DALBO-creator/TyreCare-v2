@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-30 — ciclo 20261030-18 — T070 T105
+
+**Fatto**
+
+- T070: `apps/web/scripts/dimensioni.mjs` gira dopo `vite build` (script `build` di `apps/web`) e fallisce
+  se il JS iniziale (gzip) supera 70 kB (misurati 60,7 + 15%) o il CSS supera 40 kB (oggi 31,5). In
+  `eslint.config.js` aggiunto `apps/web/scripts/**/*.mjs` al blocco dei globali Node (modifica fuori dal
+  campo file del compito, accettata dal supervisore).
+- T105: aggiunto il controllo axe (wcag2a/aa, impatto grave o critico) ai moduli dell'officina: nuovo
+  cliente, nuovo veicolo, nuovo controllo, import clienti; per il nuovo cliente anche con gli errori
+  mostrati dopo "Salva cliente" a modulo vuoto. La revisione statica non ha trovato problemi nelle pagine
+  (nessuna pagina cambiata); l'esecuzione la verifica la CI.
+
 ### Sessione agenti — 2026-10-30 — ciclo 20261030-15 — T073 T094
 
 **Fatto**
