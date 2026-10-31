@@ -79,6 +79,14 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
   giorno e fascia (mattina o pomeriggio), note, stato della richiesta, orario proposto o confermato,
   messaggio dell'officina, chi in officina l'ha gestita, date di creazione e di modifica.
 
+**Aiuto su strada** (richieste di aiuto con la posizione)
+
+- posizione precisa del telefono (latitudine e longitudine), presa dal telefono **solo nel momento in cui
+  invii la richiesta** e solo con il permesso che dai al browser; non viene seguita né registrata in altri
+  momenti;
+- telefono, descrizione del problema (fino a 500 caratteri), targa (facoltativa), data, stato della
+  richiesta (in attesa, accettata, chiusa, annullata, scaduta), officina che l'ha accettata.
+
 **Notifiche**
 
 - notifiche ricevute nell'app: tipo (es. cambio di stato di una prenotazione, promemoria
@@ -104,8 +112,8 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
   [DA COMPLETARE: verificare con il consulente e nelle impostazioni dei fornitori cosa registrano e per
   quanto]
 
-TyreCare **non** chiede dati particolari (ad esempio sulla salute) e **non** usa la posizione del tuo
-dispositivo.
+TyreCare **non** chiede dati particolari (ad esempio sulla salute) e usa la posizione del tuo
+dispositivo **solo** se invii una richiesta di aiuto su strada (vedi sopra).
 
 ## 3. Perché trattiamo i dati e su quale base giuridica
 
@@ -114,6 +122,7 @@ dispositivo.
 | Creare e gestire il tuo account, farti accedere | Account e profilo | Esecuzione del contratto (art. 6.1.b): i termini di servizio |
 | Mostrare al cliente i suoi veicoli, pneumatici, controlli e report | Veicoli, pneumatici, controlli | Esecuzione del contratto con il cliente; per l'officina, le istruzioni dell'officina titolare |
 | Gestire le richieste di appuntamento tra cliente e officina | Prenotazioni | Esecuzione del contratto (art. 6.1.b) |
+| Inoltrare la tua richiesta di aiuto su strada alle officine vicine e metterti in contatto con quella che accetta | Aiuto su strada | Richiesta dell'interessato, esecuzione di misure precontrattuali (art. 6.1.b); la posizione è presa solo con il permesso del browser |
 | Avvisarti nell'app e con le push dei cambi di stato delle prenotazioni | Notifiche, iscrizioni push | Esecuzione del contratto (art. 6.1.b); le push solo se le attivi nel browser |
 | Promemoria del giorno prima, esito del controllo, cambio stagionale degli pneumatici | Notifiche, iscrizioni push, veicoli e pneumatici | [DA COMPLETARE: esecuzione del contratto, legittimo interesse o consenso — vedi README, domanda 1] |
 | Gestione dell'officina: clienti, veicoli, controlli, import dal gestionale | Dati caricati dall'officina | Trattamento per conto dell'officina (art. 28); la base giuridica è quella scelta dall'officina titolare |
@@ -136,6 +145,9 @@ eliminati dall'officina, dall'interessato o alla chiusura dell'account. I tempi 
   [DA COMPLETARE: entro quanti giorni];
 - **notifiche nell'app**: un job notturno cancella quelle lette da più di 180 giorni e tutte quelle più
   vecchie di un anno (365 giorni) [DA COMPLETARE: confermare i tempi con il consulente];
+- **richieste di aiuto su strada**: una richiesta non accettata scade dopo 2 ore e una accettata si chiude
+  da sola dopo 24 ore se l'officina non la chiude; le richieste chiuse, annullate o scadute (con posizione,
+  telefono, descrizione e targa) vengono cancellate dopo **90 giorni**;
 - **prenotazioni**: non si cancellano da sole [DA COMPLETARE: periodo, es. N mesi dopo l'appuntamento];
 - **iscrizioni push**: finché non disattivi le notifiche push nell'app o dal browser (in quel caso
   l'iscrizione viene eliminata);
@@ -157,6 +169,9 @@ I dati non vengono venduti né ceduti a terzi per scopi propri. Possono vederli:
 
 - **l'officina** con cui hai a che fare: chi lavora in un'officina vede solo i clienti, i veicoli e le
   prenotazioni **di quell'officina**, mai quelli di altre officine;
+- per l'**aiuto su strada**: prima che un'officina accetti, le officine vicine che offrono il servizio
+  vedono solo la distanza, la descrizione e la targa; la posizione esatta e il telefono li vede solo
+  l'officina che accetta (che poi interviene come soggetto autonomo, vedi i termini di servizio);
 - **tu**, se sei cliente: vedi i veicoli collegati al tuo account e le tue prenotazioni, non i dati di
   altri clienti;
 - il **personale autorizzato di TyreCare**: l'account amministratore dell'app non vede i dati dei clienti

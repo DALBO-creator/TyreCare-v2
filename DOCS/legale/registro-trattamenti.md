@@ -117,6 +117,20 @@ README, "Da fare prima del lancio"]
 | Conservazione | [DA COMPLETARE: tempi dei fornitori] |
 | Misure | Gestite dai fornitori; TyreCare non aggiunge strumenti di analisi né cookie |
 
+## A6. Aiuto su strada
+
+| Voce | Contenuto |
+|------|-----------|
+| Finalità | Inoltrare la richiesta di aiuto del cliente alle officine vicine che offrono il servizio e metterlo in contatto con quella che accetta |
+| Base giuridica | Richiesta dell'interessato (art. 6.1.b) |
+| Interessati | Clienti che inviano una richiesta |
+| Dati | Posizione precisa del telefono (presa solo all'invio, con il permesso del browser), telefono, descrizione (≤ 500 caratteri), targa (facoltativa), stato, officina che accetta, date |
+| Destinatari | Prima dell'accettazione, le officine attive entro il raggio: solo distanza, descrizione e targa; dopo l'accettazione, solo l'officina che accetta: posizione esatta e telefono; Supabase |
+| Ruolo dell'officina che accetta | [DA COMPLETARE: ruolo dell'officina che esegue l'intervento — titolare autonomo? da confermare con il consulente] |
+| Trasferimenti extra UE | Come A1 |
+| Conservazione | Non accettata: scade dopo 2 ore; accettata: si chiude da sola dopo 24 ore; chiusa, annullata o scaduta: cancellata dopo 90 giorni (R18) |
+| Misure | M1–M5; ogni officina vede solo le richieste del proprio raggio e quelle che ha accettato; la posizione esatta e il telefono solo a chi accetta |
+
 ---
 
 # Parte B — TyreCare responsabile per conto delle officine

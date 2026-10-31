@@ -36,7 +36,7 @@ TyreCare non esegue lavori sui veicoli: i lavori li fanno le officine, che ne so
   almeno [DA COMPLETARE: età minima — vedi README, domanda 3] anni.
 - Le **officine** sono imprese che svolgono attività di gommista o di officina e che TyreCare ha accettato
   come affiliate. Una nuova officina resta "in attesa" finché TyreCare non attiva l'affiliazione, e
-  TyreCare può sospenderla (vedi §10).
+  TyreCare può sospenderla (vedi §11).
 - Per usare TyreCare servono un dispositivo con un browser aggiornato e una connessione a Internet.
 
 ## 4. Account e ruoli
@@ -83,7 +83,28 @@ L'officina:
 - TyreCare mette a disposizione lo strumento ma non è parte del rapporto tra cliente e officina e non
   risponde di appuntamenti non rispettati, ritardi o lavori eseguiti.
 
-## 7. Dati sugli pneumatici: solo indicativi
+## 7. Aiuto su strada
+
+Se hai un problema con le gomme lontano da casa, puoi chiedere **aiuto su strada** dall'app.
+
+- **Come funziona.** Invii una richiesta con la **posizione del tuo telefono**, una descrizione del
+  problema (fino a 500 caratteri), il tuo telefono e, se vuoi, la targa. TyreCare **inoltra** la richiesta
+  alle officine attive che offrono il servizio entro il raggio che hanno scelto. Prima dell'accettazione le
+  officine vedono solo la distanza, la descrizione e la targa; la posizione esatta e il tuo telefono li
+  vede solo l'officina che accetta, e tu ricevi il suo nome e il suo telefono.
+- **Chi interviene.** La prima officina che accetta prende la richiesta. L'**intervento è dell'officina**:
+  il prezzo e le modalità li concordi con lei, il pagamento avviene fuori da TyreCare. TyreCare non è parte
+  del rapporto tra te e l'officina.
+- **Nessuna garanzia.** Non possiamo garantire che un'officina risponda, né in quanto tempo: non c'è un
+  filtro sugli orari, risponde chi è disponibile, anche di notte e nei festivi. Se nessuna officina offre il
+  servizio nel raggio la richiesta non parte e lo leggi subito.
+- **Tempi.** Una richiesta che nessuno accetta **scade dopo 2 ore**; una accettata si chiude da sola dopo
+  24 ore se l'officina non la chiude prima. Puoi avere una sola richiesta aperta alla volta e puoi
+  annullarla.
+- **Pericolo.** Se sei in pericolo o ci sono feriti, **chiama subito il 112**: TyreCare non è un servizio
+  di emergenza.
+
+## 8. Dati sugli pneumatici: solo indicativi
 
 Lo stato di salute degli pneumatici, i colori (verde, giallo, rosso), i grafici e le stime di consumo o di
 sostituzione mostrati in TyreCare si basano sulle misure inserite dall'officina e su calcoli
@@ -98,7 +119,7 @@ approssimativi. Sono **solo indicativi**:
 Il conducente resta responsabile di controllare il proprio veicolo. In caso di dubbi rivolgiti a
 un'officina.
 
-## 8. Notifiche e promemoria
+## 9. Notifiche e promemoria
 
 TyreCare invia notifiche nell'app e, se le attivi nel browser, notifiche push: cambi di stato delle
 prenotazioni, promemoria del giorno prima dell'appuntamento, esito dei controlli, cambio stagionale degli
@@ -106,7 +127,7 @@ pneumatici. Sono un aiuto, non una garanzia: possono arrivare in ritardo o non a
 telefono è spento, le notifiche sono disattivate o su iPhone l'app non è installata nella schermata Home).
 Le notifiche push si possono disattivare in qualsiasi momento.
 
-## 9. Abbonamento delle officine
+## 10. Abbonamento delle officine
 
 [DA COMPLETARE: condizioni dell'abbonamento per le officine (P19) — prezzo, periodo, rinnovo, modalità di
 pagamento, eventuale periodo di prova, recesso, eventuale contributo per prenotazione completata. Oggi
@@ -114,7 +135,7 @@ TyreCare è in fase di prova e non sono previsti pagamenti nell'app.]
 
 Per i clienti l'uso di TyreCare è [DA COMPLETARE: gratuito? confermare].
 
-## 10. Uso corretto, sospensione e chiusura
+## 11. Uso corretto, sospensione e chiusura
 
 Non è consentito:
 
@@ -124,38 +145,41 @@ Non è consentito:
   servizio.
 
 TyreCare può sospendere o chiudere un account o un'officina che viola questi termini, avvisando quando
-possibile. Puoi chiudere il tuo account in qualsiasi momento chiedendolo a
-[DA COMPLETARE: email di contatto]: oggi la chiusura si fa **su richiesta via email**. Cosa succede ai
-dati è spiegato nell'informativa privacy.
+possibile. Puoi chiudere il tuo account in qualsiasi momento dal **Profilo**, con «Elimina il tuo account»; chi non
+riesce ad accedere scrive a [DA COMPLETARE: email di contatto]. Cosa succede ai dati è spiegato
+nell'informativa privacy.
 
-## 11. Disponibilità del servizio
+## 12. Disponibilità del servizio
 
 Facciamo il possibile perché TyreCare funzioni sempre, ma il servizio può avere interruzioni per
 manutenzione, aggiornamenti o problemi dei fornitori. TyreCare è fornito "così com'è" e può cambiare nel
 tempo (funzioni aggiunte, modificate o tolte).
 
-## 12. Responsabilità
+## 13. Responsabilità
 
 [DA COMPLETARE: limitazioni di responsabilità da definire con il consulente, nel rispetto del Codice del
 consumo per i clienti privati e degli artt. 1341–1342 c.c. — vedi README, domanda 12]
 
-In ogni caso TyreCare non risponde:
+In ogni caso, nei limiti consentiti dalla legge, TyreCare non risponde:
 
 - dei lavori eseguiti dalle officine e dei loro prezzi;
-- delle decisioni prese basandosi solo sui dati indicativi degli pneumatici (§7);
+- delle decisioni prese basandosi solo sui dati indicativi degli pneumatici (§8);
+- dell'intervento su strada e della mancata risposta delle officine alle richieste di aiuto (§7);
 - dei dati inseriti in modo errato dalle officine o dagli utenti.
 
-## 13. Proprietà intellettuale
+## 14. Proprietà intellettuale
 
 L'app, il suo codice, il nome e il logo TyreCare appartengono a [DA COMPLETARE: titolare dei diritti].
 I dati inseriti dalle officine restano delle officine; i dati del tuo account restano tuoi.
 
-## 14. Modifiche ai termini
+## 15. Modifiche ai termini
 
 Possiamo modificare questi termini. Le modifiche importanti verranno comunicate nell'app o via email
-[DA COMPLETARE: con quanto preavviso]. Se non le accetti puoi chiudere il tuo account.
+[DA COMPLETARE: con quanto preavviso]. Quando i termini cambiano, al primo accesso l'app chiede di
+accettare la versione nuova a chi aveva già accettato la precedente. Se non le accetti puoi chiudere il
+tuo account.
 
-## 15. Legge applicabile e foro competente
+## 16. Legge applicabile e foro competente
 
 Questi termini sono regolati dalla **legge italiana**. Per i clienti consumatori è competente il foro del
 luogo di residenza o domicilio del consumatore. Per le officine e gli altri utenti professionali è

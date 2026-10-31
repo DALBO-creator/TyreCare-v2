@@ -118,6 +118,8 @@ TyreCare autorizza al trattamento dei Dati dell'Officina solo le persone che ne 
 il Servizio (gestione del sistema, assistenza, sicurezza), vincolate da un **obbligo di riservatezza**
 scritto o di legge e istruite sul trattamento. [DA COMPLETARE: elenco o funzioni delle persone
 autorizzate e come si registrano i loro accessi — README, domanda 9]
+La procedura di registrazione degli accessi è in bozza: [registro accessi](registro-accessi.md); finché non è in uso, questo
+Accordo non garantisce che gli accessi siano registrati.
 
 ## 9. Misure di sicurezza (art. 32)
 
@@ -162,6 +164,8 @@ conservato da TyreCare; restano solo i dati importati e il registro dell'importa
 
 [DA COMPLETARE: cifratura dei dati a riposo, copie di sicurezza e loro durata, procedura di ripristino —
 dipendono dal piano Supabase scelto, da verificare]
+La procedura per le copie di sicurezza e il ripristino è in bozza:
+[copie di sicurezza](../pilota/copie-di-sicurezza.md); finché non è provata, queste misure non sono garantite.
 
 ## 10. Sub-responsabili
 
