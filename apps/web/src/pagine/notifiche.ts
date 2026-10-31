@@ -6,7 +6,10 @@ import {
   CalendarClock,
   CalendarPlus,
   CalendarX,
+  CircleCheck,
+  CircleX,
   ClipboardCheck,
+  LifeBuoy,
   ThermometerSnowflake,
   type IconNode,
 } from 'lucide';
@@ -33,6 +36,9 @@ const ICONE: Record<Enums<'tipo_notifica'>, IconNode> = {
   PROMEMORIA: AlarmClock,
   ESITO_CONTROLLO: ClipboardCheck,
   CAMBIO_STAGIONE: ThermometerSnowflake,
+  STRADA_RICHIESTA: LifeBuoy,
+  STRADA_ACCETTATA: CircleCheck,
+  STRADA_ANNULLATA: CircleX,
 };
 
 function rigaNotifica(n: Notifica): string {

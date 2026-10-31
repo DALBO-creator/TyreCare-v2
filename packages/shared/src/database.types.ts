@@ -692,11 +692,13 @@ export type Database = {
           email: string | null;
           id: string;
           indirizzo: string;
+          intervento_strada: boolean;
           latitudine: number | null;
           longitudine: number | null;
           orari: NonNullable<Json>;
           partita_iva: string;
           provincia: string | null;
+          raggio_strada_km: number;
           ragione_sociale: string;
           stato_affiliazione: Database['public']['Enums']['stato_affiliazione'];
           telefono: string | null;
@@ -710,11 +712,13 @@ export type Database = {
           email?: string | null;
           id?: string;
           indirizzo?: string;
+          intervento_strada?: boolean;
           latitudine?: number | null;
           longitudine?: number | null;
           orari?: NonNullable<Json>;
           partita_iva: string;
           provincia?: string | null;
+          raggio_strada_km?: number;
           ragione_sociale: string;
           stato_affiliazione?: Database['public']['Enums']['stato_affiliazione'];
           telefono?: string | null;
@@ -728,11 +732,13 @@ export type Database = {
           email?: string | null;
           id?: string;
           indirizzo?: string;
+          intervento_strada?: boolean;
           latitudine?: number | null;
           longitudine?: number | null;
           orari?: NonNullable<Json>;
           partita_iva?: string;
           provincia?: string | null;
+          raggio_strada_km?: number;
           ragione_sociale?: string;
           stato_affiliazione?: Database['public']['Enums']['stato_affiliazione'];
           telefono?: string | null;
@@ -930,6 +936,69 @@ export type Database = {
         };
         Relationships: [];
       };
+      richieste_strada: {
+        Row: {
+          accettata_il: string | null;
+          cliente_id: string;
+          created_at: string;
+          descrizione: string;
+          id: string;
+          latitudine: number;
+          longitudine: number;
+          officina_id: string | null;
+          scade_il: string;
+          stato: string;
+          targa: string | null;
+          telefono: string;
+          updated_at: string;
+        };
+        Insert: {
+          accettata_il?: string | null;
+          cliente_id: string;
+          created_at?: string;
+          descrizione: string;
+          id?: string;
+          latitudine: number;
+          longitudine: number;
+          officina_id?: string | null;
+          scade_il?: string;
+          stato?: string;
+          targa?: string | null;
+          telefono: string;
+          updated_at?: string;
+        };
+        Update: {
+          accettata_il?: string | null;
+          cliente_id?: string;
+          created_at?: string;
+          descrizione?: string;
+          id?: string;
+          latitudine?: number;
+          longitudine?: number;
+          officina_id?: string | null;
+          scade_il?: string;
+          stato?: string;
+          targa?: string | null;
+          telefono?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'richieste_strada_cliente_id_fkey';
+            columns: ['cliente_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+          {
+            foreignKeyName: 'richieste_strada_officina_id_fkey';
+            columns: ['officina_id'];
+            isOneToOne: false;
+            referencedRelation: 'officine';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       servizi_officina: {
         Row: {
           created_at: string;
@@ -1040,6 +1109,7 @@ export type Database = {
       accetta_termini: { Args: { p_versione: string }; Returns: undefined };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
+      annulla_richiesta_strada: { Args: { p_id: string }; Returns: undefined };
       attiva_officina: { Args: { p_officina_id: string }; Returns: undefined };
       crea_invito_cliente: {
         Args: { p_cliente_id: string; p_email: string };
@@ -1055,6 +1125,20 @@ export type Database = {
       };
       crea_promemoria_appuntamenti: { Args: { p_adesso?: string }; Returns: number };
       crea_promemoria_pneumatici: { Args: { p_adesso?: string }; Returns: number };
+      crea_richiesta_strada: {
+        Args: {
+          p_descrizione: string;
+          p_latitudine: number;
+          p_longitudine: number;
+          p_targa?: string;
+          p_telefono: string;
+        };
+        Returns: string;
+      };
+      distanza_km: {
+        Args: { lat1: number; lat2: number; lon1: number; lon2: number };
+        Returns: number;
+      };
       elimina_account: { Args: Record<PropertyKey, never>; Returns: undefined };
       fasce_aperte: {
         Args: { p_giorno: string; p_orari: Json };
@@ -1109,6 +1193,7 @@ export type Database = {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string };
         Returns: undefined;
       };
+      manutenzione_richieste_strada: { Args: { p_adesso?: string }; Returns: undefined };
       mappatura_import_valida: { Args: { p_colonne: Json }; Returns: boolean };
       modifica_controllo: {
         Args: {
@@ -1232,7 +1317,10 @@ export type Database = {
         | 'ANNULLATA'
         | 'PROMEMORIA'
         | 'ESITO_CONTROLLO'
-        | 'CAMBIO_STAGIONE';
+        | 'CAMBIO_STAGIONE'
+        | 'STRADA_RICHIESTA'
+        | 'STRADA_ACCETTATA'
+        | 'STRADA_ANNULLATA';
       usura: 'REGOLARE' | 'INTERNA' | 'ESTERNA' | 'CENTRALE' | 'BORDI';
     };
     CompositeTypes: {
@@ -1374,6 +1462,9 @@ export const Constants = {
         'PROMEMORIA',
         'ESITO_CONTROLLO',
         'CAMBIO_STAGIONE',
+        'STRADA_RICHIESTA',
+        'STRADA_ACCETTATA',
+        'STRADA_ANNULLATA',
       ],
       usura: ['REGOLARE', 'INTERNA', 'ESTERNA', 'CENTRALE', 'BORDI'],
     },
