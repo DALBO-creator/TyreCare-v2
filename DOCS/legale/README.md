@@ -32,6 +32,9 @@ seguito: contratto di abbonamento per le officine (P19), a cui il DPA rimanda.
 - Non si promettono funzioni che l'app non ha: si scrive come fatto solo ciò che è sul ramo `main`
   (aggiornato con T058: «Scarica i tuoi dati» ed «Elimina il tuo account» nel Profilo, esportazione per
   l'officina, pulizia delle notifiche). Le prenotazioni passate, invece, non si cancellano ancora da sole.
+  Eccezione: la sezione «Aiuto su strada» (termini §7, informativa, registro A6) descrive la funzione
+  decisa con R18 (T139–T144): sul ramo `main` c'è solo il database (T139), le pagine arrivano con
+  T140–T144. Va riletta quando la funzione è completa e non va data al consulente come già attiva.
 
 ## Cosa manca (da completare prima di darle al consulente)
 
@@ -57,10 +60,10 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 
 - [~] **Registro degli accessi del personale di TyreCare** ai dati delle officine: chi usa la chiave di
   servizio o la console di Supabase legge tutto senza traccia nell'app (DPA §8; domanda 9). Bozza pronta
-  (T048, [`registro-accessi.md`](registro-accessi.md)): finché non è in uso, il DPA non dice che gli
+  (T048, [registro accessi](registro-accessi.md), procedura in bozza): finché non è in uso, il DPA non dice che gli
   accessi sono registrati.
 - [~] **Cifratura a riposo, copie di sicurezza e ripristino:** dipendono dal piano Supabase. Bozza pronta
-  (T048, [`../pilota/copie-di-sicurezza.md`](../pilota/copie-di-sicurezza.md)): resta da verificare cosa
+  (T048, [copie di sicurezza](../pilota/copie-di-sicurezza.md), procedura in bozza): resta da verificare cosa
   offre il piano scelto e da provare il ripristino, poi scriverlo nel DPA §9.
 - [x] **Esportazione dei dati** in formato leggibile da computer: fatto. Per l'officina (restituzione a fine
   contratto, DPA §13): «Scarica clienti e veicoli» (T030, stesso formato dell'import) e «Scarica i
@@ -125,7 +128,8 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
    accessi)?
 10. **Cancellazione dell'account:** ora si fa dal Profilo («Elimina il tuo account», T038–T039): la
     funzione rifiuta gli amministratori, i titolari di un'officina e chi ha prenotazioni in corso. Basta
-    questa funzione, o serve anche una procedura per chi non riesce ad accedere (richiesta via email)?
+    questa funzione, o serve anche una procedura per chi non riesce ad accedere (richiesta via
+    email)? Proposta: email di contatto, come informativa §6 e termini §11.
 11. **Archiviazione locale:** il salvataggio della sessione nel `localStorage` e il service worker sono
     "strettamente necessari" e quindi senza banner dei cookie? Va bene un'informativa breve senza banner?
 12. **Termini di servizio:** limitazioni di responsabilità sulle misure degli pneumatici e sulle
@@ -138,3 +142,9 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
     perde anche le prenotazioni passate fatte come cliente (cancellazione a cascata), mentre clienti,
     veicoli e controlli restano all'officina, scollegati dall'account. La sparizione delle prenotazioni
     passate è compatibile con gli obblighi di conservazione (dell'officina e di TyreCare)?
+15. **Aiuto su strada (termini §7, informativa e registro A6).** La sezione nuova dice che TyreCare
+    inoltra la richiesta, che l'intervento, il prezzo e le modalità sono dell'officina che accetta, che non
+    c'è garanzia di risposta (nessun filtro sugli orari) e che in pericolo si chiama il 112; il pagamento
+    avviene fuori dall'app. Basta questa formula per escludere la responsabilità di TyreCare (Codice del
+    consumo, artt. 1341–1342 c.c.)? E l'officina che accetta è **titolare autonomo** del trattamento di
+    posizione e telefono (registro A6, ruolo ancora da confermare), o agisce per conto di TyreCare?

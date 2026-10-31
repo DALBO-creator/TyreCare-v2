@@ -4,6 +4,27 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-31 — ciclo 20261031-18 — T104 T151
+
+**Fatto**
+
+- T104: nuova `DOCS/pilota/guida-cliente.md`, guida di una pagina (35 righe) per i clienti dell'officina pilota:
+  invito (14 giorni), account, garage e colori, gomma, appuntamento, notifiche (anche iPhone), dati ed
+  eliminazione; i nomi sono copiati dal codice.
+- T151: bozze legali allineate a R18 e R20: chiusura dall'app (termini §11), riaccettazione dei termini (§15),
+  nuova §7 «Aiuto su strada» (termini rinumerati §8–§16), trattamento in informativa e registro A6, link alle
+  procedure in bozza (registro accessi, copie di sicurezza) in README e DPA, domanda 15 per il consulente.
+
+**Decisioni prese al posto di Davide**
+
+- Registro A6 in Parte A (TyreCare titolare dell'inoltro); ruolo dell'officina che accetta lasciato
+  `[DA COMPLETARE]` per il consulente.
+- Targa visibile prima dell'accettazione, come in R18 (il testo del compito diceva solo distanza e descrizione).
+
+**Verifica**
+
+- Prova d'insieme: 346 test verdi; format, lint, typecheck e build verdi (Node 24). CI del treno da vedere.
+
 ### Sessione agenti — 2026-10-31 — ciclo 20261031-15 — T080 T090
 
 **Fatto**

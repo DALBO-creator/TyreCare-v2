@@ -2443,6 +2443,21 @@ accessi, copie, officina, import, primo cliente e D8.
 Soglie e decisioni R1–R15 sono `[DA COMPLETARE]`. I commenti partono dalla console Supabase finché T103
 non è su main: quando entra, aggiornare le due bozze.
 
+## Guida per i clienti dell'officina (T104)
+
+**File coinvolti:** `DOCS/pilota/guida-cliente.md`, `DOCS/PLAN.md` (indice).
+**Come funziona:** guida di una pagina per i clienti, con i nomi copiati dal codice. Va riletta quando cambiano i
+testi di `invito.ts`, `registrati.ts`, `profilo.ts`, `ui/stato.ts`, `ui/avvisi-push.ts`, `ui/prenotazione.ts`.
+
+## Bozze legali: aiuto su strada e termini rinumerati (T151)
+
+**File coinvolti:** `DOCS/legale/` (termini, informativa, registro, DPA, README).
+**Come funziona:** la numerazione dei termini è cambiata (nuova §7 «Aiuto su strada», le altre §8–§16): chi cita
+«termini §N» usa i numeri nuovi. L'informativa dice che la posizione si usa solo per l'aiuto su strada.
+
+### Codice complesso
+La sezione descrive una funzione solo in parte su main (T139): va riletta quando T140–T144 sono completi.
+
 ## Primi passi nella home officina (T101)
 
 **File coinvolti:** `apps/web/src/lib/primi-passi.ts`, la home dell'officina in `apps/web/src/pagine/`,
