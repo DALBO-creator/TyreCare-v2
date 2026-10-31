@@ -4,6 +4,28 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-31 — ciclo 20261031-21 — T140 T141
+
+**Fatto**
+
+- T140: tre funzioni per l'intervento su strada: `richieste_strada_vicine` (richieste aperte nel raggio, senza
+  posizione, telefono né cliente), `accetta_richiesta_strada` (la prima officina che accetta la prende; notifica
+  STRADA_ACCETTATA al cliente con nome e telefono) e `chiudi_richiesta_strada`. Migrazione `20261031000300`,
+  pgTAP `strada-accetta.test.sql` (52 test con i negati), `database.types.ts` aggiornato.
+- T141: rotte `/strada` ("Aiuto su strada") e `/officina/strada` ("Richieste su strada"), pigre, con
+  segnaposto in `pagine/strada.ts` e `pagine/strada-officina.ts`; T143 e T144 riscrivono solo il loro file.
+
+**Decisioni prese al posto di Davide**
+
+- Nessuna. Interpretazione del caso titolare2 (documentata): con Gomme Rossi l'esito è 42501; con Pneus
+  Express l'elenco è vuoto e l'accettazione dà 42501.
+
+**Verifica**
+
+- Prova d'insieme: 346 test verdi; format, lint, typecheck e build verdi.
+- pgTAP T140 eseguito solo su Postgres 16 locale con imitazioni di Supabase (52/52): da vedere col job
+  `database` della CI del treno.
+
 ### Sessione agenti — 2026-10-31 — ciclo 20261031-18 — T104 T151
 
 **Fatto**

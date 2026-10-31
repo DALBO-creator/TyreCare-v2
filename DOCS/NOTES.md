@@ -2560,6 +2560,34 @@ dà `NESSUNA_OFFICINA` senza salvare. `annulla_richiesta_strada` è solo del cli
 (STRADA_ANNULLATA) se era accettata. `manutenzione_richieste_strada(p_adesso)` (job `richieste-strada`, ogni 10
 minuti) prima cancella le finite da 90 giorni, poi scade le APERTE (2 ore) e chiude le ACCETTATE (24 ore).
 
+## Intervento su strada: elenco, accettazione e chiusura (T140)
+
+**File coinvolti:** `supabase/migrations/20261031000300_intervento_strada_accetta.sql`,
+`supabase/tests/database/strada-accetta.test.sql`, `packages/shared/src/database.types.ts`.
+**Come funziona:** i membri di un'officina ATTIVA, con "Offro l'aiuto su strada" e la posizione, chiamano
+`richieste_strada_vicine(officina)` e ricevono le richieste APERTE non scadute entro il raggio (descrizione,
+targa, distanza a 1 decimale, creazione, scadenza; dalla più recente), senza posizione, telefono né cliente.
+`accetta_richiesta_strada` porta la richiesta a ACCETTATA con `officina_id` e `accettata_il`: da lì i membri
+leggono la riga intera (policy T139) e il cliente riceve STRADA_ACCETTATA (link `/strada`; senza telefono:
+"Resta dove sei: ti chiamerà al numero che hai indicato."). `chiudi_richiesta_strada` la porta a CHIUSA.
+Errori: 42501 (non membro, requisiti mancanti, fuori raggio); RICHIESTA_NON_DISPONIBILE (assente, non aperta,
+scaduta, non tua).
+
+### Codice complesso
+`accetta_richiesta_strada` — `for update` sulla riga mette in fila due accettazioni contemporanee: vince la
+prima, la seconda trova la richiesta non più aperta. Il raggio si controlla dopo il blocco, sulla riga
+aggiornata. Le colonne di `returns table` sono variabili plpgsql: per questo ogni colonna ha un alias in tutte
+le query. La condizione "l'officina può rispondere" (ATTIVA, aiuto offerto, posizione) è ripetuta in
+crea/elenco/accetta: se cambia, va cambiata in tutte e tre.
+
+## Intervento su strada: rotte e segnaposto (T141)
+
+**File coinvolti:** `apps/web/src/main.ts`, `apps/web/src/pagine/strada.ts`,
+`apps/web/src/pagine/strada-officina.ts`.
+**Come funziona:** `/strada` ("Aiuto su strada", cliente) e `/officina/strada` ("Richieste su strada",
+officina) sono rotte pigre con `pigra()` in `main.ts`, come admin-commenti (T099). Le pagine sono segnaposto:
+T143 e T144 riscrivono solo il proprio file. Nessun link dal resto dell'app finché non arrivano T143 e T144.
+
 ## Nome mostrato di un cliente (`nominativo`, T080)
 
 **File coinvolti:** `packages/shared/src/clienti.ts`, `packages/shared/src/index.ts`,

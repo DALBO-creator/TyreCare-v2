@@ -91,6 +91,12 @@ const ROTTE: Rotta[] = [
     mostra: pigra(() => import('./pagine/officine'), 'mostraPrenota'),
   },
   {
+    percorso: '/strada',
+    accesso: 'utente',
+    titolo: 'Aiuto su strada',
+    mostra: pigra(() => import('./pagine/strada'), 'mostraStrada'),
+  },
+  {
     percorso: '/appuntamenti',
     accesso: 'utente',
     titolo: 'Appuntamenti',
@@ -151,6 +157,12 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: 'Registra la tua officina',
     mostra: pigra(() => import('./pagine/registra-officina'), 'mostraRegistraOfficina'),
+  },
+  {
+    percorso: '/officina/strada',
+    accesso: 'utente',
+    titolo: 'Richieste su strada',
+    mostra: pigra(() => import('./pagine/strada-officina'), 'mostraStradaOfficina'),
   },
   {
     percorso: '/officina/abbonamento',
