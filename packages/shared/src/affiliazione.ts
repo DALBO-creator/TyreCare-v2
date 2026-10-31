@@ -31,7 +31,7 @@ export const RichiestaAffiliazioneSchema = z.object({
     .max(200, { error: 'La ragione sociale può avere al massimo 200 caratteri' }),
   partita_iva: z
     .string()
-    .transform((s) => s.replace(/\s+/g, ''))
+    .transform((s) => s.replace(/[\s.]+/g, '').replace(/^it/i, ''))
     .refine(partitaIvaValida, { error: 'Partita IVA non valida' }),
   citta: z
     .string()
