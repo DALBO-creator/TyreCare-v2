@@ -3,8 +3,8 @@
 Bozza del 2026-10-31, da stampare o mandare ai clienti. Pochi passi, nell'ordine.
 
 1. **Apri l'invito.** La tua officina ti manda un'email (o un messaggio) con un link. Toccalo: si apre
-   TyreCare con il nome dell'officina e l'email a cui è arrivato l'invito. Il link vale per qualche giorno:
-   se è scaduto, chiedi un nuovo invito alla tua officina.
+   TyreCare con il nome dell'officina e l'email a cui è arrivato l'invito. Il link vale 14 giorni:
+   se è scaduto, chiedi un nuovo invito alla tua officina (l'ultimo invito annulla i precedenti).
 2. **Crea il tuo account.** Tocca "Crea account" e usa **la stessa email dell'invito**. Scegli una password
    (almeno 8 caratteri). Spunta la casella "Ho letto l'informativa privacy e accetto i termini di servizio",
    poi "Crea account". Se ti chiede di controllare la posta, apri l'email e conferma. Se hai già un
