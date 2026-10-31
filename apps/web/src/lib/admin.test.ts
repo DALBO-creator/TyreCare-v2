@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { contaInAttesa, formattaDataOra, nomeAutore, ordinaOfficineAdmin } from './admin';
+import {
+  contaInAttesa,
+  formattaDataOra,
+  leggiAbbonamentoEmbed,
+  nomeAutore,
+  ordinaOfficineAdmin,
+} from './admin';
 
 type S = 'IN_ATTESA' | 'ATTIVA' | 'SOSPESA';
 const o = (id: string, stato: S, created_at: string) => ({
@@ -55,5 +61,16 @@ describe('formattaDataOra', () => {
     // Il separatore tra data e ora dipende dalla versione di ICU: si controllano le parti
     expect(formattaDataOra('2026-07-01T10:05:00Z')).toMatch(/^1 luglio 2026.*12:05$/);
     expect(formattaDataOra('2026-12-01T10:05:00Z')).toMatch(/^1 dicembre 2026.*11:05$/);
+  });
+});
+
+describe('leggiAbbonamentoEmbed', () => {
+  it('legge l’oggetto, l’array e il valore assente', () => {
+    const a = { piano: 'PILOTA', stato: 'PROVA' } as const;
+    const atteso = { piano: 'PILOTA', statoAbbonamento: 'PROVA' };
+    expect(leggiAbbonamentoEmbed(a)).toEqual(atteso);
+    expect(leggiAbbonamentoEmbed([a])).toEqual(atteso);
+    expect(leggiAbbonamentoEmbed([])).toEqual({ piano: null, statoAbbonamento: null });
+    expect(leggiAbbonamentoEmbed(null)).toEqual({ piano: null, statoAbbonamento: null });
   });
 });
