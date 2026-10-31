@@ -1,5 +1,5 @@
 import { isAuthError } from '@supabase/supabase-js';
-import type { ModificaProfilo, Tables } from '@tyrecare/shared';
+import { VERSIONE_TERMINI, type ModificaProfilo, type Tables } from '@tyrecare/shared';
 import { messaggioErrore, sessioneCorrente } from './auth';
 import { ErroreModulo } from './errori';
 import { conRiprova } from './rete';
@@ -75,6 +75,12 @@ export async function salvaProfilo(dati: ModificaProfilo): Promise<void> {
   const { error } = await conRiprova(() =>
     getSupabase().from('profiles').update(dati).eq('id', utente.id).select('id').single(),
   );
+  if (error) throw error;
+}
+
+/** Registra nel profilo l'accettazione dei termini attuali (la funzione scrive versione e data). */
+export async function accettaTerminiAttuali(): Promise<void> {
+  const { error } = await getSupabase().rpc('accetta_termini', { p_versione: VERSIONE_TERMINI });
   if (error) throw error;
 }
 

@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   AccessoSchema,
   CambioPasswordSchema,
+  VERSIONE_TERMINI,
+  devonoRiaccettare,
   ModificaProfiloSchema,
   RegistrazioneSchema,
 } from './auth';
@@ -87,5 +89,17 @@ describe('CambioPasswordSchema', () => {
   it('chiede la password attuale e una nuova abbastanza lunga', () => {
     const r = CambioPasswordSchema.safeParse({ attuale: '', password: 'corta' });
     expect(r.error?.issues.map((i) => i.path[0])).toEqual(['attuale', 'password']);
+  });
+});
+
+describe('devonoRiaccettare', () => {
+  it('non chiede nulla se la versione è nulla', () => {
+    expect(devonoRiaccettare(null)).toBe(false);
+  });
+  it('non chiede nulla se la versione è quella attuale', () => {
+    expect(devonoRiaccettare(VERSIONE_TERMINI)).toBe(false);
+  });
+  it('chiede di riaccettare se la versione è diversa', () => {
+    expect(devonoRiaccettare('2020-01-vecchia')).toBe(true);
   });
 });

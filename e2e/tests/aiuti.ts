@@ -116,13 +116,20 @@ function supabaseLocale(): { url: string; chiave: string } {
  * Crea e conferma un account cliente nuovo senza passare dal browser (registrazione dall'API di Auth,
  * link di conferma da Mailpit): per i test che partono da un cliente già registrato.
  */
-export async function nuovoAccountCliente(nome = 'Cliente'): Promise<string> {
+export async function nuovoAccountCliente(
+  nome = 'Cliente',
+  metadati: Record<string, string> = {},
+): Promise<string> {
   const email = emailNuova();
   const { url, chiave } = supabaseLocale();
   const risposta = await fetch(`${url}/auth/v1/signup`, {
     method: 'POST',
     headers: { apikey: chiave, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password: PASSWORD, data: { nome, cognome: 'Prova' } }),
+    body: JSON.stringify({
+      email,
+      password: PASSWORD,
+      data: { nome, cognome: 'Prova', ...metadati },
+    }),
   });
   expect(risposta.ok, 'registrazione dall’API di Auth').toBe(true);
   // Aprire il link conferma l'email (poi Auth rimanda al sito: il rimando non serve)

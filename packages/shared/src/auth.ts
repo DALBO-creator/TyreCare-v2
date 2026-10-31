@@ -33,6 +33,11 @@ export type Accesso = z.infer<typeof AccessoSchema>;
 /** Versione dei termini che l'utente accetta alla registrazione (finisce nel suo profilo). */
 export const VERSIONE_TERMINI = '2026-10-bozza';
 
+/** Vero se l'utente aveva accettato una versione dei termini diversa da quella attuale (nulla: mai chiesta). */
+export function devonoRiaccettare(versione: string | null): boolean {
+  return versione !== null && versione !== VERSIONE_TERMINI;
+}
+
 export const RegistrazioneSchema = z.object({
   nome: nome('nome'),
   cognome: nome('cognome'),
