@@ -2544,3 +2544,30 @@ parziale). Calcola la distanza con `distanza_km` (stessa formula di `distanzaKm`
 dà `NESSUNA_OFFICINA` senza salvare. `annulla_richiesta_strada` è solo del cliente e avvisa l'officina
 (STRADA_ANNULLATA) se era accettata. `manutenzione_richieste_strada(p_adesso)` (job `richieste-strada`, ogni 10
 minuti) prima cancella le finite da 90 giorni, poi scade le APERTE (2 ore) e chiude le ACCETTATE (24 ore).
+
+## Nome mostrato di un cliente (`nominativo`, T080)
+
+**File coinvolti:** `packages/shared/src/clienti.ts`, `packages/shared/src/index.ts`,
+`packages/shared/src/importa.ts`, `apps/web/src/lib/officina.ts`.
+**Come funziona:** `nominativo(c)` dà la ragione sociale se c'è, altrimenti "Cognome Nome" senza spazi in
+fondo, `''` per null. La usano `csvClientiVeicoli` (export CSV) e le pagine dell'officina tramite
+`apps/web/src/lib/officina.ts`, che la riesporta (gli import `from '../lib/officina'` non cambiano): così
+export e app mostrano sempre lo stesso nome.
+
+### Codice complesso
+`ConNominativo` — parametro strutturale (ragione sociale, cognome, nome): accetta sia le righe di
+`clienti_officina` sia `ClienteDaEsportare`, senza conversioni.
+
+## Clienti: invito dalla lista e riga con azione (T090)
+
+**File coinvolti:** `apps/web/src/pagine/clienti.ts`, `apps/web/src/pagine/clienti.test.ts`,
+`apps/web/src/styles/_componenti.scss`.
+**Come funziona:** ogni cliente è un `.tc-lista__voce` (flex) con il link della riga (`.tc-lista__riga`) e, se
+`profile_id` è nullo (non usa l'app), il link "Invita" (`/cliente/invito?id=…`) come fratello: niente link
+dentro link. Il link si vede da tutti i membri, come la RPC `crea_invito_cliente`. Pattern riusabile per liste
+riga+azione (CSS `__voce`, `__invita`).
+
+### Codice complesso
+`pagine/clienti.ts` — `rigaCliente()` disegna la riga; `htmlElenco(trovati, cercaGrezza, soloSenzaApp)` è la
+parte pura di `disegna()` e mostra la ricerca come scritta (trim, non in minuscolo) nello stato vuoto. Nei test
+di `clienti.test.ts` `ui/icone` è simulato (`vi.mock`) perché l'ambiente è node.

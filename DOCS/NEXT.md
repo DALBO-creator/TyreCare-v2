@@ -6,9 +6,10 @@
 
 ## Prossima sessione
 
-> **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultima sessione: ciclo agenti
-> 20261031-09 (T138 scadenza automatica della prova, T139 database dell'intervento su strada; restano T140
-> accettazione, T141 rotte, T143 e T144 pagine; il pgTAP lo verifica la CI del treno).
+> **Obiettivo: il prossimo compito pronto della coda di ai-org.** Ultimo ciclo agenti: 20261031-15 (T080
+> `nominativo()` unico in `packages/shared`; T090 link "Invita" dalla lista clienti). Intervento su strada:
+> fatti il database (T139) e la scadenza della prova (T138, ciclo 09); restano T140 accettazione, T141 rotte,
+> T143 e T144 pagine; il pgTAP lo verifica la CI del treno.
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
