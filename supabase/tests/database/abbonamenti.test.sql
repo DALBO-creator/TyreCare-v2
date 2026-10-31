@@ -80,8 +80,8 @@ select is(
 );
 select is(
   (select prova_fino_al from public.abbonamenti where officina_id = :nuova),
-  current_date + 30,
-  'la prova dura 30 giorni da oggi'
+  current_date + 29,
+  'la prova dura 30 giorni contando oggi'
 );
 
 -- ---------------------------------------------------------------- lettura
@@ -213,8 +213,8 @@ select is(
 reset role;
 select is(
   (select a.prova_fino_al from public.abbonamenti a join esito e on e.id = a.officina_id),
-  current_date + 30,
-  'l''officina richiesta ha la prova di 30 giorni'
+  current_date + 29,
+  'l''officina richiesta ha la prova di 30 giorni contando oggi'
 );
 
 select * from finish();
