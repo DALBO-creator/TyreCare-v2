@@ -4,6 +4,29 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-01 — ciclo 20261101-00 — T142 T148
+
+**Fatto**
+
+- T142: quando informativa e termini cambiano versione, chi aveva accettato la precedente li riaccetta al
+  primo accesso, prima della home (tutti i ruoli); l'accettazione si scrive con `accetta_termini`. Chi ha
+  `termini_versione` nullo (seed, account creati dall'admin) non vede la richiesta (R20). e2e
+  `termini-nuovi.spec.ts`.
+- T148: la partita IVA di "Registra la tua officina" accetta la scrittura da fattura ("IT", spazi, punti):
+  lo schema restituisce le 11 cifre; il campo ha `maxlength` 20, tastiera normale e aiuto aggiornato.
+
+**Decisioni prese al posto di Davide**
+
+- Nessuna. Decisione del coordinatore: in T148 toccata anche `apps/web/src/pagine/registra-officina.ts`
+  (fuori dal campo `file`): `maxlength="20"`, niente `inputmode="numeric"`, aiuto "11 cifre, anche con IT
+  davanti" (altrimenti "IT 012 345 678 90" non entrava). L'esempio "01234567890" del compito non supera la
+  cifra di controllo: i test usano `VALIDA`.
+
+**Verifica**
+
+- Prova d'insieme: 351 test verdi; format, lint, typecheck e build verdi; JS iniziale 62,1/70 kB.
+- e2e `termini-nuovi.spec.ts` (T142) non eseguiti qui (niente Docker): da vedere in CI.
+
 ### Sessione agenti — 2026-10-31 — ciclo 20261031-21 — T140 T141
 
 **Fatto**

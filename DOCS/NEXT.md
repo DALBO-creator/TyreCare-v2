@@ -7,9 +7,9 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultimo ciclo agenti: 20261031-21 (T140 accettazione e chiusura su strada; T141 rotte `/strada` e
-> `/officina/strada`), nel treno. Prossimi in coda per C4: T150 → T152 → T153.
-> Aiuto su strada: restano T142, T143, T144 e T159; T165 (idea del supervisore:
+> Ultima sessione: ciclo 20261101-00 (T142 riaccettazione dei termini aggiornati; T148 partita IVA con
+> prefisso IT), nel treno. Prossimi in coda per C4: T150 → T152 → T153.
+> Aiuto su strada: restano T143, T144 e T159; T165 (idea del supervisore:
 > note legali: eliminazione account, informativa §6 e registro A6, «16 tabelle» del registro M1).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
