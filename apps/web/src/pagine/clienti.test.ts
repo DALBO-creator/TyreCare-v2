@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest';
-import { filtraClienti, senzaApp, testoVuoto } from './clienti';
+import { describe, expect, it, vi } from 'vitest';
+import { filtraClienti, htmlElenco, rigaCliente, senzaApp, testoVuoto } from './clienti';
 import type { ClienteConVeicoli } from '../lib/officina';
+
+// Ambiente node, senza DOM: le icone (SVG creati con `document`) qui non servono
+vi.mock('../ui/icone', () => ({ icona: () => '<svg></svg>' }));
 
 const cliente = (o: Partial<ClienteConVeicoli> & { id: string }): ClienteConVeicoli =>
   ({
@@ -79,5 +82,25 @@ describe('testoVuoto', () => {
     expect(testoVuoto('Rossi', true).titolo).toBe(
       'Nessun cliente per «Rossi» tra chi non usa l’app',
     );
+  });
+});
+
+describe('invito dalla lista e ricerca nello stato vuoto', () => {
+  const verdi = cliente({ id: 'abc-1', nome: 'Giulia', cognome: 'Verdi' });
+
+  it('chi non usa l’app ha il link "Invita", fuori dal link della riga', () => {
+    const html = rigaCliente(verdi);
+    expect(html).toContain('href="/cliente/invito?id=abc-1"');
+    expect(html).toContain('aria-label="Invita Verdi Giulia nell\'app"');
+    expect(html.indexOf('</a>')).toBeLessThan(html.indexOf('/cliente/invito'));
+    expect(html.match(/<a /g)).toHaveLength(2);
+  });
+
+  it('chi usa già l’app non ha il link "Invita"', () => {
+    expect(rigaCliente({ ...verdi, profile_id: 'p1' })).not.toContain('/cliente/invito');
+  });
+
+  it('lo stato vuoto mostra la ricerca come scritta (senza spazi), non in minuscolo', () => {
+    expect(htmlElenco([], 'ROSSI ', false)).toContain('Nessun cliente per «ROSSI»');
   });
 });

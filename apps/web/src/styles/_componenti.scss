@@ -505,6 +505,41 @@ h6 {
     }
   }
 
+  // Riga con un'azione a fianco (es. "Invita"): il link della riga e l'azione sono fratelli,
+  // così non c'è un link dentro un link.
+  &__voce {
+    display: flex;
+    align-items: center;
+    padding-right: 0.75rem;
+    transition: background-color 0.2s $tc-transizione;
+
+    & + & {
+      border-top: 1px solid var(--bs-border-color);
+    }
+
+    &:hover {
+      background: var(--tc-superficie-alta);
+    }
+
+    > .tc-lista__riga {
+      flex: 1;
+      min-width: 0;
+
+      &:hover {
+        background: transparent;
+      }
+    }
+  }
+
+  &__invita {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    min-height: $tc-touch-min;
+    min-width: $tc-touch-min;
+  }
+
   &__icona {
     display: grid;
     place-items: center;
