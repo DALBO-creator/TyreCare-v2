@@ -2564,7 +2564,9 @@ export e app mostrano sempre lo stesso nome.
 `apps/web/src/styles/_componenti.scss`.
 **Come funziona:** ogni cliente è un `.tc-lista__voce` (flex) con il link della riga (`.tc-lista__riga`) e, se
 `profile_id` è nullo (non usa l'app), il link "Invita" (`/cliente/invito?id=…`) come fratello: niente link
-dentro link. Il link si vede da tutti i membri, come la RPC `crea_invito_cliente`. Pattern riusabile per liste
+dentro link. Il nome accessibile è fisso, "Invita nell'app"; il nominativo (`<span id="tc-cliente-<id>">`) arriva
+da `aria-describedby`, così il link non è omonimo di quello della riga (gli e2e cercano la riga per nome). Il
+link si vede da tutti i membri, come la RPC `crea_invito_cliente`. Pattern riusabile per liste
 riga+azione (CSS `__voce`, `__invita`).
 
 ### Codice complesso

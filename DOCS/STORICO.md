@@ -12,7 +12,8 @@
   e l'app web (`lib/officina.ts`, che la riesporta) danno sempre lo stesso nome; le due copie erano identiche.
   Commento di `caricaVeicoli` allineato alla lettura a pagine (T042).
 - T090: nella lista clienti chi non usa l'app ha un link "Invita" (`/cliente/invito?id=…`) accanto al link
-  della riga, `aria-label` "Invita <nominativo> nell'app", bersaglio ≥ 44px; lo stato vuoto mostra la ricerca
+  della riga, nome accessibile "Invita nell'app" con il nominativo in `aria-describedby` (non omonimo del link
+  della riga), bersaglio ≥ 44px; lo stato vuoto mostra la ricerca
   come scritta (con trim, non in minuscolo).
 
 ### Sessione agenti — 2026-10-31 — ciclo 20261031-09 — T138 T139
