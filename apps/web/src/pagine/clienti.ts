@@ -128,15 +128,11 @@ function collegaElenco(app: HTMLElement, clienti: ClienteConVeicoli[]): void {
   let soloSenzaApp = false;
 
   const disegna = () => {
-    const testo = cerca.value.trim().toLowerCase();
-    const trovati = filtraClienti(clienti, testo, soloSenzaApp);
+    const trovati = filtraClienti(clienti, cerca.value, soloSenzaApp);
 
     conteggio.textContent =
       trovati.length === 1 ? '1 cliente trovato' : `${trovati.length} clienti trovati`;
-    elenco.innerHTML =
-      trovati.length > 0
-        ? `<div class="tc-lista">${trovati.map(rigaCliente).join('')}</div>`
-        : nessunRisultato(testo, soloSenzaApp);
+    elenco.innerHTML = htmlElenco(trovati, cerca.value, soloSenzaApp);
   };
 
   cerca.addEventListener('input', disegna);
@@ -159,7 +155,18 @@ function collegaElenco(app: HTMLElement, clienti: ClienteConVeicoli[]): void {
   disegna();
 }
 
-function rigaCliente(c: ClienteConVeicoli): string {
+/** Elenco dei clienti trovati, o lo stato vuoto con la ricerca come l'ha scritta l'utente. */
+export function htmlElenco(
+  trovati: ClienteConVeicoli[],
+  cercaGrezza: string,
+  soloSenzaApp: boolean,
+): string {
+  return trovati.length > 0
+    ? `<div class="tc-lista">${trovati.map(rigaCliente).join('')}</div>`
+    : nessunRisultato(cercaGrezza, soloSenzaApp);
+}
+
+export function rigaCliente(c: ClienteConVeicoli): string {
   const targhe = c.veicoli.map((v) => formattaTarga(v.targa));
   const dettagli = [
     targhe.length === 0
@@ -169,15 +176,23 @@ function rigaCliente(c: ClienteConVeicoli): string {
         : `${targhe.slice(0, 2).join(', ')} e altri ${targhe.length - 2}`,
     c.telefono ?? c.email ?? '',
   ].filter(Boolean);
+  // Chi può vedere la lista (titolare e operatore) può anche invitare: lo stesso vale per la RPC
+  const invita =
+    c.profile_id === null
+      ? `<a class="btn btn-sm btn-outline-light tc-lista__invita" href="/cliente/invito?id=${c.id}" aria-label="Invita ${esc(nominativo(c))} nell'app">Invita</a>`
+      : '';
   return `
-    <a class="tc-lista__riga" href="/cliente?id=${c.id}">
-      <span class="tc-lista__icona">${icona(UserRound)}</span>
-      <span class="tc-lista__testo">
-        ${esc(nominativo(c))}
-        <small>${esc(dettagli.join(' · '))}</small>
-        ${c.profile_id === null ? '<small>Non usa l’app</small>' : ''}
-      </span>
-    </a>`;
+    <div class="tc-lista__voce">
+      <a class="tc-lista__riga" href="/cliente?id=${c.id}">
+        <span class="tc-lista__icona">${icona(UserRound)}</span>
+        <span class="tc-lista__testo">
+          ${esc(nominativo(c))}
+          <small>${esc(dettagli.join(' · '))}</small>
+          ${c.profile_id === null ? '<small>Non usa l’app</small>' : ''}
+        </span>
+      </a>
+      ${invita}
+    </div>`;
 }
 
 /**
