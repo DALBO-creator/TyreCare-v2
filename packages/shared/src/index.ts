@@ -12,3 +12,4 @@ export * from './importa-controlli';
 export * from './esporta';
 export * from './stagioni';
 export * from './abbonamenti';
+export * from './clienti';

@@ -34,3 +34,21 @@ test('il filtro "Senza app" mostra i clienti da invitare e nasconde quelli già 
   await page.getByRole('button', { name: 'Tutti', exact: true }).click();
   await expect(page.locator('a[href^="/cliente?id="]', { hasText: 'Verdi' })).toBeVisible();
 });
+
+test('dalla lista "Senza app" si apre subito l’invito del cliente', async ({ page }) => {
+  const id = unico();
+  await accedi(page, 'titolare@tyrecare.test');
+  await creaCliente(page, { nome: 'Invito', cognome: `Listainvito${id}` });
+
+  await page.goto('/clienti');
+  await page.getByRole('button', { name: /Senza app/ }).click();
+  await page.getByLabel('Cerca per nome, telefono, email o targa').fill(`Listainvito${id}`);
+  await page
+    .locator('.tc-lista__voce')
+    .filter({ hasText: `Listainvito${id}` })
+    .getByRole('link', { name: "Invita nell'app", exact: true })
+    .click();
+
+  await expect(page).toHaveURL(/\/cliente\/invito/);
+  await expect(page.getByRole('heading', { name: "Invita nell'app" })).toBeVisible();
+});

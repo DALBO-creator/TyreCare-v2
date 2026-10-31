@@ -1,4 +1,5 @@
 import {
+  nominativo,
   statoBattistrada,
   statoPeggiore,
   type Cliente,
@@ -14,6 +15,8 @@ import { codiceErrore, ErroreModulo } from './errori';
 import { caricaDatiUtente, type DatiUtente, type OfficinaUtente } from './profilo';
 import { conRiprova } from './rete';
 import { getSupabase } from './supabase';
+
+export { nominativo };
 
 // Dati lato officina (Fase 2). Le letture passano direttamente da Supabase: la RLS mostra solo i dati
 // delle officine di cui l'utente è membro. Le scritture su più tabelle passano dalle funzioni SQL
@@ -63,14 +66,6 @@ export async function caricaContestoOfficina(): Promise<DatiUtente & { attiva: O
 // Elenco dei veicoli
 // ---------------------------------------------------------------------------------------------------
 
-type ClienteBreve = Pick<Tables<'clienti_officina'>, 'nome' | 'cognome' | 'ragione_sociale'>;
-
-/** "Verdi Giulia", oppure la ragione sociale. */
-export function nominativo(c: ClienteBreve | null): string {
-  if (!c) return '';
-  return c.ragione_sociale ?? `${c.cognome} ${c.nome}`.trim();
-}
-
 export interface VeicoloInElenco {
   id: string;
   targa: string;
@@ -87,8 +82,8 @@ export interface VeicoloInElenco {
 
 /**
  * Veicoli dell'officina (o di un suo cliente) con il cliente e l'ultimo controllo. Si caricano tutti
- * e si filtrano nel browser: per un'officina sono qualche centinaio, e la ricerca risponde a ogni
- * tasto anche offline.
+ * (a pagine, anche oltre i 1000) e si filtrano nel browser, così la ricerca risponde a ogni tasto
+ * anche offline.
  */
 export async function caricaVeicoli(
   filtro: { officinaId: string } | { clienteId: string },

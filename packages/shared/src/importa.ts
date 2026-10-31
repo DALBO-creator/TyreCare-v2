@@ -1,3 +1,4 @@
+import { nominativo } from './clienti';
 import { ClienteSchema, VeicoloSchema } from './officina';
 
 // Import dal gestionale (PLAN P8): formato CSV standard di TyreCare per clienti e veicoli.
@@ -476,12 +477,6 @@ export interface VeicoloDaEsportare {
   telaio: string | null;
 }
 
-/** "Verdi Giulia" oppure la ragione sociale (come `nominativo()` dell'app web). */
-function nominativoCliente(c: ClienteDaEsportare | null): string {
-  if (!c) return '';
-  return c.ragione_sociale ?? `${c.cognome} ${c.nome}`.trim();
-}
-
 /**
  * Tutti i clienti e i veicoli nel formato del modello (stesse colonne, stesso ordine), pronti per
  * essere reimportati. Una riga per veicolo con i dati del suo cliente; un veicolo senza cliente ha le
@@ -502,7 +497,7 @@ export function csvClientiVeicoli(
   }
   for (const c of clienti) if (!conVeicoli.has(c.id)) voci.push({ cliente: c, veicolo: null });
 
-  const nome = (cliente: ClienteDaEsportare | null) => nominativoCliente(cliente);
+  const nome = (cliente: ClienteDaEsportare | null) => nominativo(cliente);
   voci.sort((a, b) => {
     const na = nome(a.cliente);
     const nb = nome(b.cliente);
