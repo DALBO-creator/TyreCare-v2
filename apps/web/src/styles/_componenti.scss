@@ -525,10 +525,6 @@ h6 {
       flex: 1;
       min-width: 0;
 
-      & + & {
-        border-top: 0;
-      }
-
       &:hover {
         background: transparent;
       }
