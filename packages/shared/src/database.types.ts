@@ -1186,6 +1186,7 @@ export type Database = {
         Returns: undefined;
       };
       rispondi_proposta: { Args: { p_accetta: boolean; p_id: string }; Returns: undefined };
+      scadi_prove_abbonamento: { Args: { p_oggi?: string }; Returns: number };
       sospendi_officina: { Args: { p_officina_id: string }; Returns: undefined };
       stato_battistrada: {
         Args: { p_mm: number; p_stagione: Database['public']['Enums']['stagione'] };
