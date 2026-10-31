@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-31 — ciclo 20261031-03 — T103 T106
+
+**Fatto**
+
+- T103: pagina `/admin/commenti` per l'amministratore, in sola lettura: tutti i commenti dal più recente
+  (data e ora di Roma, autore, pagina di provenienza) e link "Commenti degli utenti" nel Profilo
+  dell'admin. Nessuna migrazione: bastano la RLS di `commenti` e i pgTAP esistenti. e2e: il cliente
+  scrive, l'admin vede, il titolare trova il messaggio riservato.
+- T106: nella pagina "Officine" dell'amministratore ogni riga mostra piano e stato dell'abbonamento e un
+  modulo "Piano" + "Salva" che aggiorna `abbonamenti.piano`: l'officina pilota (LA SANTI GOMME) si mette
+  su "Officina pilota" senza SQL. Unit test e un e2e (registrazione, piano pilota, ricarica, sospensione).
+- Verifiche: 339 unit test verdi; pgTAP ed e2e in CI. Gate del supervisore approvato al primo giro.
+
 ### Sessione agenti — 2026-10-31 — ciclo 20261031-00 — T101 T075
 
 **Fatto**

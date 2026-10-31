@@ -2472,3 +2472,41 @@ controlli (stessa funzione).
 file invariato); le celle oltre, se non vuote (`trim() !== ''`), vanno tra «» unite da ", " nel suffisso
 ` (celle in più: …)` di `errore`. Il suffisso dipende solo dalla riga. L'escape di `;` e `"` lo fa
 `scriviCsv` sull'intera cella.
+
+## Commenti degli utenti (admin, T103)
+
+**File coinvolti:** `apps/web/src/pagine/admin-commenti.ts` (`mostraAdminCommenti`),
+`apps/web/src/lib/admin.ts` (`caricaCommentiAdmin`, `nomeAutore`, `formattaDataOra`),
+`apps/web/src/lib/admin.test.ts`,
+`apps/web/src/pagine/profilo.ts` (link), `e2e/tests/admin-commenti.spec.ts`.
+**Come funziona:** `/admin/commenti` mostra in sola lettura tutti i commenti dal più recente, con data e ora
+di Roma, autore e pagina di provenienza. Il link "Commenti degli utenti" compare nel Profilo solo per
+l'ADMIN. Nessuna migrazione: la sicurezza è la RLS di `commenti` ("lettura propria o admin").
+
+### Codice complesso
+`pagine/admin-commenti.ts` — `mostraAdminCommenti` controlla `ruolo === 'ADMIN'` solo per non mostrare una
+pagina vuota; chi non è admin vedrebbe comunque zero righe per la RLS.
+`lib/admin.ts` — `caricaCommentiAdmin()` usa `leggiTutte` ordinando per `created_at` decrescente e poi
+`id`, con embed `profiles(nome, cognome)`;
+`nomeAutore` restituisce '' se il profilo manca e la pagina scrive "Autore non disponibile";
+`formattaDataOra` usa `Intl.DateTimeFormat` it-IT con fuso Europe/Rome. Il testo passa da `esc()` e ha
+`white-space: pre-wrap`; il percorso vuoto non viene mostrato.
+
+## Piano dell'abbonamento dall'amministratore (T106)
+
+**File coinvolti:** `apps/web/src/lib/admin.ts` (`caricaOfficineAdmin`, `leggiAbbonamentoEmbed`,
+`cambiaPianoOfficina`), `apps/web/src/lib/admin.test.ts`, `apps/web/src/pagine/admin-officine.ts`,
+`e2e/tests/admin-officine.spec.ts`.
+**Come funziona:** in `/admin/officine` ogni riga mostra piano e stato dell'abbonamento e un modulo "Piano" +
+"Salva" che aggiorna `abbonamenti.piano`: l'officina pilota si mette su "Officina pilota" senza SQL. Lo stato
+di pagamento non viene mai toccato.
+
+### Codice complesso
+`lib/admin.ts` — `caricaOfficineAdmin` fa l'embed `abbonamenti(piano, stato)`: la relazione è 1-a-1
+(oggetto), ma se arriva un array lo gestisce. `leggiAbbonamentoEmbed` valida con `PianoSchema` e
+`StatoAbbonamentoSchema`
+e dà null se i valori sono sconosciuti. `cambiaPianoOfficina` =
+`update().eq('officina_id').select().single()`: l'errore PGRST116 (0 righe: RLS o riga assente) diventa
+un `ErroreModulo` chiaro. Il permesso viene solo dalla
+policy "abbonamenti: modifica admin". Nella pagina select e pulsante sono disabilitati durante il salvataggio,
+poi la lista si ridisegna.
