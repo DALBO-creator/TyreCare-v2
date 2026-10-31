@@ -32,8 +32,9 @@ seguito: contratto di abbonamento per le officine (P19), a cui il DPA rimanda.
 - Non si promettono funzioni che l'app non ha: si scrive come fatto solo ciò che è sul ramo `main`
   (aggiornato con T058: «Scarica i tuoi dati» ed «Elimina il tuo account» nel Profilo, esportazione per
   l'officina, pulizia delle notifiche). Le prenotazioni passate, invece, non si cancellano ancora da sole.
-  Eccezione: la sezione «Aiuto su strada» (termini §7, informativa, registro A6) descrive la funzione di
-  T139–T144 (R18), che entra con lo stesso treno: se non venisse unita, va tolta prima della pubblicazione.
+  Eccezione: la sezione «Aiuto su strada» (termini §7, informativa, registro A6) descrive la funzione
+  decisa con R18 (T139–T144): sul ramo `main` c'è solo il database (T139), le pagine arrivano con
+  T140–T144. Va riletta quando la funzione è completa e non va data al consulente come già attiva.
 
 ## Cosa manca (da completare prima di darle al consulente)
 
@@ -127,8 +128,8 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
    accessi)?
 10. **Cancellazione dell'account:** ora si fa dal Profilo («Elimina il tuo account», T038–T039): la
     funzione rifiuta gli amministratori, i titolari di un'officina e chi ha prenotazioni in corso. Basta
-    questa funzione, o serve anche una procedura per chi non riesce ad accedere (richiesta via email)? Proposta: email di
-    contatto, come informativa §6 e termini §11.
+    questa funzione, o serve anche una procedura per chi non riesce ad accedere (richiesta via
+    email)? Proposta: email di contatto, come informativa §6 e termini §11.
 11. **Archiviazione locale:** il salvataggio della sessione nel `localStorage` e il service worker sono
     "strettamente necessari" e quindi senza banner dei cookie? Va bene un'informativa breve senza banner?
 12. **Termini di servizio:** limitazioni di responsabilità sulle misure degli pneumatici e sulle

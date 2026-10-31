@@ -145,9 +145,9 @@ Non è consentito:
   servizio.
 
 TyreCare può sospendere o chiudere un account o un'officina che viola questi termini, avvisando quando
-possibile. Puoi chiudere il tuo account in qualsiasi momento dal **Profilo**, con «Elimina il tuo account»; chi non
-riesce ad accedere scrive a [DA COMPLETARE: email di contatto]. Cosa succede ai dati è spiegato
-nell'informativa privacy.
+possibile. Puoi chiudere il tuo account in qualsiasi momento dal **Profilo**, con «Elimina il tuo
+account»; chi non riesce ad accedere scrive a [DA COMPLETARE: email di contatto]. Cosa succede ai dati
+è spiegato nell'informativa privacy.
 
 ## 12. Disponibilità del servizio
 

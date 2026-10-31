@@ -147,7 +147,9 @@ eliminati dall'officina, dall'interessato o alla chiusura dell'account. I tempi 
   vecchie di un anno (365 giorni) [DA COMPLETARE: confermare i tempi con il consulente];
 - **richieste di aiuto su strada**: una richiesta non accettata scade dopo 2 ore e una accettata si chiude
   da sola dopo 24 ore se l'officina non la chiude; le richieste chiuse, annullate o scadute (con posizione,
-  telefono, descrizione e targa) vengono cancellate dopo **90 giorni**;
+  telefono, descrizione e targa) vengono cancellate dopo **90 giorni**
+  [DA COMPLETARE: cosa succede alle richieste di aiuto su strada quando si elimina l'account — da
+  definire con T140–T144];
 - **prenotazioni**: non si cancellano da sole [DA COMPLETARE: periodo, es. N mesi dopo l'appuntamento];
 - **iscrizioni push**: finché non disattivi le notifiche push nell'app o dal browser (in quel caso
   l'iscrizione viene eliminata);
