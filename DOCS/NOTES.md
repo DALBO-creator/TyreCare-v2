@@ -2562,7 +2562,7 @@ minuti) prima cancella le finite da 90 giorni, poi scade le APERTE (2 ore) e chi
 
 ## Intervento su strada: elenco, accettazione e chiusura (T140)
 
-**File coinvolti:** `supabase/migrations/20261031000300_strada_accetta.sql`,
+**File coinvolti:** `supabase/migrations/20261031000300_intervento_strada_accetta.sql`,
 `supabase/tests/database/strada-accetta.test.sql`, `packages/shared/src/database.types.ts`.
 **Come funziona:** i membri di un'officina ATTIVA, con "Offro l'aiuto su strada" e la posizione, chiamano
 `richieste_strada_vicine(officina)` e ricevono le richieste APERTE non scadute entro il raggio (descrizione,
