@@ -176,17 +176,18 @@ export function rigaCliente(c: ClienteConVeicoli): string {
         : `${targhe.slice(0, 2).join(', ')} e altri ${targhe.length - 2}`,
     c.telefono ?? c.email ?? '',
   ].filter(Boolean);
-  // Chi può vedere la lista (titolare e operatore) può anche invitare: lo stesso vale per la RPC
+  // Il nome accessibile del link è solo "Invita nell'app" (il nominativo, in aria-describedby, non lo
+  // rende omonimo del link della riga). Chi può vedere la lista (titolare e operatore) può anche invitare: lo stesso vale per la RPC
   const invita =
     c.profile_id === null
-      ? `<a class="btn btn-sm btn-outline-light tc-lista__invita" href="/cliente/invito?id=${c.id}" aria-label="Invita ${esc(nominativo(c))} nell'app">Invita</a>`
+      ? `<a class="btn btn-sm btn-outline-light tc-lista__invita" href="/cliente/invito?id=${c.id}" aria-label="Invita nell'app" aria-describedby="tc-cliente-${esc(c.id)}">Invita</a>`
       : '';
   return `
     <div class="tc-lista__voce">
       <a class="tc-lista__riga" href="/cliente?id=${c.id}">
         <span class="tc-lista__icona">${icona(UserRound)}</span>
         <span class="tc-lista__testo">
-          ${esc(nominativo(c))}
+          <span id="tc-cliente-${esc(c.id)}">${esc(nominativo(c))}</span>
           <small>${esc(dettagli.join(' · '))}</small>
           ${c.profile_id === null ? '<small>Non usa l’app</small>' : ''}
         </span>

@@ -91,7 +91,9 @@ describe('invito dalla lista e ricerca nello stato vuoto', () => {
   it('chi non usa l’app ha il link "Invita", fuori dal link della riga', () => {
     const html = rigaCliente(verdi);
     expect(html).toContain('href="/cliente/invito?id=abc-1"');
-    expect(html).toContain('aria-label="Invita Verdi Giulia nell\'app"');
+    expect(html).toContain('aria-label="Invita nell\'app"');
+    expect(html).toContain('aria-describedby="tc-cliente-abc-1"');
+    expect(html).toMatch(/<span id="tc-cliente-abc-1">Verdi Giulia<\/span>/);
     expect(html.indexOf('</a>')).toBeLessThan(html.indexOf('/cliente/invito'));
     expect(html.match(/<a /g)).toHaveLength(2);
   });
