@@ -4,6 +4,27 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-10-31 — ciclo 20261031-09 — T138 T139
+
+**Fatto**
+
+- T138: la prova delle officine nuove dura 30 giorni contando oggi (default `prova_fino_al = current_date + 29`;
+  le righe esistenti non cambiano). Job pg_cron `scadenza-prove` (0:25 UTC): le prove finite, non PILOTA,
+  passano a SCADUTO, senza blocchi delle funzioni (R19). pgTAP `abbonamenti-scadenza.test.sql`; in
+  `abbonamenti.test.sql` le due attese diventano `current_date + 29` (cambio voluto).
+- T139: intervento su strada, database (R18). Tabella `richieste_strada` con RLS di sola lettura (cliente,
+  officina che ha accettato, admin), `crea_richiesta_strada`, `annulla_richiesta_strada`, `distanza_km`, colonne
+  `intervento_strada` e `raggio_strada_km` di `officine`, 3 tipi di notifica con le icone. Job `richieste-strada`
+  ogni 10 minuti (scadenza 2 ore, chiusura 24 ore, cancellazione 90 giorni). pgTAP `strada.test.sql` (57).
+- Decisioni dello sviluppatore (reversibili con una migrazione nuova): lat/lon obbligatorie; errori
+  POSIZIONE_NON_VALIDA, DESCRIZIONE_NON_VALIDA, TELEFONO_NON_VALIDO, TARGA_NON_VALIDA; indice unico parziale per
+  una sola richiesta in corso; una notifica per persona e mai a chi agisce.
+- Verifiche: 339 unit test verdi (Node 24). Il pgTAP non è stato eseguito (niente Docker): T139 provato solo con
+  Postgres 16 locale e sostituti di pgTAP e auth (57/57); lo verifica la CI del treno (`db:test`).
+- Idee: default di `prova_fino_al` con la data italiana invece di `current_date` (UTC); limite di richieste su
+  strada per ora per cliente. Rilievi `nota` del supervisore: anon legge `intervento_strada` e
+  `raggio_strada_km` (non riservati); richiedente membro dell'unica officina vicina, nessuna notifica (marginale).
+
 ### Sessione agenti — 2026-10-31 — ciclo 20261031-03 — T103 T106
 
 **Fatto**

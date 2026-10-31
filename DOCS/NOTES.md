@@ -2510,3 +2510,37 @@ e dà null se i valori sono sconosciuti. `cambiaPianoOfficina` =
 un `ErroreModulo` chiaro. Il permesso viene solo dalla
 policy "abbonamenti: modifica admin". Nella pagina select e pulsante sono disabilitati durante il salvataggio,
 poi la lista si ridisegna.
+
+## Abbonamenti: scadenza automatica della prova (T138)
+
+**File coinvolti:** `supabase/migrations/20261031000100_abbonamenti_scadenza.sql`,
+`supabase/tests/database/abbonamenti-scadenza.test.sql`, `supabase/tests/database/abbonamenti.test.sql`,
+`packages/shared/src/database.types.ts`.
+**Come funziona:** `prova_fino_al` è l'ultimo giorno incluso (R16). Il default è `current_date + 29`, quindi il
+primo giorno si legge "mancano 30 giorni"; le officine già esistenti tengono la loro data. Ogni notte alle 0:25
+UTC il job `scadenza-prove` mette SCADUTO le prove finite (R19). SCADUTO si mostra soltanto: nessun blocco.
+
+### Codice complesso
+`public.scadi_prove_abbonamento(p_oggi)` — `security definer`, eseguibile solo dal job (dal client dà 42501).
+Aggiorna le righe con stato `PROVA`, piano diverso da `PILOTA` e `prova_fino_al < p_oggi`, e restituisce quante.
+`p_oggi` di default è la data italiana (`now() at time zone 'Europe/Rome'`); i test la passano esplicita.
+Per toglierlo: `select cron.unschedule('scadenza-prove')`.
+
+## Intervento su strada — database (T139, R18)
+
+**File coinvolti:** `supabase/migrations/20261031000200_intervento_strada.sql`,
+`supabase/tests/database/strada.test.sql`, `packages/shared/src/database.types.ts`,
+`apps/web/src/pagine/notifiche.ts` (`ICONE`).
+**Come funziona:** il cliente fermo manda una richiesta con posizione, descrizione, telefono e targa facoltativa
+alle officine ATTIVE con `intervento_strada` entro il loro `raggio_strada_km`. Ogni persona di quelle officine
+riceve una notifica STRADA_RICHIESTA. Nessuna policy di scrittura: si passa solo dalle funzioni. I membri
+leggono la riga solo quando `officina_id` è la loro, cioè dopo l'accettazione (T140): prima nessuna officina
+vede posizione e telefono (R18).
+
+### Codice complesso
+`crea_richiesta_strada(lat, lon, descrizione, telefono, targa?)` — valida i dati, chiude le richieste del
+cliente già scadute e rifiuta se ne ha una in corso (`RICHIESTA_GIA_APERTA`, garantito anche da un indice unico
+parziale). Calcola la distanza con `distanza_km` (stessa formula di `distanzaKm`); se nessuna officina rientra
+dà `NESSUNA_OFFICINA` senza salvare. `annulla_richiesta_strada` è solo del cliente e avvisa l'officina
+(STRADA_ANNULLATA) se era accettata. `manutenzione_richieste_strada(p_adesso)` (job `richieste-strada`, ogni 10
+minuti) prima cancella le finite da 90 giorni, poi scade le APERTE (2 ore) e chiude le ACCETTATE (24 ore).
