@@ -1106,11 +1106,16 @@ export type Database = {
     };
     Functions: {
       accetta_invito: { Args: { p_codice: string }; Returns: string };
+      accetta_richiesta_strada: {
+        Args: { p_id: string; p_officina_id: string };
+        Returns: undefined;
+      };
       accetta_termini: { Args: { p_versione: string }; Returns: undefined };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
       annulla_richiesta_strada: { Args: { p_id: string }; Returns: undefined };
       attiva_officina: { Args: { p_officina_id: string }; Returns: undefined };
+      chiudi_richiesta_strada: { Args: { p_id: string }; Returns: undefined };
       crea_invito_cliente: {
         Args: { p_cliente_id: string; p_email: string };
         Returns: {
@@ -1265,6 +1270,17 @@ export type Database = {
           p_veicolo: string;
         };
         Returns: string;
+      };
+      richieste_strada_vicine: {
+        Args: { p_officina_id: string };
+        Returns: {
+          created_at: string;
+          descrizione: string;
+          distanza_km: number;
+          id: string;
+          scade_il: string;
+          targa: string;
+        }[];
       };
       rispondi_prenotazione: {
         Args: { p_appuntamento?: string; p_azione: string; p_id: string; p_messaggio?: string };
