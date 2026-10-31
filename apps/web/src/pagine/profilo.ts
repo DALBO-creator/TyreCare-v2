@@ -120,6 +120,7 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
               <h2 id="tc-admin" class="tc-etichetta">Amministrazione</h2>
               <nav class="tc-lista" aria-labelledby="tc-admin">
                 ${link(Building2, `Officine da attivare${inAttesa === null ? '' : ` (${inAttesa})`}`, '/admin/officine')}
+                ${link(MessageSquare, 'Commenti degli utenti', '/admin/commenti')}
               </nav>
             </section>`
           : ''
