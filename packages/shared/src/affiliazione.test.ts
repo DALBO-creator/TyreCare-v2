@@ -66,6 +66,28 @@ describe('RichiestaAffiliazioneSchema', () => {
     });
   });
 
+  it('accetta la partita IVA scritta come in fattura (prefisso IT, spazi, punti) e restituisce le 11 cifre', () => {
+    const pi = (v: string) =>
+      RichiestaAffiliazioneSchema.parse({ ...base, partita_iva: v }).partita_iva;
+    expect(pi('IT' + VALIDA)).toBe(VALIDA);
+    expect(pi('it ' + VALIDA.replace(/(\d{3})(?=\d)/g, '$1 '))).toBe(VALIDA);
+    expect(pi(`IT ${VALIDA.slice(0, 3)}.${VALIDA.slice(3, 6)}.${VALIDA.slice(6)}`)).toBe(VALIDA);
+  });
+
+  it('rifiuta IT con 10 cifre, altri prefissi, solo IT e IT in mezzo', () => {
+    const cattive = [
+      'IT' + VALIDA.slice(0, 10),
+      'FR' + VALIDA,
+      'IT',
+      VALIDA.slice(0, 5) + 'IT' + VALIDA.slice(5),
+    ];
+    for (const v of cattive) {
+      const r = RichiestaAffiliazioneSchema.safeParse({ ...base, partita_iva: v });
+      expect(r.success).toBe(false);
+      expect(r.error?.issues.map((i) => i.message)).toContain('Partita IVA non valida');
+    }
+  });
+
   it('il telefono è facoltativo: vuoto diventa null', () => {
     expect(RichiestaAffiliazioneSchema.parse(base).telefono).toBeNull();
   });

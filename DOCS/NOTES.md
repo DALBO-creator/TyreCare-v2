@@ -2588,6 +2588,35 @@ crea/elenco/accetta: se cambia, va cambiata in tutte e tre.
 officina) sono rotte pigre con `pigra()` in `main.ts`, come admin-commenti (T099). Le pagine sono segnaposto:
 T143 e T144 riscrivono solo il proprio file. Nessun link dal resto dell'app finché non arrivano T143 e T144.
 
+## Riaccettazione dei termini aggiornati (T142)
+
+**File coinvolti:** `packages/shared/src/auth.ts`, `apps/web/src/lib/profilo.ts`,
+`apps/web/src/pagine/home.ts`, `e2e/tests/termini-nuovi.spec.ts`.
+**Come funziona:** `devonoRiaccettare(versione)` è vera solo se la versione del profilo è non nulla e
+diversa da `VERSIONE_TERMINI`. `mostraHome` la controlla dopo `caricaDatiUtente` e prima del ramo officina
+(vale per tutti i ruoli); `mostraRiaccetta` sostituisce la home con titolo, casella (testo e link della
+registrazione), pulsante "Accetto e continuo" disattivato finché la casella non è spuntata, e "Esci". Chi ha
+`termini_versione` nullo (seed, account creati dall'admin) non vede la richiesta (R20).
+
+### Codice complesso
+`accettaTerminiAttuali()` (`lib/profilo.ts`) chiama l'RPC `accetta_termini` con `VERSIONE_TERMINI`, poi si
+richiama `mostraHome`: la colonna è protetta dal trigger, quindi la prova sta nel database. Gli errori
+compaiono in un avviso sopra il pulsante. Costante e funzione stanno in `shared` per restare nel file
+iniziale (dritta T056). Nell'e2e `nuovoAccountCliente(nome, metadati)` crea l'account con i metadati voluti.
+
+## Partita IVA con prefisso IT (T148)
+
+**File coinvolti:** `packages/shared/src/affiliazione.ts`,
+`apps/web/src/pagine/registra-officina.ts`.
+**Come funziona:** `RichiestaAffiliazioneSchema.partita_iva` normalizza con un `transform` prima del `refine`:
+toglie spazi e punti e un `IT`/`it` iniziale. Alla funzione SQL `richiedi_affiliazione` arrivano solo le 11
+cifre. Il campo ha `maxlength="20"`, niente `inputmode="numeric"` e l'aiuto "11 cifre, anche con IT davanti".
+
+### Codice complesso
+`partitaIvaValida` resta rigida (11 cifre e cifra di controllo): la tolleranza sta solo nello schema. "IT" in
+mezzo, "FR…" o "IT" + 10 cifre danno "Partita IVA non valida". Nei test si usa `VALIDA`, perché l'esempio
+"01234567890" non supera la cifra di controllo.
+
 ## Nome mostrato di un cliente (`nominativo`, T080)
 
 **File coinvolti:** `packages/shared/src/clienti.ts`, `packages/shared/src/index.ts`,

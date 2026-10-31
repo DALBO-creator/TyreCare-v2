@@ -1,7 +1,8 @@
 import { Car, ChevronRight, CircleDashed } from 'lucide';
-import { formattaTarga } from '@tyrecare/shared';
+import { devonoRiaccettare, formattaTarga } from '@tyrecare/shared';
 import { caricaGarage, type VeicoloGarage } from '../lib/garage';
-import { caricaDatiUtente, type DatiUtente } from '../lib/profilo';
+import { messaggioErrore, esci } from '../lib/auth';
+import { accettaTerminiAttuali, caricaDatiUtente, type DatiUtente } from '../lib/profilo';
 import { esc } from '../lib/html';
 import { gommeVecchie } from '../lib/salute';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
@@ -26,6 +27,7 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
     return;
   }
   if (!ancoraAttuale(n)) return;
+  if (devonoRiaccettare(dati.profilo.termini_versione)) return mostraRiaccetta(app, n);
   if (dati.officine.length > 0) return mostraHomeOfficina(app, n, dati);
 
   const { profilo } = dati;
@@ -44,6 +46,67 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
         <a href="/officina/registra">Hai un'officina? Registrala su TyreCare</a>
       </p>
     </div>`);
+}
+
+/** Termini cambiati dall'ultima accettazione: si chiede di riaccettarli prima di mostrare la home. */
+function mostraRiaccetta(app: HTMLElement, n: number): void {
+  app.innerHTML = paginaApp(`
+    <section class="tc-hero">
+      <h1 class="tc-hero__modello" tabindex="-1">Abbiamo aggiornato informativa e termini</h1>
+    </section>
+
+    <div class="tc-contenuto">
+      <p>Per continuare a usare TyreCare ti chiediamo di leggerli e di accettarli di nuovo.</p>
+      <div class="form-check mb-3">
+        <input class="form-check-input" type="checkbox" id="campo-riaccetto" />
+        <label class="form-check-label" for="campo-riaccetto">
+          Ho letto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a>
+          e accetto i <a href="/termini" target="_blank" rel="noopener">termini di servizio</a>
+        </label>
+      </div>
+      <div class="tc-avviso tc-avviso--rosso" data-errore-riaccetto role="alert" tabindex="-1" hidden></div>
+      <button type="button" class="btn btn-primary btn-lg w-100" data-riaccetto disabled>Accetto e continuo</button>
+      <button type="button" class="btn btn-link w-100 mt-2" data-esci>Esci</button>
+    </div>`);
+
+  const casella = app.querySelector<HTMLInputElement>('#campo-riaccetto');
+  const pulsante = app.querySelector<HTMLButtonElement>('[data-riaccetto]');
+  const box = app.querySelector<HTMLElement>('[data-errore-riaccetto]');
+  casella?.addEventListener('change', () => {
+    if (pulsante) pulsante.disabled = !casella.checked;
+  });
+  pulsante?.addEventListener('click', async () => {
+    if (box) box.hidden = true;
+    const testo = pulsante.textContent;
+    pulsante.disabled = true;
+    pulsante.textContent = 'Salvataggio…';
+    try {
+      await accettaTerminiAttuali();
+    } catch (errore) {
+      pulsante.textContent = testo;
+      pulsante.disabled = !casella?.checked;
+      if (box) {
+        box.innerHTML = `<p class="mb-0">${esc(messaggioErrore(errore))}</p>`;
+        box.hidden = false;
+        box.focus();
+      }
+      return;
+    }
+    if (!ancoraAttuale(n)) return;
+    await mostraHome(app);
+  });
+  app.querySelector('[data-esci]')?.addEventListener('click', async () => {
+    try {
+      // Il ritorno alla pagina di accesso lo fa main.ts, quando Supabase segnala SIGNED_OUT
+      await esci();
+    } catch (errore) {
+      if (box) {
+        box.innerHTML = `<p class="mb-0">${esc(messaggioErrore(errore))}</p>`;
+        box.hidden = false;
+        box.focus();
+      }
+    }
+  });
 }
 
 function sezioneVeicoli(garage: VeicoloGarage[]): string {
