@@ -54,8 +54,8 @@ export async function mostraRegistraOfficina(app: HTMLElement): Promise<void> {
           etichetta: 'Partita IVA',
           tipo: 'text',
           autocomplete: 'off',
-          aiuto: '11 cifre',
-          attributi: 'inputmode="numeric" maxlength="13" autocapitalize="off"',
+          aiuto: '11 cifre, anche con IT davanti',
+          attributi: 'maxlength="20" autocapitalize="characters"',
         })}
         ${campo({
           nome: 'citta',
