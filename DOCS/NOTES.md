@@ -2728,3 +2728,18 @@ riga+azione (CSS `__voce`, `__invita`).
 `pagine/clienti.ts` — `rigaCliente()` disegna la riga; `htmlElenco(trovati, cercaGrezza, soloSenzaApp)` è la
 parte pura di `disegna()` e mostra la ricerca come scritta (trim, non in minuscolo) nello stato vuoto. Nei test
 di `clienti.test.ts` `ui/icone` è simulato (`vi.mock`) perché l'ambiente è node.
+
+## Riepilogo della home officina su telefono (T147)
+
+**File coinvolti:** `apps/web/src/styles/_officina.scss`, `apps/web/src/styles/_desktop.scss`,
+`e2e/tests/computer.spec.ts`.
+**Come funziona:** il riepilogo della home officina è un `role="group"` con `aria-label="Filtra i veicoli"` e
+5 pulsanti-filtro `tc-riepilogo__voce`. Il modificatore `tc-riepilogo--cinque` vale solo sotto 35.98rem:
+2 colonne e `grid-column: 1 / -1` sulla quinta voce, che occupa tutta la riga. Da 36rem le colonne sono 3 e
+su desktop `_desktop.scss` porta la quinta voce a una sola riga. Il riepilogo dell'import
+(`tc-riepilogo--import`) non usa il modificatore. L'e2e cerca il gruppo con
+`{ name: 'Filtra i veicoli', exact: true }`.
+
+### Codice complesso
+`_officina.scss` — il limite 35.98rem (e non 36rem) evita che a 36rem esatti valgano insieme la regola da
+telefono e quella da tablet.
