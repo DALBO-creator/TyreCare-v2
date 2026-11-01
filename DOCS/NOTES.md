@@ -2617,7 +2617,7 @@ cifre. Il campo ha `maxlength="20"`, niente `inputmode="numeric"` e l'aiuto "11 
 mezzo, "FR…" o "IT" + 10 cifre danno "Partita IVA non valida". Nei test si usa `VALIDA`, perché l'esempio
 "01234567890" non supera la cifra di controllo.
 
-## Aiuto su strada (cliente)
+## Aiuto su strada (cliente, T143)
 
 **File coinvolti:** `apps/web/src/lib/strada.ts`, `apps/web/src/lib/strada.test.ts`,
 `apps/web/src/pagine/strada.ts`, `apps/web/src/pagine/home.ts`, `e2e/tests/strada.spec.ts`.
@@ -2630,20 +2630,20 @@ rete (darebbe RICHIESTA_GIA_APERTA). La home ha il link "Gomma a terra? Chiedi a
 ### Codice complesso
 `richiestaInCorso()` legge la `APERTA` o `ACCETTATA` più recente filtrando per `cliente_id` dell'utente (la
 RLS di `richieste_strada` fa leggere anche ai membri dell'officina che ha accettato e all'admin) e scarta lato
-client quelle già scadute (`ancoraInCorso`: 2 ore per le aperte, 24 ore dall'accettazione; il job SQL passa
-ogni 10 minuti). Un `setInterval` da 15 s rilegge e ridisegna solo se `id` o `stato` cambiano (un dialogo
-aperto non sparisce); si ferma con `clearInterval` quando `ancoraAttuale(n)` è falso; se la richiesta sparisce
-torna il modulo con la nota "La richiesta non è più in corso.". `TelefonoSchema` dà null se vuoto: qui è reso
-obbligatorio con un refine.
+client quelle già scadute (`ancoraInCorso`: 2 ore per le aperte, 24 ore dall'accettazione; il job SQL
+passa ogni 10 minuti). Un `setInterval` da 15 s rilegge e ridisegna solo se `id` o `stato` cambiano (un
+dialogo aperto non sparisce); si ferma con `clearInterval` quando `ancoraAttuale(n)` è falso; se la
+richiesta sparisce torna il modulo con la nota "La richiesta non è più in corso.". `TelefonoSchema` dà null
+se vuoto: qui è reso obbligatorio con un refine.
 
 ## Uscita senza rete (T149)
 
 **File coinvolti:** `apps/web/src/lib/supabase.ts`, `apps/web/src/lib/supabase.test.ts`,
 `apps/web/src/lib/auth.ts`.
 **Come funziona:** supabase-js salva la sessione in `localStorage` con chiave `sb-<primo pezzo del
-dominio>-auth-token` (`chiaveSessione(url)`, l'URL viene da `VITE_SUPABASE_URL`). Se `signOut({scope:'local'})`
-dà errore, `esci()` toglie la chiave a mano (try/catch: lo storage può non essere disponibile) e rilancia
-l'errore; vale anche per l'eliminazione dell'account, che chiama `esci()`.
+dominio>-auth-token` (`chiaveSessione(url)`, l'URL viene da `VITE_SUPABASE_URL`). Se
+`signOut({scope:'local'})` dà errore, `esci()` toglie la chiave a mano (try/catch: lo storage può non
+essere disponibile) e rilancia l'errore; vale anche per l'eliminazione dell'account, che chiama `esci()`.
 
 ### Codice complesso
 Limite: la sessione in memoria resta fino al ricaricamento (nessun SIGNED_OUT), ma al ricaricamento l'utente
