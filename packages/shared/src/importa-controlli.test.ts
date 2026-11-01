@@ -248,6 +248,25 @@ describe('controllaTabellaControlli: documenti', () => {
     ]);
   });
 
+  it('documentiSaltati: 0 senza errori', () => {
+    expect(controlla([riga()]).documentiSaltati).toBe(0);
+  });
+
+  it('documentiSaltati: 1 con un documento di due righe di cui una sbagliata', () => {
+    const r = controlla([riga(), riga({ posizione: 'ANT_DX', km: 'abc' })]);
+    expect(r.documentiSaltati).toBe(1);
+  });
+
+  it('documentiSaltati: 2 con due documenti ognuno con una riga sbagliata', () => {
+    const r = controlla([
+      riga(),
+      riga({ posizione: 'ANT_DX', km: 'abc' }),
+      riga({ codice_documento: 'D2', data: '2026-10-02' }),
+      riga({ codice_documento: 'D2', data: '2026-10-02', posizione: 'ANT_DX', km: 'abc' }),
+    ]);
+    expect(r.documentiSaltati).toBe(2);
+  });
+
   it('la stessa posizione in documenti diversi va bene', () => {
     const r = controlla([riga(), riga({ codice_documento: 'D2', data: '2026-10-02' })]);
     expect(r.righe).toHaveLength(2);

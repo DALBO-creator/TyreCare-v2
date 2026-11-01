@@ -14,7 +14,12 @@ import {
 import { codiceErrore } from '../lib/errori';
 import { esc } from '../lib/html';
 import { leggiTabella } from '../lib/importa';
-import { importaControlli, periodoDate, type ConteggiControlli } from '../lib/importa-controlli';
+import {
+  importaControlli,
+  periodoDate,
+  periodoSospetto,
+  type ConteggiControlli,
+} from '../lib/importa-controlli';
 import { caricaContestoOfficina, eTitolare } from '../lib/officina';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { scaricaCsv } from '../lib/scarica';
@@ -147,7 +152,7 @@ async function leggiEMostra(
     return;
   }
 
-  const { righe, errori, lette } = esito;
+  const { righe, errori, lette, documentiSaltati } = esito;
   const scartate = new Set(errori.map((e) => e.numero)).size;
   let conteggi: ConteggiControlli | null = null;
   if (righe.length > 0) {
@@ -178,7 +183,7 @@ async function leggiEMostra(
       </p>
       ${conteggi ? riepilogoAnteprima(conteggi, periodoDate(righe)) : ''}
       ${conteggi ? avvisoTarghe(conteggi.targhe_non_trovate) : ''}
-      ${errori.length ? elencoErrori(errori, scartate) : ''}
+      ${errori.length ? elencoErrori(errori, scartate, documentiSaltati) : ''}
       ${
         righe.length === 0
           ? avvisoErrore('Nessuna riga da importare: correggi il file e caricalo di nuovo.')
@@ -229,6 +234,13 @@ function riepilogoAnteprima(
     <p class="mb-0 fw-semibold" data-conteggi>${esc(frase(c))}</p>
     ${testoPeriodo ? `<p class="text-body-secondary small mb-0" data-periodo>${esc(testoPeriodo)}</p>` : ''}
     ${
+      periodo && periodoSospetto(periodo, oggiInItalia())
+        ? `<div class="tc-avviso tc-avviso--giallo" role="status" data-periodo-sospetto>
+            <p class="mb-0">Il controllo più vecchio è del ${esc(formattaData(periodo.da))}: se non ti torna, controlla che la colonna «Data» del file sia quella giusta.</p>
+          </div>`
+        : ''
+    }
+    ${
       c.misure_saltate > 0
         ? `<p class="text-body-secondary small mb-0">
             ${plurale(c.misure_saltate, 'misura non si aggancia', 'misure non si agganciano')}
@@ -248,7 +260,7 @@ function avvisoTarghe(targhe: string[]): string {
     </div>`;
 }
 
-function elencoErrori(errori: ErroreImport[], scartate: number): string {
+function elencoErrori(errori: ErroreImport[], scartate: number, documentiSaltati: number): string {
   const mostrati = errori.slice(0, MAX_ERRORI_MOSTRATI);
   return `
     <div class="tc-avviso tc-avviso--giallo" role="status">
@@ -257,8 +269,12 @@ function elencoErrori(errori: ErroreImport[], scartate: number): string {
         ${scartate === 1 ? 'verrà saltata' : 'verranno saltate'}: le righe con errori non vengono
         importate. I documenti con righe sbagliate vengono saltati per intero: correggi il file e
         reimportalo.
-        Se vuoi che il controllo sia completo, correggi il file prima di importare.
       </p>
+      ${
+        documentiSaltati > 0
+          ? `<p class="mb-0">${plurale(documentiSaltati, 'documento verrà saltato per intero', 'documenti verranno saltati per intero')}</p>`
+          : ''
+      }
     </div>
     <ul class="tc-lista tc-import__errori" aria-label="Righe con errori">
       ${mostrati
