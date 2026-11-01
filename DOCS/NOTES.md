@@ -2650,6 +2650,26 @@ Limite: la sessione in memoria resta fino al ricaricamento (nessun SIGNED_OUT), 
 non è più collegato. Nei test (ambiente node) `localStorage` e l'env sono finti con `vi.stubGlobal` /
 `vi.stubEnv`, e si usano `vi.doMock` + `resetModules` perché `auth.ts` ha stato di modulo.
 
+## Accessibilità e2e, pagine pubbliche (T154)
+
+**File coinvolti:** `e2e/tests/accessibilita.spec.ts`, `e2e/tests/per-le-officine.spec.ts`.
+**Come funziona:** `PAGINE` in `accessibilita.spec.ts` elenca le pagine da ospite, compresi
+`/per-le-officine` e un percorso inesistente ("Pagina non trovata", rotta `NON_TROVATA` pubblica). Il blocco
+`avvisi "Controlla la posta"` arriva allo stato di conferma del recupero password (email del seed
+`cliente@tyrecare.test`, non cambia la password) e della registrazione (`emailNuova()` e casella dei
+termini); entrambi usano `controllaAccessibilita` (attesa animazioni, nessuna regola esclusa).
+
+## Soglia dimensioni: file JS più grandi (T156)
+
+**File coinvolti:** `apps/web/scripts/dimensioni.mjs`.
+**Come funziona:** se il JS iniziale supera la soglia, lo script elenca i 3 file JS più grandi (nome e kB
+gzip) prima di uscire con 1; con la soglia rispettata l'output non cambia.
+
+### Codice complesso
+`gzipKbFile(p)` misura un file (controllo di esistenza ed `esci`); `gzipKb(percorsi, perFile)` somma e, se
+riceve una Map, registra percorso→kB. Nel ramo errore, solo se `jsKb > SOGLIA_JS_KB`, la Map si ordina per
+kB decrescente e si taglia a 3, righe con `fmt` (virgola). Se supera solo il CSS il messaggio non cambia.
+
 ## Nome mostrato di un cliente (`nominativo`, T080)
 
 **File coinvolti:** `packages/shared/src/clienti.ts`, `packages/shared/src/index.ts`,

@@ -36,6 +36,7 @@ test("dopo l'accesso con ?dopo=/officina/registra si arriva al modulo di registr
   await page.getByRole('button', { name: 'Accedi' }).click();
   await expect(page).toHaveURL(/\/officina\/registra/);
   await expect(page.getByRole('heading', { name: 'Registra la tua officina' })).toBeVisible();
+  await expect(page.getByLabel('Ragione sociale')).toBeVisible();
 });
 
 test('da /accedi il link per le officine porta alla pagina', async ({ page }) => {
