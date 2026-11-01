@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { accedi } from './aiuti';
+import { PASSWORD, accedi, emailNuova } from './aiuti';
 
 /**
  * Analizza la pagina già caricata: nessuna violazione WCAG 2 A/AA di impatto grave o critico.
@@ -25,6 +25,8 @@ const PAGINE = [
   { percorso: '/accedi', titolo: 'Accedi' },
   { percorso: '/registrati', titolo: 'Crea il tuo account' },
   { percorso: '/password-dimenticata', titolo: 'Password dimenticata' },
+  { percorso: '/per-le-officine', titolo: 'TyreCare per le officine' },
+  { percorso: '/pagina-che-non-esiste', titolo: 'Pagina non trovata' },
 ];
 
 for (const { percorso, titolo } of PAGINE) {
@@ -35,6 +37,32 @@ for (const { percorso, titolo } of PAGINE) {
     await controllaAccessibilita(page, percorso);
   });
 }
+
+test.describe('avvisi "Controlla la posta"', () => {
+  test('password dimenticata: avviso "Controlla la posta" senza violazioni gravi', async ({
+    page,
+  }) => {
+    await page.goto('/password-dimenticata');
+    await page.getByLabel('Email', { exact: true }).fill('cliente@tyrecare.test');
+    await page.getByRole('button', { name: 'Invia il link' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Controlla la posta' })).toBeVisible();
+
+    await controllaAccessibilita(page, '/password-dimenticata (Controlla la posta)');
+  });
+
+  test('registrazione: avviso "Controlla la posta" senza violazioni gravi', async ({ page }) => {
+    await page.goto('/registrati');
+    await page.getByLabel('Nome', { exact: true }).fill('Marta');
+    await page.getByLabel('Cognome', { exact: true }).fill('Prova');
+    await page.getByLabel('Email', { exact: true }).fill(emailNuova());
+    await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
+    await page.getByLabel(/Ho letto l'informativa privacy/).check();
+    await page.getByRole('button', { name: 'Crea account' }).click();
+    await expect(page.getByRole('heading', { level: 1, name: 'Controlla la posta' })).toBeVisible();
+
+    await controllaAccessibilita(page, '/registrati (Controlla la posta)');
+  });
+});
 
 // Pagine con l'accesso: stesso controllo, a pagina caricata (h1 visibile).
 const PAGINE_CLIENTE = [
