@@ -31,6 +31,7 @@ test('il link "Abbonamento" sta fuori dal modulo dei dati e porta alla pagina', 
 }) => {
   await accedi(page, 'titolare@tyrecare.test');
   await page.goto('/officina/dati');
+  await expect(page.getByRole('button', { name: 'Salva dati' })).toBeVisible();
   await expect(page.locator('form').getByRole('link', { name: 'Abbonamento' })).toHaveCount(0);
   await expect(page.getByRole('link', { name: 'Abbonamento', exact: true })).toHaveCount(1);
   await page.getByRole('link', { name: 'Abbonamento', exact: true }).click();
