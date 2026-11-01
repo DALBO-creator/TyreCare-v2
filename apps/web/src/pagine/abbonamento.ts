@@ -12,8 +12,8 @@ import { formattaData, gestisciErroreCaricamento, intestazioneSottopagina } from
 const NOTA_PAGAMENTO =
   'Il pagamento online arriva a breve: per ora scrivici con «Invia un commento».';
 
-function testoStato(a: AbbonamentoOfficina): string {
-  if (a.piano === 'PILOTA') return 'Officina pilota: gratuito';
+export function testoStato(a: AbbonamentoOfficina): string {
+  if (a.piano === 'PILOTA') return 'Gratuito per tutta la durata del pilota';
   switch (a.stato) {
     case 'PROVA': {
       const giorni = giorniDiProva(a.prova_fino_al, oggiInItalia());
@@ -28,6 +28,15 @@ function testoStato(a: AbbonamentoOfficina): string {
     case 'ANNULLATO':
       return 'Abbonamento annullato';
   }
+}
+
+/** Pulsante e nota del pagamento solo se c'è qualcosa da pagare: non per il pilota né per chi è già a posto. */
+export function mostraPagamento(a: AbbonamentoOfficina | null): boolean {
+  return (
+    a !== null &&
+    a.piano !== 'PILOTA' &&
+    (a.stato === 'PROVA' || a.stato === 'SCADUTO' || a.stato === 'ANNULLATO')
+  );
 }
 
 function cartaPiano(piano: Exclude<Piano, 'PILOTA'>): string {
@@ -74,6 +83,14 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
        <p class="mb-0">${esc(testoStato(abbonamento))}</p>`
     : '<p class="mb-0">Abbonamento non trovato: scrivici con «Invia un commento».</p>';
 
+  let azione = '';
+  if (mostraPagamento(abbonamento)) {
+    azione = `<button type="button" class="btn btn-primary btn-lg w-100" disabled>Attiva l'abbonamento</button>
+      <p class="text-body-secondary">${esc(NOTA_PAGAMENTO)}</p>`;
+  } else if (abbonamento) {
+    azione = '<p class="mb-0">Il tuo abbonamento è a posto: non devi fare nulla.</p>';
+  }
+
   app.innerHTML = paginaApp(`
     ${intestazioneSottopagina('Abbonamento', 'Officina')}
     <div class="tc-contenuto">
@@ -88,7 +105,6 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
           ${cartaPiano('PRO')}
         </div>
       </section>
-      <button type="button" class="btn btn-primary btn-lg w-100" disabled>Attiva l'abbonamento</button>
-      <p class="text-body-secondary">${esc(NOTA_PAGAMENTO)}</p>
+${azione}
     </div>`);
 }
