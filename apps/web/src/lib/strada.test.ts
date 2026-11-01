@@ -1,10 +1,31 @@
 import { ErroreModulo } from './errori';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+const mock = vi.hoisted(() => ({
+  utente: { id: 'u1' } as { id: string } | null,
+  eq: [] as unknown[][],
+}));
+vi.mock('./auth', () => ({
+  sessioneCorrente: () => (mock.utente ? { user: mock.utente } : null),
+}));
+vi.mock('./supabase', () => ({
+  getSupabase: () => {
+    const q: Record<string, unknown> = {};
+    q.select = () => q;
+    q.in = () => q;
+    q.order = () => q;
+    q.limit = () => q;
+    q.eq = (...args: unknown[]) => (mock.eq.push(args), q);
+    q.maybeSingle = async () => ({ data: null, error: null });
+    return { from: () => q };
+  },
+}));
+
 import {
   FRASE_RESPONSABILITA,
   MESSAGGI,
   RichiestaStradaSchema,
   ancoraInCorso,
+  richiestaInCorso,
   messaggioPosizione,
   traduci,
 } from './strada';
@@ -160,5 +181,21 @@ describe('FRASE_RESPONSABILITA', () => {
     expect(FRASE_RESPONSABILITA).toBe(
       "TyreCare inoltra la richiesta alle officine vicine che offrono il servizio: l'intervento lo fa e lo concorda l'officina. In pericolo chiama il 112.",
     );
+  });
+});
+
+describe('richiestaInCorso', () => {
+  it('legge solo le richieste del cliente che ha aperto la pagina', async () => {
+    mock.eq = [];
+    mock.utente = { id: 'cliente-1' };
+    await richiestaInCorso();
+    expect(mock.eq).toEqual([['cliente_id', 'cliente-1']]);
+  });
+
+  it('senza sessione lancia un errore e non legge nulla', async () => {
+    mock.eq = [];
+    mock.utente = null;
+    await expect(richiestaInCorso()).rejects.toThrow('Nessun utente autenticato');
+    expect(mock.eq).toEqual([]);
   });
 });

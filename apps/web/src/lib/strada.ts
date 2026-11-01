@@ -1,5 +1,6 @@
 import { TelefonoSchema, normalizzaTarga, type Tables } from '@tyrecare/shared';
 import { z } from 'zod';
+import { sessioneCorrente } from './auth';
 import { ErroreModulo } from './errori';
 import { conRiprova } from './rete';
 import { getSupabase } from './supabase';
@@ -147,11 +148,16 @@ export function ancoraInCorso(
 
 /** La richiesta `APERTA` o `ACCETTATA` più recente del cliente, se ancora valida. */
 export async function richiestaInCorso(): Promise<RichiestaInCorso | null> {
+  // La RLS fa leggere anche le richieste accettate dalla propria officina e (all'admin) tutte: qui
+  // servono solo quelle fatte da questo utente
+  const utente = sessioneCorrente()?.user;
+  if (!utente) throw new Error('Nessun utente autenticato');
   const { data, error } = await getSupabase()
     .from('richieste_strada')
     .select(
       'id, stato, descrizione, scade_il, accettata_il, targa, officina:officine (ragione_sociale, telefono)',
     )
+    .eq('cliente_id', utente.id)
     .in('stato', ['APERTA', 'ACCETTATA'])
     .order('created_at', { ascending: false })
     .limit(1)
