@@ -54,7 +54,7 @@ select throws_ok(
 );
 select throws_ok(
   format($$select public.modifica_controllo(%L, '[{"posizione": "ANT_SX", "battistrada_mm": 5}]',
-    current_date + 1)$$, :controllo),
+    (now() at time zone 'Europe/Rome')::date + 1)$$, :controllo),
   '22023', null,
   'data nel futuro: errore'
 );

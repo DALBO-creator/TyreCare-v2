@@ -45,7 +45,7 @@ select lives_ok(
 reset role;
 select is(
   (select prova_fino_al from public.abbonamenti where officina_id = :ieri),
-  current_date + 29,
+  (now() at time zone 'Europe/Rome')::date + 29,
   'l''officina nuova ha la prova di 30 giorni contando oggi (ultimo giorno: oggi + 29)'
 );
 
