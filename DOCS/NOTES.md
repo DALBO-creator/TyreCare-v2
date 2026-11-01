@@ -2731,12 +2731,12 @@ di `clienti.test.ts` `ui/icone` è simulato (`vi.mock`) perché l'ambiente è no
 
 ## Riepilogo della home officina su telefono (T147)
 
-**File coinvolti:** `apps/web/src/styles/_officina.scss`, `apps/web/src/styles/_desktop.scss`,
+**File coinvolti:** `apps/web/src/pagine/home-officina.ts`, `apps/web/src/styles/_officina.scss`,
 `e2e/tests/computer.spec.ts`.
 **Come funziona:** il riepilogo della home officina è un `role="group"` con `aria-label="Filtra i veicoli"` e
 5 pulsanti-filtro `tc-riepilogo__voce`. Il modificatore `tc-riepilogo--cinque` vale solo sotto 35.98rem:
 2 colonne e `grid-column: 1 / -1` sulla quinta voce, che occupa tutta la riga. Da 36rem le colonne sono 3 e
-su desktop `_desktop.scss` porta la quinta voce a una sola riga. Il riepilogo dell'import
+su desktop `_desktop.scss` (non toccato) mette le voci una sotto l'altra. Il riepilogo dell'import
 (`tc-riepilogo--import`) non usa il modificatore. L'e2e cerca il gruppo con
 `{ name: 'Filtra i veicoli', exact: true }`.
 
