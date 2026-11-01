@@ -2617,6 +2617,39 @@ cifre. Il campo ha `maxlength="20"`, niente `inputmode="numeric"` e l'aiuto "11 
 mezzo, "FR…" o "IT" + 10 cifre danno "Partita IVA non valida". Nei test si usa `VALIDA`, perché l'esempio
 "01234567890" non supera la cifra di controllo.
 
+## Aiuto su strada (cliente)
+
+**File coinvolti:** `apps/web/src/lib/strada.ts`, `apps/web/src/lib/strada.test.ts`,
+`apps/web/src/pagine/strada.ts`, `apps/web/src/pagine/home.ts`, `e2e/tests/strada.spec.ts`.
+**Come funziona:** `lib/strada.ts` valida il modulo con Zod e traduce le chiavi d'errore di
+`crea_richiesta_strada` e `annulla_richiesta_strada` in messaggi italiani (`MESSAGGI`, `traduci`); gli errori
+di campo vanno sotto il campo. Al clic su "Usa la mia posizione e invia" `collegaModulo` valida,
+`posizioneAttuale()` legge il GPS (maximumAge 60 s) e parte la RPC; la creazione non si ripete su errore di
+rete (darebbe RICHIESTA_GIA_APERTA). La home ha il link "Gomma a terra? Chiedi aiuto su strada".
+
+### Codice complesso
+`richiestaInCorso()` legge la `APERTA` o `ACCETTATA` più recente filtrando per `cliente_id` dell'utente (la
+RLS di `richieste_strada` fa leggere anche ai membri dell'officina che ha accettato e all'admin) e scarta lato
+client quelle già scadute (`ancoraInCorso`: 2 ore per le aperte, 24 ore dall'accettazione; il job SQL passa
+ogni 10 minuti). Un `setInterval` da 15 s rilegge e ridisegna solo se `id` o `stato` cambiano (un dialogo
+aperto non sparisce); si ferma con `clearInterval` quando `ancoraAttuale(n)` è falso; se la richiesta sparisce
+torna il modulo con la nota "La richiesta non è più in corso.". `TelefonoSchema` dà null se vuoto: qui è reso
+obbligatorio con un refine.
+
+## Uscita senza rete (T149)
+
+**File coinvolti:** `apps/web/src/lib/supabase.ts`, `apps/web/src/lib/supabase.test.ts`,
+`apps/web/src/lib/auth.ts`.
+**Come funziona:** supabase-js salva la sessione in `localStorage` con chiave `sb-<primo pezzo del
+dominio>-auth-token` (`chiaveSessione(url)`, l'URL viene da `VITE_SUPABASE_URL`). Se `signOut({scope:'local'})`
+dà errore, `esci()` toglie la chiave a mano (try/catch: lo storage può non essere disponibile) e rilancia
+l'errore; vale anche per l'eliminazione dell'account, che chiama `esci()`.
+
+### Codice complesso
+Limite: la sessione in memoria resta fino al ricaricamento (nessun SIGNED_OUT), ma al ricaricamento l'utente
+non è più collegato. Nei test (ambiente node) `localStorage` e l'env sono finti con `vi.stubGlobal` /
+`vi.stubEnv`, e si usano `vi.doMock` + `resetModules` perché `auth.ts` ha stato di modulo.
+
 ## Nome mostrato di un cliente (`nominativo`, T080)
 
 **File coinvolti:** `packages/shared/src/clienti.ts`, `packages/shared/src/index.ts`,
