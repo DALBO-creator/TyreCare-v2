@@ -4,6 +4,27 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-01 — ciclo 20261101-18 — T147 T150
+
+**Fatto**
+
+- T147: il riepilogo della home officina su telefono ha il modificatore `tc-riepilogo--cinque` (sotto 36rem
+  2 colonne, quinta voce a tutta riga); il gruppo dei filtri si chiama "Filtra i veicoli" e
+  `e2e/tests/computer.spec.ts` usa `{ name: 'Filtra i veicoli', exact: true }`.
+- T150: nelle guide `guida-avvio.md` e `guida-officina.md` corretti i nomi di 3 pulsanti ("Monta gli
+  pneumatici"; "Rifiuta la richiesta" / "Annulla l'appuntamento"; campo «Richieste al massimo per fascia»);
+  controllate con grep tutte le 203 citazioni, restano solo segnaposto e voci dei menu del browser.
+
+**Decisioni prese al posto di Davide**
+
+- Nessuna.
+
+**Verifica**
+
+- Gate del supervisore: 2/2 approvati al primo giro.
+- Prova d'insieme: 386 test verdi e build.
+- e2e `computer.spec.ts` (T147): da vedere in CI.
+
 ### Sessione agenti — 2026-11-01 — ciclo 20261101-15 — T145 T146
 
 **Fatto**

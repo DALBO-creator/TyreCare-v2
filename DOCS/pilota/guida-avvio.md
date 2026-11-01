@@ -26,7 +26,7 @@ Una pagina per partire da solo. Fai i passi nell'ordine; ognuno richiede pochi m
    - Puoi **reimportare lo stesso file quando vuoi**: i dati già presenti vengono aggiornati, non duplicati,
      e le celle vuote non cancellano nulla.
 5. **Controlli degli pneumatici.** Apri un veicolo (dalla Home o dalla scheda del cliente). Se non ha
-   pneumatici, premi "Monta pneumatici" e indica misura, marca, modello e stagione. Poi "Nuovo controllo":
+   pneumatici, premi "Monta gli pneumatici" e indica misura, marca, modello e stagione. Poi "Nuovo controllo":
    battistrada e pressione per ogni ruota. Il veicolo si colora in base allo stato (rosso: da sostituire,
    giallo: da controllare, verde: a posto).
 6. **Inviti ai clienti.** Nella scheda del cliente, sezione "App TyreCare", premi "Invita nell'app" e scrivi
@@ -35,8 +35,9 @@ Una pagina per partire da solo. Fai i passi nell'ordine; ognuno richiede pochi m
    garage.
 7. **Richieste di appuntamento.** I clienti chiedono un giorno e una fascia (mattina o pomeriggio). Le
    trovi in **Appuntamenti** sotto "Da confermare" (e con un avviso giallo nella Home). Apri la richiesta:
-   "Conferma appuntamento" con l'ora precisa, "Proponi un altro orario" oppure "Rifiuta o annulla". Il
-   "Calendario" mostra la settimana con gli appuntamenti di ogni giorno.
+   "Conferma appuntamento" con l'ora precisa, "Proponi un altro orario" oppure "Rifiuta la richiesta" (se è
+   già confermata, il pulsante è "Annulla l'appuntamento"). Il "Calendario" mostra la
+   settimana con gli appuntamenti di ogni giorno.
 8. **Attiva le notifiche.** Apri **Notifiche** (la campanella nella barra), sezione "Avvisi sul telefono", e
    premi "Avvisami su questo dispositivo"; accetta il permesso. Da ora una nuova richiesta ti arriva sul
    telefono anche con l'app chiusa. Per spegnerle: "Disattiva gli avvisi".
