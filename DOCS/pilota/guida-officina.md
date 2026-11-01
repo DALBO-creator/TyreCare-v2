@@ -194,8 +194,8 @@ scaduto, dalla scheda del cliente premi "Nuovo invito".
 Premi "Scarica le righe con errori", correggi e carica di nuovo il file. Le righe già importate non si
 duplicano.
 
-**Un cliente chiede un giorno in cui sono chiuso.** Non può: controlla "Orari e chiusure" e la
-"Richieste al massimo per fascia". Se il giorno non compare, è chiuso o la fascia è piena.
+**Un cliente chiede un giorno in cui sono chiuso.** Non può: controlla "Orari e chiusure" e il
+campo «Richieste al massimo per fascia». Se il giorno non compare, è chiuso o la fascia è piena.
 
 **Non arrivano le notifiche.** Controlla "Avvisi sul telefono" in **Notifiche**. Su iPhone apri l'app
 dall'icona sulla Home, non da Safari.
