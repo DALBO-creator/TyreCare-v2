@@ -133,7 +133,7 @@ export async function mostraHomeOfficina(
           : ''
       }
 
-      <div class="tc-riepilogo" role="group" aria-label="Filtra i veicoli per stato">
+      <div class="tc-riepilogo tc-riepilogo--cinque" role="group" aria-label="Filtra i veicoli">
         ${voceRiepilogo('TUTTI', veicoli.length, 'Veicoli')}
         ${voceRiepilogo('ROSSO', conta('ROSSO'), STATI.ROSSO.etichetta)}
         ${voceRiepilogo('GIALLO', conta('GIALLO'), STATI.GIALLO.etichetta)}
