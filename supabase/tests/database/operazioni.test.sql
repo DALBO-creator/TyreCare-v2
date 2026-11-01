@@ -77,7 +77,7 @@ select throws_ok(
 );
 select throws_ok(
   format($$select public.registra_controllo(%L, '[{"posizione": "ANT_SX", "battistrada_mm": 5}]',
-    current_date + 1)$$, :panda),
+    (now() at time zone 'Europe/Rome')::date + 1)$$, :panda),
   '22023', null,
   'data nel futuro: errore'
 );
@@ -126,7 +126,7 @@ select results_eq(
 );
 select is(
   (select smontato_il from public.pneumatici where id = 'e0000000-0000-4000-8000-000000000001'),
-  current_date,
+  (now() at time zone 'Europe/Rome')::date,
   'il vecchio anteriore sinistro resta nello storico, smontato oggi'
 );
 select is(
