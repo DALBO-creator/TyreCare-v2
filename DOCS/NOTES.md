@@ -2574,7 +2574,7 @@ altrimenti conterebbe durante il caricamento e passerebbe anche senza la modific
 ## Date italiane nel database (T175)
 
 **File coinvolti:** `supabase/migrations/20261101000240_date_italiane.sql`,
-`supabase/tests/date-italiane.test.sql`.
+`supabase/tests/database/date-italiane.test.sql`.
 **Come funziona:** `current_date` in Postgres è la data UTC: tra mezzanotte e le 2 in Italia è ancora ieri. La
 migrazione usa `(now() at time zone 'Europe/Rome')::date` nei default di `abbonamenti.prova_fino_al` (+29),
 `controlli.eseguito_il`, `pneumatici.montato_il` e nel controllo "data nel futuro" (e nel default del
@@ -2684,7 +2684,7 @@ se vuoto: qui è reso obbligatorio con un refine.
 ## Aiuto su strada: limiti (T173, R23)
 
 **File coinvolti:** `supabase/migrations/20261101000100_strada_limiti.sql`,
-`supabase/tests/strada-limiti.test.sql`.
+`supabase/tests/database/strada-limiti.test.sql`.
 **Come funziona:** `crea_richiesta_strada` conta le richieste del cliente con `created_at` nell'ultima ora, in
 qualsiasi stato (anche annullate o scadute): da 3 in su risponde `TROPPE_RICHIESTE`, così chi annulla e ricrea
 non riempie di notifiche le officine vicine. `richieste_strada_vicine` esclude le richieste di chi chiama
