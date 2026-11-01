@@ -42,7 +42,10 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
     <div class="tc-contenuto">
       ${avvisoConferma()}
       ${sezioneVeicoli(garage)}
-      <p class="text-center mt-4">
+      <p class="text-center mt-4 mb-0">
+        <a href="/strada">Gomma a terra? Chiedi aiuto su strada</a>
+      </p>
+      <p class="text-center mt-3">
         <a href="/officina/registra">Hai un'officina? Registrala su TyreCare</a>
       </p>
     </div>`);
