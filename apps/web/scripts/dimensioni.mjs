@@ -42,19 +42,28 @@ for (const [tag] of html.matchAll(/<(?:script|link)\b[^>]*>/gi)) {
   if (insieme && percorso) insieme.add(percorso.split(/[?#]/)[0].replace(/^\//, ''));
 }
 
-function gzipKb(percorsi) {
-  let byte = 0;
+// Dimensione gzip (in kB) di un solo file di dist/; esce con errore se il file manca.
+function gzipKbFile(p) {
+  const file = new URL(p, dist);
+  if (!existsSync(file)) esci(`file elencato in index.html ma assente: ${fileURLToPath(file)}`);
+  return gzipSync(readFileSync(file)).length / 1000;
+}
+
+// Somma dei kB gzip di un insieme di file; se serve, riempie la mappa percorso -> kB.
+function gzipKb(percorsi, perFile) {
+  let kb = 0;
   for (const p of percorsi) {
-    const file = new URL(p, dist);
-    if (!existsSync(file)) esci(`file elencato in index.html ma assente: ${fileURLToPath(file)}`);
-    byte += gzipSync(readFileSync(file)).length;
+    const k = gzipKbFile(p);
+    perFile?.set(p, k);
+    kb += k;
   }
-  return byte / 1000;
+  return kb;
 }
 
 if (js.size === 0) esci('nessun file JS iniziale trovato in dist/index.html.');
 
-const jsKb = gzipKb(js);
+const kbJs = new Map(); // percorso -> kB gzip, per dire quali file pesano di più
+const jsKb = gzipKb(js, kbJs);
 const cssKb = gzipKb(css);
 const fmt = (n) => n.toFixed(1).replace('.', ',');
 console.log(
@@ -66,10 +75,20 @@ const errori = [];
 if (jsKb > SOGLIA_JS_KB) errori.push(`JS ${fmt(jsKb)} kB supera ${SOGLIA_JS_KB} kB`);
 if (cssKb > SOGLIA_CSS_KB) errori.push(`CSS ${fmt(cssKb)} kB supera ${SOGLIA_CSS_KB} kB`);
 if (errori.length) {
+  // Solo se supera il JS: i 3 file JS iniziali più pesanti, dal più grande.
+  const piuGrandi =
+    jsKb > SOGLIA_JS_KB
+      ? [...kbJs]
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 3)
+          .map(([p, kb]) => `\n  - ${p} ${fmt(kb)} kB`)
+          .join('')
+      : '';
   console.error(
     `dimensioni: codice iniziale troppo grande: ${errori.join('; ')}.\n` +
       'Prima cerca di ridurlo (import dinamici, pigra() in main.ts). Se la crescita è giustificata, ' +
-      'alza la costante in apps/web/scripts/dimensioni.mjs scrivendo il motivo nel messaggio di commit.',
+      'alza la costante in apps/web/scripts/dimensioni.mjs scrivendo il motivo nel messaggio di commit.' +
+      (piuGrandi ? `\nFile JS più grandi (gzip):${piuGrandi}` : ''),
   );
   process.exit(1);
 }
