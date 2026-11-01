@@ -9,7 +9,7 @@ import type {
 import { VERSIONE_TERMINI } from '@tyrecare/shared';
 import { erroreDiRete } from './rete';
 import { destinazioneDopoAccesso } from './router';
-import { getSupabase } from './supabase';
+import { chiaveSessione, getSupabase } from './supabase';
 
 let sessione: Session | null = null;
 
@@ -88,7 +88,16 @@ export async function cambiaPassword({ attuale, password }: CambioPassword): Pro
 export async function esci(): Promise<void> {
   // `local`: esce da questo dispositivo, non da tutti
   const { error } = await getSupabase().auth.signOut({ scope: 'local' });
-  if (error) throw error;
+  if (error) {
+    // Senza rete signOut non cancella la sessione locale: la togliamo noi, poi rilanciamo l'errore
+    try {
+      const url = import.meta.env.VITE_SUPABASE_URL;
+      if (url) localStorage.removeItem(chiaveSessione(url));
+    } catch {
+      /* storage non disponibile o URL non valido */
+    }
+    throw error;
+  }
 }
 
 // Codici di errore di Supabase Auth → messaggi per l'utente

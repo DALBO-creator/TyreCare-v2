@@ -4,6 +4,29 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-01 — ciclo 20261101-03 — T143 T149
+
+**Fatto**
+
+- T143: pagina cliente "Aiuto su strada" (`/strada`): modulo con la posizione del telefono, stato della
+  richiesta (in cerca / accettata con il telefono dell'officina), annulla con conferma, aggiornamento ogni
+  15 s. Nuovi `lib/strada.ts` (schema, mappa degli errori, RPC) e `strada.test.ts`; link "Gomma a terra?
+  Chiedi aiuto su strada" dalla home; e2e `strada.spec.ts`.
+- T149: `esci()` cancella da `localStorage` la chiave di sessione di supabase-js se `signOut` locale fallisce
+  (es. senza rete), poi rilancia l'errore; vale anche per l'eliminazione dell'account. Nuova
+  `chiaveSessione(url)` in `lib/supabase.ts` con unit test (`supabase.test.ts`).
+
+**Decisioni prese al posto di Davide**
+
+- Nessuna.
+
+**Verifica**
+
+- Gate del supervisore: 2/2 approvati (T143 al secondo giro di revisione, per il filtro `cliente_id` in
+  `richiestaInCorso`).
+- Prova d'insieme: 373 test verdi, Node 24.
+- e2e `strada.spec.ts` (T143) non eseguito qui: da vedere in CI.
+
 ### Sessione agenti — 2026-11-01 — ciclo 20261101-00 — T142 T148
 
 **Fatto**
