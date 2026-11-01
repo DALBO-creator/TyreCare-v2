@@ -2103,6 +2103,20 @@ numero di Excel).
 
 ---
 
+## Import controlli: anteprima più chiara (T146)
+
+**File coinvolti:** `apps/web/src/lib/importa-controlli.ts`, `apps/web/src/pagine/importa-controlli.ts`.
+**Come funziona:** l'anteprima dice quanti documenti saltano per intero ("N documenti verranno saltati per
+intero", con `plurale`), ha un solo invito a correggere il file (tolta la frase "Se vuoi che il controllo sia
+completo…") e mostra l'avviso giallo `data-periodo-sospetto` se il controllo più vecchio ha più di 15
+anni, suggerendo di controllare la colonna «Data». Le date future restano errori di riga.
+
+### Codice complesso
+- `controllaTabellaControlli` restituisce anche `documentiSaltati`: i documenti con almeno una riga in
+  errore, contati prima di `soloUltimo`.
+- `periodoSospetto(periodo, oggi)` confronta `periodo.da` con `oggi` meno 15 anni come stringhe `AAAA-MM-GG`
+  (niente fusi orari; il 29 febbraio funziona).
+
 ## Clienti: testi dello stato vuoto (T089)
 
 **File coinvolti:** `apps/web/src/pagine/clienti.ts`.
@@ -2540,6 +2554,22 @@ UTC il job `scadenza-prove` mette SCADUTO le prove finite (R19). SCADUTO si most
 Aggiorna le righe con stato `PROVA`, piano diverso da `PILOTA` e `prova_fino_al < p_oggi`, e restituisce quante.
 `p_oggi` di default è la data italiana (`now() at time zone 'Europe/Rome'`); i test la passano esplicita.
 Per toglierlo: `select cron.unschedule('scadenza-prove')`.
+
+## Pagina Abbonamento: quando mostrare il pagamento (T145)
+
+**File coinvolti:** `apps/web/src/pagine/abbonamento.ts`, `apps/web/src/pagine/abbonamento.test.ts`,
+`apps/web/src/pagine/dati-officina.ts`, `apps/web/e2e/abbonamento.spec.ts`.
+**Come funziona:** `mostraPagamento(abbonamento)` è una funzione pura: vera solo per i piani a pagamento (non
+PILOTA) con stato PROVA, SCADUTO o ANNULLATO; allora la pagina mostra il pulsante "Attiva l'abbonamento" e la
+nota del pagamento. Per ATTIVO e PILOTA compare "Il tuo abbonamento è a posto: non devi fare nulla."; senza
+abbonamento non compare né l'uno né l'altro. Il nome del piano è già sopra (`PIANI[piano].nome`), quindi
+`testoStato` per PILOTA ("Gratuito per tutta la durata del pilota") non lo ripete.
+
+### Codice complesso
+ANNULLATO è trattato come SCADUTO (chi ha annullato deve poter riattivare): si cambia solo in
+`mostraPagamento`. In `dati-officina.ts` il link Abbonamento sta in una sezione fuori dal `<form>`, per non
+perdere modifiche non salvate. L'e2e verifica un'assenza (nessun link nel form): prima aspetta "Salva dati",
+altrimenti conterebbe durante il caricamento e passerebbe anche senza la modifica.
 
 ## Intervento su strada — database (T139, R18)
 

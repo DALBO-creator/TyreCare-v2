@@ -7,8 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261101-09 (T154 axe sulle pagine pubbliche mancanti; T156 soglia dimensioni
-> con i file JS più grandi), nel treno. Prossimi in coda per C4: T150 → T152 → T153.
+> Ultima sessione: ciclo 20261101-15 (T145 testi della pagina Abbonamento; T146 anteprima dell'import
+> controlli più chiara), nel treno. Prossimi in coda per C4: T150 → T152 → T153.
 > Aiuto su strada: restano T144 (lato officina) e T159 (guide); T165 (idea del supervisore:
 > note legali: eliminazione account, informativa §6 e registro A6, «16 tabelle» del registro M1).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
