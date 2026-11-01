@@ -11,7 +11,7 @@ test('al computer la navigazione è una barra laterale e "/" porta alla ricerca'
   await accedi(page, 'titolare@tyrecare.test');
 
   const nav = page.getByRole('navigation', { name: 'Navigazione principale' });
-  await expect(page.getByRole('group', { name: 'Filtra i veicoli per stato' })).toBeVisible();
+  await expect(page.getByRole('group', { name: 'Filtra i veicoli', exact: true })).toBeVisible();
   await expect(page.locator('.tc-appbar')).toBeHidden();
   // La barra sta a sinistra, alta quanto la finestra
   const barra = (await nav.boundingBox())!;
@@ -22,7 +22,7 @@ test('al computer la navigazione è una barra laterale e "/" porta alla ricerca'
 
   // Home dell'officina: l'elenco dei veicoli sta a destra del riepilogo, non sotto
   const riepilogo = await page
-    .getByRole('group', { name: 'Filtra i veicoli per stato' })
+    .getByRole('group', { name: 'Filtra i veicoli', exact: true })
     .boundingBox();
   const ricerca = page.getByLabel('Cerca per targa, cliente o modello');
   const campo = await ricerca.boundingBox();

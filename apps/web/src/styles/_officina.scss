@@ -106,6 +106,17 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
 
+  // Home officina, cinque voci: su telefono due colonne e la quinta su tutta la riga
+  &--cinque {
+    @media (max-width: 35.98rem) {
+      grid-template-columns: repeat(2, 1fr);
+
+      .tc-riepilogo__voce:nth-child(5) {
+        grid-column: 1 / -1;
+      }
+    }
+  }
+
   &__voce {
     display: grid;
     gap: 0.25rem;
