@@ -2558,7 +2558,7 @@ Per toglierlo: `select cron.unschedule('scadenza-prove')`.
 ## Pagina Abbonamento: quando mostrare il pagamento (T145)
 
 **File coinvolti:** `apps/web/src/pagine/abbonamento.ts`, `apps/web/src/pagine/abbonamento.test.ts`,
-`apps/web/src/pagine/dati-officina.ts`, `apps/web/e2e/abbonamento.spec.ts`.
+`apps/web/src/pagine/dati-officina.ts`, `e2e/tests/abbonamento.spec.ts`.
 **Come funziona:** `mostraPagamento(abbonamento)` è una funzione pura: vera solo per i piani a pagamento (non
 PILOTA) con stato PROVA, SCADUTO o ANNULLATO; allora la pagina mostra il pulsante "Attiva l'abbonamento" e la
 nota del pagamento. Per ATTIVO e PILOTA compare "Il tuo abbonamento è a posto: non devi fare nulla."; senza
