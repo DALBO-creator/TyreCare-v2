@@ -4,6 +4,26 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-01 — ciclo 20261101-09 — T154 T156
+
+**Fatto**
+
+- T154: l'analisi axe (e2e) copre anche `/per-le-officine`, la pagina non trovata e gli avvisi "Controlla
+  la posta" (recupero password e registrazione); in `per-le-officine.spec.ts` attesa sul campo "Ragione
+  sociale".
+- T156: `apps/web/scripts/dimensioni.mjs`, quando il JS iniziale supera la soglia, elenca i 3 file JS più
+  grandi (nome e kB gzip) prima di uscire con 1; soglia rispettata: output invariato.
+
+**Decisioni prese al posto di Davide**
+
+- Nessuna. Corsia C5.
+
+**Verifica**
+
+- Gate del supervisore: 2/2 approvati al primo giro.
+- Prova d'insieme: 373 test verdi.
+- e2e `accessibilita.spec.ts` e `per-le-officine.spec.ts` (T154) non eseguiti qui: da vedere in CI.
+
 ### Sessione agenti — 2026-11-01 — ciclo 20261101-03 — T143 T149
 
 **Fatto**
