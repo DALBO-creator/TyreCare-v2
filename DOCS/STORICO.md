@@ -4,6 +4,27 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-02 — ciclo 20261102-00 — T173 T175
+
+**Fatto**
+
+- T173: aiuto su strada, chi lavora in un'officina non vede né accetta più la propria richiesta e un cliente
+  crea al massimo 3 richieste all'ora (`TROPPE_RICHIESTE`). Migrazione `20261101000100_strada_limiti`, pgTAP
+  `strada-limiti.test.sql` (22 asserzioni).
+- T175: le date "di oggi" nel database sono quelle italiane (`(now() at time zone 'Europe/Rome')::date`):
+  default di `prova_fino_al`, `eseguito_il`, `montato_il` e controllo "data nel futuro" di
+  `registra_controllo`, `monta_pneumatici`, `modifica_controllo`. Migrazione `20261101000240_date_italiane`,
+  pgTAP `date-italiane.test.sql` (20 asserzioni); allineate 6 attese di test esistenti (dritta T094):
+  `abbonamenti` 83 e 216, `abbonamenti-scadenza` 48, `operazioni` 80 e 129, `modifiche` 57.
+
+**Decisioni prese al posto di Davide**
+
+- Nessuna.
+
+**Verifica**
+
+- Test pgTAP dei due compiti: da vedere in CI.
+
 ### Sessione agenti — 2026-11-01 — ciclo 20261101-18 — T147 T150
 
 **Fatto**

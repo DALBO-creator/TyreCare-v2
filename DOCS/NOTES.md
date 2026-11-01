@@ -2571,6 +2571,21 @@ ANNULLATO è trattato come SCADUTO (chi ha annullato deve poter riattivare): si 
 perdere modifiche non salvate. L'e2e verifica un'assenza (nessun link nel form): prima aspetta "Salva dati",
 altrimenti conterebbe durante il caricamento e passerebbe anche senza la modifica.
 
+## Date italiane nel database (T175)
+
+**File coinvolti:** `supabase/migrations/20261101000240_date_italiane.sql`,
+`supabase/tests/date-italiane.test.sql`.
+**Come funziona:** `current_date` in Postgres è la data UTC: tra mezzanotte e le 2 in Italia è ancora ieri. La
+migrazione usa `(now() at time zone 'Europe/Rome')::date` nei default di `abbonamenti.prova_fino_al` (+29),
+`controlli.eseguito_il`, `pneumatici.montato_il` e nel controllo "data nel futuro" (e nel default del
+parametro data) di `registra_controllo`, `monta_pneumatici`, `modifica_controllo`. L'app passa già la data del
+dispositivo (`oggiISO()`).
+
+### Codice complesso
+I corpi delle funzioni sono quelli di 20261008130000 e 20261008150000; `create or replace` cambia il valore
+di un default ma non può toglierlo. Il test controlla le definizioni (`pg_attrdef`, `pg_get_functiondef`),
+così fallisce senza la migrazione a qualsiasi ora.
+
 ## Intervento su strada — database (T139, R18)
 
 **File coinvolti:** `supabase/migrations/20261031000200_intervento_strada.sql`,
@@ -2665,6 +2680,21 @@ passa ogni 10 minuti). Un `setInterval` da 15 s rilegge e ridisegna solo se `id`
 dialogo aperto non sparisce); si ferma con `clearInterval` quando `ancoraAttuale(n)` è falso; se la
 richiesta sparisce torna il modulo con la nota "La richiesta non è più in corso.". `TelefonoSchema` dà null
 se vuoto: qui è reso obbligatorio con un refine.
+
+## Aiuto su strada: limiti (T173, R23)
+
+**File coinvolti:** `supabase/migrations/20261101000100_strada_limiti.sql`,
+`supabase/tests/strada-limiti.test.sql`.
+**Come funziona:** `crea_richiesta_strada` conta le richieste del cliente con `created_at` nell'ultima ora, in
+qualsiasi stato (anche annullate o scadute): da 3 in su risponde `TROPPE_RICHIESTE`, così chi annulla e ricrea
+non riempie di notifiche le officine vicine. `richieste_strada_vicine` esclude le richieste di chi chiama
+(`r.cliente_id <> v_uid`): gli altri membri della stessa officina le vedono. `accetta_richiesta_strada`
+risponde `RICHIESTA_NON_DISPONIBILE` sulla propria richiesta (stesso errore di una già presa).
+
+### Codice complesso
+Il controllo dei 3 all'ora viene dopo le chiusure automatiche, "una in corso" e `NESSUNA_OFFICINA`, subito
+prima dell'insert; due chiamate parallele le ferma l'indice unico "una in corso". Per cambiare il limite:
+migrazione nuova, messaggio in `apps/web/src/lib/strada.ts` (T183) e guida del cliente.
 
 ## Uscita senza rete (T149)
 

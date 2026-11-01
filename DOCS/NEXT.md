@@ -7,8 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261101-18 (T147 riepilogo della home officina su telefono; T150 nomi esatti
-> dei pulsanti nelle guide), nel treno. Prossimi in coda per C4: T152 → T153.
+> Ultima sessione: ciclo 20261102-00 (T173 limiti dell'aiuto su strada; T175 date italiane nel database),
+> nel treno. Prossimi in coda per C4: T152 → T153.
 > Aiuto su strada: restano T144 (lato officina, ora sbloccato) e T159 (guide); T165 (idea del supervisore:
 > note legali: eliminazione account, informativa §6 e registro A6, «16 tabelle» del registro M1).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
