@@ -174,6 +174,8 @@ export type EsitoControlliImport =
       lette: number;
       /** Righe vuote saltate e righe tolte da `soloUltimo`. */
       ignorate: number;
+      /** Documenti con almeno una riga in errore: non entrano nemmeno con le righe valide. */
+      documentiSaltati: number;
     };
 
 // ---------------------------------------------------------------------------------------------------
@@ -508,7 +510,8 @@ export function controllaTabellaControlli(
   // Un documento entra completo o non entra: le righe valide di un documento con una riga in errore
   // diventano errori. Prima di `soloUltimo`, così un documento scartato non fa sparire il precedente
   // completo.
-  if (documentiConErrori.size > 0) {
+  const documentiSaltati = documentiConErrori.size;
+  if (documentiSaltati > 0) {
     const restanti: RigaControlloImport[] = [];
     for (const r of righe) {
       if (documentiConErrori.has(r.codice_documento)) {
@@ -536,7 +539,7 @@ export function controllaTabellaControlli(
     ignorate += prima - righe.length;
   }
 
-  return { ok: true, righe, errori, lette: dati.length, ignorate };
+  return { ok: true, righe, errori, lette: dati.length, ignorate, documentiSaltati };
 }
 
 /** Modello del file da scaricare: intestazione e una riga d'esempio, separate da punto e virgola. */

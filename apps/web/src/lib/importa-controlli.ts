@@ -88,3 +88,13 @@ export function periodoDate(righe: { data: string }[]): { da: string; a: string 
   }
   return da ? { da, a } : null;
 }
+
+/**
+ * Vero se il controllo più vecchio ha più di 15 anni rispetto a `oggi` (date `AAAA-MM-GG`): di solito
+ * la colonna «Data» è stata letta male. Confronto tra stringhe, senza `Date` (niente fusi orari).
+ */
+export function periodoSospetto(periodo: { da: string; a: string } | null, oggi: string): boolean {
+  if (!periodo) return false;
+  const soglia = `${String(Number(oggi.slice(0, 4)) - 15).padStart(4, '0')}${oggi.slice(4)}`;
+  return periodo.da < soglia;
+}

@@ -4,6 +4,28 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-01 — ciclo 20261101-15 — T145 T146
+
+**Fatto**
+
+- T145: la pagina Abbonamento non ripete più "Officina pilota" (PILOTA: "Gratuito per tutta la durata del
+  pilota"); pulsante e nota del pagamento solo per PROVA, SCADUTO e ANNULLATO, per ATTIVO e PILOTA "Il tuo
+  abbonamento è a posto: non devi fare nulla."; in "Dati dell'officina" il link Abbonamento sta in una
+  sezione sotto il modulo.
+- T146: l'anteprima dell'import dei controlli dice quanti documenti saltano per intero, ha un solo invito a
+  correggere il file e mostra un avviso giallo se il controllo più vecchio ha più di 15 anni.
+
+**Decisioni prese al posto di Davide**
+
+- T145: lo stato ANNULLATO mostra il pulsante "Attiva l'abbonamento" e la nota del pagamento come SCADUTO
+  (chi ha annullato deve poter riattivare); si cambia in `mostraPagamento` (`pagine/abbonamento.ts`).
+
+**Verifica**
+
+- Gate del supervisore: 2/2 approvati (T145 al secondo giro: l'e2e contava i link durante il caricamento).
+- Prova d'insieme: 386 test verdi (42 file), Node 24.
+- e2e `abbonamento.spec.ts` (T145): da vedere in CI.
+
 ### Sessione agenti — 2026-11-01 — ciclo 20261101-09 — T154 T156
 
 **Fatto**

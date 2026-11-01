@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { leggiConteggiControlli, periodoDate } from './importa-controlli';
+import { leggiConteggiControlli, periodoDate, periodoSospetto } from './importa-controlli';
 
 const valido = {
   controlli_nuovi: 2,
@@ -64,5 +64,26 @@ describe('periodoDate', () => {
       a: '2026-02-02',
     });
     expect(periodoDate([{ data: '' }])).toBeNull();
+  });
+});
+
+describe('periodoSospetto', () => {
+  const oggi = '2026-11-01';
+  it('14 anni fa non è sospetto', () => {
+    expect(periodoSospetto({ da: '2012-11-01', a: '2026-01-01' }, oggi)).toBe(false);
+  });
+  it('16 anni fa è sospetto', () => {
+    expect(periodoSospetto({ da: '2010-11-01', a: '2026-01-01' }, oggi)).toBe(true);
+  });
+  it('esattamente 15 anni fa non è sospetto', () => {
+    expect(periodoSospetto({ da: '2011-11-01', a: '2026-01-01' }, oggi)).toBe(false);
+    expect(periodoSospetto({ da: '2011-10-31', a: '2026-01-01' }, oggi)).toBe(true);
+  });
+  it('senza periodo non è sospetto', () => {
+    expect(periodoSospetto(null, oggi)).toBe(false);
+  });
+  it('il 29 febbraio non manda in errore', () => {
+    expect(periodoSospetto({ da: '2009-02-28', a: '2024-01-01' }, '2024-02-29')).toBe(true);
+    expect(periodoSospetto({ da: '2009-03-01', a: '2024-01-01' }, '2024-02-29')).toBe(false);
   });
 });
