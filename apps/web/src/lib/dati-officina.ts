@@ -53,6 +53,16 @@ export async function salvaDatiOfficina(
   throw error;
 }
 
+/** Vero se l'officina offre l'aiuto su strada (per il link nella home); errore di lettura = no. */
+export async function officinaOffreStrada(officinaId: string): Promise<boolean> {
+  const { data, error } = await getSupabase()
+    .from('officine')
+    .select('intervento_strada')
+    .eq('id', officinaId)
+    .single();
+  return !error && data.intervento_strada;
+}
+
 /** Posizione come la mostra il campo: "45.070312, 7.686856", vuota se manca. */
 export const testoPosizione = (
   d: Pick<DatiOfficinaSalvati, 'latitudine' | 'longitudine'>,

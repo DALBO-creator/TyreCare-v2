@@ -78,16 +78,6 @@ export const DatiEStradaSchema = z.unknown().transform((valore, ctx) => {
   return { ...dati.data, ...strada.data };
 });
 
-/** Vero se l'officina offre l'aiuto su strada (per il link nella home); errore di lettura = no. */
-export async function officinaOffreStrada(officinaId: string): Promise<boolean> {
-  const { data, error } = await getSupabase()
-    .from('officine')
-    .select('intervento_strada')
-    .eq('id', officinaId)
-    .single();
-  return !error && data.intervento_strada;
-}
-
 // ---------------------------------------------------------------------------------------------------
 // Richieste
 // ---------------------------------------------------------------------------------------------------

@@ -1,5 +1,6 @@
 import { Check, MapPin, Phone } from 'lucide';
 import { formattaDistanza } from '@tyrecare/shared';
+import { officinaOffreStrada } from '../lib/dati-officina';
 import { esc } from '../lib/html';
 import { caricaContestoOfficina, eTitolare } from '../lib/officina';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
@@ -10,7 +11,6 @@ import {
   caricaRichiesteVicine,
   chiudiRichiestaStrada,
   linkMappa,
-  officinaOffreStrada,
   scadeAlle,
   telefonoHref,
   type RichiestaAccettata,

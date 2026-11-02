@@ -18,6 +18,7 @@ import {
   oggiInItalia,
   type StatoSalute,
 } from '@tyrecare/shared';
+import { officinaOffreStrada } from '../lib/dati-officina';
 import { esc } from '../lib/html';
 import {
   caricaVeicoli,
@@ -33,7 +34,6 @@ import {
   passiPrimiPassi,
   type PassoPrimiPassi,
 } from '../lib/primi-passi';
-import { officinaOffreStrada } from '../lib/strada-officina';
 import { contaRichiesteDaConfermare } from '../lib/prenotazioni';
 import type { DatiUtente } from '../lib/profilo';
 import { ancoraAttuale, mostraPagina } from '../lib/router';
