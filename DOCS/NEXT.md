@@ -7,8 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261102-03 (T144 aiuto su strada lato officina; T157 ricarica e home dal riquadro
-> d'errore del router), nel treno. Prossimi in coda per C4: T152 → T153.
+> Ultima sessione: ciclo 20261102-15 (T152 "Torna indietro" delle pagine legali che resta nel sito; T153
+> `robots.txt` e controlli di base Lighthouse), nel treno.
 > Aiuto su strada: resta T159 (guide); T165 (idea del supervisore:
 > note legali: eliminazione account, informativa §6 e registro A6, «16 tabelle» del registro M1).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del

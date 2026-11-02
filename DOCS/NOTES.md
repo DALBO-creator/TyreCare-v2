@@ -2805,3 +2805,37 @@ su desktop `_desktop.scss` (non toccato) mette le voci una sotto l'altra. Il rie
 ### Codice complesso
 `_officina.scss` — il limite 35.98rem (e non 36rem) evita che a 36rem esatti valgano insieme la regola da
 telefono e quella da tablet.
+
+## Pagine legali: Torna indietro che resta nel sito (T152)
+
+**File coinvolti:** `apps/web/src/pagine/legale.ts`, `apps/web/src/pagine/legale.test.ts`,
+`e2e/tests/legale.spec.ts`.
+**Come funziona:** il link "Torna indietro" delle pagine legali ha `href="/"`. Al click, se
+`tornaIndietroNelSito(document.referrer, location.origin, history.length)` è vera, si fa `preventDefault` e
+`history.back()`; altrimenti vale l'`href` e si va a `/` (per un ospite rimanda a `/accedi`). Le pagine
+legali usano `MARCHIO` esportato da `ui/layout.ts`.
+
+### Codice complesso
+`legale.ts` `referrerStessoSito(referrer, origine)` — confronta `new URL(referrer).origin` con
+`location.origin` (schema, host, porta); referrer vuoto o non valido → `false` (il `try/catch` copre l'errore
+di `new URL`).
+`legale.ts` `tornaIndietroNelSito` — aggiunge `lunghezzaStoria > 1`: le schede nuove aperte da
+`registrati.ts` e `home.ts` (`target="_blank" rel="noopener"`) hanno referrer del sito ma storia di 1 voce,
+e `history.back()` non porterebbe da nessuna parte. Con il solo `history.length > 1` chi arrivava da un
+link esterno usciva dal sito. In una SPA `document.referrer` resta quello del primo caricamento: in quel caso
+si va a `/` (si resta nel sito).
+
+## Controlli di base del sito: robots.txt e Lighthouse (T153)
+
+**File coinvolti:** `apps/web/public/robots.txt`, `apps/web/src/sito.test.ts`.
+**Come funziona:** `robots.txt` contiene `User-agent: *` e `Allow: /`; la riga `Sitemap:` si aggiunge quando
+il dominio è scelto (R3). `sito.test.ts` (10 test) legge `robots.txt`, `index.html` e `vite.config.ts` come
+testo (`node:fs`) e controlla: lang, titolo, descrizione, theme-color, viewport, apple-touch-icon, icone del
+manifest (almeno 3) e che i file di `includeAssets` esistano in `public/`.
+
+### Codice complesso
+`vercel.json` — la riscrittura `/(.*)` vale solo per i file che non esistono: senza `public/robots.txt`,
+`/robots.txt` rispondeva con la pagina dell'app e il punteggio SEO calava.
+`sito.test.ts` — le icone del manifest si trovano con la regex `src: '…png'` su `vite.config.ts`: se cambia
+la forma del file, il test fallisce in modo chiaro. `Disallow: /` da solo è vietato, `Disallow: /percorso`
+è ammesso.

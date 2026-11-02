@@ -4,6 +4,29 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-02 — ciclo 20261102-15 — T152 T153
+
+**Fatto**
+
+- T152: le pagine legali usano `MARCHIO` esportato da `ui/layout.ts`; "Torna indietro" fa `history.back()`
+  solo se il referrer è del sito e la storia ha più di una voce, altrimenti porta a `/`. Al 1° giro il
+  supervisore ha notato che le schede nuove (`target="_blank"`) da registrati/home hanno il referrer del
+  sito: corretto con `tornaIndietroNelSito`. Unit test `legale.test.ts` ed e2e `legale.spec.ts`.
+- T153: aggiunto `apps/web/public/robots.txt` (Allow tutto, niente `Sitemap` finché il dominio non è
+  scelto), perché Vercel serviva la pagina dell'app al suo posto; `apps/web/src/sito.test.ts` (10 test)
+  tiene sotto controllo i requisiti di base Lighthouse/PWA.
+
+**Decisioni prese al posto di Davide**
+
+- Nessuna.
+
+**Verifica**
+
+- Controlli veloci sulla prova d'insieme: verdi (45 file, 419 test; Node 24; JS iniziale 62,9 kB gzip su 70).
+- Gate del supervisore: 2/2 approvati al 1° giro; T152 revisione del coordinatore al 2° giro.
+- E2e `legale.spec.ts`: non eseguito nel cloud, da vedere in CI.
+- Idea emersa: scelto il dominio (R3), riga `Sitemap:` in `robots.txt` e test che la verifichi.
+
 ### Sessione agenti — 2026-11-02 — ciclo 20261102-03 — T144 T157
 
 **Fatto**
