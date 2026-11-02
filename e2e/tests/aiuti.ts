@@ -137,6 +137,59 @@ export async function nuovoAccountCliente(
   return email;
 }
 
+/**
+ * Il cliente apre il link dell'invito in `page` (browser separato), crea l'account con l'email
+ * dell'invito, conferma dall'email (Mailpit) e collega i veicoli: alla fine è nella home, già dentro.
+ */
+export async function registratiDalLinkInvito(
+  page: Page,
+  link: string,
+  { nome, cognome, email }: { nome: string; cognome: string; email: string },
+): Promise<void> {
+  await page.goto(link);
+  await expect(
+    page.getByRole('heading', { name: `${OFFICINA} ti invita su TyreCare` }),
+  ).toBeVisible();
+  await page.getByRole('link', { name: 'Crea account' }).click();
+  await expect(page.getByLabel('Email', { exact: true })).toHaveValue(email);
+  await page.getByLabel('Nome', { exact: true }).fill(nome);
+  await page.getByLabel('Cognome', { exact: true }).fill(cognome);
+  await page.getByLabel('Password', { exact: true }).fill(PASSWORD);
+  await page.getByLabel(/Ho letto l'informativa privacy/).check();
+  await page.getByRole('button', { name: 'Crea account' }).click();
+  await expect(page.getByRole('heading', { name: 'Controlla la posta' })).toBeVisible();
+
+  // Il link di conferma riporta all'invito, già dentro
+  await page.goto(await linkConferma(email));
+  await expect(page).toHaveURL(/\/invito\?codice=/);
+  await page.getByRole('button', { name: 'Collega i miei veicoli' }).click();
+  await expect(page).toHaveURL(/\/$/);
+}
+
+/** Colonne del CSV dei controlli, nell'ordine dell'import (`importa-controlli`). */
+const COLONNE_CONTROLLI = [
+  'codice_documento',
+  'targa',
+  'data',
+  'km',
+  'posizione',
+  'battistrada_mm',
+  'pressione_bar',
+  'usura',
+  'danni',
+  'stagione',
+  'misura',
+  'marca',
+  'modello',
+  'dot',
+  'note',
+];
+
+/** CSV dei controlli come lo salva Excel in italiano: intestazione, campi con `;`, righe con `\r\n`. */
+export function csvControlli(righe: string[][]): string {
+  return [COLONNE_CONTROLLI, ...righe].map((r) => r.join(';')).join('\r\n');
+}
+
 /** Prossimo giorno feriale (lunedì–venerdì) dopo oggi, `AAAA-MM-GG`, saltandone `salta`. */
 export function prossimoFeriale(salta = 0): string {
   // Da oggi in Italia (come il database), non dal giorno UTC
