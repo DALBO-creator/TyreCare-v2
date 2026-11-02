@@ -7,8 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261102-18 (T180 database per Stripe, T185 webhook `stripe-webhook`, T174 uscita
-> senza rete, T178 box d'errore comune), nel treno.
+> Ultima sessione: ciclo 20261102-21 (T155 aiuti e2e comuni per invito e CSV dei controlli, T177 e2e
+> unisci-clienti non più instabile), nel treno.
 > Aiuto su strada: resta T159 (guide); T165 (idea del supervisore:
 > note legali: eliminazione account, informativa §6 e registro A6, «16 tabelle» del registro M1).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del

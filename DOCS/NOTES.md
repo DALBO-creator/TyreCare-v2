@@ -2895,3 +2895,17 @@ scrive l'HTML, toglie `hidden` e dà `focus()` (il riquadro ha `tabindex="-1"` e
 
 ### Codice complesso
 Test solo sulla parte pura (vitest web in node).
+
+## e2e: aiuti per invito e CSV dei controlli (T155, T177)
+
+**File coinvolti:** `e2e/tests/aiuti.ts`, gli spec di inviti, percorso del pilota e import dei controlli.
+**Come funziona:** `registratiDalLinkInvito(page, link, { nome, cognome, email })` fa il percorso del
+cliente: link, "Crea account", modulo con termini, "Controlla la posta", conferma da Mailpit, "Collega i
+miei veicoli", home; un cambio di testo del flusso si corregge lì. `csvControlli(righe)` aggiunge
+l'intestazione `COLONNE_CONTROLLI` (15 colonne), unisce i campi con `;` e le righe con `\r\n`; ogni riga è
+un array di 15 stringhe (ultimo `''` per `note`); gli spec ne fanno `Buffer.from(csv, 'utf8')`.
+
+### Codice complesso
+Targhe di test con un prefisso proprio (`UC` + ultimi 6 di `id` in "unisci clienti") e
+`getByText(targa, { exact: true })`: una targa non in formato italiano resta com'è nella scheda e, senza
+`exact`, può coincidere con un pezzo del cognome `Primo${id}` (T177).

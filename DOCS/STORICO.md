@@ -4,6 +4,17 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-02 — ciclo 20261102-21 — T155 T177
+
+**Fatto**
+
+- T155: in `e2e/tests/aiuti.ts` due aiuti nuovi, `registratiDalLinkInvito` (registrazione del cliente dal
+  link d'invito fino alla home) e `csvControlli` (CSV dei controlli a 15 colonne); inviti, percorso-pilota e
+  import-controlli li usano al posto delle copie, CSV identico byte per byte e asserzioni invariate.
+- T177: l'e2e "unisci clienti" falliva a caso perché la targa `U`+ultimi 7 di `id` poteva essere un pezzo del
+  cognome `Primo${id}` (h1 della scheda) e `getByText` senza `exact` trovava due elementi; ora targa
+  `UC`+ultimi 6 e `getByText(targa, { exact: true })`.
+
 ### Sessione agenti — 2026-11-02 — ciclo 20261102-18 — T180 T185 T174 T178
 
 **Fatto**
