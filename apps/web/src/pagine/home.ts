@@ -9,7 +9,15 @@ import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import { STATI, badgeStato } from '../ui/stato';
-import { ETICHETTE_AREA, avvisoConferma, conData, gestisciErroreCaricamento, oggi } from './comune';
+import {
+  ETICHETTE_AREA,
+  avvisoConferma,
+  conData,
+  gestisciErroreCaricamento,
+  mostraErroreInBox,
+  nascondiBox,
+  oggi,
+} from './comune';
 import { mostraHomeOfficina } from './home-officina';
 
 /** Home dopo l'accesso: per chi lavora in un'officina l'elenco dei veicoli, per il cliente il garage. */
@@ -79,7 +87,7 @@ function mostraRiaccetta(app: HTMLElement, n: number): void {
     if (pulsante) pulsante.disabled = !casella.checked;
   });
   pulsante?.addEventListener('click', async () => {
-    if (box) box.hidden = true;
+    nascondiBox(box);
     const testo = pulsante.textContent;
     pulsante.disabled = true;
     pulsante.textContent = 'Salvataggio…';
@@ -88,11 +96,7 @@ function mostraRiaccetta(app: HTMLElement, n: number): void {
     } catch (errore) {
       pulsante.textContent = testo;
       pulsante.disabled = !casella?.checked;
-      if (box) {
-        box.innerHTML = `<p class="mb-0">${esc(messaggioErrore(errore))}</p>`;
-        box.hidden = false;
-        box.focus();
-      }
+      mostraErroreInBox(box, messaggioErrore(errore));
       return;
     }
     if (!ancoraAttuale(n)) return;
@@ -103,11 +107,7 @@ function mostraRiaccetta(app: HTMLElement, n: number): void {
       // Il ritorno alla pagina di accesso lo fa main.ts, quando Supabase segnala SIGNED_OUT
       await esci();
     } catch (errore) {
-      if (box) {
-        box.innerHTML = `<p class="mb-0">${esc(messaggioErrore(errore))}</p>`;
-        box.hidden = false;
-        box.focus();
-      }
+      mostraErroreInBox(box, messaggioErrore(errore));
     }
   });
 }
