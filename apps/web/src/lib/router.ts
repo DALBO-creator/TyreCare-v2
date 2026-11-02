@@ -68,7 +68,10 @@ export function vaiA(destinazione: string, { sostituisci = false } = {}): void {
   void mostraPagina();
 }
 
-/** Riquadro mostrato quando una pagina non si carica; "Riprova" è un link all'URL attuale. */
+/**
+ * Riquadro mostrato quando una pagina non si carica; "Riprova" è un link all'URL attuale,
+ * "Ricarica l'app" ricarica davvero la pagina (utile con una versione vecchia in cache).
+ */
 export function riquadroPaginaNonDisponibile(url: string): string {
   return `
     <main class="tc-auth">
@@ -76,8 +79,18 @@ export function riquadroPaginaNonDisponibile(url: string): string {
         <h1 class="tc-auth__titolo" tabindex="-1">Pagina non disponibile</h1>
         <p class="tc-auth__sottotitolo">Pagina non disponibile: controlla la connessione e riprova.</p>
         <a class="btn btn-primary btn-lg w-100" href="${esc(url)}">Riprova</a>
+        <button type="button" class="btn btn-outline-light btn-lg w-100 mt-2" data-ricarica>Ricarica l'app</button>
+        <a class="btn btn-outline-light btn-lg w-100 mt-2" href="/">Torna alla home</a>
       </div>
     </main>`;
+}
+
+/** Collega il pulsante `data-ricarica` dentro `el` alla ricarica completa della pagina. */
+export function collegaRicarica(
+  el: Pick<HTMLElement, 'querySelector'>,
+  ricarica: () => void = () => location.reload(),
+): void {
+  el.querySelector('[data-ricarica]')?.addEventListener('click', ricarica);
 }
 
 /** Mostra la pagina dell'URL attuale, applicando le regole di accesso. */
@@ -106,6 +119,7 @@ export async function mostraPagina(): Promise<void> {
     // Solo se nel frattempo non è partita un'altra navigazione
     if (ancoraAttuale(n)) {
       contenitore.innerHTML = riquadroPaginaNonDisponibile(location.pathname + location.search);
+      collegaRicarica(contenitore);
     }
   }
 

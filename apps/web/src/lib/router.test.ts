@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { avviaRouter, riquadroPaginaNonDisponibile, vaiA, type Rotta } from './router';
+import {
+  avviaRouter,
+  collegaRicarica,
+  riquadroPaginaNonDisponibile,
+  vaiA,
+  type Rotta,
+} from './router';
 
 describe('riquadroPaginaNonDisponibile', () => {
   it('contiene il testo e il link Riprova', () => {
@@ -13,6 +19,35 @@ describe('riquadroPaginaNonDisponibile', () => {
     const html = riquadroPaginaNonDisponibile('/x?a="<b>&c');
     expect(html).toContain('href="/x?a=&quot;&lt;b&gt;&amp;c"');
     expect(html).not.toContain('<b>');
+  });
+});
+
+describe('riquadroPaginaNonDisponibile: ricarica e home', () => {
+  it('ha il link alla home', () => {
+    expect(riquadroPaginaNonDisponibile('/x')).toMatch(/href="\/">Torna alla home<\/a>/);
+  });
+
+  it("ha il pulsante Ricarica l'app", () => {
+    const html = riquadroPaginaNonDisponibile('/x');
+    expect(html).toMatch(/<button type="button"[^>]*data-ricarica[^>]*>Ricarica l'app<\/button>/);
+  });
+
+  it("esegue l'escape di un URL con virgolette e tag", () => {
+    const html = riquadroPaginaNonDisponibile('/x?a=<b>&c="d"');
+    expect(html).toContain('href="/x?a=&lt;b&gt;&amp;c=&quot;d&quot;">Riprova</a>');
+  });
+
+  it('il clic sul pulsante chiama ricarica una volta', () => {
+    let gestore: () => void = () => undefined;
+    const pulsante = { addEventListener: (_t: string, f: () => void) => (gestore = f) };
+    const el = {
+      querySelector: (s: string) => (s === '[data-ricarica]' ? pulsante : null),
+    } as unknown as HTMLElement;
+    const ricarica = vi.fn();
+    collegaRicarica(el, ricarica);
+    expect(ricarica).not.toHaveBeenCalled();
+    gestore();
+    expect(ricarica).toHaveBeenCalledTimes(1);
   });
 });
 

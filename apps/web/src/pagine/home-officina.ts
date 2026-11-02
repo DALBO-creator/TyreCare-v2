@@ -7,6 +7,7 @@ import {
   Plus,
   Search,
   Snowflake,
+  Truck,
   type IconNode,
 } from 'lucide';
 import {
@@ -17,6 +18,7 @@ import {
   oggiInItalia,
   type StatoSalute,
 } from '@tyrecare/shared';
+import { officinaOffreStrada } from '../lib/dati-officina';
 import { esc } from '../lib/html';
 import {
   caricaVeicoli,
@@ -75,8 +77,9 @@ export async function mostraHomeOfficina(
   let veicoli: VeicoloInElenco[];
   let richieste: number;
   let passi: PassoPrimiPassi[] | null;
+  let strada: boolean;
   try {
-    [veicoli, richieste, passi] = await Promise.all([
+    [veicoli, richieste, passi, strada] = await Promise.all([
       caricaVeicoli({ officinaId: attiva.officina.id }),
       // Solo un avviso: se non si legge, la home si mostra lo stesso
       contaRichiesteDaConfermare(attiva.officina.id, oggiInItalia()).catch(() => 0),
@@ -84,6 +87,8 @@ export async function mostraHomeOfficina(
       eTitolare(dati.officine, attiva.officina.id)
         ? leggiStatoPrimiPassi(attiva.officina.id).then(passiPrimiPassi, () => null)
         : Promise.resolve(null),
+      // Il link compare solo se l'officina offre il servizio; se non si legge, niente link
+      officinaOffreStrada(attiva.officina.id).catch(() => false),
     ]);
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
@@ -152,6 +157,11 @@ export async function mostraHomeOfficina(
       </div>
 
       <a class="btn btn-primary btn-lg w-100" href="/veicoli/nuovo">${icona(Plus)} Nuovo veicolo</a>
+      ${
+        strada
+          ? `<a class="btn btn-outline-light btn-lg w-100" href="/officina/strada">${icona(Truck)} Richieste su strada</a>`
+          : ''
+      }
 
       <section aria-labelledby="tc-veicoli">
         <h2 id="tc-veicoli" class="tc-etichetta">Veicoli</h2>

@@ -4,6 +4,26 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-02 — ciclo 20261102-03 — T144 T157
+
+**Fatto**
+
+- T144: aiuto su strada lato officina (R18). Il titolare attiva il servizio e il raggio 5–100 km in "Dati
+  dell'officina"; `/officina/strada` mostra le richieste vicine con "Accetta" e le "Accettate" con telefono,
+  mappa e "Chiudi", aggiornandosi ogni 15 s; il link in home c'è solo se il servizio è attivo. Unit test
+  `lib/strada-officina.test.ts` ed e2e `strada-officina.spec.ts`.
+- T157: il riquadro "Pagina non disponibile" del router ha il pulsante "Ricarica l'app" (ricarica completa)
+  e il link "Torna alla home"; 4 unit test del router.
+
+**Decisioni prese al posto di Davide**
+
+- Nessuna.
+
+**Verifica**
+
+- Controlli veloci sulla prova d'insieme: verdi (43 file, 402 test; JS iniziale 63,1 kB, `main` 62,2).
+- E2e `strada-officina.spec.ts`: non eseguito nel cloud, da vedere in CI.
+
 ### Sessione agenti — 2026-11-02 — ciclo 20261102-00 — T173 T175
 
 **Fatto**
