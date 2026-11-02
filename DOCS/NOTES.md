@@ -2854,7 +2854,7 @@ ATTIVO/SCADUTO/ANNULLATO e piani STARTER/PRO o nullo (PILOTA solo ADMIN); riferi
 
 ### Codice complesso
 `stripe_eventi` ha RLS senza policy e nessun permesso per gli utenti dell'app. `pulisci_eventi_stripe()` gira
-dal job `pulizia-eventi-stripe` (0:35, eventi oltre 30 giorni); si toglie con
+dal job `pulizia-eventi-stripe` (0:35 UTC, eventi oltre 30 giorni); si toglie con
 `cron.unschedule('pulizia-eventi-stripe')`.
 
 ## Webhook di Stripe (`supabase/functions/stripe-webhook`, T185)

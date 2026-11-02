@@ -10,7 +10,7 @@
 
 - T180: tabella `stripe_eventi` (solo service role) e funzioni `collega_cliente_stripe`,
   `aggiorna_abbonamento_stripe`, `registra_evento_stripe` riservate al service role; job notturno
-  `pulizia-eventi-stripe` (0:35, eventi oltre 30 giorni). Test pgTAP `abbonamenti-stripe` (39) da vedere in CI.
+  `pulizia-eventi-stripe` (0:35 UTC, eventi oltre 30 giorni). Test pgTAP `abbonamenti-stripe` (39) da vedere in CI.
 - T185: Edge Function `stripe-webhook`: firma Stripe verificata con Web Crypto, stato e piano
   dell'abbonamento dagli eventi checkout/subscription, duplicati ignorati, 500 su errore DB perché Stripe
   ritenti. 49 test Vitest; la funzione non gira in CI, deploy con `--no-verify-jwt`.
