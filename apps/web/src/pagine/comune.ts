@@ -169,6 +169,24 @@ export function avvisoConferma(): string {
     : '';
 }
 
+/** HTML del contenuto di un riquadro d'errore (testo con escape). */
+export function htmlErrore(messaggio: string): string {
+  return `<p class="mb-0">${esc(messaggio)}</p>`;
+}
+
+/** Mostra il messaggio nel riquadro d'errore e gli dà il focus (senza riquadro: niente). */
+export function mostraErroreInBox(box: HTMLElement | null, messaggio: string): void {
+  if (!box) return;
+  box.innerHTML = htmlErrore(messaggio);
+  box.hidden = false;
+  box.focus();
+}
+
+/** Nasconde il riquadro d'errore (senza riquadro: niente). */
+export function nascondiBox(box: HTMLElement | null): void {
+  if (box) box.hidden = true;
+}
+
 /** Parametro `?nome=` dell'URL attuale. */
 export const parametro = (nome: string): string | null =>
   new URLSearchParams(location.search).get(nome);
