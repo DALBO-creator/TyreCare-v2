@@ -4,7 +4,7 @@ import { avviaNotifiche, notificheNonLette, numeroBadge, testoNonLette } from '.
 import { lavoraInOfficina } from '../lib/profilo';
 import { icona } from './icone';
 
-const MARCHIO = '<span class="tc-marchio">Tyre<span>Care</span></span>';
+export const MARCHIO = '<span class="tc-marchio">Tyre<span>Care</span></span>';
 
 interface PaginaAuth {
   titolo: string;

@@ -15,3 +15,12 @@ for (const [percorso, titolo] of [
     await expect(page.getByRole('link', { name: 'Torna indietro' })).toBeVisible();
   });
 }
+
+test('aperta direttamente, "Torna indietro" resta su TyreCare', async ({ page }) => {
+  await page.goto('/termini');
+  const indietro = page.getByRole('link', { name: 'Torna indietro' });
+  await expect(indietro).toBeVisible();
+  await indietro.click();
+  await expect(page).toHaveURL(/\/(accedi)?(\?[^#]*)?$/);
+  await expect(page.getByRole('heading', { name: 'Accedi' })).toBeVisible();
+});
