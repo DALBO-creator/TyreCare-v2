@@ -2837,5 +2837,5 @@ manifest (almeno 3) e che i file di `includeAssets` esistano in `public/`.
 `apps/web/vercel.json` — la riscrittura `/(.*)` vale solo per i file che non esistono: senza
 `public/robots.txt`, `/robots.txt` rispondeva con la pagina dell'app e il punteggio SEO calava.
 `sito.test.ts` — le icone del manifest si trovano con la regex `src: '…png'` su `vite.config.ts`: se
-cambia la forma del file, il test fallisce in modo chiaro. `Disallow: /` da solo è vietato, `Disallow: /percorso`
-è ammesso.
+cambia la forma del file, il test fallisce in modo chiaro. `Disallow: /` da solo è vietato,
+`Disallow: /percorso` è ammesso.
