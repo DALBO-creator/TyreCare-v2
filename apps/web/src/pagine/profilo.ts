@@ -1,4 +1,5 @@
 import {
+  Building2,
   ChevronRight,
   ClipboardList,
   Clock,
@@ -13,7 +14,6 @@ import {
   Trash2,
   UserPen,
   Wrench,
-  Building2,
 } from 'lucide';
 import { contaOfficineInAttesa } from '../lib/admin';
 import { esci, messaggioErrore } from '../lib/auth';
@@ -29,6 +29,8 @@ import {
   ETICHETTE_RUOLO_OFFICINA,
   avvisoConferma,
   gestisciErroreCaricamento,
+  mostraErroreInBox,
+  nascondiBox,
   vaiConConferma,
 } from './comune';
 
@@ -155,18 +157,14 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
   const scaricaDati = app.querySelector<HTMLButtonElement>('[data-scarica-dati]');
   scaricaDati?.addEventListener('click', async () => {
     const box = app.querySelector<HTMLElement>('[data-errore-dati]');
-    if (box) box.hidden = true;
+    nascondiBox(box);
     const html = scaricaDati.innerHTML;
     scaricaDati.disabled = true;
     scaricaDati.textContent = 'Preparazione…';
     try {
       scaricaJson(nomeFileMieiDati(), await raccogliMieiDati());
     } catch (errore) {
-      if (box) {
-        box.innerHTML = `<p class="mb-0">${esc(messaggioErrore(errore))}</p>`;
-        box.hidden = false;
-        box.focus();
-      }
+      mostraErroreInBox(box, messaggioErrore(errore));
     } finally {
       scaricaDati.innerHTML = html;
       scaricaDati.disabled = false;
@@ -179,11 +177,7 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
       await esci();
     } catch (errore) {
       const box = app.querySelector<HTMLElement>('[data-errore-esci]');
-      if (box) {
-        box.innerHTML = `<p class="mb-0">${esc(messaggioErrore(errore))}</p>`;
-        box.hidden = false;
-        box.focus();
-      }
+      mostraErroreInBox(box, messaggioErrore(errore));
     }
   });
 }

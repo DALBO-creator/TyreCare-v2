@@ -1043,6 +1043,24 @@ export type Database = {
           },
         ];
       };
+      stripe_eventi: {
+        Row: {
+          id: string;
+          ricevuto_il: string;
+          tipo: string;
+        };
+        Insert: {
+          id: string;
+          ricevuto_il?: string;
+          tipo: string;
+        };
+        Update: {
+          id?: string;
+          ricevuto_il?: string;
+          tipo?: string;
+        };
+        Relationships: [];
+      };
       veicoli: {
         Row: {
           anno: number | null;
@@ -1111,11 +1129,25 @@ export type Database = {
         Returns: undefined;
       };
       accetta_termini: { Args: { p_versione: string }; Returns: undefined };
+      aggiorna_abbonamento_stripe: {
+        Args: {
+          p_customer: string;
+          p_officina_id: string;
+          p_piano: string;
+          p_stato: string;
+          p_subscription: string;
+        };
+        Returns: undefined;
+      };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
       annulla_richiesta_strada: { Args: { p_id: string }; Returns: undefined };
       attiva_officina: { Args: { p_officina_id: string }; Returns: undefined };
       chiudi_richiesta_strada: { Args: { p_id: string }; Returns: undefined };
+      collega_cliente_stripe: {
+        Args: { p_customer: string; p_officina_id: string };
+        Returns: undefined;
+      };
       crea_invito_cliente: {
         Args: { p_cliente_id: string; p_email: string };
         Returns: {
@@ -1224,6 +1256,7 @@ export type Database = {
       };
       oggi_in_italia: { Args: Record<PropertyKey, never>; Returns: string };
       orari_validi: { Args: { p_orari: Json }; Returns: boolean };
+      pulisci_eventi_stripe: { Args: { p_adesso?: string }; Returns: number };
       pulisci_notifiche: { Args: { p_adesso?: string }; Returns: number };
       registra_cliente_da_prenotazione: {
         Args: {
@@ -1246,6 +1279,7 @@ export type Database = {
         };
         Returns: string;
       };
+      registra_evento_stripe: { Args: { p_id: string; p_tipo: string }; Returns: boolean };
       report_pubblico: { Args: { p_codice: string }; Returns: Json };
       revoca_link_report: { Args: { p_controllo_id: string }; Returns: undefined };
       richiedi_affiliazione: {

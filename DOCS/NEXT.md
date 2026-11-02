@@ -7,8 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261102-15 (T152 "Torna indietro" delle pagine legali che resta nel sito; T153
-> `robots.txt` e controlli di base Lighthouse), nel treno.
+> Ultima sessione: ciclo 20261102-18 (T180 database per Stripe, T185 webhook `stripe-webhook`, T174 uscita
+> senza rete, T178 box d'errore comune), nel treno.
 > Aiuto su strada: resta T159 (guide); T165 (idea del supervisore:
 > note legali: eliminazione account, informativa §6 e registro A6, «16 tabelle» del registro M1).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
@@ -44,6 +44,8 @@
   l'email dal dominio di TyreCare (P23): comando in `NOTES.md` → "Notifiche: email di riserva (T066)"
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
+- [~] Fase 7: **Stripe** — fatti il database (T180) e il webhook (T185); restano checkout (T189), portale
+  (T195), pagina Abbonamento (T192) e guida (T204)
 - [x] Promemoria: la registrazione web passa `termini_versione` nei metadati di `signUp` — fatto (T056,
   2026-10-29): la spunta dei termini è obbligatoria e il trigger (T054) copia la versione nel profilo
 

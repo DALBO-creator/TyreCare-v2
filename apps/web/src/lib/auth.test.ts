@@ -20,15 +20,20 @@ describe('messaggioErrore', () => {
 describe('esci', () => {
   const signOut = vi.fn();
   const removeItem = vi.fn();
+  const assign = vi.fn();
+  const getSession = vi.fn();
 
   beforeEach(() => {
     signOut.mockReset();
     removeItem.mockReset();
+    assign.mockReset();
+    getSession.mockReset();
     vi.stubGlobal('localStorage', { removeItem });
+    vi.stubGlobal('location', { assign });
     vi.stubEnv('VITE_SUPABASE_URL', 'https://abcd.supabase.co');
     vi.doMock('./supabase', async (originale) => ({
       ...(await originale<typeof Supabase>()),
-      getSupabase: () => ({ auth: { signOut } }),
+      getSupabase: () => ({ auth: { signOut, getSession, onAuthStateChange: vi.fn() } }),
     }));
     vi.resetModules();
   });
@@ -39,19 +44,33 @@ describe('esci', () => {
     vi.unstubAllEnvs();
   });
 
-  it('senza rete cancella la sessione locale e rilancia l’errore', async () => {
-    const errore = new Error('Failed to fetch');
-    signOut.mockResolvedValue({ error: errore });
+  it('senza rete cancella la sessione locale e torna ad /accedi senza errore', async () => {
+    signOut.mockResolvedValue({ error: new Error('Failed to fetch') });
     const { esci } = await import('./auth');
-    await expect(esci()).rejects.toBe(errore);
+    await expect(esci()).resolves.toBeUndefined();
     expect(signOut).toHaveBeenCalledWith({ scope: 'local' });
+    expect(removeItem).toHaveBeenCalledTimes(1);
     expect(removeItem).toHaveBeenCalledWith('sb-abcd-auth-token');
+    expect(assign).toHaveBeenCalledTimes(1);
+    expect(assign).toHaveBeenCalledWith('/accedi');
   });
 
-  it('senza errore non tocca localStorage', async () => {
+  it('senza rete azzera anche la sessione in memoria', async () => {
+    const utente = { access_token: 't', user: { id: 'u1' } };
+    getSession.mockResolvedValue({ data: { session: utente } });
+    signOut.mockResolvedValue({ error: new Error('Failed to fetch') });
+    const { esci, inizializzaAuth, sessioneCorrente } = await import('./auth');
+    await inizializzaAuth(() => {});
+    expect(sessioneCorrente()).toBe(utente);
+    await esci();
+    expect(sessioneCorrente()).toBeNull();
+  });
+
+  it('senza errore non tocca localStorage né la pagina', async () => {
     signOut.mockResolvedValue({ error: null });
     const { esci } = await import('./auth');
     await esci();
     expect(removeItem).not.toHaveBeenCalled();
+    expect(assign).not.toHaveBeenCalled();
   });
 });
