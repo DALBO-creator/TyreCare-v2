@@ -1,13 +1,12 @@
 import { expect, test } from '@playwright/test';
 import {
   OFFICINA,
-  PASSWORD,
   accedi,
   creaCliente,
   creaVeicolo,
   emailNuova,
-  linkConferma,
   preparaInvito,
+  registratiDalLinkInvito,
   unico,
 } from './aiuti';
 
@@ -29,24 +28,7 @@ test("il cliente crea l'account dall'invito e trova i veicoli nel garage", async
 
   // Cliente, in un altro browser: dal link alla registrazione con l'email già scritta
   const cliente = await (await browser.newContext()).newPage();
-  await cliente.goto(link);
-  await expect(
-    cliente.getByRole('heading', { name: `${OFFICINA} ti invita su TyreCare` }),
-  ).toBeVisible();
-  await cliente.getByRole('link', { name: 'Crea account' }).click();
-  await expect(cliente.getByLabel('Email', { exact: true })).toHaveValue(email);
-  await cliente.getByLabel('Nome', { exact: true }).fill('Elena');
-  await cliente.getByLabel('Cognome', { exact: true }).fill('Prova');
-  await cliente.getByLabel('Password', { exact: true }).fill(PASSWORD);
-  await cliente.getByLabel(/Ho letto l'informativa privacy/).check();
-  await cliente.getByRole('button', { name: 'Crea account' }).click();
-  await expect(cliente.getByRole('heading', { name: 'Controlla la posta' })).toBeVisible();
-
-  // Il link di conferma riporta all'invito, già dentro
-  await cliente.goto(await linkConferma(email));
-  await expect(cliente).toHaveURL(/\/invito\?codice=/);
-  await cliente.getByRole('button', { name: 'Collega i miei veicoli' }).click();
-  await expect(cliente).toHaveURL(/\/$/);
+  await registratiDalLinkInvito(cliente, link, { nome: 'Elena', cognome: 'Prova', email });
   await expect(
     cliente.getByText(`Fatto! I veicoli registrati da ${OFFICINA} sono nel tuo garage.`),
   ).toBeVisible();

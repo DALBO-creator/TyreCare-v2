@@ -6,7 +6,7 @@ import { accedi, creaCliente, creaVeicolo, unico } from './aiuti';
 
 test('il titolare unisce due clienti e vede il veicolo sulla scheda rimasta', async ({ page }) => {
   const id = unico();
-  const targa = `U${id.slice(-7)}`;
+  const targa = `UC${id.slice(-6)}`;
   await accedi(page, 'titolare@tyrecare.test');
   const primo = await creaCliente(page, { nome: 'Unisci', cognome: `Primo${id}` });
   const secondo = await creaCliente(page, { nome: 'Unisci', cognome: `Secondo${id}` });
@@ -33,7 +33,7 @@ test('il titolare unisce due clienti e vede il veicolo sulla scheda rimasta', as
 
   await expect(page).toHaveURL(new RegExp(`/cliente\\?id=${primo}`));
   await expect(page.getByText('Clienti uniti.')).toBeVisible();
-  await expect(page.getByText(targa)).toBeVisible();
+  await expect(page.getByText(targa, { exact: true })).toBeVisible();
 });
 
 test('l’operatore non vede il link per unire i clienti', async ({ page }) => {
