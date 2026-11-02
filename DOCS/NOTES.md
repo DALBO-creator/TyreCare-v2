@@ -2735,7 +2735,8 @@ Resta fuori la seconda parte dell'idea T116 (errori delle pagine lanciati con `v
 **Come funziona:** supabase-js salva la sessione in `localStorage` con chiave `sb-<primo pezzo del
 dominio>-auth-token` (`chiaveSessione(url)`, l'URL viene da `VITE_SUPABASE_URL`). Se
 `signOut({scope:'local'})` dà errore, `esci()` toglie la chiave a mano (try/catch: lo storage può non
-essere disponibile) e rilancia l'errore; vale anche per l'eliminazione dell'account, che chiama `esci()`.
+essere disponibile) e rilancia l'errore (dal T174 non più: vedi "Uscita senza rete (`esci`, `lib/auth.ts`)"); vale anche per
+l'eliminazione dell'account, che chiama `esci()`.
 
 ### Codice complesso
 Limite: la sessione in memoria resta fino al ricaricamento (nessun SIGNED_OUT), ma al ricaricamento l'utente
@@ -2839,3 +2840,58 @@ manifest (almeno 3) e che i file di `includeAssets` esistano in `public/`.
 `sito.test.ts` — le icone del manifest si trovano con la regex `src: '…png'` su `vite.config.ts`: se
 cambia la forma del file, il test fallisce in modo chiaro. `Disallow: /` da solo è vietato,
 `Disallow: /percorso` è ammesso.
+
+## Abbonamenti: il database per Stripe (T180, R22)
+
+**File coinvolti:** `supabase/migrations/20261102000100_abbonamenti_stripe.sql`,
+`supabase/tests/database/abbonamenti-stripe.test.sql`, `packages/shared/src/database.types.ts`.
+**Come funziona:** le Edge Functions di Stripe (T185, T189) girano con il service role e sono le sole a poter
+chiamare tre funzioni `security definer`. `collega_cliente_stripe` collega il cliente una volta sola (diverso
+→ `CLIENTE_STRIPE_DIVERSO`, senza abbonamento → `ABBONAMENTO_NON_TROVATO`). `aggiorna_abbonamento_stripe`
+cerca per officina, poi per subscription, poi per customer (solo se su una riga); accetta
+ATTIVO/SCADUTO/ANNULLATO e piani STARTER/PRO o nullo (PILOTA solo ADMIN); riferimenti Stripe con `coalesce`.
+`registra_evento_stripe` dà `true` solo la prima volta.
+
+### Codice complesso
+`stripe_eventi` ha RLS senza policy e nessun permesso per gli utenti dell'app. `pulisci_eventi_stripe()` gira
+dal job `pulizia-eventi-stripe` (0:35, eventi oltre 30 giorni); si toglie con
+`cron.unschedule('pulizia-eventi-stripe')`.
+
+## Webhook di Stripe (`supabase/functions/stripe-webhook`, T185)
+
+**File coinvolti:** `supabase/functions/stripe-webhook/index.ts`, `firma.ts`, `eventi.ts` e i test
+`firma.test.ts`, `eventi.test.ts`.
+**Come funziona:** `index.ts` accetta solo POST (405), risponde 503 senza segreto e 400 per firma o JSON non
+validi; un evento già in `stripe_eventi` dà 200 duplicato, altrimenti chiama la rpc e poi registra l'evento.
+Errore DB → 500 senza registrare, così Stripe ritenta. Deploy:
+`supabase functions deploy stripe-webhook --no-verify-jwt`.
+
+### Codice complesso
+`firma.ts` legge `t` e tutti i `v1` di `Stripe-Signature`, calcola HMAC-SHA256 di `${t}.${corpo grezzo}` con
+`whsec_…`, confronta a tempo costante, tolleranza 300 s. `eventi.ts` traduce `checkout.session.completed`
+(mode subscription, officina da `client_reference_id`, ATTIVO) e `customer.subscription.created|updated|deleted`
+(officina da `metadata.officina_id`, stato da `status`, deleted = ANNULLATO, piano dal primo prezzo). Id
+officina non uuid → null; status da ignorare (`incomplete`) → nessun aggiornamento.
+
+## Uscita senza rete (`esci`, `lib/auth.ts`, T174)
+
+**File coinvolti:** `apps/web/src/lib/auth.ts`, `apps/web/src/lib/auth.test.ts`.
+**Come funziona:** con `scope: 'local'` e senza rete `signOut` dà errore, non cancella la sessione salvata e
+non emette `SIGNED_OUT`. `esci()` allora rimuove `sb-<ref>-auth-token` (`chiaveSessione`), azzera la variabile
+`sessione` e fa `location.assign('/accedi')` (ricarica completa, nessuno stato vecchio). Con rete resta il
+flusso `SIGNED_OUT` → `vaiA('/accedi')` di `main.ts`.
+
+### Codice complesso
+L'errore non si rilancia: i `catch` dei chiamanti valgono solo per altri errori, e un messaggio di
+`impostaConferma()` messo prima di `esci()` si perde senza rete.
+
+## Box d'errore comune (`pagine/comune.ts`, T178)
+
+**File coinvolti:** `apps/web/src/pagine/comune.ts`, `apps/web/src/pagine/comune.test.ts`,
+`apps/web/src/pagine/home.ts`, `apps/web/src/pagine/profilo.ts`.
+**Come funziona:** `htmlErrore(msg)` costruisce `<p class="mb-0">` con `esc`; `mostraErroreInBox(box, msg)`
+scrive l'HTML, toglie `hidden` e dà `focus()` (il riquadro ha `tabindex="-1"` e `role="alert"`);
+`nascondiBox(box)` rimette `hidden`; entrambe accettano `null`. Il chiamante passa `messaggioErrore(errore)`.
+
+### Codice complesso
+Test solo sulla parte pura (vitest web in node).

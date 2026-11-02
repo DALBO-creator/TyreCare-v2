@@ -4,6 +4,37 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-02 — ciclo 20261102-18 — T180 T185 T174 T178
+
+**Fatto**
+
+- T180: tabella `stripe_eventi` (solo service role) e funzioni `collega_cliente_stripe`,
+  `aggiorna_abbonamento_stripe`, `registra_evento_stripe` riservate al service role; job notturno
+  `pulizia-eventi-stripe` (0:35, eventi oltre 30 giorni). Test pgTAP `abbonamenti-stripe` (39) da vedere in CI.
+- T185: Edge Function `stripe-webhook`: firma Stripe verificata con Web Crypto, stato e piano
+  dell'abbonamento dagli eventi checkout/subscription, duplicati ignorati, 500 su errore DB perché Stripe
+  ritenti. 49 test Vitest; la funzione non gira in CI, deploy con `--no-verify-jwt`.
+- T174: `esci()` senza rete toglie la sessione dallo storage e dalla memoria e ricarica `/accedi` invece di
+  rilanciare l'errore; test aggiornati (T094) e test nuovo sulla sessione in memoria.
+- T178: il riquadro rosso d'errore con focus è in `comune.ts` (`htmlErrore`, `mostraErroreInBox`,
+  `nascondiBox`), usato da `home.ts` e `profilo.ts`; HTML identico; nuovo `comune.test.ts`.
+
+**Decisioni prese al posto di Davide**
+
+- SCADUTO da Stripe vale anche per un'officina in PROVA (come da compito); registrata in
+  `decisioni-rimandate` (R28).
+
+**Verifica**
+
+- Controlli veloci sulla prova d'insieme: verdi (48 file, 463 test; Node 24; JS iniziale 63,0 kB gzip su 70).
+- Gate del supervisore: 4/4 approvati al 1° giro.
+- pgTAP `abbonamenti-stripe` e `stripe-webhook/index.ts`: non eseguiti nel cloud (niente Docker né Deno),
+  da vedere in CI; firma ed eventi verificati con Vitest.
+- Idee emerse: T211 (`aggiorna_abbonamento_stripe`: subscription diversa, 23505 tradotto, ordine degli
+  eventi); T212 (`ABBONAMENTO_NON_TROVATO` permanente → 200 e avviso admin); T213 (indice unico parziale su
+  `stripe_customer_id`); T214 (togliere i `catch` di `esci()` ormai irraggiungibili); T215
+  (`mostraErroreInBox` anche in appuntamenti, cliente, invito).
+
 ### Sessione agenti — 2026-11-02 — ciclo 20261102-15 — T152 T153
 
 **Fatto**
