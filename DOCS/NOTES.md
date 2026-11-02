@@ -2696,6 +2696,38 @@ Il controllo dei 3 all'ora viene dopo le chiusure automatiche, "una in corso" e 
 prima dell'insert; due chiamate parallele le ferma l'indice unico "una in corso". Per cambiare il limite:
 migrazione nuova, messaggio in `apps/web/src/lib/strada.ts` (T183) e guida del cliente.
 
+## Aiuto su strada, lato officina (T144)
+
+**File coinvolti:** `apps/web/src/pagine/strada-officina.ts`, `apps/web/src/lib/strada-officina.ts`,
+`apps/web/src/lib/strada-officina.test.ts`, `apps/web/src/lib/dati-officina.ts`,
+`e2e/tests/strada-officina.spec.ts`.
+**Come funziona:** il titolare attiva il servizio e il raggio (5–100 km) in "Dati dell'officina"; la pagina
+`/officina/strada` legge `richieste_strada_vicine(officina)` e mostra le richieste con "Accetta"; le
+"Accettate" (telefono, mappa, "Chiudi") vengono dalla tabella con `.eq('officina_id', …)` e passano da
+`soloAccettateDi`, perché la RLS apre la lettura anche ad altri ruoli (dritta T143). Il link in home compare
+solo se `officinaOffreStrada` è vero. La casella del servizio si disattiva senza posizione leggibile (regola
+solo di interfaccia: le funzioni SQL richiedono comunque la posizione).
+
+### Codice complesso
+`pagine/strada-officina.ts` rilegge ogni 15 s e ridisegna solo se l'impronta JSON dell'elenco cambia (un
+dialogo aperto non sparisce); il timer si ferma con `ancoraAttuale(n)` o se il contenitore esce dal DOM.
+`DatiEStradaSchema` (`lib/strada-officina.ts`) valida `DatiOfficinaSchema` (ha un `transform`, non si può
+estendere) e `ImpostazioniStradaSchema` sugli stessi dati, unendo gli errori col percorso del campo.
+`officinaOffreStrada` sta in `lib/dati-officina.ts` e non in `strada-officina.ts`: la home è nel file
+iniziale e quel modulo trascina zod e schemi (+3 kB). `salvaDatiOfficina` traduce `PGRST116` in
+`ErroreModulo`; `RICHIESTA_NON_DISPONIBILE` e `42501` sono tradotti da `traduci`.
+
+## Router: ricarica e home dal riquadro d'errore (T157)
+
+**File coinvolti:** `apps/web/src/lib/router.ts`, `apps/web/src/lib/router.test.ts`.
+**Come funziona:** `riquadroPaginaNonDisponibile(url)` mostra, oltre a "Riprova" (link all'URL attuale, che
+non ricarica davvero), il pulsante `data-ricarica` "Ricarica l'app" e il link "Torna alla home" verso "/".
+
+### Codice complesso
+`collegaRicarica(el, ricarica)` aggancia il clic a `location.reload()` (o a una funzione finta nei test);
+`mostraPagina` la chiama dopo aver inserito il riquadro, solo se la navigazione è ancora quella attuale.
+Resta fuori la seconda parte dell'idea T116 (errori delle pagine lanciati con `void`).
+
 ## Uscita senza rete (T149)
 
 **File coinvolti:** `apps/web/src/lib/supabase.ts`, `apps/web/src/lib/supabase.test.ts`,
