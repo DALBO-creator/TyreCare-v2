@@ -2817,8 +2817,8 @@ legali usano `MARCHIO` esportato da `ui/layout.ts`.
 
 ### Codice complesso
 `legale.ts` `referrerStessoSito(referrer, origine)` — confronta `new URL(referrer).origin` con
-`location.origin` (schema, host, porta); referrer vuoto o non valido → `false` (il `try/catch` copre l'errore
-di `new URL`).
+`location.origin` (schema, host, porta); referrer vuoto o non valido → `false` (il `try/catch` copre
+l'errore di `new URL`).
 `legale.ts` `tornaIndietroNelSito` — aggiunge `lunghezzaStoria > 1`: le schede nuove aperte da
 `registrati.ts` e `home.ts` (`target="_blank" rel="noopener"`) hanno referrer del sito ma storia di 1 voce,
 e `history.back()` non porterebbe da nessuna parte. Con il solo `history.length > 1` chi arrivava da un
@@ -2834,8 +2834,8 @@ testo (`node:fs`) e controlla: lang, titolo, descrizione, theme-color, viewport,
 manifest (almeno 3) e che i file di `includeAssets` esistano in `public/`.
 
 ### Codice complesso
-`vercel.json` — la riscrittura `/(.*)` vale solo per i file che non esistono: senza `public/robots.txt`,
-`/robots.txt` rispondeva con la pagina dell'app e il punteggio SEO calava.
-`sito.test.ts` — le icone del manifest si trovano con la regex `src: '…png'` su `vite.config.ts`: se cambia
-la forma del file, il test fallisce in modo chiaro. `Disallow: /` da solo è vietato, `Disallow: /percorso`
+`apps/web/vercel.json` — la riscrittura `/(.*)` vale solo per i file che non esistono: senza
+`public/robots.txt`, `/robots.txt` rispondeva con la pagina dell'app e il punteggio SEO calava.
+`sito.test.ts` — le icone del manifest si trovano con la regex `src: '…png'` su `vite.config.ts`: se
+cambia la forma del file, il test fallisce in modo chiaro. `Disallow: /` da solo è vietato, `Disallow: /percorso`
 è ammesso.

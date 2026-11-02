@@ -9,9 +9,9 @@
 **Fatto**
 
 - T152: le pagine legali usano `MARCHIO` esportato da `ui/layout.ts`; "Torna indietro" fa `history.back()`
-  solo se il referrer è del sito e la storia ha più di una voce, altrimenti porta a `/`. Al 1° giro il
-  supervisore ha notato che le schede nuove (`target="_blank"`) da registrati/home hanno il referrer del
-  sito: corretto con `tornaIndietroNelSito`. Unit test `legale.test.ts` ed e2e `legale.spec.ts`.
+  solo se il referrer è del sito e la storia ha più di una voce, altrimenti porta a `/`. Al 1° giro la
+  revisione del coordinatore ha notato che le schede nuove (`target="_blank"`) da registrati/home hanno
+  il referrer del sito: corretto con `tornaIndietroNelSito`. Unit test `legale.test.ts` ed e2e `legale.spec.ts`.
 - T153: aggiunto `apps/web/public/robots.txt` (Allow tutto, niente `Sitemap` finché il dominio non è
   scelto), perché Vercel serviva la pagina dell'app al suo posto; `apps/web/src/sito.test.ts` (10 test)
   tiene sotto controllo i requisiti di base Lighthouse/PWA.
