@@ -12,6 +12,18 @@ export function referrerStessoSito(referrer: string, origine: string): boolean {
   }
 }
 
+/**
+ * Vero se "Torna indietro" può usare `history.back()`: il referrer è del sito e la storia ha più di una
+ * voce (in una scheda nuova, es. `target="_blank"`, il referrer è del sito ma la storia ha una sola voce).
+ */
+export function tornaIndietroNelSito(
+  referrer: string,
+  origine: string,
+  lunghezzaStoria: number,
+): boolean {
+  return lunghezzaStoria > 1 && referrerStessoSito(referrer, origine);
+}
+
 /** Pagina pubblica con un testo legale; il contenuto viene solo dai file del repository. */
 function mostraLegale(app: HTMLElement, markdown: string): void {
   const avviso = TESTI_LEGALI_DEFINITIVI
@@ -27,8 +39,9 @@ function mostraLegale(app: HTMLElement, markdown: string): void {
       </article>
     </main>`;
   app.querySelector<HTMLAnchorElement>('.tc-legale__indietro')?.addEventListener('click', (e) => {
-    // Si torna indietro solo se la pagina precedente è del sito; altrimenti il link porta alla home.
-    if (referrerStessoSito(document.referrer, location.origin)) {
+    // Si torna indietro solo se la pagina precedente è del sito e c'è una storia da cui tornare
+    // (non in una scheda nuova); altrimenti il link porta alla home.
+    if (tornaIndietroNelSito(document.referrer, location.origin, history.length)) {
       e.preventDefault();
       history.back();
     }
