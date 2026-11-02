@@ -1,6 +1,16 @@
 import informativa from '../../../../DOCS/legale/informativa-privacy.md?raw';
 import termini from '../../../../DOCS/legale/termini-di-servizio.md?raw';
 import { AVVISO_BOZZA, legaleInHtml, TESTI_LEGALI_DEFINITIVI } from '../lib/legale';
+import { MARCHIO } from '../ui/layout';
+
+/** Vero se `referrer` è una pagina della stessa origine (schema, host e porta) di `origine`. */
+export function referrerStessoSito(referrer: string, origine: string): boolean {
+  try {
+    return new URL(referrer).origin === origine;
+  } catch {
+    return false;
+  }
+}
 
 /** Pagina pubblica con un testo legale; il contenuto viene solo dai file del repository. */
 function mostraLegale(app: HTMLElement, markdown: string): void {
@@ -9,7 +19,7 @@ function mostraLegale(app: HTMLElement, markdown: string): void {
     : `<div class="tc-avviso tc-avviso--giallo" role="status"><p class="mb-0">${AVVISO_BOZZA}</p></div>`;
   app.innerHTML = `
     <main class="tc-auth tc-legale">
-      <a class="tc-auth__marchio" href="/" aria-label="TyreCare, home"><span class="tc-marchio">Tyre<span>Care</span></span></a>
+      <a class="tc-auth__marchio" href="/" aria-label="TyreCare, home">${MARCHIO}</a>
       <article class="tc-legale__testo">
         <p><a class="tc-legale__indietro" href="/">Torna indietro</a></p>
         ${avviso}
@@ -17,8 +27,8 @@ function mostraLegale(app: HTMLElement, markdown: string): void {
       </article>
     </main>`;
   app.querySelector<HTMLAnchorElement>('.tc-legale__indietro')?.addEventListener('click', (e) => {
-    // Se c'è una pagina precedente si torna lì, altrimenti il link porta alla home.
-    if (history.length > 1) {
+    // Si torna indietro solo se la pagina precedente è del sito; altrimenti il link porta alla home.
+    if (referrerStessoSito(document.referrer, location.origin)) {
       e.preventDefault();
       history.back();
     }
