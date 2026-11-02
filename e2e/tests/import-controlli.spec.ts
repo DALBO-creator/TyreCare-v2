@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { accedi, creaCliente, creaVeicolo, unico } from './aiuti';
+import { accedi, creaCliente, creaVeicolo, csvControlli, unico } from './aiuti';
 
 // Import dei controlli dal gestionale (T023): anteprima, import, reimport senza doppioni.
 // Targa e codici documento unici a ogni esecuzione: non serve `db:reset`.
@@ -16,34 +16,30 @@ test('il titolare importa i controlli di un veicolo e reimportarli non li duplic
   const schedaVeicolo = page.url();
 
   // 2 documenti (2 ruote ciascuno) in date passate e diverse, con la stessa gomma
-  const intestazione = [
-    'codice_documento',
-    'targa',
-    'data',
-    'km',
-    'posizione',
-    'battistrada_mm',
-    'pressione_bar',
-    'usura',
-    'danni',
-    'stagione',
-    'misura',
-    'marca',
-    'modello',
-    'dot',
-    'note',
-  ].join(';');
-  const riga = (doc: string, data: string, km: number, posizione: string, mm: string) =>
-    [doc, targa, data, km, posizione, mm, '2,2', 'REGOLARE', '', 'ESTIVO'].join(';') +
-    ';205/55 R16;Pirelli;Cinturato;2321;';
+  const riga = (doc: string, data: string, km: number, posizione: string, mm: string) => [
+    doc,
+    targa,
+    data,
+    String(km),
+    posizione,
+    mm,
+    '2,2',
+    'REGOLARE',
+    '',
+    'ESTIVO',
+    '205/55 R16',
+    'Pirelli',
+    'Cinturato',
+    '2321',
+    '',
+  ];
   const csv = Buffer.from(
-    [
-      intestazione,
+    csvControlli([
       riga(`D1${id}`, '15/01/2026', 40000, 'ANT_SX', '5,5'),
       riga(`D1${id}`, '15/01/2026', 40000, 'ANT_DX', '5,4'),
       riga(`D2${id}`, '20/03/2026', 45000, 'ANT_SX', '4,5'),
       riga(`D2${id}`, '20/03/2026', 45000, 'ANT_DX', '4,4'),
-    ].join('\r\n'),
+    ]),
     'utf8',
   );
   const file = { name: `controlli-${id}.csv`, mimeType: 'text/csv', buffer: csv };

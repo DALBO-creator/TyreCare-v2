@@ -1,11 +1,10 @@
 import { expect, test } from '@playwright/test';
 import {
-  OFFICINA,
-  PASSWORD,
   accedi,
   emailNuova,
-  linkConferma,
+  csvControlli,
   preparaInvito,
+  registratiDalLinkInvito,
   unico,
 } from './aiuti';
 
@@ -43,39 +42,35 @@ test("dall'import dell'officina al garage del cliente", async ({ page, browser }
   ).toBeVisible();
 
   // Titolare: import dei controlli di quella targa, 2 documenti con le stesse 4 gomme
-  const intestazione = [
-    'codice_documento',
-    'targa',
-    'data',
-    'km',
-    'posizione',
-    'battistrada_mm',
-    'pressione_bar',
-    'usura',
-    'danni',
-    'stagione',
-    'misura',
-    'marca',
-    'modello',
-    'dot',
-    'note',
-  ].join(';');
-  const riga = (doc: string, data: string, km: number, posizione: string, mm: string) =>
-    [doc, targa, data, km, posizione, mm, '2,2', 'REGOLARE', '', 'ESTIVO'].join(';') +
-    ';205/55 R16;Pirelli;Cinturato;2321;';
+  const riga = (doc: string, data: string, km: number, posizione: string, mm: string) => [
+    doc,
+    targa,
+    data,
+    String(km),
+    posizione,
+    mm,
+    '2,2',
+    'REGOLARE',
+    '',
+    'ESTIVO',
+    '205/55 R16',
+    'Pirelli',
+    'Cinturato',
+    '2321',
+    '',
+  ];
   const posizioni = ['ANT_SX', 'ANT_DX', 'POST_SX', 'POST_DX'];
-  const csvControlli = Buffer.from(
-    [
-      intestazione,
+  const csv = Buffer.from(
+    csvControlli([
       ...posizioni.map((p) => riga(`D1${id}`, '15/01/2026', 40000, p, '5,0')),
       // Nel secondo controllo l'anteriore sinistra è sotto il limite di legge (1,6 mm)
       ...posizioni.map((p) =>
         riga(`D2${id}`, '20/03/2026', 45000, p, p === 'ANT_SX' ? '1,5' : '4,9'),
       ),
-    ].join('\r\n'),
+    ]),
     'utf8',
   );
-  const fileControlli = { name: `controlli-${id}.csv`, mimeType: 'text/csv', buffer: csvControlli };
+  const fileControlli = { name: `controlli-${id}.csv`, mimeType: 'text/csv', buffer: csv };
   await page.goto('/clienti/importa-controlli');
   await page.getByLabel('File CSV o Excel').setInputFiles(fileControlli);
   await expect(page.getByText(/^2 controlli nuovi · 0 già presenti/)).toBeVisible();
@@ -92,22 +87,7 @@ test("dall'import dell'officina al garage del cliente", async ({ page, browser }
 
   // Cliente, in un altro browser: crea l'account dal link e collega i veicoli
   const cliente = await (await browser.newContext()).newPage();
-  await cliente.goto(link);
-  await expect(
-    cliente.getByRole('heading', { name: `${OFFICINA} ti invita su TyreCare` }),
-  ).toBeVisible();
-  await cliente.getByRole('link', { name: 'Crea account' }).click();
-  await expect(cliente.getByLabel('Email', { exact: true })).toHaveValue(email);
-  await cliente.getByLabel('Nome', { exact: true }).fill('Luca');
-  await cliente.getByLabel('Cognome', { exact: true }).fill(cognome);
-  await cliente.getByLabel('Password', { exact: true }).fill(PASSWORD);
-  await cliente.getByLabel(/Ho letto l'informativa privacy/).check();
-  await cliente.getByRole('button', { name: 'Crea account' }).click();
-  await expect(cliente.getByRole('heading', { name: 'Controlla la posta' })).toBeVisible();
-  await cliente.goto(await linkConferma(email));
-  await expect(cliente).toHaveURL(/\/invito\?codice=/);
-  await cliente.getByRole('button', { name: 'Collega i miei veicoli' }).click();
-  await expect(cliente).toHaveURL(/\/$/);
+  await registratiDalLinkInvito(cliente, link, { nome: 'Luca', cognome, email });
 
   // Garage: il veicolo ha lo stato rosso; dal cruscotto si apre lo pneumatico da 1,5 mm
   const carta = cliente.getByRole('link', { name: /Panda/ });
