@@ -31,6 +31,7 @@ test('un’officina nuova vede i "Primi passi" e il titolare può nasconderli', 
 
   await page.getByRole('button', { name: 'Nascondi' }).click();
   await expect(page.getByRole('heading', { name: 'Primi passi' })).toBeHidden();
+  await expect(page.getByRole('heading', { level: 1 })).toBeFocused();
 
   await page.reload();
   await expect(page.getByText('Officina in attesa')).toBeVisible();
