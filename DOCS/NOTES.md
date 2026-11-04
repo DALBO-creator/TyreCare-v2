@@ -2106,10 +2106,11 @@ numero di Excel).
 ## Import controlli: anteprima più chiara (T146)
 
 **File coinvolti:** `apps/web/src/lib/importa-controlli.ts`, `apps/web/src/pagine/importa-controlli.ts`.
-**Come funziona:** l'anteprima dice quanti documenti saltano per intero ("N documenti verranno saltati per
-intero", con `plurale`), ha un solo invito a correggere il file (tolta la frase "Se vuoi che il controllo sia
-completo…") e mostra l'avviso giallo `data-periodo-sospetto` se il controllo più vecchio ha più di 15
-anni, suggerendo di controllare la colonna «Data». Le date future restano errori di riga.
+**Come funziona:** l'anteprima dice quanti documenti saltano per intero ("N documenti con righe sbagliate
+verranno saltati per intero", con `plurale`, solo se ce ne sono; T176), ha un solo invito a correggere il
+file (tolta la frase "Se vuoi che il controllo sia completo…") e mostra l'avviso giallo
+`data-periodo-sospetto` se il controllo più vecchio ha più di 15 anni, suggerendo di controllare la colonna
+«Data». Le date future restano errori di riga.
 
 ### Codice complesso
 - `controllaTabellaControlli` restituisce anche `documentiSaltati`: i documenti con almeno una riga in
@@ -2486,8 +2487,20 @@ dell'officina, ciascuno con testo e link. Compare se almeno un passo è da fare 
 conteggi `head: true` di `servizi_officina`, `clienti_officina` e dei clienti con `profile_id` non nullo.
 Posizione fatta = latitudine non nulla; orari fatti = `jsonb` non vuoto. La home legge lo stato in
 parallelo solo per il titolare; se la lettura fallisce la carta non compare. "Nascondi" salva
-`tc-primi-passi-nascosti-<officinaId>` in `localStorage` (con try/catch). Dopo `remove()` il focus non è
-spostato: idea in coda.
+`tc-primi-passi-nascosti-<officinaId>` in `localStorage` (con try/catch). Il focus dopo `remove()` è
+descritto sotto (T181).
+
+## Primi passi: focus dopo Nascondi (T181)
+
+**File coinvolti:** `apps/web/src/pagine/home-officina.ts`, `apps/web/src/pagine/home-officina.test.ts`,
+`e2e/tests/` (spec `primi-passi`).
+**Come funziona:** "Nascondi" rimuove la carta dal DOM e il pulsante che aveva il focus sparisce, quindi il
+browser tornerebbe in cima alla pagina. L'handler in `home-officina.ts` mette a fuoco l'h1 della home
+(`tabindex="-1"`), senza scorrere se il titolo è già visibile. L'e2e verifica il focus con `toBeFocused`.
+
+### Codice complesso
+`home-officina.ts` — `titoloVisibile(rect, altezza)` è pura: vero se `top >= 0` e `bottom <= altezza`.
+Se il titolo è visibile si usa `focus({ preventScroll: true })`, altrimenti `focus()` che lo porta in vista.
 
 ## CSV delle righe con errori: celle in più (T075)
 
