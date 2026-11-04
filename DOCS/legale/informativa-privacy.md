@@ -138,8 +138,9 @@ l'officina possa contattarti.
 
 ## 4. Per quanto tempo conserviamo i dati
 
-L'app cancella da sola **solo le notifiche** (vedi sotto): gli altri dati restano finché non vengono
-eliminati dall'officina, dall'interessato o alla chiusura dell'account. I tempi previsti sono:
+L'app cancella da sola **le notifiche e le richieste di aiuto su strada** (vedi sotto): gli altri
+dati restano finché non vengono eliminati dall'officina, dall'interessato o alla chiusura dell'account.
+I tempi previsti sono:
 
 - **account e profilo**: finché l'account è attivo; dopo la richiesta di cancellazione
   [DA COMPLETARE: entro quanti giorni];
