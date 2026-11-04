@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { accedi, nuovoAccountCliente } from './aiuti';
+import { accedi, entra, nuovoAccountCliente, unico } from './aiuti';
 
 /** Partita IVA italiana valida e unica: 10 cifre dall'orologio e dal caso, più la cifra di controllo. */
 function partitaIvaUnica(): string {
@@ -42,4 +42,34 @@ test('un cliente registra la sua officina e si ritrova nell’area officina in a
     page.getByText('Richiesta inviata: intanto puoi preparare la tua officina.'),
   ).toBeVisible();
   await expect(page.getByText('Officina in attesa')).toBeVisible();
+});
+
+test('la partita IVA scritta come in fattura (IT e spazi) è accettata e l’amministratore vede le 11 cifre', async ({
+  page,
+  browser,
+}) => {
+  test.setTimeout(180_000);
+  const ragioneSociale = `Gomme Spazi ${unico()}`;
+  const piva = partitaIvaUnica();
+  const comeInFattura = 'IT ' + piva.match(/.{1,3}/g)!.join(' ');
+
+  await accedi(page, await nuovoAccountCliente('Sara'));
+  await page.goto('/officina/registra');
+  await page.getByLabel('Ragione sociale').fill(ragioneSociale);
+  await page.getByLabel('Partita IVA').fill(comeInFattura);
+  await page.getByLabel('Città').fill('Torino');
+  await page.getByRole('button', { name: 'Invia la richiesta' }).click();
+
+  await expect(page).toHaveURL(/\/$/);
+  await expect(
+    page.getByText('Richiesta inviata: intanto puoi preparare la tua officina.'),
+  ).toBeVisible();
+  await expect(page.getByText('Officina in attesa')).toBeVisible();
+
+  const admin = await entra(browser, 'admin@tyrecare.test');
+  await admin.goto('/admin/officine');
+  const riga = admin.locator('.tc-lista__riga').filter({ hasText: ragioneSociale });
+  await expect(riga).toBeVisible();
+  await expect(riga).toContainText(`P. IVA ${piva} · Torino`);
+  await expect(riga).not.toContainText('P. IVA IT');
 });
