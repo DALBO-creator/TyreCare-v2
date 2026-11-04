@@ -2923,3 +2923,26 @@ un array di 15 stringhe (ultimo `''` per `note`); gli spec ne fanno `Buffer.from
 Targhe di test con un prefisso proprio (`UC` + ultimi 6 di `id` in "unisci clienti") e
 `getByText(targa, { exact: true })`: una targa non in formato italiano resta com'è nella scheda e, senza
 `exact`, può coincidere con un pezzo del cognome `Primo${id}` (T177).
+
+## e2e: partita IVA scritta come in fattura (T182)
+
+**File coinvolti:** `e2e/tests/registra-officina.spec.ts`.
+**Come funziona:** `partitaIvaUnica()` genera una partita IVA con la cifra di controllo calcolata; il test la
+digita come `IT ` + gruppi di 3 cifre. `RichiestaAffiliazioneSchema` toglie spazi, punti e `IT` iniziale, e in
+`/admin/officine` l'amministratore la vede a 11 cifre.
+
+### Codice complesso
+La riga in `/admin/officine` deve contenere `P. IVA <11 cifre> · Torino` e non `P. IVA IT`; il controllo
+va fatto dopo l'attesa della riga, altrimenti passa su una lista ancora vuota.
+
+## Test delle funzioni pure di lib/ (html, officina, dati-officina, T187)
+
+**File coinvolti:** tre file `*.test.ts` nuovi in `apps/web/src/lib/` (per `html`, `officina`,
+`dati-officina`).
+**Come funziona:** i test importano `./officina` e `./dati-officina` simulando `./supabase` con
+`getSupabase: () => ({})`. Coprono `esc`, `officinaAttiva`/`eTitolare`/`giaSalvato` e `testoPosizione`.
+
+### Codice complesso
+Ambiente vitest `node`: `localStorage` è simulato con `vi.stubGlobal` (una `Map` in memoria o funzioni che
+lanciano). `OfficinaUtente` arriva dall'helper `officina(id, ruolo)`. Gli errori Supabase sono oggetti
+`{ code, message }` perché `codiceErrore` legge `code`.

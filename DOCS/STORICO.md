@@ -4,6 +4,17 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-05 — ciclo 20261105-00 — T182 T187
+
+**Fatto**
+
+- T182: test e2e in `registra-officina.spec.ts`: la partita IVA scritta "IT 123 456 789 01" è accettata e
+  l'amministratore la vede a 11 cifre in `/admin/officine`.
+- T187: unit test di `esc`, `officinaAttiva`/`eTitolare`/`giaSalvato` e `testoPosizione` (3 file nuovi in
+  `apps/web/src/lib/`); nessun codice di produzione cambiato; 491 test web verdi.
+- Revisione a coppia: 2 giri per ciascun compito; gate del supervisore approvato.
+- Documentazione: NOTES (due voci) e NEXT allineati.
+
 ### Sessione agenti — 2026-11-04 — ciclo 20261104-21 — T179 T184
 
 **Fatto**

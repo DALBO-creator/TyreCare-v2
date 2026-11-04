@@ -7,8 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261104-21 (T179 guide del pilota: Primi passi e commenti dall'app; T184 bozze
-> legali: richieste di aiuto su strada cancellate con l'account), nel treno.
+> Ultima sessione: ciclo 20261105-00 (T182 e2e della partita IVA scritta come in fattura; T187 unit test
+> delle funzioni pure di `lib/`), nel treno.
 > Aiuto su strada: resta T159 (guide).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
