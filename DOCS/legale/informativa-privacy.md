@@ -147,9 +147,8 @@ eliminati dall'officina, dall'interessato o alla chiusura dell'account. I tempi 
   vecchie di un anno (365 giorni) [DA COMPLETARE: confermare i tempi con il consulente];
 - **richieste di aiuto su strada**: una richiesta non accettata scade dopo 2 ore e una accettata si chiude
   da sola dopo 24 ore se l'officina non la chiude; le richieste chiuse, annullate o scadute (con posizione,
-  telefono, descrizione e targa) vengono cancellate dopo **90 giorni**
-  [DA COMPLETARE: cosa succede alle richieste di aiuto su strada quando si elimina l'account — da
-  definire con T140–T144];
+  telefono, descrizione e targa) vengono cancellate dopo **90 giorni**; se elimini il tuo account, le tue
+  richieste di aiuto su strada vengono cancellate subito con l'account;
 - **prenotazioni**: non si cancellano da sole [DA COMPLETARE: periodo, es. N mesi dopo l'appuntamento];
 - **iscrizioni push**: finché non disattivi le notifiche push nell'app o dal browser (in quel caso
   l'iscrizione viene eliminata);
@@ -173,7 +172,8 @@ I dati non vengono venduti né ceduti a terzi per scopi propri. Possono vederli:
   prenotazioni **di quell'officina**, mai quelli di altre officine;
 - per l'**aiuto su strada**: prima che un'officina accetti, le officine vicine che offrono il servizio
   vedono solo la distanza, la descrizione e la targa; la posizione esatta e il telefono li vede solo
-  l'officina che accetta (che poi interviene come soggetto autonomo, vedi i termini di servizio);
+  l'officina che accetta [DA COMPLETARE: ruolo dell'officina che accetta — da confermare con il
+  consulente, come nel registro A6];
 - **tu**, se sei cliente: vedi i veicoli collegati al tuo account e le tue prenotazioni, non i dati di
   altri clienti;
 - il **personale autorizzato di TyreCare**: l'account amministratore dell'app non vede i dati dei clienti

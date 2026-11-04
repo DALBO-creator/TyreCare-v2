@@ -12,8 +12,8 @@ export function mostraEliminaAccount(app: HTMLElement): void {
     ${intestazioneSottopagina('Elimina il tuo account')}
     <div class="tc-contenuto">
       <p>
-        Verranno eliminati il tuo account, il tuo profilo, le notifiche, i commenti e le
-        prenotazioni passate.
+        Verranno eliminati il tuo account, il tuo profilo, le notifiche, i commenti, le
+        richieste di aiuto su strada e le prenotazioni passate.
       </p>
       <p>
         Le officine di cui sei cliente conservano la tua scheda e i tuoi veicoli, ma non sono più
@@ -27,7 +27,7 @@ export function mostraEliminaAccount(app: HTMLElement): void {
   collegaElimina(app, {
     titolo: 'Eliminare il tuo account?',
     testo:
-      "Account, profilo, notifiche, commenti e prenotazioni passate verranno eliminati. L'operazione non si può annullare.",
+      "Account, profilo, notifiche, commenti, richieste di aiuto su strada e prenotazioni passate verranno eliminati. L'operazione non si può annullare.",
     pulsante: 'Sì, elimina',
     azione: async () => {
       await eliminaAccount();
