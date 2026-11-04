@@ -2412,7 +2412,8 @@ misure dello pneumatico. Il cliente usa un contesto nuovo: registrazione con i t
 
 **File coinvolti:** `DOCS/pilota/guida-officina.md`, `DOCS/PLAN.md` (indice).
 **Come funziona:** documento unico per le officine, con una sezione per funzione. In fondo "In arrivo":
-pagamento dell'abbonamento e Primi passi; quando escono, la voce diventa una sezione.
+il pagamento dell'abbonamento; quando esce, la voce diventa una sezione ("Primi passi" è già un paragrafo
+della §1).
 
 ### Codice complesso
 - Ogni nome tra virgolette esiste tale e quale nel codice: si controlla con
