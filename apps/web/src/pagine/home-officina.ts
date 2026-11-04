@@ -197,8 +197,22 @@ export async function mostraHomeOfficina(
   app.querySelector('[data-nascondi-primi-passi]')?.addEventListener('click', () => {
     nascondi(attiva.officina.id);
     app.querySelector('[data-primi-passi]')?.remove();
+    // Il pulsante sparisce: il focus passa al titolo, senza scorrere se è già visibile
+    const titolo = app.querySelector<HTMLElement>('h1');
+    if (titolo) {
+      if (titoloVisibile(titolo.getBoundingClientRect(), window.innerHeight)) {
+        titolo.focus({ preventScroll: true });
+      } else {
+        titolo.focus();
+      }
+    }
   });
   if (veicoli.length > 0) collegaElenco(app, veicoli, oggi);
+}
+
+/** Il titolo è interamente nella finestra (altezza `altezza`)? */
+export function titoloVisibile(rect: { top: number; bottom: number }, altezza: number): boolean {
+  return rect.top >= 0 && rect.bottom <= altezza;
 }
 
 function cartaPrimiPassi(passi: PassoPrimiPassi[]): string {
