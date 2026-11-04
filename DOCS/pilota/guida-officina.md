@@ -18,6 +18,21 @@ schermata Home (serve per le notifiche su iPhone) segui il passo 1 di `guida-avv
 - **Profilo → "Elimina il tuo account"** cancella l'account (chiede conferma).
 - "Esci" chiude la sessione.
 
+### "Primi passi" nella home
+
+Finché la tua officina è nuova, nella **Home** (solo per il titolare) compare la carta "Primi passi", con il
+contatore "N di 5 fatti". Ogni passo è un link che apre la pagina giusta e si spunta da solo:
+
+1. "Completa i dati dell'officina e la posizione": fatto quando la posizione è salvata.
+2. "Imposta orari e capienza": fatto quando hai salvato gli orari.
+3. "Aggiungi i servizi": fatto quando c'è almeno un servizio.
+4. "Importa clienti e veicoli": fatto quando c'è almeno un cliente.
+5. "Invita i clienti nell'app": fatto quando almeno un cliente è collegato all'app.
+
+La carta sparisce da sola quando i cinque passi sono fatti. Se non la vuoi vedere prima, premi "Nascondi":
+vale solo su quel telefono (o computer), perché la scelta resta nel browser. Su un altro telefono la carta
+ricompare finché i passi non sono fatti.
+
 ## 2. Dati dell'officina e posizione
 
 **Profilo → "Dati dell'officina"** (solo titolare). Ragione sociale e partita IVA le cambia
@@ -206,7 +221,6 @@ Non ancora disponibili: non ci sono istruzioni.
 
 - Pagamento online dell'abbonamento: la pagina "Abbonamento" mostra il piano, ma "Attiva l'abbonamento"
   non è ancora attivo.
-- "Primi passi": percorso guidato per le nuove officine.
 
 ---
 

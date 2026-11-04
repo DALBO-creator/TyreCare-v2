@@ -29,7 +29,8 @@ Bozza del 2026-10-31, da stampare o mandare ai clienti. Pochi passi, nell'ordine
 7. **I tuoi dati.** Vai in **Profilo**, sezione "Account".
    - "Scarica i tuoi dati": ottieni un file con tutto ciò che TyreCare ha su di te.
    - "Elimina il tuo account": l'app spiega cosa viene eliminato, poi chiede conferma con "Sì, elimina".
-     Vengono eliminati account, profilo, notifiche, commenti e prenotazioni passate. La tua officina
-     conserva la tua scheda e i tuoi veicoli, ma non sono più collegati all'app. Non si può annullare.
+     Vengono eliminati account, profilo, notifiche, commenti, richieste di aiuto su strada e
+     prenotazioni passate. La tua officina conserva la tua scheda e i tuoi veicoli, ma non sono più
+     collegati all'app. Non si può annullare.
 
 Hai bisogno di aiuto? Chiedi alla tua officina: [DA COMPLETARE: telefono o email dell'officina].

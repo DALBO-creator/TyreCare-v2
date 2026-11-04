@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-04 — ciclo 20261104-21 — T179 T184
+
+**Fatto**
+
+- T179: la guida delle officine descrive la carta "Primi passi" della home (5 passi, quando risultano fatti,
+  "Nascondi" solo sul dispositivo) e non la elenca più in "In arrivo"; il piano del pilota dice che i
+  commenti si leggono dall'app (Profilo → "Commenti degli utenti", solo admin), non dalla console di Supabase.
+- T184: informativa (§4 e §5), registro A6 e pagina "Elimina il tuo account" (paragrafo e dialogo) dicono che
+  le richieste di aiuto su strada si cancellano con l'account (`on delete cascade`); tabelle con RLS ricontate
+  dalle migrazioni: 21 in `public`, tutte con RLS (registro M1, README legale); «soggetto autonomo»
+  dell'informativa §6 tornato `[DA COMPLETARE]` come nel registro A6.
+- Documentazione: NOTES (guida officina), guida cliente e NEXT allineati.
+
 ### Sessione agenti — 2026-11-04 — ciclo 20261104-18 — T181 T176
 
 **Fatto**

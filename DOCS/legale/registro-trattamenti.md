@@ -26,7 +26,7 @@ lancio": non vanno considerate attive finché non sono realizzate.
 
 Valgono per tutti i trattamenti; ogni scheda indica solo le particolarità.
 
-- **M1 — Regole di accesso per riga (RLS).** Tutte le 16 tabelle con dati in `public` hanno
+- **M1 — Regole di accesso per riga (RLS).** Tutte le 21 tabelle in `public` hanno
   `enable row level security`: ogni utente legge e modifica solo le righe che gli spettano (il proprio
   account, la propria officina, i veicoli collegati al proprio account). Verificate con test pgTAP in
   `supabase/tests/database/`, anche per gli accessi negati (es. un'altra officina non vede i controlli).
@@ -128,7 +128,7 @@ README, "Da fare prima del lancio"]
 | Destinatari | Prima dell'accettazione, le officine attive entro il raggio: solo distanza, descrizione e targa; dopo l'accettazione, solo l'officina che accetta: posizione esatta e telefono; Supabase |
 | Ruolo dell'officina che accetta | [DA COMPLETARE: ruolo dell'officina che esegue l'intervento — titolare autonomo? da confermare con il consulente] |
 | Trasferimenti extra UE | Come A1 |
-| Conservazione | Non accettata: scade dopo 2 ore; accettata: si chiude da sola dopo 24 ore; chiusa, annullata o scaduta: cancellata dopo 90 giorni (R18) |
+| Conservazione | Non accettata: scade dopo 2 ore; accettata: si chiude da sola dopo 24 ore; chiusa, annullata o scaduta: cancellata dopo 90 giorni (R18); cancellata subito con l'account del cliente |
 | Misure | M1–M5; ogni officina vede solo le richieste del proprio raggio e quelle che ha accettato; la posizione esatta e il telefono solo a chi accetta |
 
 ---

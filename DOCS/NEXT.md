@@ -7,10 +7,9 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261104-18 (T181 focus sull'h1 dopo "Nascondi" dei Primi passi, T176 frase unica
-> sui documenti saltati nell'anteprima dell'import dei controlli), nel treno.
-> Aiuto su strada: resta T159 (guide); T165 (idea del supervisore:
-> note legali: eliminazione account, informativa §6 e registro A6, «16 tabelle» del registro M1).
+> Ultima sessione: ciclo 20261104-21 (T179 guide del pilota: Primi passi e commenti dall'app; T184 bozze
+> legali: richieste di aiuto su strada cancellate con l'account), nel treno.
+> Aiuto su strada: resta T159 (guide).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
