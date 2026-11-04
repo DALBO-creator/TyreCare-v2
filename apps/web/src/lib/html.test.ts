@@ -10,7 +10,7 @@ describe('esc', () => {
     expect(esc('<b>Rossi & figli</b>')).toBe('&lt;b&gt;Rossi &amp; figli&lt;/b&gt;');
   });
 
-  it('non riesegue l’escape su un testo già sostituito una sola volta', () => {
+  it('un testo già sostituito viene sostituito di nuovo (esc va chiamata una volta sola)', () => {
     expect(esc('&amp;')).toBe('&amp;amp;');
   });
 
