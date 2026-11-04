@@ -70,6 +70,6 @@ test('la partita IVA scritta come in fattura (IT e spazi) è accettata e l’amm
   await admin.goto('/admin/officine');
   const riga = admin.locator('.tc-lista__riga').filter({ hasText: ragioneSociale });
   await expect(riga).toBeVisible();
-  await expect(riga).toContainText(`P. IVA ${piva} ·`);
-  await expect(riga).not.toContainText('IT ');
+  await expect(riga).toContainText(`P. IVA ${piva} · Torino`);
+  await expect(riga).not.toContainText('P. IVA IT');
 });
