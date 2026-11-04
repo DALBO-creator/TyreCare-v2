@@ -267,12 +267,11 @@ function elencoErrori(errori: ErroreImport[], scartate: number, documentiSaltati
       <p class="mb-0">
         ${plurale(scartate, 'riga ha', 'righe hanno')} errori e
         ${scartate === 1 ? 'verrà saltata' : 'verranno saltate'}: le righe con errori non vengono
-        importate. I documenti con righe sbagliate vengono saltati per intero: correggi il file e
-        reimportalo.
+        importate: correggi il file e reimportalo.
       </p>
       ${
         documentiSaltati > 0
-          ? `<p class="mb-0">${plurale(documentiSaltati, 'documento verrà saltato per intero', 'documenti verranno saltati per intero')}</p>`
+          ? `<p class="mb-0">${plurale(documentiSaltati, 'documento con righe sbagliate verrà saltato per intero', 'documenti con righe sbagliate verranno saltati per intero')}</p>`
           : ''
       }
     </div>
