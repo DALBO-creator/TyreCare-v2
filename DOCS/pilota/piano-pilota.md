@@ -21,10 +21,10 @@ Si annotano ogni settimana, in una tabella tua (non nel repository), questi quat
 | Clienti invitati e clienti collegati (hanno accettato l'invito) | Scheda del cliente → "App TyreCare" |
 | Controlli inseriti | Schede dei veicoli, "Nuovo controllo" (o tabella `controlli` in Supabase) |
 | Richieste di appuntamento arrivate | **Appuntamenti** → "Da confermare" e storico |
-| Commenti arrivati dall'app | Console di Supabase, tabella `commenti` |
+| Commenti arrivati dall'app | **Profilo** → "Commenti degli utenti" (`/admin/commenti`, solo admin) |
 
-Per i commenti oggi serve la console di Supabase; una pagina nell'app è in preparazione (T103), ma non
-contarci finché non la vedi in **Profilo**.
+La voce "Commenti degli utenti" sta nella sezione "Amministrazione" del Profilo: la vedi solo entrando con
+l'account amministratore, non con quello del titolare.
 
 ## 4. Incontro di avvio con l'officina
 
@@ -43,8 +43,8 @@ Lascia al titolare [`guida-officina.md`](guida-officina.md) per tutto il resto.
 
 - **Una telefonata a settimana** di 10 minuti con il titolare: cosa ha usato, cosa non ha capito, cosa manca.
   Annota i quattro numeri della tabella.
-- **Lettura dei commenti** dell'app almeno due volte a settimana; rispondi al titolare in telefonata, non
-  per email in massa.
+- **Lettura dei commenti** dell'app (**Profilo** → "Commenti degli utenti") almeno due volte a settimana;
+  rispondi al titolare in telefonata, non per email in massa.
 - Le richieste di cambio che ne escono le porti in coda (idee), non le prometti a voce.
 
 ## 6. Quando il pilota è riuscito
