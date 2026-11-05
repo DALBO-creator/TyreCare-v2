@@ -76,6 +76,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **marked** | 18.1.2 | ✅ | Converte in HTML i testi legali di `DOCS/legale/` (`apps/web/src/lib/legale.ts`); sta solo nel chunk della pagina `legale`. Versione esatta. |
 | **web-push** | 3.6 | ✅ | Invio delle notifiche push con chiavi VAPID, dentro la Edge Function `invia-notifica` (import `npm:` in Deno), non in Fastify (PLAN P21). |
 | **Supabase Edge Functions** (Deno) | — | ✅ | `supabase/functions/invia-notifica`: Web Push a ogni nuova notifica. Deploy: `npx supabase functions deploy invia-notifica`. `stripe-webhook` (T185): webhook di Stripe, segreti `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PRO`, deploy con `--no-verify-jwt`. |
+| `supabase/functions/_shared/` | — | ✅ | Aiuti comuni alle Edge Functions (T189, `stripe.ts` con `fetch`), senza Deno; testati da Vitest nel project `funzioni`. Nessuna dipendenza nuova. |
 | **pg_net** + **Vault** | — | ✅ | Il trigger `notifiche_push` chiama la Edge Function in modo asincrono; indirizzo e segreto nel Vault. |
 | **pg_cron** (Supabase Cron) | — | ✅ | Job orari: `promemoria-appuntamenti` (dalle 18, promemoria del giorno prima) e `promemoria-pneumatici` (dalle 10, cambio stagionale); `scadenza-prove` (0:25 UTC, prove scadute), `pulizia-eventi-stripe` (0:35 UTC, eventi Stripe oltre 30 giorni) e `richieste-strada` (ogni 10 minuti, richieste di aiuto su strada). Elenco dei job: tabella `cron.job`; esecuzioni: `cron.job_run_details`. |
 

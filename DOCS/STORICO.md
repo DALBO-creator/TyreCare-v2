@@ -4,6 +4,26 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-05 — ciclo 20261105-03 — T189 T191
+
+**Fatto**
+
+- T189: Edge Function `stripe-checkout`: il titolare sceglie STARTER o PRO e riceve l'URL del pagamento
+  Stripe (solo carta); senza chiavi risponde 503 PAGAMENTI_NON_ATTIVI. Nessun SDK: `_shared/stripe.ts` con
+  `fetch`, flusso in `checkout.ts` con 41 test Vitest.
+- T191: avvisi dell'affiliazione (admin alla richiesta, titolari all'attivazione, membri al rifiuto) e nuova
+  `rifiuta_affiliazione`, che cancella l'officina IN_ATTESA e libera la partita IVA (R24); migrazione
+  20261105000100, pgTAP `affiliazione-avvisi` (32 asserzioni).
+- Revisione a coppia: 1 giro per ciascun compito; gate del supervisore approvato 2/2 al primo giro.
+- Prova d'insieme verde (532 test, 54 file; JS iniziale 63,1 kB); il pgTAP di T191 non è stato eseguito
+  in locale: lo verifica la CI.
+- Idee: T189b (una sola subscription Stripe per officina, prima di T192 e delle chiavi); `Idempotency-Key`
+  per la creazione del cliente Stripe; `/` valido in `notifiche.link`; pulsante "Rifiuta" dell'admin con
+  avviso che i dati caricati si cancellano (già T196).
+- Note del supervisore: con abbonamento SCADUTO e subscription viva è possibile un secondo checkout, e
+  un'officina IN_ATTESA che paga e poi viene rifiutata lascia la subscription attiva (entrambe T189b);
+  `attiva_officina` avvisa anche nel passaggio SOSPESA → ATTIVA con il testo della prima attivazione.
+
 ### Sessione agenti — 2026-11-05 — ciclo 20261105-00 — T182 T187
 
 **Fatto**

@@ -7,8 +7,9 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261105-00 (T182 e2e della partita IVA scritta come in fattura; T187 unit test
-> delle funzioni pure di `lib/`), nel treno.
+> Ultima sessione: ciclo 20261105-03 (T189 checkout di Stripe; T191 avvisi e rifiuto dell'affiliazione),
+> nel treno.
+> Promemoria: prima delle chiavi Stripe (D8) serve T189b (una sola subscription per officina).
 > Aiuto su strada: resta T159 (guide).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
@@ -43,8 +44,8 @@
   l'email dal dominio di TyreCare (P23): comando in `NOTES.md` → "Notifiche: email di riserva (T066)"
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
-- [~] Fase 7: **Stripe** — fatti il database (T180) e il webhook (T185); restano checkout (T189), portale
-  (T195), pagina Abbonamento (T192) e guida (T204)
+- [~] Fase 7: **Stripe** — fatti il database (T180), il webhook (T185) e il checkout (T189); prima delle
+  chiavi (D8) serve T189b; restano portale (T195), pagina Abbonamento (T192) e guida (T204)
 - [x] Promemoria: la registrazione web passa `termini_versione` nei metadati di `signUp` — fatto (T056,
   2026-10-29): la spunta dei termini è obbligatoria e il trigger (T054) copia la versione nel profilo
 
