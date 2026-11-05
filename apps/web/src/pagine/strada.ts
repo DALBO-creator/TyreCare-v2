@@ -141,7 +141,7 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
                  ${
                    officina?.telefono
                      ? `<a class="btn btn-primary btn-lg w-100 mb-2" href="${esc(telefonoHref(officina.telefono))}">${icona(Phone)} Chiama ${esc(officina.telefono)}</a>`
-                     : "<p class='mb-2'>L'officina ti richiamerà al numero che hai indicato.</p>"
+                     : `<p class="mb-2">L'officina ti richiamerà al numero che hai indicato.</p>`
                  }`
               : `<p class="mb-0">Cerchiamo un'officina vicina: la richiesta resta aperta fino alle ${esc(ORA.format(new Date(r.scade_il)))}.</p>`
           }
@@ -168,9 +168,11 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
         inCorso: 'Annullamento…',
         origine: annulla,
         azione: async () => {
-          ferma();
+          // Due volte: prima scarta le letture partite prima, dopo quelle partite durante l'annullo
+          // (se l'annullo fallisce il timer resta acceso; se riesce, `disegna()` lo ferma)
           generazione.nuova();
           await annullaRichiestaStrada(r.id);
+          generazione.nuova();
           if (ancoraAttuale(n)) await disegna();
         },
       }),
