@@ -604,6 +604,35 @@ h6 {
   border-radius: $tc-raggio-card;
 }
 
+// --- Avviso "nuova versione": fisso in basso, sopra la navigazione inferiore -----------------
+.tc-aggiornamento {
+  position: fixed;
+  inset-inline: 0.75rem;
+  bottom: calc(#{$tc-bottomnav-h} + env(safe-area-inset-bottom, 0px) + 0.75rem);
+  z-index: $zindex-fixed + 1;
+  max-width: 32rem;
+  margin-inline: auto;
+  // Opaco: è sopra la pagina, il contenuto sotto non deve trasparire
+  background-color: var(--tc-superficie);
+  // Elevazione + il bordo inset di `.tc-avviso--info` (qui lo si sovrascrive, quindi si ricopia)
+  box-shadow:
+    0 0.5rem 1.5rem rgba($tc-nero, 0.45),
+    inset 0 0 0 1px var(--bs-border-color);
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+  &__testo {
+    flex: 1 1 14rem;
+    margin: 0;
+  }
+
+  &__azioni {
+    display: flex;
+    gap: 0.5rem;
+  }
+}
+
 // --- Navigazione inferiore (massimo 5 voci) ----------------------------------------------
 .tc-bottomnav {
   position: fixed;

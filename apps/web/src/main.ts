@@ -17,6 +17,7 @@ import { mostraAccedi } from './pagine/accedi';
 import { mostraHome } from './pagine/home';
 import { mostraNonTrovata } from './pagine/non-trovata';
 import { mostraRegistrati } from './pagine/registrati';
+import { mostraAvvisoAggiornamento } from './ui/aggiornamento';
 
 const ROTTE: Rotta[] = [
   { percorso: '/', accesso: 'utente', titolo: '', mostra: mostraHome },
@@ -382,11 +383,9 @@ if (app) {
   });
 }
 
-// Quando è disponibile una nuova versione dell'app chiede all'utente se ricaricare
+// Quando è disponibile una nuova versione dell'app mostra un avviso non bloccante con "Aggiorna"
 const updateSW = registerSW({
   onNeedRefresh() {
-    if (confirm('È disponibile una nuova versione di TyreCare. Aggiornare ora?')) {
-      void updateSW(true);
-    }
+    mostraAvvisoAggiornamento(() => void updateSW(true));
   },
 });
