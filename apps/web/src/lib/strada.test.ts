@@ -23,6 +23,7 @@ vi.mock('./supabase', () => ({
 import {
   FRASE_RESPONSABILITA,
   MESSAGGI,
+  creaGenerazione,
   RichiestaStradaSchema,
   ancoraInCorso,
   richiestaInCorso,
@@ -70,7 +71,7 @@ describe('RichiestaStradaSchema', () => {
 
   it('il telefono è obbligatorio', () => {
     expect(errori({ ...valida, telefono: '' })).toEqual({
-      telefono: 'Inserisci un telefono, così l’officina può richiamarti',
+      telefono: "Inserisci un telefono, così l'officina può richiamarti",
     });
   });
 
@@ -93,6 +94,7 @@ describe('traduci', () => {
     'TARGA_NON_VALIDA',
     'RICHIESTA_GIA_APERTA',
     'NESSUNA_OFFICINA',
+    'TROPPE_RICHIESTE',
     'RICHIESTA_NON_DISPONIBILE',
   ];
 
@@ -136,10 +138,39 @@ describe('traduci', () => {
     expect((traduci({ message: 'NESSUNA_OFFICINA' }) as ErroreModulo).campo).toBeUndefined();
   });
 
+  it('TROPPE_RICHIESTE: limite orario, testo esatto e nessun campo', () => {
+    const e = traduci({ message: 'TROPPE_RICHIESTE' }) as ErroreModulo;
+    expect(e).toBeInstanceOf(ErroreModulo);
+    expect(e.message).toBe(
+      "Hai già fatto diverse richieste nell'ultima ora. Se sei in pericolo chiama il 112; altrimenti chiama un soccorso stradale.",
+    );
+    expect(e.campo).toBeUndefined();
+    expect(e.codice).toBe('TROPPE_RICHIESTE');
+  });
+
   it('un errore sconosciuto resta com’è', () => {
     const altro = { message: 'boom' };
     expect(traduci(altro)).toBe(altro);
     expect(traduci(null)).toBeNull();
+  });
+});
+
+describe('creaGenerazione', () => {
+  it('una lettura partita prima di un annullo non è più attuale', () => {
+    const g = creaGenerazione();
+    const lettura = g.corrente();
+    expect(g.attuale(lettura)).toBe(true);
+    g.nuova();
+    expect(g.attuale(lettura)).toBe(false);
+    expect(g.attuale(g.corrente())).toBe(true);
+  });
+
+  it('ogni generazione è distinta dalle precedenti', () => {
+    const g = creaGenerazione();
+    const a = g.nuova();
+    const b = g.nuova();
+    expect(b).not.toBe(a);
+    expect(g.attuale(a)).toBe(false);
   });
 });
 

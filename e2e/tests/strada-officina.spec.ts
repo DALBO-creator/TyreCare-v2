@@ -67,7 +67,7 @@ test('il titolare attiva l’aiuto, l’operatore accetta una richiesta e il tit
     await cliente.getByLabel('Cosa è successo').fill(descrizione);
     await cliente.getByLabel('Telefono', { exact: true }).fill('333 1234567');
     await cliente.getByRole('button', { name: 'Usa la mia posizione e invia' }).click();
-    await expect(cliente.getByText('Stiamo cercando un’officina vicina')).toBeVisible();
+    await expect(cliente.getByText("Stiamo cercando un'officina vicina")).toBeVisible();
 
     // L'operatore la vede e la accetta
     await operatore.goto('/officina/strada');

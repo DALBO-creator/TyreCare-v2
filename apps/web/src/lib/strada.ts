@@ -38,9 +38,25 @@ export const MESSAGGI: Record<string, string> = {
     'Hai già una richiesta in corso. Ricarica la pagina per seguirla o per annullarla.',
   NESSUNA_OFFICINA:
     "Nessuna officina vicina offre l'aiuto su strada in questo momento. Chiama un soccorso stradale; in pericolo chiama il 112.",
+  TROPPE_RICHIESTE:
+    "Hai già fatto diverse richieste nell'ultima ora. Se sei in pericolo chiama il 112; altrimenti chiama un soccorso stradale.",
   RICHIESTA_NON_DISPONIBILE:
     'Questa richiesta non è più disponibile: è già stata chiusa, annullata o è scaduta.',
 };
+
+/**
+ * Contatore di generazioni: chi avvia una lettura ne annota il numero (`corrente`) e, a risposta
+ * arrivata, la usa solo se `attuale(g)`. Un annullo o una nuova richiesta chiamano `nuova()`: le letture
+ * già in volo diventano vecchie e si scartano.
+ */
+export function creaGenerazione() {
+  let n = 0;
+  return {
+    nuova: () => ++n,
+    corrente: () => n,
+    attuale: (g: number) => g === n,
+  };
+}
 
 /** Un errore atteso diventa un `ErroreModulo` con il suo messaggio; gli altri restano come sono. */
 export function traduci(errore: { message?: string } | null): unknown {
@@ -58,7 +74,7 @@ export const RichiestaStradaSchema = z.object({
     .max(500, { error: 'La descrizione può avere al massimo 500 caratteri' }),
   // Come il telefono del profilo, ma obbligatorio: lo schema condiviso dà `null` per il campo vuoto
   telefono: TelefonoSchema.refine((s): s is string => s !== null, {
-    error: 'Inserisci un telefono, così l’officina può richiamarti',
+    error: "Inserisci un telefono, così l'officina può richiamarti",
   }),
   targa: z
     .string()
