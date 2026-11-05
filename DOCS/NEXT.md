@@ -7,8 +7,8 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261105-21 (T190 bozze legali su abbonamento e Stripe; T193 avviso di
-> aggiornamento al posto di `confirm()`), nel treno.
+> Ultima sessione: ciclo 20261106-00 (T194 axe su aiuto su strada e abbonamento; T202 e2e ingresso
+> officina), nel treno.
 > T196 ora può partire: T158 è unito al treno. Idee in coda: T220 (annullo fallito durante un ridisegno),
 > T221 (bozze legali) e T222 (avviso di aggiornamento).
 > Promemoria: prima delle chiavi Stripe (D8) serve T189b (una sola subscription per officina).

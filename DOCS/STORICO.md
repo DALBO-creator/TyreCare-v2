@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-06 — ciclo 20261106-00 — T194 T202
+
+**Fatto**
+
+- T194: analisi axe aggiunta a `/strada` (cliente), `/officina/strada` e `/officina/abbonamento` (titolare)
+  in `e2e/tests/accessibilita.spec.ts`; nessuna correzione all'app.
+- T202: nuovo e2e `e2e/tests/ingresso-officina.spec.ts` sul percorso completo di un'officina nuova
+  (richiesta, avviso all'admin, attivazione, avviso al titolare, home attiva, poi sospensione).
+- Revisione a coppia: T194 1 giro, T202 2 giri (l'officina del test restava attiva nel database condiviso:
+  ora l'admin la sospende a fine percorso); gate del supervisore approvato 2/2 al primo giro.
+- Prova d'insieme verde: 543 unit test, JS iniziale 63,2 kB; e2e e axe si vedono in CI.
+- Idea accodata: `partitaIvaUnica()` è duplicata in 3 spec (registra-officina, admin-officine,
+  ingresso-officina): spostarla in `e2e/tests/aiuti.ts`.
+- Nota del supervisore: `/officina/strada` si ridisegna ogni 15 s (`INTERVALLO_AGGIORNAMENTO_MS`): un errore
+  axe saltuario in CI su quel caso nasce da lì. Aprire `/notifiche` con l'admin segna le sue notifiche come
+  lette (nessun e2e le conta).
+
 ### Sessione agenti — 2026-11-05 — ciclo 20261105-21 — T190 T193
 
 **Fatto**
