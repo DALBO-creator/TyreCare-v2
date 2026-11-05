@@ -2946,3 +2946,36 @@ va fatto dopo l'attesa della riga, altrimenti passa su una lista ancora vuota.
 Ambiente vitest `node`: `localStorage` è simulato con `vi.stubGlobal` (una `Map` in memoria o funzioni che
 lanciano). `OfficinaUtente` arriva dall'helper `officina(id, ruolo)`. Gli errori Supabase sono oggetti
 `{ code, message }` perché `codiceErrore` legge `code`.
+
+## Checkout di Stripe (T189, R22)
+
+**File coinvolti:** `supabase/functions/stripe-checkout/index.ts`, `checkout.ts` (stessa cartella),
+`supabase/functions/_shared/stripe.ts`.
+**Come funziona:** il titolare sceglie STARTER o PRO e l'Edge Function risponde con l'URL del pagamento
+Stripe (solo carta). `index.ts` cabla Deno e il service role; il flusso sta in `checkout.ts`
+(`gestisciCheckout(richiesta, { env, fetchFn, db })`), così Vitest lo prova senza Deno. Nessun SDK: gli aiuti
+comuni (per T195) sono in `_shared/stripe.ts` e usano `fetch`.
+
+### Codice complesso
+Ordine dei controlli: OPTIONS 204 → 503 PAGAMENTI_NON_ATTIVI (senza chiavi) → 401 (`auth.getUser`) →
+400 → 403 SOLO_TITOLARE → 404 → 409 PILOTA/GIA_ATTIVO. Senza `stripe_customer_id` crea il cliente e chiama
+`collega_cliente_stripe` prima della sessione; se fallisce per una richiesta contemporanea usa il cliente già
+collegato. La sessione porta `client_reference_id`, `subscription_data[metadata][officina_id]` e
+`payment_method_types[0]=card`. Il messaggio di Stripe va solo nel log (risposta 502 STRIPE). Limite noto:
+T189b (una sola subscription per officina).
+
+## Avvisi e rifiuto dell'affiliazione (T191, R24)
+
+**File coinvolti:** migrazione `20261105000100_affiliazione_avvisi.sql`, pgTAP
+`supabase/tests/database/affiliazione-avvisi.test.sql` (32 asserzioni).
+**Come funziona:** `richiedi_affiliazione` avvisa ogni ADMIN (`AFFILIAZIONE_RICHIESTA`, link
+`/admin/officine`); `attiva_officina` avvisa i titolari (`AFFILIAZIONE_ATTIVATA`); la nuova
+`rifiuta_affiliazione(p_officina_id, p_motivo)` avvisa i membri (`AFFILIAZIONE_RIFIUTATA`, link
+`/officina/registra`) e cancella l'officina IN_ATTESA, liberando la partita IVA.
+
+### Codice complesso
+`attiva_officina` avvisa solo se l'update ha cambiato lo stato (`get diagnostics row_count`); il
+link è `/clienti/importa` perché `notifiche.link` non accetta `/`. `rifiuta_affiliazione` è per admin o senza utente
+(42501), usa `for update` e dà MOTIVO_TROPPO_LUNGO, OFFICINA_NON_TROVATA, OFFICINA_NON_IN_ATTESA; gli avvisi
+partono prima del delete. Il cascade cancella il resto; commenti e richieste su strada vanno a `set null`.
+Il ruolo OFFICINA resta (R14).
