@@ -3051,3 +3051,29 @@ copre solo l'HTML (vitest web gira in ambiente node).
 dell'avviso aperto, così una seconda chiamata ne sostituisce solo il callback invece di creare un'altra copia.
 `apps/web/src/ui/aggiornamento.ts:24` — `document.querySelector('[data-aggiornamento]')` fa uscire subito
 se il riquadro c'è già: l'unicità si controlla nel DOM, non con un flag.
+
+## Accessibilità e2e: pagine dell'aiuto su strada e dell'abbonamento (T194)
+
+**File coinvolti:** `e2e/tests/accessibilita.spec.ts`.
+**Come funziona:** `/strada` (cliente), `/officina/strada` e `/officina/abbonamento` (titolare) sono negli
+array `PAGINE_CLIENTE` e `PAGINE_TITOLARE` e passano da `controllaAccessibilita` (attesa delle animazioni,
+WCAG 2 A/AA, nessuna regola esclusa). `/strada` si analizza nello stato "modulo di richiesta", prima
+dell'invio e senza permesso di posizione; le altre due come titolare di Gomme Rossi. Non sono coperti gli
+stati "richiesta in corso" di `/strada` e "servizio non attivo". `/officina/strada` si ridisegna ogni 15 s
+(`INTERVALLO_AGGIORNAMENTO_MS`): un errore axe saltuario in CI su quel caso nasce da lì.
+
+## e2e: ingresso di un'officina nuova (T202)
+
+**File coinvolti:** `e2e/tests/ingresso-officina.spec.ts`.
+**Come funziona:** percorso completo di un'officina nuova: richiesta, avviso all'admin, attivazione, avviso
+al titolare, home attiva. L'utente nuovo e l'admin lavorano in due contesti del browser. I testi degli avvisi
+vengono dalla migrazione `20261105000100_affiliazione_avvisi.sql` (T191). A fine test l'admin sospende
+l'officina, per non lasciarla visibile agli altri test nel database condiviso.
+
+### Codice complesso
+`e2e/tests/ingresso-officina.spec.ts` — le notifiche si trovano con `.tc-notifica` filtrata per la ragione
+sociale unica: l'admin ne riceve una per ogni officina registrata dagli e2e.
+`e2e/tests/ingresso-officina.spec.ts` — la home attiva si riconosce da "Area officina · <ragione>"; l'assenza
+di "Officina in attesa" si asserisce solo dopo, per non dare un falso positivo durante il caricamento.
+`e2e/tests/ingresso-officina.spec.ts` — aprire `/notifiche` con l'admin segna le sue notifiche come lette
+(nessun e2e le conta).
