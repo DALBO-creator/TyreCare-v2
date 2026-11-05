@@ -1,11 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import {
-  contaInAttesa,
-  formattaDataOra,
-  leggiAbbonamentoEmbed,
-  nomeAutore,
-  ordinaOfficineAdmin,
-} from './admin';
+import { formattaDataOra, leggiAbbonamentoEmbed, nomeAutore, ordinaOfficineAdmin } from './admin';
 
 type S = 'IN_ATTESA' | 'ATTIVA' | 'SOSPESA';
 const o = (id: string, stato: S, created_at: string) => ({
@@ -30,20 +24,6 @@ describe('ordinaOfficineAdmin', () => {
     ordinaOfficineAdmin(entrata);
     expect(entrata.map((x) => x.id)).toEqual(['a', 'b']);
     expect(ordinaOfficineAdmin([])).toEqual([]);
-  });
-});
-
-describe('contaInAttesa', () => {
-  it('conta solo le IN_ATTESA', () => {
-    expect(
-      contaInAttesa([
-        o('a', 'ATTIVA', 'x'),
-        o('b', 'IN_ATTESA', 'x'),
-        o('c', 'IN_ATTESA', 'x'),
-        o('d', 'SOSPESA', 'x'),
-      ]),
-    ).toBe(2);
-    expect(contaInAttesa([])).toBe(0);
   });
 });
 
