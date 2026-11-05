@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-05 — ciclo 20261105-15 — T183 T158
+
+**Fatto**
+
+- T183: aiuto su strada del cliente: messaggio `TROPPE_RICHIESTE` per il limite orario (T173); contatore di
+  generazione (`creaGenerazione()` in `lib/strada.ts`), così dopo "Annulla" una lettura già in volo non
+  mostra più "La richiesta non è più in corso."; apostrofi dritti in `pagine/strada.ts` e `lib/strada.ts`.
+  Un'attesa di `e2e/tests/strada-officina.spec.ts` (r.70) è stata cambiata fuori dal campo del compito.
+- T158: e2e admin-officine: il badge di stato si controlla con `riga.locator('.tc-stato')` e `toHaveText` del
+  testo esatto, per non confonderlo con il pulsante omonimo; tolta `contaInAttesa` (la usava solo il suo test).
+- Revisione a coppia: T183 2 giri (l'annullo con `ferma()` lasciava il timer spento se falliva: ora
+  `nuova()` prima e dopo l'annullo), T158 1 giro; gate del supervisore approvato 2/2.
+- Prova d'insieme verde: 534 unit test, JS iniziale 63,1 kB; gli e2e si vedono in CI.
+- Idea: T220 (annullo fallito durante un ridisegno + e2e della corsa), accodata in ai-org: caso raro del
+  supervisore, annullo fallito mentre la lettura che chiude la richiesta è in volo.
+
 ### Sessione agenti — 2026-11-05 — ciclo 20261105-03 — T189 T191
 
 **Fatto**
