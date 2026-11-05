@@ -7,9 +7,9 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261105-15 (T183 limite orario e annullo dell'aiuto su strada; T158 badge
-> dell'admin negli e2e), nel treno. Prima: ciclo 20261105-03 (T189 checkout di Stripe; T191 avvisi e
-> rifiuto dell'affiliazione).
+> Ultima sessione: ciclo 20261105-18 (T186 età delle gomme nella scheda veicolo dell'officina; T188 prezzi
+> sulla pagina per le officine, R29), nel treno. Prima: ciclo 20261105-15 (T183 limite orario dell'aiuto
+> su strada; T158 badge dell'admin negli e2e).
 > T196 ora può partire: T158 è unito al treno. Idea nuova in coda: T220 (annullo fallito durante un ridisegno).
 > Promemoria: prima delle chiavi Stripe (D8) serve T189b (una sola subscription per officina).
 > Aiuto su strada: resta T159 (guide).

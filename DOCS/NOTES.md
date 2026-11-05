@@ -2995,3 +2995,30 @@ link è `/clienti/importa` perché `notifiche.link` non accetta `/`. `rifiuta_af
 (42501), usa `for update` e dà MOTIVO_TROPPO_LUNGO, OFFICINA_NON_TROVATA, OFFICINA_NON_IN_ATTESA; gli avvisi
 partono prima del delete. Il cascade cancella il resto; commenti e richieste su strada vanno a `set null`.
 Il ruolo OFFICINA resta (R14).
+
+## Scheda veicolo dell'officina: età delle gomme (T186)
+
+**File coinvolti:** `apps/web/src/pagine/veicolo.ts` (con il suo test); usa `lib/salute.ts`.
+**Come funziona:** ogni pneumatico montato mostra l'età dal DOT ("DOT 3820 · 6 anni e 1 mese"). Sopra
+l'elenco compare una sola volta l'avviso giallo `tc-avviso--giallo` "Gomme con più di 5 anni: consiglia la
+sostituzione", se almeno una gomma supera la soglia `MESI_GOMMA_VECCHIA`. Report e garage del cliente usano
+ancora `descrizionePneumatico`, che non cambia.
+
+### Codice complesso
+`descrizioneConEta(p, oggi)` compone `descrizionePneumatico` con l'età (`mesiDalDot` e `formattaEta`); senza
+DOT valido non aggiunge nulla. `avvisoGommeVecchie(pneumatici, oggi)` restituisce l'avviso se `gommeVecchie`
+è maggiore di 0; conta anche la scorta, come `home.ts`. Sono funzioni pure con `oggi` come argomento: la
+pagina passa `oggi()`.
+
+## Prezzi sulla pagina per le officine (T188, R29)
+
+**File coinvolti:** `apps/web/src/pagine/per-le-officine.ts`, e2e della pagina.
+**Come funziona:** la pagina pubblica mostra le carte di Starter e Pro con prezzo e funzioni letti da `PIANI`
+(`@tyrecare/shared`), allineati con "Abbonamento". Sotto c'è la frase "30 giorni di prova gratuita: non serve
+la carta per iniziare." e tra i vantaggi "Aiuto su strada". La decisione R29 supera R5.
+
+### Codice complesso
+`cartaPrezzo` è una copia locale della forma di `cartaPiano` di `abbonamento.ts`: non si importa perché
+dipende da Supabase e gonfierebbe la pagina pubblica pigra. Gli h3 hanno id `tc-prezzo-<PIANO>`. La griglia
+è `auto-fit` con `minmax(min(100%, 14rem), 1fr)`, così sul telefono va a capo. L'e2e legge nome e prezzo da
+`PIANI`.
