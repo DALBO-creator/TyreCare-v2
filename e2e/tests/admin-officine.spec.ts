@@ -37,7 +37,7 @@ test('l’amministratore attiva e sospende un’officina; il titolare del seed n
   await expect(admin).toHaveURL(/\/admin\/officine/);
   const riga = admin.locator('.tc-lista__riga').filter({ hasText: ragioneSociale });
   await expect(riga).toBeVisible();
-  await expect(riga.getByText('In attesa', { exact: true })).toBeVisible();
+  await expect(riga.locator('.tc-stato')).toHaveText('In attesa');
   await expect(riga.getByText('Titolare: Marta Prova')).toBeVisible();
 
   // Attiva: prima la conferma, poi il badge cambia
@@ -49,7 +49,7 @@ test('l’amministratore attiva e sospende un’officina; il titolare del seed n
     ),
   ).toBeVisible();
   await dialogo.getByRole('button', { name: 'Attiva' }).click();
-  await expect(riga.getByText('Attiva', { exact: true })).toBeVisible();
+  await expect(riga.locator('.tc-stato')).toHaveText('Attiva');
 
   // Sospendi: l'officina resta SOSPESA, così non è visibile agli altri test
   await riga.getByRole('button', { name: 'Sospendi' }).click();
@@ -57,7 +57,7 @@ test('l’amministratore attiva e sospende un’officina; il titolare del seed n
     admin.getByRole('dialog').getByText(`Sospendere «${ragioneSociale}»? Non sarà più visibile`),
   ).toBeVisible();
   await admin.getByRole('dialog').getByRole('button', { name: 'Sospendi' }).click();
-  await expect(riga.getByText('Sospesa', { exact: true })).toBeVisible();
+  await expect(riga.locator('.tc-stato')).toHaveText('Sospesa');
 
   // Il titolare di Gomme Rossi non è amministratore
   const titolare = await entra(browser, 'titolare@tyrecare.test');
@@ -97,11 +97,11 @@ test('l’amministratore mette un’officina nuova sul piano Officina pilota', a
   // L'officina resta SOSPESA, così non è visibile agli altri test
   await riga().getByRole('button', { name: 'Attiva' }).click();
   await admin.getByRole('dialog').getByRole('button', { name: 'Attiva' }).click();
-  await expect(riga().getByText('Attiva', { exact: true })).toBeVisible();
+  await expect(riga().locator('.tc-stato')).toHaveText('Attiva');
   await riga().getByRole('button', { name: 'Sospendi' }).click();
   await expect(
     admin.getByRole('dialog').getByText(`Sospendere «${ragioneSociale}»? Non sarà più visibile`),
   ).toBeVisible();
   await admin.getByRole('dialog').getByRole('button', { name: 'Sospendi' }).click();
-  await expect(riga().getByText('Sospesa', { exact: true })).toBeVisible();
+  await expect(riga().locator('.tc-stato')).toHaveText('Sospesa');
 });
