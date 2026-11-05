@@ -612,6 +612,12 @@ h6 {
   z-index: $zindex-fixed + 1;
   max-width: 32rem;
   margin-inline: auto;
+  // Opaco: è sopra la pagina, il contenuto sotto non deve trasparire
+  background-color: var(--tc-superficie);
+  // Elevazione + il bordo inset di `.tc-avviso--info` (qui lo si sovrascrive, quindi si ricopia)
+  box-shadow:
+    0 0.5rem 1.5rem rgba($tc-nero, 0.45),
+    inset 0 0 0 1px var(--bs-border-color);
   align-items: center;
   flex-wrap: wrap;
   justify-content: space-between;
