@@ -70,6 +70,8 @@ const PAGINE_CLIENTE = [
   // Panda di Giulia (seed): il titolo è il modello ("Panda" o "Panda 1.2")
   { percorso: '/garage/veicolo?targa=AB123CD', titolo: /Panda/ },
   { percorso: '/officine', titolo: 'Officine' },
+  // Modulo di richiesta prima dell'invio (nessuna posizione richiesta)
+  { percorso: '/strada', titolo: 'Aiuto su strada' },
 ];
 
 test.describe('cliente', () => {
@@ -100,6 +102,8 @@ const PAGINE_TITOLARE = [
     titolo: 'Nuovo controllo',
   },
   { percorso: '/clienti/importa', titolo: 'Importa clienti e veicoli' },
+  { percorso: '/officina/strada', titolo: 'Richieste su strada' },
+  { percorso: '/officina/abbonamento', titolo: 'Abbonamento' },
 ];
 
 test.describe('titolare (Gomme Rossi)', () => {
