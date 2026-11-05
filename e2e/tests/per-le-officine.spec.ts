@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { PIANI } from '@tyrecare/shared';
 import { PASSWORD, nuovoAccountCliente } from './aiuti';
 
 const DOPO = '/officina/registra';
@@ -46,4 +47,19 @@ test('da /accedi il link per le officine porta alla pagina', async ({ page }) =>
     .click();
   await expect(page).toHaveURL(/\/per-le-officine$/);
   await expect(page.getByRole('heading', { name: 'TyreCare per le officine' })).toBeVisible();
+});
+
+test('la pagina per le officine mostra i prezzi, la prova gratuita e l’aiuto su strada', async ({
+  page,
+}) => {
+  await page.goto('/per-le-officine');
+  await expect(page.getByRole('heading', { level: 2, name: 'Prezzi' })).toBeVisible();
+  for (const piano of [PIANI.STARTER, PIANI.PRO]) {
+    await expect(page.getByRole('heading', { level: 3, name: piano.nome })).toBeVisible();
+    await expect(page.getByText(`${piano.prezzoMensile} €/mese`)).toBeVisible();
+  }
+  await expect(
+    page.getByText('30 giorni di prova gratuita: non serve la carta per iniziare.'),
+  ).toBeVisible();
+  await expect(page.getByText('Aiuto su strada', { exact: true })).toBeVisible();
 });
