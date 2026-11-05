@@ -3022,3 +3022,32 @@ la carta per iniziare." e tra i vantaggi "Aiuto su strada". La decisione R29 sup
 dipende da Supabase e gonfierebbe la pagina pubblica pigra. Gli h3 hanno id `tc-prezzo-<PIANO>`. La griglia
 è `auto-fit` con `minmax(min(100%, 14rem), 1fr)`, così sul telefono va a capo. L'e2e legge nome e prezzo da
 `PIANI`.
+
+## Bozze legali: abbonamento e pagamenti con Stripe (T190)
+
+**File coinvolti:** `DOCS/legale/` (termini §10, informativa, registro dei trattamenti scheda A7, README
+domanda 16).
+**Come funziona:** le bozze descrivono il pagamento come non ancora attivo (R22) e non danno cifre: i prezzi
+stanno solo in `PIANI`. Il ruolo privacy di Stripe è aperto nel registro (A7) e non è affermato né
+nell'informativa né nei termini, che rimandano alla domanda 16 per il consulente. Informativa e A7 elencano
+cosa TyreCare conserva (piano, stato, fine prova, id cliente e abbonamento Stripe) e cosa manda a Stripe
+(email del titolare, ragione sociale, id dell'officina). Con il portale (T195/T200) va completata la regola
+di annullamento.
+
+## Avviso di aggiornamento dell'app (`ui/aggiornamento.ts`, T193)
+
+**File coinvolti:** `apps/web/src/ui/aggiornamento.ts` (con il suo test), `apps/web/src/main.ts`, stili
+`.tc-aggiornamento`.
+**Come funziona:** `main.ts` chiama `mostraAvvisoAggiornamento(() => void updateSW(true))` quando il service
+worker segnala una nuova versione (`onNeedRefresh`), al posto di `confirm()` che bloccava la pagina. Il
+riquadro `tc-avviso--info` con `role="status"` è fisso sopra la barra di navigazione (`$tc-bottomnav-h` +
+safe-area + .75rem), con sfondo opaco e ombra; su desktop nessuna media query (centrato sul viewport).
+"Aggiorna" si disattiva dopo il clic, "Più tardi" rimuove il riquadro (ricompare alla prossima
+segnalazione). Il testo è statico; il modulo non ha dipendenze e sta nel file iniziale. Il test unitario
+copre solo l'HTML (vitest web gira in ambiente node).
+
+### Codice complesso
+`apps/web/src/ui/aggiornamento.ts:19` — `aggiornaCorrente` è una variabile di modulo: tiene il callback
+dell'avviso aperto, così una seconda chiamata ne sostituisce solo il callback invece di creare un'altra copia.
+`apps/web/src/ui/aggiornamento.ts:24` — `document.querySelector('[data-aggiornamento]')` fa uscire subito
+se il riquadro c'è già: l'unicità si controlla nel DOM, non con un flag.
