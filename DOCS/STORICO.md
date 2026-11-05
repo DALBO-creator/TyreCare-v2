@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-05 — ciclo 20261105-18 — T186 T188
+
+**Fatto**
+
+- T186: scheda veicolo dell'officina: ogni pneumatico montato mostra l'età dal DOT ("DOT 3820 · 6 anni e 1
+  mese"); sopra l'elenco un avviso giallo "Gomme con più di 5 anni: consiglia la sostituzione" se almeno una
+  gomma supera la soglia. Conta anche la scorta, come la home.
+- T188: la pagina pubblica "Per le officine" mostra i prezzi di Starter e Pro letti da `PIANI`, la frase
+  "30 giorni di prova gratuita: non serve la carta per iniziare." e il vantaggio "Aiuto su strada".
+- Decisione R29 (supera R5): prezzi pubblici sulla pagina per le officine. L'età usa il formato di
+  `formattaEta` ("6 anni e 1 mese"), non "6 anni" come nell'esempio del compito.
+- Revisione a coppia: 1 giro per ciascun compito; gate del supervisore approvato 2/2. T188 è di area C4,
+  preso da C2 perché T192 attende T189b.
+- Prova d'insieme verde: 540 unit test, JS iniziale 63,1 kB; e2e e axe si vedono in CI.
+- Idea non accodata: escludere la scorta da `gommeVecchie` per home e officina (oggi coerenti tra loro).
+
 ### Sessione agenti — 2026-11-05 — ciclo 20261105-15 — T183 T158
 
 **Fatto**
