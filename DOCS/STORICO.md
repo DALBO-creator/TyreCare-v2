@@ -4,6 +4,24 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-05 — ciclo 20261105-21 — T190 T193
+
+**Fatto**
+
+- T190: bozze legali sull'abbonamento delle officine con pagamento Stripe, non ancora attivo (termini §10,
+  dati della carta nell'informativa, scheda A7 del registro con il ruolo di Stripe aperto); nel README la
+  domanda 16 per il consulente su ruolo di Stripe e trasferimento extra UE.
+- T193: al posto di `confirm()`, `onNeedRefresh` mostra un avviso non bloccante in basso
+  (`ui/aggiornamento.ts`) con "Aggiorna" e "Più tardi", sopra la barra di navigazione.
+- Decisione su T193: su desktop nessuna media query (riquadro centrato sul viewport, sopra la posizione
+  della barra in basso); reversibile in `.tc-aggiornamento`.
+- Revisione a coppia: T190 1 giro, T193 2 giri (lo sfondo semitrasparente dell'avviso fisso è diventato
+  opaco, con ombra); gate del supervisore approvato 2/2 al primo giro.
+- Prova d'insieme verde: 543 unit test, JS iniziale 63,2 kB; e2e e axe si vedono in CI.
+- Idee accodate in ai-org: T221 (bozze legali: righe 8-9 di `dpa-officine.md` su P19, "21 tabelle" nel
+  registro, sigle R.. interne) e T222 (avviso di aggiornamento: test DOM/e2e, annuncio di `role="status"`
+  inserito già pieno, colore del bordo info).
+
 ### Sessione agenti — 2026-11-05 — ciclo 20261105-18 — T186 T188
 
 **Fatto**

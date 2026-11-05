@@ -7,10 +7,10 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261105-18 (T186 età delle gomme nella scheda veicolo dell'officina; T188 prezzi
-> sulla pagina per le officine, R29), nel treno. Prima: ciclo 20261105-15 (T183 limite orario dell'aiuto
-> su strada; T158 badge dell'admin negli e2e).
-> T196 ora può partire: T158 è unito al treno. Idea nuova in coda: T220 (annullo fallito durante un ridisegno).
+> Ultima sessione: ciclo 20261105-21 (T190 bozze legali su abbonamento e Stripe; T193 avviso di
+> aggiornamento al posto di `confirm()`), nel treno.
+> T196 ora può partire: T158 è unito al treno. Idee in coda: T220 (annullo fallito durante un ridisegno),
+> T221 (bozze legali) e T222 (avviso di aggiornamento).
 > Promemoria: prima delle chiavi Stripe (D8) serve T189b (una sola subscription per officina).
 > Aiuto su strada: resta T159 (guide).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
