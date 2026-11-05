@@ -68,11 +68,6 @@ export function ordinaOfficineAdmin<
   );
 }
 
-/** Quante officine aspettano di essere attivate. */
-export function contaInAttesa(officine: readonly Pick<OfficinaAdmin, 'stato_affiliazione'>[]) {
-  return officine.filter((o) => o.stato_affiliazione === 'IN_ATTESA').length;
-}
-
 interface RigaOfficina extends Omit<OfficinaAdmin, 'titolare' | 'piano' | 'statoAbbonamento'> {
   abbonamenti: EmbedAbbonamento | EmbedAbbonamento[] | null;
   officina_utenti: {

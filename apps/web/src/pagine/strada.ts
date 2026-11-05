@@ -8,6 +8,7 @@ import {
   INTERVALLO_AGGIORNAMENTO_MS,
   RichiestaStradaSchema,
   annullaRichiestaStrada,
+  creaGenerazione,
   creaRichiestaStrada,
   posizioneAttuale,
   richiestaInCorso,
@@ -30,6 +31,8 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
   const n = visualizzazioneCorrente();
   app.innerHTML = paginaApp(caricamento());
 
+  // Ogni annullo o nuova richiesta apre una generazione nuova: la lettura partita prima si ignora
+  const generazione = creaGenerazione();
   let timer: ReturnType<typeof setInterval> | undefined;
   const ferma = () => {
     clearInterval(timer);
@@ -39,23 +42,26 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
   /** Legge lo stato e disegna la pagina; `nota` è un messaggio da mostrare sopra il modulo. */
   const disegna = async (nota = ''): Promise<void> => {
     ferma();
+    const g = generazione.corrente();
     let richiesta: RichiestaInCorso | null;
     try {
       richiesta = await richiestaInCorso();
     } catch (errore) {
-      await gestisciErroreCaricamento(app, n, errore);
+      if (generazione.attuale(g)) await gestisciErroreCaricamento(app, n, errore);
       return;
     }
-    if (!ancoraAttuale(n)) return;
+    if (!ancoraAttuale(n) || !generazione.attuale(g)) return;
     if (richiesta) {
       mostraRichiesta(richiesta);
       // Si ridisegna solo se qualcosa è cambiato: un dialogo aperto non deve sparire
       let attuale = richiesta;
       timer = setInterval(async () => {
         if (!ancoraAttuale(n)) return ferma();
+        const gLettura = generazione.corrente();
         try {
           const nuova = await richiestaInCorso();
           if (!ancoraAttuale(n)) return ferma();
+          if (!generazione.attuale(gLettura)) return;
           if (!nuova) return void disegna('La richiesta non è più in corso.');
           if (nuova.id !== attuale.id || nuova.stato !== attuale.stato) {
             attuale = nuova;
@@ -115,6 +121,7 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
 
     collegaModulo(app.querySelector('form')!, RichiestaStradaSchema, async (dati) => {
       const posizione = await posizioneAttuale();
+      generazione.nuova();
       await creaRichiestaStrada(dati, posizione);
       if (ancoraAttuale(n)) await disegna();
     });
@@ -127,16 +134,16 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
       ${intestazioneSottopagina('Aiuto su strada', 'Assistenza')}
       <div class="tc-contenuto">
         <section class="tc-azione" aria-labelledby="tc-stato" aria-live="polite">
-          <h2 id="tc-stato" class="tc-etichetta">${accettata ? 'Un’officina ti aiuta' : 'Stiamo cercando un’officina vicina'}</h2>
+          <h2 id="tc-stato" class="tc-etichetta">${accettata ? "Un'officina ti aiuta" : "Stiamo cercando un'officina vicina"}</h2>
           ${
             accettata
-              ? `<p class="mb-2"><strong>${esc(officina?.ragione_sociale ?? 'L’officina')}</strong> ha accettato la tua richiesta.</p>
+              ? `<p class="mb-2"><strong>${esc(officina?.ragione_sociale ?? "L'officina")}</strong> ha accettato la tua richiesta.</p>
                  ${
                    officina?.telefono
                      ? `<a class="btn btn-primary btn-lg w-100 mb-2" href="${esc(telefonoHref(officina.telefono))}">${icona(Phone)} Chiama ${esc(officina.telefono)}</a>`
-                     : '<p class="mb-2">L’officina ti richiamerà al numero che hai indicato.</p>'
+                     : `<p class="mb-2">L'officina ti richiamerà al numero che hai indicato.</p>`
                  }`
-              : `<p class="mb-0">Cerchiamo un’officina vicina: la richiesta resta aperta fino alle ${esc(ORA.format(new Date(r.scade_il)))}.</p>`
+              : `<p class="mb-0">Cerchiamo un'officina vicina: la richiesta resta aperta fino alle ${esc(ORA.format(new Date(r.scade_il)))}.</p>`
           }
         </section>
         <section aria-labelledby="tc-tua">
@@ -161,7 +168,11 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
         inCorso: 'Annullamento…',
         origine: annulla,
         azione: async () => {
+          // Due volte: prima scarta le letture partite prima, dopo quelle partite durante l'annullo
+          // (se l'annullo fallisce il timer resta acceso; se riesce, `disegna()` lo ferma)
+          generazione.nuova();
           await annullaRichiestaStrada(r.id);
+          generazione.nuova();
           if (ancoraAttuale(n)) await disegna();
         },
       }),
