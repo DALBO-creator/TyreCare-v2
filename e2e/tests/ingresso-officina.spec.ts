@@ -65,4 +65,14 @@ test('ingresso di un’officina nuova: richiesta, avviso all’amministratore, a
   await page.goto('/');
   await expect(page.getByText(`Area officina · ${ragioneSociale}`)).toBeVisible();
   await expect(page.getByText('Officina in attesa')).toHaveCount(0);
+
+  // Sospendi: l'officina resta SOSPESA, così non è visibile agli altri test (db condiviso)
+  await admin.goto('/admin/officine');
+  const rigaAttiva = admin.locator('.tc-lista__riga').filter({ hasText: ragioneSociale });
+  await rigaAttiva.getByRole('button', { name: 'Sospendi' }).click();
+  await expect(
+    admin.getByRole('dialog').getByText(`Sospendere «${ragioneSociale}»? Non sarà più visibile`),
+  ).toBeVisible();
+  await admin.getByRole('dialog').getByRole('button', { name: 'Sospendi' }).click();
+  await expect(rigaAttiva.locator('.tc-stato')).toHaveText('Sospesa');
 });
