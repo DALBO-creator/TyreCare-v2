@@ -20,7 +20,9 @@
 Le bozze di DPA e registro sono state aggiunte il 2026-10-22 (compito T014), quella della procedura per le
 violazioni il 2026-10-24 (compito T037), quella del registro degli accessi con le istruzioni sulle copie di
 sicurezza ([`../pilota/copie-di-sicurezza.md`](../pilota/copie-di-sicurezza.md)) con T048. Da fare in
-seguito: contratto di abbonamento per le officine (P19), a cui il DPA rimanda.
+seguito: contratto di abbonamento per le officine (P19), a cui il DPA rimanda. Le condizioni di
+abbonamento e pagamento con Stripe sono in bozza nei termini (§10), nell'informativa e nel registro (A7)
+con T190; recesso, fatturazione e IVA restano da completare.
 
 ## Come sono state scritte
 
@@ -48,7 +50,8 @@ Nei documenti sono segnati con `[DA COMPLETARE: …]`. Si possono compilare nell
 - [DA COMPLETARE: eventuale PEC e responsabile della protezione dei dati (DPO), se nominato]
 - [DA COMPLETARE: dominio e indirizzo web di TyreCare (P23)]
 - Scelte da fare (meglio con il consulente): tempi di conservazione, età minima, regione dei server di
-  Vercel e di Resend, prezzo e durata dell'abbonamento (P19), foro competente.
+  Vercel e di Resend, ruolo di Stripe, recesso e fatturazione dell'abbonamento (P19), foro competente.
+  Piani, prezzi e prova sono decisi (R5, R19, R29) e stanno nell'app, non nei termini.
 
 ## Da fare prima del lancio (misure di sicurezza che oggi mancano)
 
@@ -149,3 +152,11 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
     consumo, artt. 1341–1342 c.c.)? E l'officina che accetta è **titolare autonomo** del trattamento di
     posizione e telefono (registro A6, ruolo ancora da confermare), o agisce per conto di TyreCare?
     Chi elimina l'account cancella con esso anche le proprie richieste di aiuto su strada (a cascata).
+16. **Abbonamenti e pagamenti con Stripe (termini §10, informativa, registro A7).** Le officine pagheranno
+    l'abbonamento mensile con carta su una pagina di Stripe; TyreCare conserva solo gli identificativi
+    del cliente e dell'abbonamento Stripe, il piano e lo stato, e manda a Stripe email del titolare,
+    ragione sociale e codice dell'officina. Che **ruolo** ha Stripe (titolare autonomo, responsabile o
+    altro)? Come si regola il **trasferimento extra UE** (Stripe ha società negli USA)? Servono
+    clausole nel contratto con le officine? Mancano anche recesso, fatturazione e IVA, e da quando vale
+    l'annullamento (subito o a fine periodo). Il pagamento non è ancora attivo: le bozze non vanno date
+    come funzione già in uso.

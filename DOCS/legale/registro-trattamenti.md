@@ -95,8 +95,8 @@ README, "Da fare prima del lancio"]
 
 | Voce | Contenuto |
 |------|-----------|
-| Finalità | Mostrare le officine ai clienti, gestire l'affiliazione, gli orari, le chiusure e il catalogo dei servizi; in futuro l'abbonamento (P19) |
-| Base giuridica | Esecuzione del contratto (art. 6.1.b); obblighi fiscali per l'abbonamento (art. 6.1.c) |
+| Finalità | Mostrare le officine ai clienti, gestire l'affiliazione, gli orari, le chiusure e il catalogo dei servizi (l'abbonamento è nella scheda A7) |
+| Base giuridica | Esecuzione del contratto (art. 6.1.b) |
 | Interessati | Titolari di ditte individuali e referenti delle officine (i dati delle società non sono dati personali) |
 | Dati | Ragione sociale, partita IVA, indirizzo, posizione sulla mappa, telefono, email, orari, chiusure, servizi con durata e prezzo, stato dell'affiliazione (tabelle `officine`, `chiusure_officina`, `servizi_officina`) |
 | Destinatari | Chiunque apra l'app, anche senza account (solo le officine attive); membri dell'officina; amministratore di TyreCare; Supabase, Vercel |
@@ -130,6 +130,22 @@ README, "Da fare prima del lancio"]
 | Trasferimenti extra UE | Come A1 |
 | Conservazione | Non accettata: scade dopo 2 ore; accettata: si chiude da sola dopo 24 ore; chiusa, annullata o scaduta: cancellata dopo 90 giorni (R18); cancellata subito con l'account del cliente |
 | Misure | M1–M5; ogni officina vede solo le richieste del proprio raggio e quelle che ha accettato; la posizione esatta e il telefono solo a chi accetta |
+
+## A7. Abbonamenti delle officine
+
+Il pagamento online non è ancora attivo (R22): la scheda descrive il trattamento che parte con l'accensione.
+
+| Voce | Contenuto |
+|------|-----------|
+| Finalità | Gestire la prova, il piano e il pagamento mensile con carta dell'abbonamento dell'officina; adempiere agli obblighi fiscali |
+| Base giuridica | Esecuzione del contratto (art. 6.1.b); obblighi fiscali (art. 6.1.c) |
+| Interessati | Titolari delle officine (ditte individuali) e referenti; i dati delle società non sono dati personali |
+| Dati | Piano, stato (prova, attivo, scaduto, annullato), fine della prova, identificativo del cliente Stripe e dell'abbonamento Stripe (tabella `abbonamenti`). A Stripe TyreCare manda email del titolare, ragione sociale e codice interno dell'officina; i dati della carta li inserisce il titolare nella pagina di Stripe e TyreCare non li vede né li conserva |
+| Destinatari | Il titolare dell'officina (legge la propria riga); amministratore di TyreCare; Supabase; Stripe |
+| Ruolo di Stripe | [DA COMPLETARE: ruolo di Stripe, da confermare con il consulente] |
+| Trasferimenti extra UE | Stripe: [DA COMPLETARE: sede e garanzie — README, domanda 16]; per Supabase come A1 |
+| Conservazione | Per la durata dell'abbonamento; dati fiscali per il tempo di legge [DA COMPLETARE: es. 10 anni, come nell'informativa §4] |
+| Misure | M1–M5; la riga dell'abbonamento la leggono il titolare e l'amministratore (gli operatori no) e la scrivono solo l'amministratore e le funzioni sul server (il webhook di Stripe verifica la firma) |
 
 ---
 
