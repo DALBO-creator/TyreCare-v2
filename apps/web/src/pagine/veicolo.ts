@@ -19,6 +19,7 @@ import {
 } from '../lib/officina';
 import { caricaDatiUtente } from '../lib/profilo';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
+import { formattaEta, gommeVecchie, mesiDalDot } from '../lib/salute';
 import { ICONE_STAGIONE, cruscotto } from '../ui/cruscotto';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
@@ -31,6 +32,7 @@ import {
   conData,
   gestisciErroreCaricamento,
   idValido,
+  oggi,
   parametro,
 } from './comune';
 
@@ -228,8 +230,29 @@ export function descrizionePneumatico(
     .join(' · ');
 }
 
+/**
+ * Come `descrizionePneumatico`, con l'età dal DOT subito dopo il DOT ("… · DOT 3820 · 6 anni · dal …").
+ * Senza DOT valido l'età non c'è. Solo per la scheda dell'officina: report e garage usano l'altra.
+ */
+export function descrizioneConEta(
+  p: Pick<Pneumatico, 'marca' | 'modello' | 'misura' | 'stagione' | 'dot' | 'montato_il'>,
+  oggiIso: string,
+): string {
+  const base = descrizionePneumatico(p);
+  const mesi = mesiDalDot(p.dot, oggiIso);
+  if (mesi === null) return base;
+  return base.replace(`DOT ${p.dot}`, `DOT ${p.dot} · ${formattaEta(mesi)}`);
+}
+
+/** Avviso giallo (HTML) se almeno una gomma ha superato la soglia di età; altrimenti stringa vuota. */
+export function avvisoGommeVecchie(pneumatici: { dot: string | null }[], oggiIso: string): string {
+  if (gommeVecchie(pneumatici, oggiIso) === 0) return '';
+  return `<div class="tc-avviso tc-avviso--giallo" role="status">Gomme con più di 5 anni: consiglia la sostituzione</div>`;
+}
+
 function sezionePneumatici({ veicolo, pneumatici }: SchedaVeicolo): string {
   const gruppi = gruppiPneumatici(pneumatici);
+  const adesso = oggi();
 
   return `
     <section aria-labelledby="tc-pneumatici">
@@ -244,13 +267,13 @@ function sezionePneumatici({ veicolo, pneumatici }: SchedaVeicolo): string {
       </div>
       ${
         gruppi.length > 0
-          ? `<div class="tc-lista">
+          ? `${avvisoGommeVecchie(pneumatici, adesso)}<div class="tc-lista">
               ${gruppi
                 .map(({ p, posizioni }) =>
                   riga(
                     ICONE_STAGIONE[p.stagione],
                     nomeGruppo(posizioni),
-                    esc(descrizionePneumatico(p)),
+                    esc(descrizioneConEta(p, adesso)),
                     `/veicolo/pneumatici/modifica?id=${veicolo.id}&p=${p.id}`,
                     'correggi',
                   ),
