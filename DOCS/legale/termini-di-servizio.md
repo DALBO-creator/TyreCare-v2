@@ -129,9 +129,30 @@ Le notifiche push si possono disattivare in qualsiasi momento.
 
 ## 10. Abbonamento delle officine
 
-[DA COMPLETARE: condizioni dell'abbonamento per le officine (P19) — prezzo, periodo, rinnovo, modalità di
-pagamento, eventuale periodo di prova, recesso, eventuale contributo per prenotazione completata. Oggi
-TyreCare è in fase di prova e non sono previsti pagamenti nell'app.]
+Questa sezione riguarda le officine. Le funzioni di abbonamento e pagamento descritte qui sotto si
+accendono per gradi: il pagamento online **non è ancora attivo** e queste condizioni valgono dal momento
+in cui lo sarà.
+
+- **Prova gratuita di 30 giorni.** Ogni officina nuova ha 30 giorni di prova, contando anche il giorno
+  della registrazione. La pagina «Abbonamento» mostra l'ultimo giorno della prova (incluso) e quanti
+  giorni restano. Per iniziare la prova non serve la carta.
+- **Piani e prezzi.** I piani (Starter e Pro) e i prezzi sono nella pagina «Abbonamento» dell'app e nella
+  pagina pubblica «Per le officine»; qui non sono ripetuti. Le officine del pilota hanno il piano
+  «Officina pilota», senza pagamento durante il pilota.
+- **Pagamento.** Quando il pagamento online sarà attivo, l'abbonamento si paga ogni mese con carta,
+  tramite Stripe: la pagina di pagamento è di Stripe. I dati della carta li tratta Stripe e TyreCare non
+  li vede (vedi l'[informativa privacy](informativa-privacy.md)).
+- **Rinnovo.** L'abbonamento si rinnova ogni mese in automatico, finché non viene annullato.
+- **Annullamento e carta.** Quando il pagamento sarà attivo, dalla pagina «Abbonamento», con «Gestisci il
+  pagamento» (il portale di Stripe), il titolare potrà cambiare carta e annullare l'abbonamento.
+  [DA COMPLETARE: da quando vale l'annullamento (subito o a fine periodo pagato) e rimborsi]
+- **Alla scadenza.** Se la prova finisce senza un abbonamento, o un pagamento non riesce, lo stato
+  dell'officina diventa «scaduto». Per ora nessuna funzione viene bloccata: lo stato si vede nella
+  pagina «Abbonamento». Un abbonamento annullato si può riattivare da quella pagina.
+  [DA COMPLETARE: se e quando, in futuro, le funzioni verranno limitate alle officine con abbonamento
+  scaduto, e con quale preavviso]
+
+[DA COMPLETARE: recesso, fatturazione, IVA]
 
 Per i clienti l'uso di TyreCare è [DA COMPLETARE: gratuito? confermare].
 
