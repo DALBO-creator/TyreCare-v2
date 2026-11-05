@@ -1,7 +1,9 @@
 import {
   AlarmClock,
+  BadgeCheck,
   Ban,
   Bell,
+  Building2,
   CalendarCheck,
   CalendarClock,
   CalendarPlus,
@@ -39,6 +41,9 @@ const ICONE: Record<Enums<'tipo_notifica'>, IconNode> = {
   STRADA_RICHIESTA: LifeBuoy,
   STRADA_ACCETTATA: CircleCheck,
   STRADA_ANNULLATA: CircleX,
+  AFFILIAZIONE_RICHIESTA: Building2,
+  AFFILIAZIONE_ATTIVATA: BadgeCheck,
+  AFFILIAZIONE_RIFIUTATA: CircleX,
 };
 
 function rigaNotifica(n: Notifica): string {

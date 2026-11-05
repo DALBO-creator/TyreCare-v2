@@ -1316,6 +1316,10 @@ export type Database = {
           targa: string;
         }[];
       };
+      rifiuta_affiliazione: {
+        Args: { p_motivo?: string; p_officina_id: string };
+        Returns: undefined;
+      };
       rispondi_prenotazione: {
         Args: { p_appuntamento?: string; p_azione: string; p_id: string; p_messaggio?: string };
         Returns: undefined;
@@ -1370,7 +1374,10 @@ export type Database = {
         | 'CAMBIO_STAGIONE'
         | 'STRADA_RICHIESTA'
         | 'STRADA_ACCETTATA'
-        | 'STRADA_ANNULLATA';
+        | 'STRADA_ANNULLATA'
+        | 'AFFILIAZIONE_RICHIESTA'
+        | 'AFFILIAZIONE_ATTIVATA'
+        | 'AFFILIAZIONE_RIFIUTATA';
       usura: 'REGOLARE' | 'INTERNA' | 'ESTERNA' | 'CENTRALE' | 'BORDI';
     };
     CompositeTypes: {
@@ -1515,6 +1522,9 @@ export const Constants = {
         'STRADA_RICHIESTA',
         'STRADA_ACCETTATA',
         'STRADA_ANNULLATA',
+        'AFFILIAZIONE_RICHIESTA',
+        'AFFILIAZIONE_ATTIVATA',
+        'AFFILIAZIONE_RIFIUTATA',
       ],
       usura: ['REGOLARE', 'INTERNA', 'ESTERNA', 'CENTRALE', 'BORDI'],
     },
