@@ -103,12 +103,9 @@ function mostraRiaccetta(app: HTMLElement, n: number): void {
     await mostraHome(app);
   });
   app.querySelector('[data-esci]')?.addEventListener('click', async () => {
-    try {
-      // Il ritorno alla pagina di accesso lo fa main.ts, quando Supabase segnala SIGNED_OUT
-      await esci();
-    } catch (errore) {
-      mostraErroreInBox(box, messaggioErrore(errore));
-    }
+    // Il ritorno alla pagina di accesso lo fa main.ts su SIGNED_OUT; senza rete `esci()` toglie la
+    // sessione locale e ricarica `/accedi`. Non lancia mai: nessun errore da mostrare.
+    await esci();
   });
 }
 
