@@ -3129,8 +3129,8 @@ pulsante d'origine è stato ridisegnato (T228).
 
 ## `esci()` non lancia: niente try/catch attorno (T227)
 
-**File coinvolti:** `apps/web/src/lib/auth.ts`, `apps/web/src/pagine/comune.ts`, `home.ts`, `profilo.ts`,
-`elimina-account.ts`, `invito.ts`, `appuntamenti.ts`.
+**File coinvolti:** `apps/web/src/lib/auth.ts` (`esci()`, invariato), `apps/web/src/pagine/comune.ts`,
+`home.ts`, `profilo.ts`, `elimina-account.ts`, `invito.ts`, `appuntamenti.ts`.
 **Come funziona:** `esci()` assorbe l'errore di signOut: senza rete toglie la sessione da storage e memoria
 e ricarica `/accedi`. Le pagine fanno `await esci()` senza try/catch; un catch ha senso solo se copre altre
 chiamate (come `mostraPagina()` in `invito.ts`). `getSupabase()` lancia solo con la configurazione mancante.
@@ -3138,7 +3138,8 @@ Gli errori d'azione si mostrano con `mostraErroreInBox(box, testo)` di `comune.t
 chiamato prima di una nuova azione.
 
 ### Codice complesso
-`apps/web/src/pagine/comune.ts` — `mostraErroreInBox` dà al riquadro `tabindex="-1"`, così può ricevere il
-focus e l'errore viene letto dagli screen reader (anche il riquadro "email diversa" dell'invito).
+`apps/web/src/pagine/comune.ts` — `mostraErroreInBox` dà il focus al riquadro: il riquadro deve avere già
+`tabindex="-1"` nel markup (T227 lo ha aggiunto al riquadro "email diversa" dell'invito), altrimenti
+`focus()` non ha effetto e lo screen reader non legge l'errore.
 `apps/web/src/pagine/elimina-account.ts` — il ramo `if (sessioneCorrente())` è quasi irraggiungibile: resta
 (idea T214).
