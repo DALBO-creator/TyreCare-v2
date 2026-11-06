@@ -177,9 +177,11 @@ export async function caricaElencoClienti(officinaId: string): Promise<ClienteCo
 /**
  * Vero se l'errore è la chiave primaria duplicata: dopo una ripetizione per errore di rete significa
  * che il primo tentativo era arrivato e il record c'è già (l'id l'abbiamo scelto noi).
+ * Il nome del vincolo si confronta tra virgolette doppie, come lo scrive Postgres nel messaggio: così un
+ * vincolo che finisce allo stesso modo (es. `x_veicoli_pkey` per la tabella `veicoli`) non conta.
  */
 export const giaSalvato = (error: unknown, tabella: string) =>
-  codiceErrore(error) === '23505' && String((error as Error).message).includes(`${tabella}_pkey`);
+  codiceErrore(error) === '23505' && String((error as Error).message).includes(`"${tabella}_pkey"`);
 
 /** Crea un cliente e ne restituisce l'id. */
 export async function creaCliente(officinaId: string, cliente: Cliente): Promise<string> {

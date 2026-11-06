@@ -2200,7 +2200,7 @@ i due file in `DOCS/legale/`.
 ## Report pubblico e officine sospese (T083)
 
 **File coinvolti:** `supabase/migrations/20261028000100_report_pubblico_sospese.sql`,
-`supabase/tests/database/` (test pgTAP del report pubblico), `packages/shared/src/database.types.ts`.
+`supabase/tests/database/` (test pgTAP del report pubblico).
 **Come funziona:** `report_pubblico(codice)` restituisce il report solo se il link esiste, non è scaduto né
 revocato e l'officina del controllo non è SOSPESA (IN_ATTESA e ATTIVA vanno bene). La sospensione non revoca i
 link: li spegne finché dura; riattivata l'officina, i link non scaduti tornano a funzionare.
@@ -3138,10 +3138,13 @@ l'officina, per non lasciarla visibile agli altri test nel database condiviso.
 ### Codice complesso
 `e2e/tests/ingresso-officina.spec.ts` — le notifiche si trovano con `.tc-notifica` filtrata per la ragione
 sociale unica: l'admin ne riceve una per ogni officina registrata dagli e2e.
-`e2e/tests/ingresso-officina.spec.ts` — la home attiva si riconosce da "Area officina · <ragione>"; l'assenza
-di "Officina in attesa" si asserisce solo dopo, per non dare un falso positivo durante il caricamento.
+`e2e/tests/ingresso-officina.spec.ts` — la home attiva si riconosce da "Area officina · <ragione>";
+l'assenza di "Officina in attesa" si asserisce solo dopo, per non dare un falso positivo durante il
+caricamento.
 `e2e/tests/ingresso-officina.spec.ts` — aprire `/notifiche` con l'admin segna le sue notifiche come lette
 (nessun e2e le conta).
+`e2e/tests/aiuti.ts` — le partite IVA valide degli e2e vengono da `partitaIvaUnica()`: non ridefinirla negli
+spec (T223).
 
 ## Aiuto su strada: annullo fallito (T220)
 
@@ -3210,3 +3213,16 @@ resta (R25). La lancia solo il job pg_cron `pulizia-prenotazioni`, ogni giorno a
 data. La funzione è `security definer`: utenti e anon ricevono `42501`. Le notifiche collegate
 (`notifiche.prenotazione_id`, `on delete cascade`) si cancellano con la prenotazione. Per cambiare i tempi
 (R25): nuova migrazione con `create or replace function`; per l'orario `cron.schedule` con lo stesso nome.
+
+## Ripetizione del salvataggio: `giaSalvato` con vincolo esatto (T217)
+
+**File coinvolti:** `apps/web/src/lib/officina.ts` (`giaSalvato`) e il suo test.
+**Come funziona:** `giaSalvato(error, tabella)` dice se, dopo una ripetizione per errore di rete, il primo
+tentativo era già arrivato al database. L'id lo sceglie il client, quindi `23505` sulla chiave primaria vuol
+dire "record già presente" e l'errore non va mostrato.
+
+### Codice complesso
+`apps/web/src/lib/officina.ts` — il nome del vincolo si cerca tra virgolette doppie (`"<tabella>_pkey"`),
+come lo scrive Postgres, e non come sottostringa: altrimenti `x_veicoli_pkey` con tabella `veicoli`
+risultava già salvato e l'errore spariva. Se Postgres cambiasse il formato del messaggio, i test con il
+messaggio reale lo rivelano.

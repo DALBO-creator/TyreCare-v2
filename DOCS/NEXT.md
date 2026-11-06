@@ -7,9 +7,10 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261106-21 (T195 portale clienti Stripe; T197 pulizia prenotazioni), nel treno.
-> T196 ora può partire: T158 è unito al treno. Idee in coda: T221 (bozze legali), T222 (avviso di
-> aggiornamento) e T228 (e2e di T220 più severo e focus dopo il ridisegno).
+> Ultima sessione: ciclo 20261107-00 (T223 `partitaIvaUnica()` in `aiuti.ts`; T217 `giaSalvato` esatto),
+> nel treno. T196 ora può partire: T158 è unito al treno. Idee in coda: T221 (bozze legali), T222 (avviso
+> di aggiornamento), T228 (e2e di T220 più severo e focus dopo il ridisegno) e T230 (riga oltre 110
+> caratteri nella voce T193 di `NOTES.md`).
 > Stripe, prossimo lavoro: T212 (webhook: tratta `SUBSCRIPTION_DI_ALTRA_OFFICINA` e
 > `ABBONAMENTO_STRIPE_PRESENTE` e logga gli eventi ignorati).
 > Aiuto su strada: resta T159 (guide).

@@ -115,4 +115,20 @@ describe('giaSalvato', () => {
   it('errore senza codice: falso', () => {
     expect(giaSalvato(new Error('clienti_officina_pkey'), 'clienti_officina')).toBe(false);
   });
+
+  it('vincolo il cui nome finisce come la chiave primaria (x_veicoli_pkey): falso', () => {
+    const e = {
+      code: '23505',
+      message: 'duplicate key value violates unique constraint "x_veicoli_pkey"',
+    };
+    expect(giaSalvato(e, 'veicoli')).toBe(false);
+  });
+
+  it('messaggio reale di Postgres sulla chiave primaria (veicoli_pkey): vero', () => {
+    const e = {
+      code: '23505',
+      message: 'duplicate key value violates unique constraint "veicoli_pkey"',
+    };
+    expect(giaSalvato(e, 'veicoli')).toBe(true);
+  });
 });
