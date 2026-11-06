@@ -2386,8 +2386,8 @@ vale falso.
 **Come funziona:** piani e prezzi stanno solo in `PIANI`. La pagina carica il contesto e legge `abbonamenti`
 solo se l'utente è titolare: l'operatore vede "Solo il titolare vede l'abbonamento." (l'RLS gliela nasconde
 comunque). Il piano PILOTA mostra "Officina pilota: gratuito" prima dello stato; se la riga manca, rimanda a
-«Invia un commento». La data di oggi viene da `oggiInItalia()`. Il pulsante "Attiva l'abbonamento" resta
-disattivato fino a Stripe (D8). Dalla pagina "Dati dell'officina" c'è il link.
+«Invia un commento». La data di oggi viene da `oggiInItalia()`. Il pulsante "Attiva l'abbonamento" ora apre
+il pagamento (T192, voce sotto). Dalla pagina "Dati dell'officina" c'è il link.
 
 ### Codice complesso
 `packages/shared/src/abbonamenti.ts` — `giorniDiProva(provaFinoAl, oggi)` tratta `prova_fino_al` come ultimo
@@ -2600,6 +2600,24 @@ I corpi delle funzioni sono quelli di 20261008130000 e 20261008150000; `create o
 di un default ma non può toglierlo. Il test controlla le definizioni (`pg_attrdef`, `pg_get_functiondef`),
 così fallisce senza la migrazione a qualsiasi ora.
 
+## Pagamento dell'abbonamento (pagina Abbonamento, T192)
+
+**File coinvolti:** `apps/web/src/lib/abbonamento.ts`, `apps/web/src/pagine/abbonamento.ts`,
+`e2e/tests/abbonamento.spec.ts`.
+**Come funziona:** radio del piano (Starter/Pro) e pulsante "Attiva l'abbonamento" compaiono solo dove
+`mostraPagamento` è vero (PROVA, SCADUTO, ANNULLATO; R21). `avviaPagamento` chiama la funzione
+`stripe-checkout` con `{ officina_id, piano }`; se riesce, `location.assign(url)` e il pulsante resta
+disattivato. L'errore diventa un `ErroreModulo` mostrato con `mostraErroreInBox`. Al ritorno da Stripe
+`avvisoPagamento` (pura) legge `?pagamento=ok|annullato` e mostra l'avviso verde. Nella CI le Edge Functions
+non girano: l'e2e verifica il messaggio generico.
+
+### Codice complesso
+`apps/web/src/lib/abbonamento.ts` — un errore HTTP di supabase-js è un `FunctionsHttpError` con `context` =
+Response: `codiceDaErrore` ne legge il JSON `{ errore }` (se la lettura fallisce restituisce `null`).
+`messaggioPagamento` mappa sei codici (PAGAMENTI_NON_ATTIVI, SOLO_TITOLARE, OFFICINA_NON_ATTIVA, PILOTA,
+GIA_ATTIVO, ABBONAMENTO_DA_SISTEMARE); ogni altro codice dà "Non riusciamo ad aprire il pagamento. Riprova
+tra poco." I testi stanno in `MESSAGGI_PAGAMENTO` (apostrofi dritti, come il resto dell'app).
+
 ## Intervento su strada — database (T139, R18)
 
 **File coinvolti:** `supabase/migrations/20261031000200_intervento_strada.sql`,
@@ -2746,6 +2764,20 @@ estendere) e `ImpostazioniStradaSchema` sugli stessi dati, unendo gli errori col
 `officinaOffreStrada` sta in `lib/dati-officina.ts` e non in `strada-officina.ts`: la home è nel file
 iniziale e quel modulo trascina zod e schemi (+3 kB). `salvaDatiOfficina` traduce `PGRST116` in
 `ErroreModulo`; `RICHIESTA_NON_DISPONIBILE` e `42501` sono tradotti da `traduci`.
+
+## Aiuto su strada: la casella ricorda la scelta (T209)
+
+**File coinvolti:** `apps/web/src/lib/dati-officina.ts`, `apps/web/src/pagine/dati-officina.ts`,
+`apps/web/src/pagine/strada-officina.ts`, `apps/web/src/pagine/cliente.ts`.
+**Come funziona:** in `/officina/dati` la casella "Offro l'aiuto su strada" dipende dalla posizione: senza
+coordinate leggibili è disattivata e non spuntata; quando tornano leggibili si riattiva con l'ultima scelta
+reale. Dopo un'accettazione su strada un errore della sola rilettura non arriva più al dialogo. L'errore
+dell'annullo invito usa `mostraErroreInBox` (riquadro con `tabindex="-1"`).
+
+### Codice complesso
+`apps/web/src/lib/dati-officina.ts` — `statoCasella(posizioneLeggibile, sceltaUtente)` è pura. `sceltaUtente`
+parte dal valore salvato e cambia solo con l'evento `change`: impostare `checked` da codice non lo lancia.
+L'e2e non salva, perché le impostazioni di Gomme Rossi sono condivise.
 
 ## Router: ricarica e home dal riquadro d'errore (T157)
 

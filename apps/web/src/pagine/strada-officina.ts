@@ -120,7 +120,8 @@ export async function mostraStradaOfficina(app: HTMLElement): Promise<void> {
             void rileggi().catch(() => undefined);
             throw errore;
           }
-          await rileggi();
+          // La richiesta è già accettata: un errore della sola rilettura non deve arrivare al dialogo
+          await rileggi().catch(() => undefined);
         },
       });
       return;

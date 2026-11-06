@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 vi.mock('./supabase', () => ({ getSupabase: () => ({}) }));
 
-import { testoPosizione } from './dati-officina';
+import { statoCasella, testoPosizione } from './dati-officina';
 
 describe('testoPosizione', () => {
   it('con entrambe le coordinate', () => {
@@ -25,5 +25,17 @@ describe('testoPosizione', () => {
 
   it('zero è una coordinata valida', () => {
     expect(testoPosizione({ latitudine: 0, longitudine: 0 })).toBe('0, 0');
+  });
+});
+
+describe('statoCasella', () => {
+  it('posizione illeggibile: disattivata e non spuntata, anche se era scelta', () => {
+    expect(statoCasella(false, true)).toEqual({ disabled: true, checked: false });
+    expect(statoCasella(false, false)).toEqual({ disabled: true, checked: false });
+  });
+
+  it("posizione leggibile: attiva con l'ultima scelta dell'utente", () => {
+    expect(statoCasella(true, true)).toEqual({ disabled: false, checked: true });
+    expect(statoCasella(true, false)).toEqual({ disabled: false, checked: false });
   });
 });

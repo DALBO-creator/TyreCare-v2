@@ -36,6 +36,29 @@ test('coordinate sbagliate: errore sul campo e nessun salvataggio', async ({ pag
   await expect(page).toHaveURL(/\/officina\/dati/);
 });
 
+test("la scelta dell'aiuto su strada resta se si corregge la posizione (senza salvare)", async ({
+  page,
+}) => {
+  // Titolare di Gomme Rossi: nessun salvataggio, le impostazioni sono condivise con gli altri test
+  await accedi(page, 'titolare@tyrecare.test');
+  await page.goto('/officina/dati');
+  await expect(page.getByRole('button', { name: 'Salva dati' })).toBeVisible();
+  const posizione = page.getByLabel('Posizione sulla mappa');
+  const casella = page.getByRole('checkbox', { name: "Offro l'aiuto su strada" });
+
+  await posizione.fill('45.464200, 9.190000');
+  await expect(casella).toBeEnabled();
+  if (!(await casella.isChecked())) await casella.check();
+
+  await posizione.fill('non è una posizione');
+  await expect(casella).toBeDisabled();
+  await expect(casella).not.toBeChecked();
+
+  await posizione.fill('45.464200, 9.190000');
+  await expect(casella).toBeEnabled();
+  await expect(casella).toBeChecked();
+});
+
 test('un operatore vede che serve il titolare', async ({ page }) => {
   await accedi(page, 'operatore@tyrecare.test');
   await page.goto('/officina/dati');

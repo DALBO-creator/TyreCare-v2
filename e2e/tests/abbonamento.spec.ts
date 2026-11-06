@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { accedi } from './aiuti';
 
-// Pagina "Abbonamento" (solo titolare): piano attuale, piani disponibili, pulsante non ancora attivo.
+// Pagina "Abbonamento" (solo titolare): piano attuale, piani disponibili, pulsante di pagamento.
 
 test('il titolare vede il suo piano e i piani disponibili', async ({ page }) => {
   await accedi(page, 'titolare@tyrecare.test');
@@ -12,12 +12,22 @@ test('il titolare vede il suo piano e i piani disponibili', async ({ page }) => 
   await expect(
     page.getByText(/Prova gratuita|La prova è finita|Gratuito per tutta la durata del pilota/),
   ).toBeVisible();
-  await expect(page.getByText('29 €/mese')).toBeVisible();
-  await expect(page.getByText('49 €/mese')).toBeVisible();
-  await expect(page.getByRole('button', { name: "Attiva l'abbonamento" })).toBeDisabled();
-  await expect(
-    page.getByText('Il pagamento online arriva a breve: per ora scrivici con «Invia un commento».'),
-  ).toBeVisible();
+  const piani = page.getByRole('region', { name: 'Piani disponibili' });
+  await expect(piani.getByText('29 €/mese', { exact: true })).toBeVisible();
+  await expect(piani.getByText('49 €/mese', { exact: true })).toBeVisible();
+
+  // Nel db della CI Gomme Rossi è in prova: scelta del piano e pulsante attivo. Le Edge Functions non
+  // girano: il clic dà l'errore generico, in un riquadro con il focus.
+  await expect(page.getByRole('radio', { name: 'Starter — 29 €/mese' })).toBeChecked();
+  await expect(page.getByRole('radio', { name: 'Pro — 49 €/mese' })).not.toBeChecked();
+  await page.getByRole('radio', { name: 'Pro — 49 €/mese' }).check();
+  const attiva = page.getByRole('button', { name: "Attiva l'abbonamento" });
+  await expect(attiva).toBeEnabled();
+  await attiva.click();
+  const errore = page.getByRole('alert');
+  await expect(errore).toHaveText('Non riusciamo ad aprire il pagamento. Riprova tra poco.');
+  await expect(errore).toBeFocused();
+  await expect(attiva).toBeEnabled();
 });
 
 test("l'operatore non vede l'abbonamento", async ({ page }) => {
