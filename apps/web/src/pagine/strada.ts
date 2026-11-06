@@ -168,10 +168,18 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
         inCorso: 'Annullamento…',
         origine: annulla,
         azione: async () => {
-          // Due volte: prima scarta le letture partite prima, dopo quelle partite durante l'annullo
-          // (se l'annullo fallisce il timer resta acceso; se riesce, `disegna()` lo ferma)
+          // Due volte: prima scarta le letture partite prima, dopo quelle partite durante l'annullo.
+          // Se l'annullo fallisce la pagina sotto si ridisegna subito (`disegna()` rilegge lo stato
+          // vero e riaccende il timer, che il primo `disegna()` aveva fermato), senza attendere:
+          // l'errore arriva subito al dialogo, che resta aperto. Se riesce, `disegna()` lo ferma.
           generazione.nuova();
-          await annullaRichiestaStrada(r.id);
+          try {
+            await annullaRichiestaStrada(r.id);
+          } catch (e) {
+            generazione.nuova();
+            if (ancoraAttuale(n)) void disegna();
+            throw e;
+          }
           generazione.nuova();
           if (ancoraAttuale(n)) await disegna();
         },
