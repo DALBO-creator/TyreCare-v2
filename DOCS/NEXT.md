@@ -7,10 +7,10 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261106-03 (T189b checkout con una sola subscription; T224 regola nel database),
-> nel treno. Prima: ciclo 20261106-00 (T194 axe; T202 e2e ingresso officina).
-> T196 ora può partire: T158 è unito al treno. Idee in coda: T220 (annullo fallito durante un ridisegno),
-> T221 (bozze legali) e T222 (avviso di aggiornamento).
+> Ultima sessione: ciclo 20261106-15 (T220 annullo fallito su strada; T227 pulizia di `esci()` ed errori),
+> nel treno. Prima: ciclo 20261106-03 (T189b checkout con una sola subscription; T224 regola nel database).
+> T196 ora può partire: T158 è unito al treno. Idee in coda: T221 (bozze legali), T222 (avviso di
+> aggiornamento) e T228 (e2e di T220 più severo e focus dopo il ridisegno).
 > Stripe, prossimo lavoro: T192 (pagina Abbonamento: mappa `OFFICINA_NON_ATTIVA` e
 > `ABBONAMENTO_DA_SISTEMARE`) e T212 (webhook: tratta `SUBSCRIPTION_DI_ALTRA_OFFICINA` e
 > `ABBONAMENTO_STRIPE_PRESENTE` e logga gli eventi ignorati).
