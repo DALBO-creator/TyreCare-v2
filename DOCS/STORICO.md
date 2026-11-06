@@ -4,6 +4,18 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-07 — ciclo 20261107-00 — T223 T217
+
+**Fatto**
+
+- T223: `partitaIvaUnica()` sta in `e2e/tests/aiuti.ts` e la importano registra-officina, admin-officine,
+  primi-passi e ingresso-officina (prima erano quattro copie identiche); sistemate in `NOTES.md` la riga
+  lunga della voce T202 e i "File coinvolti" della voce T083.
+- T217: `giaSalvato` confronta il nome del vincolo tra virgolette doppie, come lo scrive Postgres:
+  `x_veicoli_pkey` non vale più come `veicoli_pkey`; due test nuovi, il primo rosso con il codice vecchio.
+- Gate del supervisore approvati 2/2 al primo giro.
+- Prova d'insieme verde: 599 unit test; e2e di T223 da vedere in CI.
+
 ### Sessione agenti — 2026-11-06 — ciclo 20261106-21 — T195 T197
 
 **Fatto**

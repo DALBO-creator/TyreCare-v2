@@ -3143,6 +3143,8 @@ l'assenza di "Officina in attesa" si asserisce solo dopo, per non dare un falso 
 caricamento.
 `e2e/tests/ingresso-officina.spec.ts` — aprire `/notifiche` con l'admin segna le sue notifiche come lette
 (nessun e2e le conta).
+`e2e/tests/aiuti.ts` — le partite IVA valide degli e2e vengono da `partitaIvaUnica()`: non ridefinirla negli
+spec (T223).
 
 ## Aiuto su strada: annullo fallito (T220)
 
@@ -3211,3 +3213,16 @@ resta (R25). La lancia solo il job pg_cron `pulizia-prenotazioni`, ogni giorno a
 data. La funzione è `security definer`: utenti e anon ricevono `42501`. Le notifiche collegate
 (`notifiche.prenotazione_id`, `on delete cascade`) si cancellano con la prenotazione. Per cambiare i tempi
 (R25): nuova migrazione con `create or replace function`; per l'orario `cron.schedule` con lo stesso nome.
+
+## Ripetizione del salvataggio: `giaSalvato` con vincolo esatto (T217)
+
+**File coinvolti:** `apps/web/src/lib/officina.ts` (`giaSalvato`) e il suo test.
+**Come funziona:** `giaSalvato(error, tabella)` dice se, dopo una ripetizione per errore di rete, il primo
+tentativo era già arrivato al database. L'id lo sceglie il client, quindi `23505` sulla chiave primaria vuol
+dire "record già presente" e l'errore non va mostrato.
+
+### Codice complesso
+`apps/web/src/lib/officina.ts` — il nome del vincolo si cerca tra virgolette doppie (`"<tabella>_pkey"`),
+come lo scrive Postgres, e non come sottostringa: altrimenti `x_veicoli_pkey` con tabella `veicoli`
+risultava già salvato e l'errore spariva. Se Postgres cambiasse il formato del messaggio, i test con il
+messaggio reale lo rivelano.
