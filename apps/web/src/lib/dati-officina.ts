@@ -68,3 +68,15 @@ export const testoPosizione = (
   d: Pick<DatiOfficinaSalvati, 'latitudine' | 'longitudine'>,
 ): string =>
   d.latitudine === null || d.longitudine === null ? '' : `${d.latitudine}, ${d.longitudine}`;
+
+/**
+ * Stato della casella "Offro l'aiuto su strada": senza posizione leggibile è disattivata e non spuntata;
+ * con la posizione leggibile è attiva e riprende l'ultima scelta dell'utente.
+ */
+export const statoCasella = (
+  posizioneLeggibile: boolean,
+  sceltaUtente: boolean,
+): { disabled: boolean; checked: boolean } =>
+  posizioneLeggibile
+    ? { disabled: false, checked: sceltaUtente }
+    : { disabled: true, checked: false };
