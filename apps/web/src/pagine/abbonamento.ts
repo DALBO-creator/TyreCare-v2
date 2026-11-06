@@ -1,16 +1,46 @@
 import { PIANI, giorniDiProva, oggiInItalia, type Piano } from '@tyrecare/shared';
-import { caricaAbbonamento, type AbbonamentoOfficina } from '../lib/abbonamento';
+import { avviaPagamento, caricaAbbonamento, type AbbonamentoOfficina } from '../lib/abbonamento';
+import { ErroreModulo } from '../lib/errori';
 import { esc } from '../lib/html';
 import { caricaContestoOfficina, eTitolare } from '../lib/officina';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { caricamento, paginaApp } from '../ui/layout';
-import { formattaData, gestisciErroreCaricamento, intestazioneSottopagina } from './comune';
+import {
+  formattaData,
+  gestisciErroreCaricamento,
+  intestazioneSottopagina,
+  mostraErroreInBox,
+  nascondiBox,
+  parametro,
+} from './comune';
 
-// "Abbonamento" (solo il TITOLARE): piano attuale, giorni di prova e piani disponibili. Il pagamento online
-// arriverà con Stripe: per ora il pulsante è disattivato.
+// "Abbonamento" (solo il TITOLARE): piano attuale, giorni di prova, piani disponibili e pagamento con Stripe
+// (la pagina di pagamento è ospitata da Stripe: qui si sceglie il piano e si va lì).
 
-const NOTA_PAGAMENTO =
-  'Il pagamento online arriva a breve: per ora scrivici con «Invia un commento».';
+/** Avviso al ritorno da Stripe (`?pagamento=ok|annullato`); `null` per qualsiasi altro valore. */
+export function avvisoPagamento(valore: string | null): string | null {
+  if (valore === 'ok') return "Pagamento ricevuto: l'abbonamento si aggiorna entro pochi minuti.";
+  if (valore === 'annullato') return 'Pagamento annullato: non ti è stato addebitato nulla.';
+  return null;
+}
+
+type PianoACarico = Exclude<Piano, 'PILOTA'>;
+const PIANI_A_CARICO: readonly PianoACarico[] = ['STARTER', 'PRO'];
+
+function sceltaPiano(attuale: Piano): string {
+  const preselezionato: PianoACarico = attuale === 'PRO' ? 'PRO' : 'STARTER';
+  const radio = PIANI_A_CARICO.map((piano) => {
+    const p = PIANI[piano];
+    return `<div class="form-check">
+        <input class="form-check-input" type="radio" name="piano" id="tc-scelta-${piano}" value="${piano}"${piano === preselezionato ? ' checked' : ''}>
+        <label class="form-check-label" for="tc-scelta-${piano}">${esc(p.nome)} — ${p.prezzoMensile} €/mese</label>
+      </div>`;
+  }).join('');
+  return `<fieldset class="mb-3">
+      <legend class="h6">Scegli il piano</legend>
+      ${radio}
+    </fieldset>`;
+}
 
 export function testoStato(a: AbbonamentoOfficina): string {
   if (a.piano === 'PILOTA') return 'Gratuito per tutta la durata del pilota';
@@ -55,10 +85,11 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
   const n = visualizzazioneCorrente();
   app.innerHTML = paginaApp(caricamento());
   let titolare: boolean;
+  let officinaId: string;
   let abbonamento: AbbonamentoOfficina | null = null;
   try {
     const contesto = await caricaContestoOfficina();
-    const officinaId = contesto.attiva.officina.id;
+    officinaId = contesto.attiva.officina.id;
     titolare = eTitolare(contesto.officine, officinaId);
     if (titolare) abbonamento = await caricaAbbonamento(officinaId);
   } catch (errore) {
@@ -85,15 +116,22 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
 
   let azione = '';
   if (mostraPagamento(abbonamento)) {
-    azione = `<button type="button" class="btn btn-primary btn-lg w-100" disabled>Attiva l'abbonamento</button>
-      <p class="text-body-secondary">${esc(NOTA_PAGAMENTO)}</p>`;
+    azione = `${sceltaPiano(abbonamento?.piano ?? 'STARTER')}
+      <div class="tc-avviso tc-avviso--rosso mb-3" data-errore-pagamento role="alert" tabindex="-1" hidden></div>
+      <button type="button" class="btn btn-primary btn-lg w-100" data-attiva>Attiva l'abbonamento</button>`;
   } else if (abbonamento) {
     azione = '<p class="mb-0">Il tuo abbonamento è a posto: non devi fare nulla.</p>';
   }
 
+  const testoAvviso = avvisoPagamento(parametro('pagamento'));
+  const avviso = testoAvviso
+    ? `<div class="tc-avviso tc-avviso--verde" role="status"><p class="mb-0">${esc(testoAvviso)}</p></div>`
+    : '';
+
   app.innerHTML = paginaApp(`
     ${intestazioneSottopagina('Abbonamento', 'Officina')}
     <div class="tc-contenuto">
+      ${avviso}
       <section aria-labelledby="tc-attuale">
         <h2 id="tc-attuale" class="tc-etichetta">Il tuo piano</h2>
         ${attuale}
@@ -107,4 +145,25 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
       </section>
 ${azione}
     </div>`);
+
+  const pulsante = app.querySelector<HTMLButtonElement>('[data-attiva]');
+  const boxErrore = app.querySelector<HTMLElement>('[data-errore-pagamento]');
+  pulsante?.addEventListener('click', async () => {
+    const scelto = app.querySelector<HTMLInputElement>('input[name="piano"]:checked')?.value;
+    const piano: PianoACarico = scelto === 'PRO' ? 'PRO' : 'STARTER';
+    pulsante.disabled = true;
+    nascondiBox(boxErrore);
+    try {
+      await avviaPagamento(officinaId, piano);
+      // Si lascia il pulsante disattivato: il browser sta andando alla pagina di Stripe.
+    } catch (errore) {
+      mostraErroreInBox(
+        boxErrore,
+        errore instanceof ErroreModulo
+          ? errore.message
+          : 'Non riusciamo ad aprire il pagamento. Riprova tra poco.',
+      );
+      pulsante.disabled = false;
+    }
+  });
 }
