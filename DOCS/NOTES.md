@@ -2768,7 +2768,7 @@ iniziale e quel modulo trascina zod e schemi (+3 kB). `salvaDatiOfficina` traduc
 ## Aiuto su strada: la casella ricorda la scelta (T209)
 
 **File coinvolti:** `apps/web/src/lib/dati-officina.ts`, `apps/web/src/pagine/dati-officina.ts`,
-`apps/web/src/pagine/strada.ts`, `apps/web/src/pagine/invito.ts`.
+`apps/web/src/pagine/strada-officina.ts`, `apps/web/src/pagine/cliente.ts`.
 **Come funziona:** in `/officina/dati` la casella "Offro l'aiuto su strada" dipende dalla posizione: senza
 coordinate leggibili è disattivata e non spuntata; quando tornano leggibili si riattiva con l'ultima scelta
 reale. Dopo un'accettazione su strada un errore della sola rilettura non arriva più al dialogo. L'errore
