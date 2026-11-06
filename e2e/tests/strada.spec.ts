@@ -67,3 +67,61 @@ test('senza descrizione il campo è segnalato e non parte nessuna richiesta', as
     await contesto.close();
   }
 });
+
+test('se l’annullo fallisce la pagina mostra ancora la richiesta e il dialogo l’errore', async ({
+  browser,
+}) => {
+  test.setTimeout(180_000);
+  const email = await nuovoAccountCliente('Gino');
+  const contesto = await browser.newContext();
+  const page = await contesto.newPage();
+  try {
+    await accedi(page, email);
+    // Nessuna officina del seed offre il servizio: la richiesta aperta e l'annullo rifiutato sono finti
+    const descrizione = `Gomma a terra ${unico()}`;
+    const riga = {
+      id: '00000000-0000-4000-8000-000000000220',
+      stato: 'APERTA',
+      descrizione,
+      scade_il: new Date(Date.now() + 3600_000).toISOString(),
+      accettata_il: null,
+      targa: null,
+      officina: null,
+    };
+    await page.route('**/rest/v1/richieste_strada?*', async (route) => {
+      if (route.request().method() !== 'GET') return route.fallback();
+      const oggetto = (await route.request().headerValue('accept'))?.includes('vnd.pgrst.object');
+      return route.fulfill({ json: oggetto ? riga : [riga] });
+    });
+    await page.route('**/rest/v1/rpc/annulla_richiesta_strada', (route) =>
+      route.fulfill({
+        status: 400,
+        json: { message: 'RICHIESTA_NON_DISPONIBILE', code: 'P0001' },
+      }),
+    );
+    await page.goto('/strada');
+
+    const stato = page.getByRole('heading', { name: "Stiamo cercando un'officina vicina" });
+    const annulla = page.getByRole('button', { name: 'Annulla la richiesta' });
+    await expect(stato).toBeVisible();
+    await expect(page.getByText(descrizione)).toBeVisible();
+
+    await annulla.click();
+    const dialogo = page.getByRole('dialog');
+    await dialogo.getByRole('button', { name: 'Annulla la richiesta' }).click();
+    await expect(
+      dialogo.getByText(
+        'Questa richiesta non è più disponibile: è già stata chiusa, annullata o è scaduta.',
+      ),
+    ).toBeVisible();
+
+    // Chiuso il dialogo, la pagina sotto mostra lo stato vero, non il caricamento
+    await dialogo.getByRole('button', { name: 'Annulla', exact: true }).click();
+    await expect(dialogo).toHaveCount(0);
+    await expect(stato).toBeVisible();
+    await expect(page.getByText(descrizione)).toBeVisible();
+    await expect(annulla).toBeEnabled();
+  } finally {
+    await contesto.close();
+  }
+});
