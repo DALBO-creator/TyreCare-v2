@@ -3175,3 +3175,38 @@ chiamato prima di una nuova azione.
 `focus()` non ha effetto e lo screen reader non legge l'errore.
 `apps/web/src/pagine/elimina-account.ts` — il ramo `if (sessioneCorrente())` è quasi irraggiungibile: resta
 (idea T214).
+
+## Portale clienti di Stripe (`supabase/functions/stripe-portale/`, T195)
+
+**File coinvolti:** `supabase/functions/stripe-portale/index.ts`,
+`supabase/functions/stripe-portale/portale.ts`, `supabase/functions/stripe-portale/portale.test.ts`.
+**Come funziona:** `index.ts` (Deno, service role) passa variabili, `fetch` e 3 letture (utente del JWT,
+ruolo in `officina_utenti`, `abbonamenti.stripe_customer_id`) a `gestisciPortale` di `portale.ts`, provato
+con vitest (project `funzioni`). Il titolare chiama la funzione con `{ officina_id }` e riceve `{ url }`:
+nel portale cambia carta o annulla, poi torna su `/officina/abbonamento`. Le modifiche fatte nel portale
+tornano all'app dal webhook (T185). Il portale va attivato nella dashboard di Stripe (T204), altrimenti la
+risposta è 502.
+
+### Codice complesso
+`portale.ts` — i controlli sono quelli del checkout e nello stesso ordine (CORS, 405, 503
+`PAGAMENTI_NON_ATTIVI` senza `STRIPE_SECRET_KEY` o `SITO_URL`, 401, 400, 403 `SOLO_TITOLARE`), poi 404
+`ABBONAMENTO_NON_TROVATO` e 409 `NESSUN_PAGAMENTO` senza cliente Stripe. `chiamaStripe(…,
+'billing_portal/sessions', …)` riceve customer e `return_url` (`SITO_URL` senza `/` finale +
+`/officina/abbonamento`) e dà 200 `{ url }`; errore di Stripe o sessione senza url → 502 `STRIPE`; errore
+del database → 500 `DATABASE`; i messaggi restano nel log. Di proposito non si controllano stato
+dell'officina né piano: chi ha un cliente Stripe deve poter annullare o sistemare la carta anche da
+SOSPESA, PILOTA o SCADUTO (un `past_due` resta vivo).
+
+## Pulizia automatica delle prenotazioni (T197)
+
+**File coinvolti:** `supabase/migrations/20261106000200_pulizia_prenotazioni.sql`,
+`supabase/tests/database/pulizia-prenotazioni.test.sql` (pgTAP, in CI).
+**Come funziona:** `public.pulisci_prenotazioni(p_oggi date)` cancella le prenotazioni con
+`giorno < p_oggi - 24 mesi`, in qualsiasi stato, e restituisce quante; il giorno esattamente 24 mesi prima
+resta (R25). La lancia solo il job pg_cron `pulizia-prenotazioni`, ogni giorno alle 00:45 UTC.
+
+### Codice complesso
+`p_oggi` di default è il giorno italiano (`(now() at time zone 'Europe/Rome')::date`); i test passano la
+data. La funzione è `security definer`: utenti e anon ricevono `42501`. Le notifiche collegate
+(`notifiche.prenotazione_id`, `on delete cascade`) si cancellano con la prenotazione. Per cambiare i tempi
+(R25): nuova migrazione con `create or replace function`; per l'orario `cron.schedule` con lo stesso nome.

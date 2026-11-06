@@ -7,7 +7,7 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261106-18 (T209 correzioni officina; T192 pagamento Stripe), nel treno.
+> Ultima sessione: ciclo 20261106-21 (T195 portale clienti Stripe; T197 pulizia prenotazioni), nel treno.
 > T196 ora può partire: T158 è unito al treno. Idee in coda: T221 (bozze legali), T222 (avviso di
 > aggiornamento) e T228 (e2e di T220 più severo e focus dopo il ridisegno).
 > Stripe, prossimo lavoro: T212 (webhook: tratta `SUBSCRIPTION_DI_ALTRA_OFFICINA` e
@@ -47,7 +47,7 @@
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
 - [~] Fase 7: **Stripe** — fatti il database (T180), il webhook (T185), il checkout (T189) e la regola di
-  una sola subscription (T189b, T224), pagina Abbonamento (T192); restano portale (T195), webhook (T212)
+  una sola subscription (T189b, T224), pagina Abbonamento (T192), portale (T195); restano webhook (T212)
   e guida (T204)
 - [x] Promemoria: la registrazione web passa `termini_versione` nei metadati di `signUp` — fatto (T056,
   2026-10-29): la spunta dei termini è obbligatoria e il trigger (T054) copia la versione nel profilo
