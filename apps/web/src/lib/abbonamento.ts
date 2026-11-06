@@ -25,12 +25,12 @@ const MESSAGGIO_GENERICO = 'Non riusciamo ad aprire il pagamento. Riprova tra po
 const MESSAGGI_PAGAMENTO: Record<string, string> = {
   PAGAMENTI_NON_ATTIVI:
     'Il pagamento online non è ancora attivo: per ora scrivici con «Invia un commento».',
-  SOLO_TITOLARE: 'Solo il titolare può attivare l’abbonamento.',
-  OFFICINA_NON_ATTIVA: 'Potrai attivare l’abbonamento quando la tua officina sarà attiva.',
-  PILOTA: 'La tua officina è nel pilota: l’abbonamento è gratuito.',
-  GIA_ATTIVO: 'L’abbonamento è già attivo.',
+  SOLO_TITOLARE: "Solo il titolare può attivare l'abbonamento.",
+  OFFICINA_NON_ATTIVA: "Potrai attivare l'abbonamento quando la tua officina sarà attiva.",
+  PILOTA: "La tua officina è nel pilota: l'abbonamento è gratuito.",
+  GIA_ATTIVO: "L'abbonamento è già attivo.",
   ABBONAMENTO_DA_SISTEMARE:
-    'L’ultimo pagamento non è riuscito: scrivici con «Invia un commento» per sistemarlo.',
+    "L'ultimo pagamento non è riuscito: scrivici con «Invia un commento» per sistemarlo.",
 };
 
 /** Testo per il codice d'errore di `stripe-checkout`; codice assente o sconosciuto → messaggio generico. */
