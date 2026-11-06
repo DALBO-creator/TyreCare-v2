@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-06 — ciclo 20261106-18 — T209 T192
+
+**Fatto**
+
+- T209: dopo un'accettazione su strada un errore della sola rilettura non arriva più al dialogo; la casella
+  "Offro l'aiuto su strada" ricorda la scelta quando la posizione diventa illeggibile e poi torna valida
+  (`statoCasella`); l'errore dell'annullo invito usa `mostraErroreInBox`.
+- T192: la pagina "Abbonamento" ha la scelta del piano (Starter/Pro) e il pulsante "Attiva l'abbonamento"
+  che apre il pagamento Stripe con `stripe-checkout`; errori con messaggi chiari (R22); avviso verde al
+  ritorno con `?pagamento=ok|annullato`.
+- Revisione a coppia: 1 giro ciascuno; gate del supervisore approvato 2/2 al primo giro (nota: apostrofi
+  tipografici in `MESSAGGI_PAGAMENTO` corretti sul ramo in apostrofi dritti).
+- Prova d'insieme verde: 568 unit test, JS iniziale invariato (26,54 kB); e2e solo in CI.
+- Decisione: testi brevi per SOLO_TITOLARE, GIA_ATTIVO e PILOTA (cambiabili in `MESSAGGI_PAGAMENTO`);
+  ABBONAMENTO_NON_TROVATO e RICHIESTA_NON_VALIDA danno il messaggio generico.
+
 ### Sessione agenti — 2026-11-06 — ciclo 20261106-15 — T220 T227
 
 **Fatto**
