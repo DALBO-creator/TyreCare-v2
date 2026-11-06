@@ -33,11 +33,7 @@ export function mostraEliminaAccount(app: HTMLElement): void {
       await eliminaAccount();
       // Il messaggio resta in attesa: il ritorno all'accesso lo fa main.ts su SIGNED_OUT
       impostaConferma('Il tuo account è stato eliminato.');
-      try {
-        await esci();
-      } catch {
-        // l'account non c'è più: un errore di rete in uscita non deve fermare l'utente
-      }
+      await esci();
       if (sessioneCorrente()) {
         // uscita fallita: pulizia locale e ritorno forzato all'accesso
         try {

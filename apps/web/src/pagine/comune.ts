@@ -112,12 +112,8 @@ export async function gestisciErroreCaricamento(
   errore: unknown,
 ): Promise<void> {
   if (sessioneNonValida(errore)) {
-    try {
-      await esci();
-      return;
-    } catch {
-      // Uscita non riuscita (es. offline): si ricade sull'avviso generico
-    }
+    await esci();
+    return;
   }
   if (!ancoraAttuale(n)) return;
   app.innerHTML = paginaApp(

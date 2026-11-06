@@ -6,7 +6,13 @@ import { accettaInvito, leggiInvito, type InfoInvito } from '../lib/inviti';
 import { ancoraAttuale, mostraPagina, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaAuth } from '../ui/layout';
-import { erroreCaricamento, formattaData, parametro, vaiConConferma } from './comune';
+import {
+  erroreCaricamento,
+  formattaData,
+  mostraErroreInBox,
+  parametro,
+  vaiConConferma,
+} from './comune';
 
 // Il codice è di 16 byte scritti in esadecimale (`crea_invito_cliente`)
 const CODICE = /^[0-9a-f]{32}$/;
@@ -101,7 +107,7 @@ function mostraEmailDiversa(app: HTMLElement, info: InfoInvito, email: string): 
             all'officina di mandarlo all'email del tuo account.
           </p>
         </div>
-        <div class="tc-avviso tc-avviso--rosso" data-errore role="alert" hidden></div>
+        <div class="tc-avviso tc-avviso--rosso" data-errore role="alert" tabindex="-1" hidden></div>
         <button type="button" class="btn btn-primary btn-lg w-100" data-esci>
           Esci e cambia account
         </button>
@@ -161,11 +167,7 @@ function mostraAccetta(app: HTMLElement, codice: string, info: InfoInvito): void
 }
 
 function mostraErrore(app: HTMLElement, testo: string): void {
-  const riquadro = app.querySelector<HTMLElement>('[data-errore]');
-  if (!riquadro) return;
-  riquadro.innerHTML = `<p class="mb-0">${esc(testo)}</p>`;
-  riquadro.hidden = false;
-  riquadro.focus();
+  mostraErroreInBox(app.querySelector<HTMLElement>('[data-errore]'), testo);
 }
 
 /** Invito che non si può usare: spiegazione e un'uscita (garage o richiesta di un nuovo invito). */
