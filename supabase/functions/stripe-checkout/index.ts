@@ -2,7 +2,8 @@
 //
 // La pagina "Abbonamento" la chiama con `{ officina_id, piano: 'STARTER' | 'PRO' }` e il JWT dell'utente;
 // risponde `{ url }` della pagina di pagamento ospitata da Stripe (solo carta, modalità abbonamento).
-// Solo il TITOLARE dell'officina; piano PILOTA o abbonamento già ATTIVO → 409. Il flusso è in
+// Solo il TITOLARE dell'officina; officina non ATTIVA, piano PILOTA, abbonamento già ATTIVO o SCADUTO con
+// la subscription ancora collegata (T189b, R30) → 409. Il flusso è in
 // `checkout.ts` (provato con vitest); qui solo il cablaggio con Deno e il database (service role).
 // Errori: `{ errore: <CHIAVE> }`; il messaggio di Stripe o del database resta nel log.
 //
@@ -43,20 +44,20 @@ const db: DbCheckout = {
   async abbonamento(officinaId) {
     const { data, error } = await supabase
       .from('abbonamenti')
-      .select('piano, stato, stripe_customer_id')
+      .select('piano, stato, stripe_customer_id, stripe_subscription_id')
       .eq('officina_id', officinaId)
       .maybeSingle();
     if (error) throw new Error(`lettura abbonamento: ${error.message}`);
     return data ?? null;
   },
-  async ragioneSociale(officinaId) {
+  async officina(officinaId) {
     const { data, error } = await supabase
       .from('officine')
-      .select('ragione_sociale')
+      .select('ragione_sociale, stato_affiliazione')
       .eq('id', officinaId)
       .maybeSingle();
     if (error) throw new Error(`lettura officina: ${error.message}`);
-    return (data?.ragione_sociale as string | undefined) ?? null;
+    return data ?? null;
   },
   async collegaCliente(officinaId, customer) {
     const { error } = await supabase.rpc('collega_cliente_stripe', {

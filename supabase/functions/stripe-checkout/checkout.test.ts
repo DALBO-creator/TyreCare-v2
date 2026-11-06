@@ -52,7 +52,7 @@ function dbFinto(abbonamento: AbbonamentoCheckout | null, altro: Partial<DbCheck
     utente: async (token) => UTENTI[token] ?? null,
     ruolo: async (officina, utente) => RUOLI[`${officina}/${utente}`] ?? null,
     abbonamento: async () => abbonamento,
-    ragioneSociale: async () => 'Gomme Rossi',
+    officina: async () => ({ ragione_sociale: 'Gomme Rossi', stato_affiliazione: 'ATTIVA' }),
     collegaCliente: vi.fn(async (officina: string, customer: string) => {
       chiamate.push(`collega ${officina} ${customer}`);
     }),
@@ -61,7 +61,12 @@ function dbFinto(abbonamento: AbbonamentoCheckout | null, altro: Partial<DbCheck
   return db;
 }
 
-const PROVA: AbbonamentoCheckout = { piano: 'STARTER', stato: 'PROVA', stripe_customer_id: null };
+const PROVA: AbbonamentoCheckout = {
+  piano: 'STARTER',
+  stato: 'PROVA',
+  stripe_customer_id: null,
+  stripe_subscription_id: null,
+};
 
 /** Stripe finto: registra le chiamate, risponde con un cliente o una sessione (o con un errore). */
 function stripeFinto(errore?: { percorso: string; messaggio: string }) {
@@ -234,7 +239,7 @@ describe('gestisciCheckout', () => {
 
   it('piano PILOTA → 409 PILOTA', async () => {
     const fetchFn = stripeFinto();
-    const db = dbFinto({ piano: 'PILOTA', stato: 'PROVA', stripe_customer_id: null });
+    const db = dbFinto({ ...PROVA, piano: 'PILOTA' });
     const r = await esegui(richiesta(CORPO), db, fetchFn);
     expect(r.status).toBe(409);
     expect(await r.json()).toEqual({ errore: 'PILOTA' });
@@ -243,11 +248,99 @@ describe('gestisciCheckout', () => {
 
   it('abbonamento ATTIVO → 409 GIA_ATTIVO (si usa il portale)', async () => {
     const fetchFn = stripeFinto();
-    const db = dbFinto({ piano: 'STARTER', stato: 'ATTIVO', stripe_customer_id: 'cus_esistente' });
+    const db = dbFinto({
+      piano: 'STARTER',
+      stato: 'ATTIVO',
+      stripe_customer_id: 'cus_esistente',
+      stripe_subscription_id: 'sub_esistente',
+    });
     const r = await esegui(richiesta({ officina_id: OFFICINA, piano: 'PRO' }), db, fetchFn);
     expect(r.status).toBe(409);
     expect(await r.json()).toEqual({ errore: 'GIA_ATTIVO' });
     expect(fetchFn).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['IN_ATTESA', { ragione_sociale: 'Pneus Express', stato_affiliazione: 'IN_ATTESA' }],
+    ['SOSPESA', { ragione_sociale: 'Gomme Rossi', stato_affiliazione: 'SOSPESA' }],
+    ['assente', null],
+  ])('officina %s → 409 OFFICINA_NON_ATTIVA, niente Stripe', async (_nome, officina) => {
+    const fetchFn = stripeFinto();
+    const abbonamento = vi.fn(async () => PROVA);
+    const db = dbFinto(PROVA, { officina: async () => officina, abbonamento });
+    const r = await esegui(richiesta(CORPO), db, fetchFn);
+    expect(r.status).toBe(409);
+    expect(await r.json()).toEqual({ errore: 'OFFICINA_NON_ATTIVA' });
+    expect(fetchFn).not.toHaveBeenCalled();
+    expect(db.collegaCliente).not.toHaveBeenCalled();
+    expect(abbonamento).not.toHaveBeenCalled(); // il controllo viene prima dell'abbonamento
+  });
+
+  it('officina non ATTIVA con abbonamento ATTIVO → OFFICINA_NON_ATTIVA (prima di GIA_ATTIVO)', async () => {
+    const db = dbFinto(
+      { ...PROVA, stato: 'ATTIVO', stripe_customer_id: 'cus_e', stripe_subscription_id: 'sub_e' },
+      { officina: async () => ({ ragione_sociale: 'Gomme Rossi', stato_affiliazione: 'SOSPESA' }) },
+    );
+    const r = await esegui(richiesta(CORPO), db);
+    expect(r.status).toBe(409);
+    expect(await r.json()).toEqual({ errore: 'OFFICINA_NON_ATTIVA' });
+  });
+
+  it('OPERATORE di un’officina non ATTIVA → 403 SOLO_TITOLARE (il ruolo viene prima)', async () => {
+    const db = dbFinto(PROVA, {
+      officina: async () => ({ ragione_sociale: 'Gomme Rossi', stato_affiliazione: 'SOSPESA' }),
+    });
+    const r = await esegui(richiesta(CORPO, 'tok_operatore'), db);
+    expect(r.status).toBe(403);
+    expect(await r.json()).toEqual({ errore: 'SOLO_TITOLARE' });
+  });
+
+  it('SCADUTO con la subscription ancora collegata → 409 ABBONAMENTO_DA_SISTEMARE, niente Stripe', async () => {
+    const fetchFn = stripeFinto();
+    const db = dbFinto({
+      piano: 'STARTER',
+      stato: 'SCADUTO',
+      stripe_customer_id: 'cus_esistente',
+      stripe_subscription_id: 'sub_past_due',
+    });
+    const r = await esegui(richiesta({ officina_id: OFFICINA, piano: 'PRO' }), db, fetchFn);
+    expect(r.status).toBe(409);
+    expect(await r.json()).toEqual({ errore: 'ABBONAMENTO_DA_SISTEMARE' });
+    expect(fetchFn).not.toHaveBeenCalled();
+    expect(db.collegaCliente).not.toHaveBeenCalled();
+  });
+
+  it('SCADUTO senza subscription e senza cliente → 200, crea il cliente e apre il checkout', async () => {
+    const fetchFn = stripeFinto();
+    const db = dbFinto({ ...PROVA, stato: 'SCADUTO' });
+    const r = await esegui(richiesta(CORPO), db, fetchFn);
+    expect(r.status).toBe(200);
+    expect(await r.json()).toEqual({ url: URL_SESSIONE });
+    expect(chiamate).toEqual([
+      'stripe customers',
+      `collega ${OFFICINA} cus_finto`,
+      'stripe checkout/sessions',
+    ]);
+  });
+
+  it('Idempotency-Key cliente-<officina> solo sulla creazione del cliente, non sulla sessione', async () => {
+    const fetchFn = stripeFinto();
+    const r = await esegui(richiesta(CORPO), dbFinto(PROVA), fetchFn);
+    expect(r.status).toBe(200);
+
+    const [urlCliente, initCliente] = fetchFn.mock.calls[0]!;
+    expect(urlCliente).toBe('https://api.stripe.com/v1/customers');
+    const intestazioniCliente = initCliente.headers as Record<string, string>;
+    expect(intestazioniCliente['Idempotency-Key']).toBe(`cliente-${OFFICINA}`);
+
+    const [urlSessione, initSessione] = fetchFn.mock.calls[1]!;
+    expect(urlSessione).toBe('https://api.stripe.com/v1/checkout/sessions');
+    const intestazioniSessione = initSessione.headers as Record<string, string>;
+    expect(intestazioniSessione['Idempotency-Key']).toBeUndefined();
+    expect(intestazioniSessione).toEqual({
+      Authorization: 'Bearer sk_test_finta',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
   });
 
   it('abbonamento assente → 404', async () => {
@@ -275,6 +368,7 @@ describe('gestisciCheckout', () => {
     expect(initCliente.headers).toEqual({
       Authorization: 'Bearer sk_test_finta',
       'Content-Type': 'application/x-www-form-urlencoded',
+      'Idempotency-Key': `cliente-${OFFICINA}`,
     });
     expect(initCliente.body).toBe(
       `email=titolare%40prova.it&name=Gomme+Rossi&metadata%5Bofficina_id%5D=${OFFICINA}`,
@@ -299,7 +393,12 @@ describe('gestisciCheckout', () => {
 
   it('cliente Stripe già collegato: non si ricrea; STARTER usa il suo prezzo', async () => {
     const fetchFn = stripeFinto();
-    const db = dbFinto({ piano: 'STARTER', stato: 'SCADUTO', stripe_customer_id: 'cus_esistente' });
+    const db = dbFinto({
+      piano: 'STARTER',
+      stato: 'SCADUTO',
+      stripe_customer_id: 'cus_esistente',
+      stripe_subscription_id: null,
+    });
     const r = await esegui(richiesta(CORPO), db, fetchFn);
 
     expect(r.status).toBe(200);
