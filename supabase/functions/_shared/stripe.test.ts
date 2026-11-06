@@ -48,6 +48,41 @@ describe('chiamaStripe', () => {
     });
   });
 
+  it('con chiaveIdempotenza: intestazione Idempotency-Key, il resto uguale', async () => {
+    const fetchFn = fetchCon(200, { id: 'cus_prova' });
+    await chiamaStripe(
+      fetchFn,
+      CHIAVE,
+      'customers',
+      new URLSearchParams([['name', 'Gomme Rossi']]),
+      {
+        chiaveIdempotenza: 'cliente-b0000000-0000-0000-0000-000000000001',
+      },
+    );
+    expect(fetchFn).toHaveBeenCalledWith('https://api.stripe.com/v1/customers', {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer sk_test_finta',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Idempotency-Key': 'cliente-b0000000-0000-0000-0000-000000000001',
+      },
+      body: 'name=Gomme+Rossi',
+    });
+  });
+
+  it.each([
+    ['senza quinto argomento', undefined],
+    ['opzioni vuote', {}],
+    ['chiave vuota', { chiaveIdempotenza: '' }],
+  ])('%s: nessuna Idempotency-Key', async (_nome, opzioni) => {
+    const fetchFn = fetchCon(200, { id: 'cs_prova' });
+    await chiamaStripe(fetchFn, CHIAVE, 'checkout/sessions', new URLSearchParams(), opzioni);
+    expect(fetchFn.mock.calls[0]![1].headers).toEqual({
+      Authorization: 'Bearer sk_test_finta',
+      'Content-Type': 'application/x-www-form-urlencoded',
+    });
+  });
+
   it('errore di Stripe → lancia con il messaggio di Stripe', async () => {
     const fetchFn = fetchCon(400, { error: { message: 'No such price: price_finto_starter' } });
     await expect(

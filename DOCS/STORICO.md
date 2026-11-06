@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-06 — ciclo 20261106-03 — T189b T224
+
+**Fatto**
+
+- T189b: il checkout di Stripe risponde 409 `OFFICINA_NON_ATTIVA` se l'officina non è ATTIVA e 409
+  `ABBONAMENTO_DA_SISTEMARE` se l'abbonamento è SCADUTO con la subscription ancora collegata (R30); la
+  creazione del cliente usa `Idempotency-Key: cliente-<officina_id>`, così due richieste insieme non
+  lasciano clienti doppi (T218).
+- T224: `aggiorna_abbonamento_stripe` ignora gli eventi di una subscription diversa da quella di un
+  abbonamento ATTIVO e dà `SUBSCRIPTION_DI_ALTRA_OFFICINA` sulla subscription di un'altra officina;
+  `rifiuta_affiliazione` dà `ABBONAMENTO_STRIPE_PRESENTE` se l'officina ha una subscription (R30).
+  Migrazione 20261106000100 e pgTAP `stripe-una-subscription` (31 asserzioni): da vedere in CI.
+- Revisione a coppia: 1 giro ciascuno; gate del supervisore approvato 2/2 al primo giro.
+- Prova d'insieme verde: 555 unit test, JS iniziale 63,2 kB; pgTAP solo in CI (niente Docker).
+- Nota del supervisore: con abbonamento ATTIVO un evento con la subscription di un'altra officina viene
+  ignorato senza errore: da loggare nel webhook con T212.
+
 ### Sessione agenti — 2026-11-06 — ciclo 20261106-00 — T194 T202
 
 **Fatto**

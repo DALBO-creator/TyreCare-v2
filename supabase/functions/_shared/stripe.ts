@@ -22,19 +22,30 @@ export type FetchFn = (url: string, init: RequestInit) => Promise<Response>;
  * `POST https://api.stripe.com/v1/<percorso>` con la chiave segreta. Restituisce il JSON di Stripe;
  * se Stripe risponde con un errore lancia un `Error` con il suo messaggio (da scrivere solo nel log:
  * non va mandato al browser).
+ *
+ * `opzioni.chiaveIdempotenza` (facoltativa, T189b) diventa l'intestazione `Idempotency-Key`: Stripe la
+ * ricorda per 24 ore e a una seconda richiesta con la stessa chiave e gli stessi parametri risponde con
+ * il risultato della prima (niente doppioni). Con la stessa chiave e parametri diversi, o mentre la prima
+ * è ancora in corso, Stripe risponde con un errore (che qui lancia, come gli altri). Senza la chiave (o
+ * con una stringa vuota) la richiesta non ha intestazioni in più.
  */
 export async function chiamaStripe(
   fetchFn: FetchFn,
   chiave: string,
   percorso: string,
   parametri: URLSearchParams,
+  opzioni?: { chiaveIdempotenza?: string },
 ): Promise<Record<string, unknown>> {
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${chiave}`,
+    'Content-Type': 'application/x-www-form-urlencoded',
+  };
+  if (typeof opzioni?.chiaveIdempotenza === 'string' && opzioni.chiaveIdempotenza) {
+    headers['Idempotency-Key'] = opzioni.chiaveIdempotenza;
+  }
   const risp = await fetchFn(`https://api.stripe.com/v1/${percorso}`, {
     method: 'POST',
-    headers: {
-      Authorization: `Bearer ${chiave}`,
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
+    headers,
     body: parametri.toString(),
   });
 
