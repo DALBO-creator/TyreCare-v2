@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { mostraPagamento, testoStato } from './abbonamento';
+import { avvisoPagamento, mostraPagamento, testoStato } from './abbonamento';
 import type { AbbonamentoOfficina } from '../lib/abbonamento';
 
 // Ambiente node, senza DOM: le icone (SVG creati con `document`) qui non servono
@@ -38,5 +38,20 @@ describe('mostraPagamento', () => {
     for (const stato of ['PROVA', 'ATTIVO', 'SCADUTO'] as const)
       expect(mostraPagamento(abb({ piano: 'PILOTA', stato }))).toBe(false);
     expect(mostraPagamento(null)).toBe(false);
+  });
+});
+
+describe('avvisoPagamento', () => {
+  it('testo per i due parametri', () => {
+    expect(avvisoPagamento('ok')).toBe(
+      "Pagamento ricevuto: l'abbonamento si aggiorna entro pochi minuti.",
+    );
+    expect(avvisoPagamento('annullato')).toBe(
+      'Pagamento annullato: non ti è stato addebitato nulla.',
+    );
+  });
+  it('altri valori: nessun avviso', () => {
+    expect(avvisoPagamento(null)).toBeNull();
+    expect(avvisoPagamento('boh')).toBeNull();
   });
 });
