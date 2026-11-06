@@ -18,6 +18,19 @@ export function unico(): string {
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`.toUpperCase();
 }
 
+/** Partita IVA italiana valida e unica: 10 cifre dall'orologio e dal caso, più la cifra di controllo. */
+export function partitaIvaUnica(): string {
+  const dieci =
+    Date.now().toString().slice(-7) + String(Math.floor(Math.random() * 1000)).padStart(3, '0');
+  let somma = 0;
+  for (let i = 0; i < 10; i++) {
+    let c = Number(dieci[i]);
+    if (i % 2 === 1) c = c * 2 > 9 ? c * 2 - 9 : c * 2;
+    somma += c;
+  }
+  return dieci + String((10 - (somma % 10)) % 10);
+}
+
 /** Email nuova di un cliente di prova, che nessun account usa ancora. */
 export const emailNuova = () => `e2e-${unico().toLowerCase()}@tyrecare.test`;
 

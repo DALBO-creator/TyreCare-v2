@@ -2200,7 +2200,7 @@ i due file in `DOCS/legale/`.
 ## Report pubblico e officine sospese (T083)
 
 **File coinvolti:** `supabase/migrations/20261028000100_report_pubblico_sospese.sql`,
-`supabase/tests/database/` (test pgTAP del report pubblico), `packages/shared/src/database.types.ts`.
+`supabase/tests/database/` (test pgTAP del report pubblico).
 **Come funziona:** `report_pubblico(codice)` restituisce il report solo se il link esiste, non è scaduto né
 revocato e l'officina del controllo non è SOSPESA (IN_ATTESA e ATTIVA vanno bene). La sospensione non revoca i
 link: li spegne finché dura; riattivata l'officina, i link non scaduti tornano a funzionare.
@@ -3138,8 +3138,9 @@ l'officina, per non lasciarla visibile agli altri test nel database condiviso.
 ### Codice complesso
 `e2e/tests/ingresso-officina.spec.ts` — le notifiche si trovano con `.tc-notifica` filtrata per la ragione
 sociale unica: l'admin ne riceve una per ogni officina registrata dagli e2e.
-`e2e/tests/ingresso-officina.spec.ts` — la home attiva si riconosce da "Area officina · <ragione>"; l'assenza
-di "Officina in attesa" si asserisce solo dopo, per non dare un falso positivo durante il caricamento.
+`e2e/tests/ingresso-officina.spec.ts` — la home attiva si riconosce da "Area officina · <ragione>";
+l'assenza di "Officina in attesa" si asserisce solo dopo, per non dare un falso positivo durante il
+caricamento.
 `e2e/tests/ingresso-officina.spec.ts` — aprire `/notifiche` con l'admin segna le sue notifiche come lette
 (nessun e2e le conta).
 
