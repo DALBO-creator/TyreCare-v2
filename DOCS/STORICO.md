@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-06 — ciclo 20261106-21 — T195 T197
+
+**Fatto**
+
+- T195: nuova Edge Function `stripe-portale`: il titolare apre il portale clienti di Stripe (cambio carta,
+  annullamento) con `{ officina_id }`, risposta `{ url }`, ritorno su `/officina/abbonamento`; 29 test
+  vitest con `fetch` finto; il portale va attivato da Davide nella dashboard di Stripe (T204).
+- T197: cancellazione automatica delle prenotazioni vecchie (R25): `pulisci_prenotazioni`, riservata al job
+  pg_cron `pulizia-prenotazioni` (00:45 UTC), cancella le prenotazioni con giorno di oltre 24 mesi prima, in
+  qualsiasi stato; le notifiche collegate spariscono in cascata. Test pgTAP aggiunto: lo esegue la CI.
+- Gate del supervisore approvati 2/2 al primo giro.
+- Prova d'insieme verde: 597 unit test; pgTAP di T197 da vedere in CI (database ed e2e girano solo lì).
+
 ### Sessione agenti — 2026-11-06 — ciclo 20261106-18 — T209 T192
 
 **Fatto**
