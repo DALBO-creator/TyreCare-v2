@@ -147,7 +147,6 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
       </section>
 
       <section class="tc-azione">
-        <div class="tc-avviso tc-avviso--rosso" data-errore-esci role="alert" tabindex="-1" hidden></div>
         <button type="button" class="btn btn-outline-light btn-lg w-100" data-esci>
           ${icona(LogOut)} Esci
         </button>
@@ -172,12 +171,8 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
   });
 
   app.querySelector('[data-esci]')?.addEventListener('click', async () => {
-    try {
-      // Il ritorno alla pagina di accesso lo fa main.ts, quando Supabase segnala SIGNED_OUT
-      await esci();
-    } catch (errore) {
-      const box = app.querySelector<HTMLElement>('[data-errore-esci]');
-      mostraErroreInBox(box, messaggioErrore(errore));
-    }
+    // Il ritorno alla pagina di accesso lo fa main.ts su SIGNED_OUT; senza rete `esci()` toglie la
+    // sessione locale e ricarica `/accedi`. Non lancia mai.
+    await esci();
   });
 }

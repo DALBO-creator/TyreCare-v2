@@ -55,6 +55,8 @@ import {
   gestisciErroreCaricamento,
   idValido,
   intestazioneSottopagina,
+  mostraErroreInBox,
+  nascondiBox,
   parametro,
   vaiConConferma,
 } from './comune';
@@ -441,17 +443,13 @@ function collegaAzioni(app: HTMLElement, p: Prenotazione): void {
   const errore = app.querySelector<HTMLElement>('[data-errore-azione]')!;
   const esegui = async (pulsante: HTMLButtonElement, azione: () => Promise<void>, ok: string) => {
     pulsante.disabled = true;
-    errore.hidden = true;
+    nascondiBox(errore);
     try {
       await azione();
       vaiConConferma(`/appuntamento?id=${p.id}`, ok, { sostituisci: true });
     } catch (e) {
       pulsante.disabled = false;
-      errore.innerHTML = `<p class="mb-0">${esc(
-        e instanceof ErroreModulo ? e.message : messaggioErrore(e),
-      )}</p>`;
-      errore.hidden = false;
-      errore.focus();
+      mostraErroreInBox(errore, e instanceof ErroreModulo ? e.message : messaggioErrore(e));
     }
   };
 

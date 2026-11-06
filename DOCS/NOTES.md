@@ -3110,3 +3110,36 @@ sociale unica: l'admin ne riceve una per ogni officina registrata dagli e2e.
 di "Officina in attesa" si asserisce solo dopo, per non dare un falso positivo durante il caricamento.
 `e2e/tests/ingresso-officina.spec.ts` — aprire `/notifiche` con l'admin segna le sue notifiche come lette
 (nessun e2e le conta).
+
+## Aiuto su strada: annullo fallito (T220)
+
+**File coinvolti:** `apps/web/src/pagine/strada.ts`, `e2e/tests/` (e2e dell'annullo su strada).
+**Come funziona:** se l'annullo di una richiesta su strada fallisce, la pagina sotto il dialogo si ridisegna
+e il dialogo mostra l'errore. Se l'annullo riesce, il ramo è invariato. L'e2e usa una richiesta finta,
+perché nessuna officina del seed offre il servizio: mock di GET `richieste_strada` (oggetto o array secondo
+`accept`) e POST `rpc/annulla_richiesta_strada` (400 `RICHIESTA_NON_DISPONIBILE`).
+
+### Codice complesso
+`apps/web/src/pagine/strada.ts` — l'`azione` dell'annullo fa `generazione.nuova()` prima dell'annullo, per
+scartare le letture in volo; se fallisce chiama `nuova()` di nuovo e `void disegna()` senza await
+(`disegna()` chiama `ferma()`, rilegge lo stato e riaccende il timer), poi rilancia l'errore.
+`apps/web/src/pagine/strada.ts` — l'errore lo mostra il dialogo (`chiediConferma`), che sta in
+`document.body` e non viene toccato dal ridisegno. Dopo la chiusura il focus finisce sul body, perché il
+pulsante d'origine è stato ridisegnato (T228).
+
+## `esci()` non lancia: niente try/catch attorno (T227)
+
+**File coinvolti:** `apps/web/src/lib/auth.ts` (`esci()`, invariato), `apps/web/src/pagine/comune.ts`,
+`home.ts`, `profilo.ts`, `elimina-account.ts`, `invito.ts`, `appuntamenti.ts`.
+**Come funziona:** `esci()` assorbe l'errore di signOut: senza rete toglie la sessione da storage e memoria
+e ricarica `/accedi`. Le pagine fanno `await esci()` senza try/catch; un catch ha senso solo se copre altre
+chiamate (come `mostraPagina()` in `invito.ts`). `getSupabase()` lancia solo con la configurazione mancante.
+Gli errori d'azione si mostrano con `mostraErroreInBox(box, testo)` di `comune.ts`, e `nascondiBox` va
+chiamato prima di una nuova azione.
+
+### Codice complesso
+`apps/web/src/pagine/comune.ts` — `mostraErroreInBox` dà il focus al riquadro: il riquadro deve avere già
+`tabindex="-1"` nel markup (T227 lo ha aggiunto al riquadro "email diversa" dell'invito), altrimenti
+`focus()` non ha effetto e lo screen reader non legge l'errore.
+`apps/web/src/pagine/elimina-account.ts` — il ramo `if (sessioneCorrente())` è quasi irraggiungibile: resta
+(idea T214).

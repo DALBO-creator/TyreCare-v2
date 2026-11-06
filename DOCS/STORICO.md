@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-06 — ciclo 20261106-15 — T220 T227
+
+**Fatto**
+
+- T220: se l'annullo di una richiesta su strada fallisce, la pagina sotto il dialogo si ridisegna
+  (`disegna()` rilegge lo stato e riaccende il timer) e il dialogo mostra l'errore; e2e nuovo con
+  `page.route` che finge la richiesta aperta e l'annullo 400 `RICHIESTA_NON_DISPONIBILE`.
+- T227: tolti i try/catch irraggiungibili attorno a `esci()` in home, profilo, comune ed elimina-account e il
+  riquadro morto `[data-errore-esci]` del profilo; `invito.ts` e `appuntamenti.ts` mostrano gli errori con
+  `mostraErroreInBox` (riquadro "email diversa" dell'invito con `tabindex="-1"`). Nessun testo cambia.
+- Revisione a coppia: 1 giro ciascuno; gate del supervisore approvato 2/2 al primo giro.
+- Prova d'insieme verde: 555 unit test, JS iniziale invariato (26,54 kB); e2e solo in CI.
+- Note del supervisore: l'e2e di T220 passerebbe anche senza la modifica e il focus finisce sul body dopo la
+  chiusura del dialogo (idea T228); in T227 il ramo `if (sessioneCorrente())` di elimina-account è quasi
+  irraggiungibile (resta, idea T214). Dritta: un e2e che chiude una corsa o un ridisegno deve fallire senza
+  la modifica (contare le richieste con `page.route` ed `expect.poll` sotto l'intervallo del timer).
+
 ### Sessione agenti — 2026-11-06 — ciclo 20261106-03 — T189b T224
 
 **Fatto**
