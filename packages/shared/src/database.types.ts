@@ -1258,6 +1258,7 @@ export type Database = {
       orari_validi: { Args: { p_orari: Json }; Returns: boolean };
       pulisci_eventi_stripe: { Args: { p_adesso?: string }; Returns: number };
       pulisci_notifiche: { Args: { p_adesso?: string }; Returns: number };
+      pulisci_prenotazioni: { Args: { p_oggi?: string }; Returns: number };
       registra_cliente_da_prenotazione: {
         Args: {
           p_cliente_id: string;
