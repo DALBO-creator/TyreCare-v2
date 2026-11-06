@@ -4,6 +4,7 @@ import { esc } from '../lib/html';
 import {
   caricaDatiOfficina,
   salvaDatiOfficina,
+  statoCasella,
   testoPosizione,
   type DatiOfficinaSalvati,
 } from '../lib/dati-officina';
@@ -176,10 +177,17 @@ export async function mostraDatiOfficina(app: HTMLElement): Promise<void> {
   // Senza una posizione leggibile l'aiuto su strada non si può offrire: la casella si disattiva
   const casella = form.querySelector<HTMLInputElement>('[name="intervento_strada"]')!;
   const aiutoStrada = form.querySelector<HTMLElement>('[data-aiuto-strada]')!;
+  // Ultima scelta reale dell'utente (`change` non parte se `checked` cambia da codice): serve a
+  // restituirla alla casella quando la posizione torna leggibile. All'inizio è il valore salvato.
+  let sceltaUtente = d.intervento_strada;
+  casella.addEventListener('change', () => {
+    sceltaUtente = casella.checked;
+  });
   const aggiornaCasella = () => {
     const ok = leggiCoordinate(posizione.value) !== null;
-    casella.disabled = !ok;
-    if (!ok) casella.checked = false;
+    const stato = statoCasella(ok, sceltaUtente);
+    casella.disabled = stato.disabled;
+    casella.checked = stato.checked;
     aiutoStrada.textContent = ok ? AIUTO_STRADA : 'Imposta prima la posizione';
   };
   posizione.addEventListener('input', aggiornaCasella);

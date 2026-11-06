@@ -19,6 +19,7 @@ import {
   formattaData,
   gestisciErroreCaricamento,
   idValido,
+  mostraErroreInBox,
   parametro,
 } from './comune';
 import { messaggioErrore } from '../lib/auth';
@@ -147,7 +148,7 @@ function sezioneApp(c: SchedaCliente, invito: InvitoInCorso | null): string {
           )}`,
         )}
       </div>
-      <div class="tc-avviso tc-avviso--rosso" data-errore-invito role="alert" hidden></div>
+      <div class="tc-avviso tc-avviso--rosso" data-errore-invito role="alert" tabindex="-1" hidden></div>
       <div class="tc-coppia-pulsanti">
         <a class="btn btn-outline-light btn-lg" href="${invita}">Nuovo invito</a>
         <button type="button" class="btn btn-outline-light btn-lg" data-annulla-invito>
@@ -180,10 +181,7 @@ function collegaAnnullaInvito(app: HTMLElement, clienteId: string): void {
       await mostraPagina();
     } catch (e) {
       pulsante.disabled = false;
-      if (errore) {
-        errore.innerHTML = `<p class="mb-0">${esc(messaggioErrore(e))}</p>`;
-        errore.hidden = false;
-      }
+      mostraErroreInBox(errore, messaggioErrore(e));
     }
   });
 }
