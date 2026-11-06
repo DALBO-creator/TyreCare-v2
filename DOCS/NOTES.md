@@ -2974,11 +2974,44 @@ comuni (per T195) sono in `_shared/stripe.ts` e usano `fetch`.
 
 ### Codice complesso
 Ordine dei controlli: OPTIONS 204 → 503 PAGAMENTI_NON_ATTIVI (senza chiavi) → 401 (`auth.getUser`) →
-400 → 403 SOLO_TITOLARE → 404 → 409 PILOTA/GIA_ATTIVO. Senza `stripe_customer_id` crea il cliente e chiama
+400 → 403 SOLO_TITOLARE → 409 OFFICINA_NON_ATTIVA → 404 → 409 PILOTA/GIA_ATTIVO (T189b). Senza
+`stripe_customer_id` crea il cliente e chiama
 `collega_cliente_stripe` prima della sessione; se fallisce per una richiesta contemporanea usa il cliente già
 collegato. La sessione porta `client_reference_id`, `subscription_data[metadata][officina_id]` e
-`payment_method_types[0]=card`. Il messaggio di Stripe va solo nel log (risposta 502 STRIPE). Limite noto:
-T189b (una sola subscription per officina).
+`payment_method_types[0]=card`. Il messaggio di Stripe va solo nel log (risposta 502 STRIPE). Una sola
+subscription per officina: vedi la voce seguente (T189b).
+
+## Checkout di Stripe: una sola subscription per officina (T189b)
+
+**File coinvolti:** `supabase/functions/stripe-checkout/checkout.ts`, `supabase/functions/_shared/stripe.ts`
+e i loro test.
+**Come funziona:** dopo SOLO_TITOLARE, `gestisciCheckout` legge l'officina con `db.officina()`: assente o non
+ATTIVA → 409 `OFFICINA_NON_ATTIVA`; poi ABBONAMENTO_NON_TROVATO, PILOTA, GIA_ATTIVO. Con abbonamento SCADUTO
+e `stripe_subscription_id` pieno (pagamento fallito, subscription ancora viva) risponde 409
+`ABBONAMENTO_DA_SISTEMARE`: si sistema dal portale. SCADUTO senza subscription apre il checkout. I codici
+nuovi li mostra la pagina «Abbonamento» (T192).
+
+### Codice complesso
+`chiamaStripe` (`_shared/stripe.ts`) accetta `{ chiaveIdempotenza }` come quinto argomento e lo manda come
+intestazione `Idempotency-Key`. Il cliente si crea con `cliente-<officina_id>`: Stripe la ricorda 24 ore e
+restituisce lo stesso cliente, così due richieste insieme non lasciano clienti doppi (T218). Con parametri
+diversi, o con la prima richiesta ancora in corso, Stripe dà errore → 502 STRIPE (limite accettato).
+
+## Stripe: una sola subscription per officina (T224, R30)
+
+**File coinvolti:** migrazione `20261106000100`, pgTAP
+`supabase/tests/database/stripe-una-subscription.test.sql` (31 asserzioni, verificate dalla CI).
+**Come funziona:** con abbonamento ATTIVO e subscription collegata, `aggiorna_abbonamento_stripe` ignora senza
+errore gli eventi di un'altra subscription (es. una vecchia annullata dopo un nuovo checkout): il webhook
+registra l'evento, risponde 200 e Stripe non lo rimanda. Con SCADUTO o ANNULLATO la subscription nuova si
+salva. `rifiuta_affiliazione` non cancella un'officina con `stripe_subscription_id` non nullo
+(`ABBONAMENTO_STRIPE_PRESENTE`): prima si annulla la subscription.
+
+### Codice complesso
+La riga si legge con `for update`: due eventi contemporanei passano uno alla volta. Il vincolo `unique` su
+`stripe_subscription_id` diventa `SUBSCRIPTION_DI_ALTRA_OFFICINA` (`exception when unique_violation`, con
+`if not found` dopo il blocco). L'evento ignorato oggi non lascia traccia: T212 deve loggarlo nel webhook e
+trattare le chiavi nuove.
 
 ## Avvisi e rifiuto dell'affiliazione (T191, R24)
 

@@ -7,11 +7,13 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261106-00 (T194 axe su aiuto su strada e abbonamento; T202 e2e ingresso
-> officina), nel treno.
+> Ultima sessione: ciclo 20261106-03 (T189b checkout con una sola subscription; T224 regola nel database),
+> nel treno. Prima: ciclo 20261106-00 (T194 axe; T202 e2e ingresso officina).
 > T196 ora può partire: T158 è unito al treno. Idee in coda: T220 (annullo fallito durante un ridisegno),
 > T221 (bozze legali) e T222 (avviso di aggiornamento).
-> Promemoria: prima delle chiavi Stripe (D8) serve T189b (una sola subscription per officina).
+> Stripe, prossimo lavoro: T192 (pagina Abbonamento: mappa `OFFICINA_NON_ATTIVA` e
+> `ABBONAMENTO_DA_SISTEMARE`) e T212 (webhook: tratta `SUBSCRIPTION_DI_ALTRA_OFFICINA` e
+> `ABBONAMENTO_STRIPE_PRESENTE` e logga gli eventi ignorati).
 > Aiuto su strada: resta T159 (guide).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
@@ -46,8 +48,9 @@
   l'email dal dominio di TyreCare (P23): comando in `NOTES.md` → "Notifiche: email di riserva (T066)"
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
-- [~] Fase 7: **Stripe** — fatti il database (T180), il webhook (T185) e il checkout (T189); prima delle
-  chiavi (D8) serve T189b; restano portale (T195), pagina Abbonamento (T192) e guida (T204)
+- [~] Fase 7: **Stripe** — fatti il database (T180), il webhook (T185), il checkout (T189) e la regola di
+  una sola subscription (T189b, T224); restano portale (T195), pagina Abbonamento (T192), webhook (T212)
+  e guida (T204)
 - [x] Promemoria: la registrazione web passa `termini_versione` nei metadati di `signUp` — fatto (T056,
   2026-10-29): la spunta dei termini è obbligatoria e il trigger (T054) copia la versione nel profilo
 
