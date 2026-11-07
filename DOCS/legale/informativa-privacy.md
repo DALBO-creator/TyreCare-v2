@@ -163,8 +163,7 @@ I tempi previsti sono:
   telefono, descrizione e targa) vengono cancellate dopo **90 giorni**; se elimini il tuo account, le tue
   richieste di aiuto su strada vengono cancellate subito con l'account;
 - **prenotazioni**: un job notturno le cancella automaticamente 24 mesi dopo il giorno dell'appuntamento,
-  in qualsiasi stato (richiesta, confermata, rifiutata o annullata); con loro spariscono le notifiche
-  collegate;
+  in qualsiasi stato; con loro spariscono le notifiche collegate;
 - **iscrizioni push**: finché non disattivi le notifiche push nell'app o dal browser (in quel caso
   l'iscrizione viene eliminata);
 - **dati caricati dall'officina** (clienti, veicoli, pneumatici, controlli, inviti, registro import): per
