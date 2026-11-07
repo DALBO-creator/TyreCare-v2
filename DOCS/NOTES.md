@@ -3331,3 +3331,29 @@ non manda l'email.
 (nessuna riga) diventa `ErroreModulo`, gli altri errori restano `Error`. `pagine/notifiche.ts` — durante il
 salvataggio l'input è disabilitato; se fallisce torna al valore di prima e compare un `role="alert"`
 (`.tc-push__errore`). Se la lettura iniziale fallisce va in errore tutta la pagina (idea in `NEXT.md`).
+
+## Guida Stripe in prova (T204)
+
+**File coinvolti:** `DOCS/pilota/stripe-prova.md`, `DOCS/pilota/lista-lancio.md` (D8).
+**Come funziona:** la guida porta Davide, passo per passo, a provare l'abbonamento in modalità di prova di
+Stripe: prodotti, segreti, deploy delle funzioni, webhook, portale clienti e pagamento con la carta 4242.
+Nessun codice toccato.
+
+### Codice complesso
+Segreti letti dalle tre funzioni Stripe: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PRO`,
+`SITO_URL` (condivisa con `invia-notifica`), `STRIPE_WEBHOOK_SECRET`. Il webhook si pubblica con
+`--no-verify-jwt` perché la sicurezza è la firma `whsec_`, non il JWT. La prova richiede il titolare di
+un'officina ATTIVA e non PILOTA (R30). Se una funzione Stripe legge una variabile nuova, aggiornare la guida.
+
+## Guide pilota: aiuto su strada (T159)
+
+**File coinvolti:** `DOCS/pilota/guida-officina.md` (sezione 13), `DOCS/pilota/guida-cliente.md` (passo 7).
+**Come funziona:** la sezione 13 della guida officina e il passo 7 della guida cliente descrivono R18, R23 e
+R31 (attivazione, notifica, accetta, chiama, chiudi; eliminazione dell'account con richiesta in corso). I nomi
+dei pulsanti sono copiati da `apps/web/src/pagine/dati-officina.ts`, `pagine/strada-officina.ts`,
+`pagine/strada.ts` e dalle notifiche di
+`supabase/migrations/20261101000100_strada_limiti.sql`.
+
+### Codice complesso
+Se cambiano i numeri (2 ore, 3 richieste all'ora, 24 ore, 5–100 km) vanno aggiornate entrambe le guide. La
+sezione «In arrivo» della guida resta per T205.

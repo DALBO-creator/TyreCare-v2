@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-08 — ciclo 20261108-00 — T204 T159
+
+**Fatto**
+
+- T204: guida `DOCS/pilota/stripe-prova.md` per Davide (D8): prodotti, segreti, deploy, webhook, portale
+  clienti e prova con la carta 4242; `lista-lancio.md` D8 rimanda alla guida. Nessun codice toccato.
+- T159: guide pilota per l'aiuto su strada: guida officina sezione 13 (attivazione, notifica, accetta,
+  chiama, chiudi; cosa si vede prima e dopo), le sezioni seguenti diventano 14–15; guida cliente passo 7
+  (posizione, 2 ore, 3 richieste all'ora, 112) e frase R31 sull'eliminazione dell'account.
+- Gate del supervisore approvati 2/2 al 1o giro. Controlli veloci verdi (635 test).
+
+**Idee**
+
+- T240: guida cliente, passo 7: «Chiama» compare solo se l'officina ha un telefono, altrimenti la notifica
+  dice «ti chiamerà al numero che hai indicato».
+
 ### Sessione agenti — 2026-11-07 — ciclo 20261107-21 — T200 T201
 
 **Fatto**
