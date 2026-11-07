@@ -1,5 +1,15 @@
-import { describe, expect, it } from 'vitest';
-import { formattaDataOra, leggiAbbonamentoEmbed, nomeAutore, ordinaOfficineAdmin } from './admin';
+import { describe, expect, it, vi } from 'vitest';
+import {
+  ERRORI_RIFIUTO,
+  formattaDataOra,
+  leggiAbbonamentoEmbed,
+  nomeAutore,
+  ordinaOfficineAdmin,
+  rifiutaAffiliazione,
+} from './admin';
+
+const rpc = vi.fn();
+vi.mock('./supabase', () => ({ getSupabase: () => ({ rpc }) }));
 
 type S = 'IN_ATTESA' | 'ATTIVA' | 'SOSPESA';
 const o = (id: string, stato: S, created_at: string) => ({
@@ -52,5 +62,48 @@ describe('leggiAbbonamentoEmbed', () => {
     expect(leggiAbbonamentoEmbed([a])).toEqual(atteso);
     expect(leggiAbbonamentoEmbed([])).toEqual({ piano: null, statoAbbonamento: null });
     expect(leggiAbbonamentoEmbed(null)).toEqual({ piano: null, statoAbbonamento: null });
+  });
+});
+
+describe('rifiutaAffiliazione', () => {
+  const messaggi: Record<string, string> = {
+    OFFICINA_NON_TROVATA: 'Officina non trovata: ricarica la pagina e riprova.',
+    OFFICINA_NON_IN_ATTESA: 'Questa officina non è più in attesa: ricarica la pagina.',
+    ABBONAMENTO_STRIPE_PRESENTE:
+      'Questa officina ha un abbonamento su Stripe: annullalo prima dalla dashboard di Stripe.',
+    MOTIVO_TROPPO_LUNGO: 'Il motivo è troppo lungo (al massimo 300 caratteri).',
+  };
+
+  it('la mappa ha esattamente le chiavi della funzione SQL', () => {
+    expect(ERRORI_RIFIUTO).toEqual(messaggi);
+  });
+
+  it('chiama la funzione solo con l’id e non dà errori se va a buon fine', async () => {
+    rpc.mockResolvedValueOnce({ error: null });
+    await expect(rifiutaAffiliazione('abc')).resolves.toBeUndefined();
+    expect(rpc).toHaveBeenLastCalledWith('rifiuta_affiliazione', { p_officina_id: 'abc' });
+  });
+
+  for (const [chiave, messaggio] of Object.entries(messaggi)) {
+    it(`${chiave} → messaggio esatto e chiave nell’errore`, async () => {
+      rpc.mockResolvedValueOnce({ error: { message: chiave } });
+      await expect(rifiutaAffiliazione('abc')).rejects.toMatchObject({ message: messaggio });
+    });
+  }
+
+  it('42501 → solo l’amministratore', async () => {
+    rpc.mockResolvedValueOnce({ error: { code: '42501', message: 'Accesso riservato' } });
+    await expect(rifiutaAffiliazione('abc')).rejects.toMatchObject({
+      message: "Solo l'amministratore può farlo.",
+    });
+  });
+
+  it('una chiave sconosciuta (anche "toString") viene rilanciata com’è', async () => {
+    const errore = { message: 'ALTRO' };
+    rpc.mockResolvedValueOnce({ error: errore });
+    await expect(rifiutaAffiliazione('abc')).rejects.toBe(errore);
+    const strano = { message: 'toString' };
+    rpc.mockResolvedValueOnce({ error: strano });
+    await expect(rifiutaAffiliazione('abc')).rejects.toBe(strano);
   });
 });
