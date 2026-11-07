@@ -46,6 +46,7 @@ Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
 
 ## Solo per la Fase 7 — Commerciale
 
-- [ ] **Stripe in prova (D8).** Apri un account Stripe in modalità test (nessun pagamento vero): gli agenti
-  potranno provare l'abbonamento e il webhook (T071). Da fare solo dopo che il pilota è riuscito
-  ([`piano-pilota.md`](piano-pilota.md) §6).
+- [ ] **Stripe in prova (D8).** Apri un account Stripe in modalità test (nessun pagamento vero) e accendi
+  i pagamenti dell'abbonamento (T071) senza aiuto degli agenti. Da fare solo dopo che il pilota è riuscito
+  ([`piano-pilota.md`](piano-pilota.md) §6). Guida passo passo (15 minuti):
+  [`stripe-prova.md`](stripe-prova.md).
