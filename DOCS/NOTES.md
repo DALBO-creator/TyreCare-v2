@@ -1705,6 +1705,16 @@ Con l'account spariscono, a cascata, profilo, `officina_utenti`, **le prenotazio
 database, senza pulsante nell'app. La sparizione delle prenotazioni passate è una domanda per il consulente
 (`DOCS/legale/README.md`, domanda 14).
 
+## Eliminazione dell'account e aiuto su strada (T225)
+
+**File coinvolti:** migrazione `20261107000100`, pgTAP
+`supabase/tests/database/elimina-account-strada.test.sql` (8 asserzioni, verificate dalla CI).
+**Come funziona:** `elimina_account()` controlla nell'ordine ADMIN, TITOLARE, prenotazioni in corso, aiuto su
+strada in corso. Blocca una richiesta del chiamante APERTA con `scade_il >= now()` o ACCETTATA con
+`accettata_il` nelle ultime 24 ore (stessi limiti di `crea_richiesta_strada`). Le richieste oltre i limiti le
+chiude la lettura o il job e non bloccano. Errore `RICHIESTA_STRADA_IN_CORSO` (P0001): prima si annulla la
+richiesta. Con l'account le richieste spariscono a cascata. Il testo per l'utente arriva con T226.
+
 ---
 
 ## Import dei controlli (database, T043)
@@ -2935,6 +2945,21 @@ Errore DB → 500 senza registrare, così Stripe ritenta. Deploy:
 (officina da `metadata.officina_id`, stato da `status`, deleted = ANNULLATO, piano dal primo prezzo). Id
 officina non uuid → null; status da ignorare (`incomplete`) → nessun aggiornamento.
 
+## Webhook di Stripe: errori permanenti ed eventi ignorati (T212)
+
+**File coinvolti:** `supabase/functions/stripe-webhook/eventi.ts`, `index.ts` e i loro test.
+**Come funziona:** se il database rifiuta un evento con un errore che non cambierà mai, il webhook lo scarta:
+scrive nel log, registra l'evento in `stripe_eventi` e risponde 200
+`{ ricevuto: true, scartato: '<chiave>' }`. Gli altri errori restano 500, così Stripe ritenta.
+Dopo un aggiornamento riuscito rilegge `stripe_subscription_id` dell'officina: se è diverso da quello
+dell'evento (evento ignorato da T224), `console.warn` con le due subscription. È solo diagnostica.
+
+### Codice complesso
+`errorePermanente` (`eventi.ts`) confronta in modo esatto, non per sottostringa, con
+`ABBONAMENTO_NON_TROVATO`, `STATO_NON_VALIDO`, `PIANO_NON_VALIDO`, `CLIENTE_STRIPE_DIVERSO` e
+`SUBSCRIPTION_DI_ALTRA_OFFICINA`. Con un 500 Stripe ritenta per tre giorni e poi disattiva l'endpoint: per
+questi errori non serve. `subscriptionIgnorata` decide se loggare l'evento ignorato.
+
 ## Uscita senza rete (`esci`, `lib/auth.ts`, T174)
 
 **File coinvolti:** `apps/web/src/lib/auth.ts`, `apps/web/src/lib/auth.test.ts`.
@@ -3042,8 +3067,8 @@ salva. `rifiuta_affiliazione` non cancella un'officina con `stripe_subscription_
 ### Codice complesso
 La riga si legge con `for update`: due eventi contemporanei passano uno alla volta. Il vincolo `unique` su
 `stripe_subscription_id` diventa `SUBSCRIPTION_DI_ALTRA_OFFICINA` (`exception when unique_violation`, con
-`if not found` dopo il blocco). L'evento ignorato oggi non lascia traccia: T212 deve loggarlo nel webhook e
-trattare le chiavi nuove.
+`if not found` dopo il blocco). L'evento ignorato lo logga il webhook, che tratta anche le chiavi nuove
+(T212).
 
 ## Avvisi e rifiuto dell'affiliazione (T191, R24)
 
