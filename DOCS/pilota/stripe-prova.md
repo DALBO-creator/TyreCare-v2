@@ -130,7 +130,7 @@ Su Stripe, **Developers → Webhooks →** il tuo endpoint deve mostrare gli eve
   rifiutato la richiesta. Cause tipiche: portale clienti non attivato (punto 8), `price_…` sbagliato o di
   un altro account, chiave `sk_test_…` copiata male. Il dettaglio è nel log della funzione.
 - **Log delle funzioni**: Supabase Dashboard → **Edge Functions →** la funzione (`stripe-checkout`,
-  `stripe-portale` o `stripe-webhook`) **→ Logs**. Il Supabase CLI non ha un comando per leggerli.
+  `stripe-portale` o `stripe-webhook`) **→ Logs**.
 - **Pagamento riuscito ma l'app resta in prova**: su Stripe, **Developers → Webhooks →** l'endpoint,
   e guarda la risposta degli eventi. Se non è 200: 400 = firma non valida (rimetti `STRIPE_WEBHOOK_SECRET`
   con il `whsec_…` di *questo* endpoint), 503 = segreto del webhook mancante, 500 = errore temporaneo
