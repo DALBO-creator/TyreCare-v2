@@ -54,7 +54,8 @@
 - [ ] Fase 4: slot orari automatici (più avanti)
 - [~] Fase 7: **Stripe** — fatti il database (T180), il webhook (T185), il checkout (T189) e la regola di
   una sola subscription (T189b, T224), pagina Abbonamento (T192), portale (T195), webhook (T212),
-  «Gestisci il pagamento» (T200); resta la guida (T204)
+  «Gestisci il pagamento» (T200), guida per la prova (T204, `DOCS/pilota/stripe-prova.md`); resta la prova
+  di Davide (D8)
 - [x] Promemoria: la registrazione web passa `termini_versione` nei metadati di `signUp` — fatto (T056,
   2026-10-29): la spunta dei termini è obbligatoria e il trigger (T054) copia la versione nel profilo
 
