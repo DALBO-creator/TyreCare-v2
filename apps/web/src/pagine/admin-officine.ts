@@ -40,7 +40,7 @@ function riga(o: OfficinaAdmin): string {
           </button>
           ${
             o.stato_affiliazione === 'IN_ATTESA'
-              ? `<button type="button" class="btn btn-outline-danger" data-rifiuta="${o.id}">
+              ? `<button type="button" class="btn tc-pulsante-elimina mt-0" data-rifiuta="${o.id}">
             ${icona(X)} Rifiuta la richiesta
           </button>`
               : ''
