@@ -57,11 +57,11 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
 
 - i **dati della carta** (numero, scadenza, codice) li inserisci nella pagina di pagamento di Stripe e li
   tratta Stripe: TyreCare non li vede e non li conserva;
-- TyreCare conserva solo il piano scelto, lo stato dell'abbonamento (prova, attivo, scaduto, annullato),
-  la fine della prova, l'identificativo del cliente su Stripe e l'identificativo dell'abbonamento su
-  Stripe (tabella `abbonamenti`);
+- TyreCare conserva solo il piano scelto (Starter, Pro oppure Officina pilota), lo stato
+  dell'abbonamento (prova, attivo, scaduto, annullato), la fine della prova, l'identificativo del
+  cliente su Stripe e l'identificativo dell'abbonamento su Stripe (tabella `abbonamenti`);
 - per creare il cliente su Stripe, TyreCare gli manda l'email del titolare, la ragione sociale
-  dell'officina e il codice interno dell'officina;
+  dell'officina e l'identificativo dell'officina nell'app (un codice che l'app assegna a ogni officina);
 - il pagamento online non è ancora attivo: finché non lo è, questi dati non sono scambiati con Stripe.
 
 **Clienti e veicoli dell'officina** (inseriti o importati dall'officina)
