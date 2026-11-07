@@ -1,6 +1,7 @@
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import type { Tables } from '@tyrecare/shared';
-import { sessioneCorrente } from './auth';
+import { messaggioErrore, sessioneCorrente } from './auth';
+import { ErroreModulo } from './errori';
 import { getSupabase } from './supabase';
 
 // Notifiche nell'app (Fase 5). Le crea il database (trigger sulle prenotazioni); qui si leggono, si
@@ -38,6 +39,48 @@ export async function segnaLette(filtro?: FiltroNotifiche): Promise<void> {
   const { error } = await query;
   if (error) throw error;
   await aggiornaContatore();
+}
+
+// ---------------------------------------------------------------------------------------------------
+// Email di riserva (T114, R26)
+// ---------------------------------------------------------------------------------------------------
+
+async function idUtente(): Promise<string> {
+  const { data, error } = await getSupabase().auth.getUser();
+  if (error) throw new Error(messaggioErrore(error));
+  if (!data.user) throw new Error('Nessun utente autenticato');
+  return data.user.id;
+}
+
+/** Se l'utente vuole le notifiche anche per email quando l'avviso sul telefono non arriva. */
+export async function leggiEmailNotifiche(): Promise<boolean> {
+  const uid = await idUtente();
+  const { data, error } = await getSupabase()
+    .from('profiles')
+    .select('email_notifiche')
+    .eq('id', uid)
+    .single();
+  if (error) throw error;
+  return data.email_notifiche;
+}
+
+/**
+ * Salva la scelta sulle email. Senza `.select().single()` un aggiornamento bloccato dalla RLS
+ * passerebbe in silenzio (0 righe): così invece è un errore con un messaggio chiaro.
+ */
+export async function salvaEmailNotifiche(valore: boolean): Promise<void> {
+  const uid = await idUtente();
+  const { error } = await getSupabase()
+    .from('profiles')
+    .update({ email_notifiche: valore })
+    .eq('id', uid)
+    .select()
+    .single();
+  if (error) {
+    if (error.code === 'PGRST116')
+      throw new ErroreModulo('Non è stato possibile salvare la scelta: profilo non trovato.');
+    throw new Error(messaggioErrore(error));
+  }
 }
 
 // ---------------------------------------------------------------------------------------------------
