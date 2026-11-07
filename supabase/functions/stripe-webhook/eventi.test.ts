@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { aggiornamentoDaEvento, pianoDaPrezzo, statoDaStripe } from './eventi.ts';
+import {
+  aggiornamentoDaEvento,
+  errorePermanente,
+  pianoDaPrezzo,
+  statoDaStripe,
+  subscriptionIgnorata,
+} from './eventi.ts';
 
 const PREZZI = { starter: 'price_starter_prova', pro: 'price_pro_prova' };
 const OFFICINA = 'b0000000-0000-0000-0000-000000000001';
@@ -173,5 +179,41 @@ describe('aggiornamentoDaEvento', () => {
     expect(aggiornamentoDaEvento({ type: 'customer.subscription.updated' }, PREZZI)).toBeNull();
     expect(aggiornamentoDaEvento(null, PREZZI)).toBeNull();
     expect(aggiornamentoDaEvento('evento', PREZZI)).toBeNull();
+  });
+});
+
+describe('errorePermanente', () => {
+  it.each([
+    ['ABBONAMENTO_NON_TROVATO', true],
+    ['STATO_NON_VALIDO', true],
+    ['PIANO_NON_VALIDO', true],
+    ['CLIENTE_STRIPE_DIVERSO', true],
+    ['SUBSCRIPTION_DI_ALTRA_OFFICINA', true],
+    ['TypeError: fetch failed', false],
+    ['', false],
+    ['errore: ABBONAMENTO_NON_TROVATO (riga 3)', false],
+    [' STATO_NON_VALIDO', false],
+    ['abbonamento_non_trovato', false],
+  ])('%j → %s', (messaggio, atteso) => {
+    expect(errorePermanente(messaggio)).toBe(atteso);
+  });
+});
+
+describe('subscriptionIgnorata', () => {
+  it("abbonamento collegato a un'altra subscription → true", () => {
+    expect(subscriptionIgnorata({ subscription: 'sub_vecchia' }, 'sub_nuova')).toBe(true);
+  });
+
+  it('stessa subscription (evento applicato) → false', () => {
+    expect(subscriptionIgnorata({ subscription: 'sub_prova' }, 'sub_prova')).toBe(false);
+  });
+
+  it('nessuna subscription collegata → false', () => {
+    expect(subscriptionIgnorata({ subscription: 'sub_prova' }, null)).toBe(false);
+    expect(subscriptionIgnorata({ subscription: 'sub_prova' }, '')).toBe(false);
+  });
+
+  it('evento senza subscription → false', () => {
+    expect(subscriptionIgnorata({ subscription: null }, 'sub_prova')).toBe(false);
   });
 });

@@ -116,3 +116,33 @@ export function aggiornamentoDaEvento(
       return null;
   }
 }
+
+/**
+ * Chiavi d'errore del database che nessun nuovo tentativo può correggere (T212): l'evento si registra,
+ * Stripe riceve 200 e non lo rimanda per tre giorni fino a disattivare l'endpoint.
+ * `CLIENTE_STRIPE_DIVERSO` oggi la lancia solo `collega_cliente_stripe`: è qui per sicurezza.
+ */
+const CHIAVI_PERMANENTI: ReadonlySet<string> = new Set([
+  'ABBONAMENTO_NON_TROVATO',
+  'STATO_NON_VALIDO',
+  'PIANO_NON_VALIDO',
+  'CLIENTE_STRIPE_DIVERSO',
+  'SUBSCRIPTION_DI_ALTRA_OFFICINA',
+]);
+
+/** `true` solo se il messaggio d'errore del database è esattamente una delle chiavi permanenti. */
+export function errorePermanente(messaggio: string): boolean {
+  return CHIAVI_PERMANENTI.has(messaggio);
+}
+
+/**
+ * `true` se `aggiorna_abbonamento_stripe` ha ignorato l'evento senza errore (T224, R30): dopo la
+ * chiamata l'abbonamento resta collegato a una subscription diversa da quella dell'evento. Solo
+ * diagnostica per i log: un vuoto da una parte o dall'altra non è un confronto.
+ */
+export function subscriptionIgnorata(
+  aggiornamento: Pick<AggiornamentoAbbonamento, 'subscription'>,
+  collegata: string | null | undefined,
+): boolean {
+  return !!aggiornamento.subscription && !!collegata && collegata !== aggiornamento.subscription;
+}
