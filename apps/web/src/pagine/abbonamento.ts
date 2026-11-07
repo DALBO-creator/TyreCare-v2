@@ -1,5 +1,10 @@
 import { PIANI, giorniDiProva, oggiInItalia, type Piano } from '@tyrecare/shared';
-import { avviaPagamento, caricaAbbonamento, type AbbonamentoOfficina } from '../lib/abbonamento';
+import {
+  apriPortale,
+  avviaPagamento,
+  caricaAbbonamento,
+  type AbbonamentoOfficina,
+} from '../lib/abbonamento';
 import { ErroreModulo } from '../lib/errori';
 import { esc } from '../lib/html';
 import { caricaContestoOfficina, eTitolare } from '../lib/officina';
@@ -69,6 +74,11 @@ export function mostraPagamento(a: AbbonamentoOfficina | null): boolean {
   );
 }
 
+/** Pulsante "Gestisci il pagamento": solo chi ha già un cliente Stripe e non è nel pilota. */
+export function mostraPortale(a: AbbonamentoOfficina | null): boolean {
+  return a !== null && a.piano !== 'PILOTA' && !!a.stripe_customer_id?.trim();
+}
+
 function cartaPiano(piano: Exclude<Piano, 'PILOTA'>): string {
   const p = PIANI[piano];
   return `
@@ -122,6 +132,11 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
   } else if (abbonamento) {
     azione = '<p class="mb-0">Il tuo abbonamento è a posto: non devi fare nulla.</p>';
   }
+  if (mostraPortale(abbonamento)) {
+    azione += `
+      <div class="tc-avviso tc-avviso--rosso mb-3 mt-3" data-errore-portale role="alert" tabindex="-1" hidden></div>
+      <button type="button" class="btn btn-outline-primary w-100 mt-3" data-portale>Gestisci il pagamento</button>`;
+  }
 
   const testoAvviso = avvisoPagamento(parametro('pagamento'));
   const avviso = testoAvviso
@@ -146,15 +161,32 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
 ${azione}
     </div>`);
 
-  const pulsante = app.querySelector<HTMLButtonElement>('[data-attiva]');
-  const boxErrore = app.querySelector<HTMLElement>('[data-errore-pagamento]');
+  collegaAzione(
+    app.querySelector<HTMLButtonElement>('[data-attiva]'),
+    app.querySelector<HTMLElement>('[data-errore-pagamento]'),
+    () => {
+      const scelto = app.querySelector<HTMLInputElement>('input[name="piano"]:checked')?.value;
+      return avviaPagamento(officinaId, scelto === 'PRO' ? 'PRO' : 'STARTER');
+    },
+  );
+  collegaAzione(
+    app.querySelector<HTMLButtonElement>('[data-portale]'),
+    app.querySelector<HTMLElement>('[data-errore-portale]'),
+    () => apriPortale(officinaId),
+  );
+}
+
+/** Click che porta a Stripe: pulsante disattivato durante la chiamata, errore nel suo box e pulsante riattivato. */
+function collegaAzione(
+  pulsante: HTMLButtonElement | null,
+  boxErrore: HTMLElement | null,
+  azione: () => Promise<void>,
+): void {
   pulsante?.addEventListener('click', async () => {
-    const scelto = app.querySelector<HTMLInputElement>('input[name="piano"]:checked')?.value;
-    const piano: PianoACarico = scelto === 'PRO' ? 'PRO' : 'STARTER';
     pulsante.disabled = true;
     nascondiBox(boxErrore);
     try {
-      await avviaPagamento(officinaId, piano);
+      await azione();
       // Si lascia il pulsante disattivato: il browser sta andando alla pagina di Stripe.
     } catch (errore) {
       mostraErroreInBox(
