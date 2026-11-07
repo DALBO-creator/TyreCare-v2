@@ -26,11 +26,22 @@ Bozza del 2026-10-31, da stampare o mandare ai clienti. Pochi passi, nell'ordine
    "Avvisami su questo dispositivo": ti avvisiamo quando l'officina risponde, anche con l'app chiusa.
    - **iPhone:** gli avvisi funzionano solo con l'app nella schermata Home. Apri il sito con Safari, tocca
      Condividi, poi "Aggiungi alla schermata Home". Apri TyreCare dall'icona e attiva gli avvisi.
-7. **I tuoi dati.** Vai in **Profilo**, sezione "Account".
+7. **Gomma a terra? Aiuto su strada.** Dalla Home tocca "Gomma a terra? Chiedi aiuto su strada".
+   - Serve se sei fermo e non puoi ripartire. **Se ci sono feriti o pericolo chiama prima il 112**: l'app
+     non è un servizio di emergenza.
+   - Scrivi "Cosa è successo", controlla il "Telefono" e, se vuoi, la "Targa (facoltativa)". Poi tocca
+     "Usa la mia posizione e invia" e consenti la posizione al telefono: la vede solo l'officina che accetta.
+   - Le officine vicine vedono distanza e descrizione. La prima che accetta ti avvisa: vedi il suo nome e
+     "Chiama" con il telefono. L'intervento lo concordi con lei.
+   - Se nessuna officina accetta entro 2 ore, la richiesta scade: richiama un soccorso stradale (o rifai
+     la richiesta). Puoi farne al massimo 3 all'ora, anche annullate.
+   - Non ti serve più? "Annulla la richiesta".
+8. **I tuoi dati.** Vai in **Profilo**, sezione "Account".
    - "Scarica i tuoi dati": ottieni un file con tutto ciò che TyreCare ha su di te.
    - "Elimina il tuo account": l'app spiega cosa viene eliminato, poi chiede conferma con "Sì, elimina".
      Vengono eliminati account, profilo, notifiche, commenti, richieste di aiuto su strada e
      prenotazioni passate. La tua officina conserva la tua scheda e i tuoi veicoli, ma non sono più
-     collegati all'app. Non si può annullare.
+     collegati all'app. Non si può annullare. Con una richiesta di aiuto su strada in corso non puoi
+     eliminare l'account: prima "Annulla la richiesta".
 
 Hai bisogno di aiuto? Chiedi alla tua officina: [DA COMPLETARE: telefono o email dell'officina].

@@ -192,12 +192,50 @@ anche con l'app chiusa, nella sezione "Avvisi sul telefono" premi "Avvisami su q
 accetta il permesso. Per spegnerle: "Disattiva gli avvisi". Su iPhone funzionano solo con l'app aperta
 dall'icona sulla Home. Se sono bloccate, riattivale dalle impostazioni del browser.
 
-## 13. Invia un commento
+## 13. Aiuto su strada
+
+Un automobilista fermo con una gomma a terra può chiedere aiuto dall'app: la richiesta arriva alle officine
+vicine che offrono il servizio, e la prima che accetta la prende.
+
+**Attivarlo** (solo titolare). **Profilo → "Dati dell'officina"**, riquadro "Aiuto su strada":
+- Prima imposta la "Posizione sulla mappa" (vedi sezione 2): senza posizione la casella è spenta e
+  compare "Imposta prima la posizione".
+- Spunta "Offro l'aiuto su strada" e scrivi in "Fino a quanti km" un numero intero da 5 a 100 (di
+  partenza è 30): è la distanza dalla posizione dell'officina entro cui ricevi le richieste.
+- Premi "Salva dati". Per spegnerlo togli la spunta e salva.
+
+**Ricevere la richiesta.** Titolare e operatori ricevono la notifica "Richiesta di aiuto su strada" (nel testo
+la distanza dall'officina). Toccandola si apre la pagina "Richieste su strada"; la raggiungi anche dal
+pulsante "Richieste su strada" nella **Home**, che compare solo con il servizio attivo. La pagina si
+aggiorna da sola ogni 15 secondi. Chi lavora in più officine vicine riceve una sola notifica. Chi ha fatto
+la richiesta non la vede, neanche se è membro di un'officina.
+
+**Prima di accettare**, in "Richieste vicine" ogni richiesta mostra solo: la distanza ("A … da te"),
+la descrizione, la targa (se il cliente l'ha messa) e l'ora di scadenza. Non vedi il telefono né la posizione
+precisa del cliente.
+
+**Accettare.** Premi "Accetta", poi "Sì, accetta" (il cliente riceverà il nome e il telefono dell'officina,
+con la notifica "Un'officina sta arrivando"). Se un'altra officina è stata più veloce, la pagina dice che la
+richiesta non è più disponibile.
+
+**Dopo aver accettato**, la richiesta passa in "Accettate" e solo tu (cioè i membri della tua officina) vedi:
+- "Chiama" seguito dal telefono del cliente;
+- "Vedi la posizione", che apre la posizione esatta sulla mappa;
+- il pulsante "Chiudi".
+Chiama il cliente, vai da lui e, a lavoro finito, premi "Chiudi". Se non la chiudi, si chiude da sola dopo
+24 ore. Se il cliente annulla, ricevi la notifica "Aiuto su strada annullato".
+
+**Quando scade.** Una richiesta che nessuno accetta sparisce dopo 2 ore. Le richieste chiuse, annullate o
+scadute si cancellano dopo 90 giorni.
+
+TyreCare inoltra soltanto la richiesta: l'intervento e il prezzo li concordi tu con il cliente.
+
+## 14. Invia un commento
 
 Qualcosa non va o manca? **Profilo → "Invia un commento su TyreCare"**: scrivi in "Cosa vuoi dirci?" e premi
 "Invia". Leggiamo tutto.
 
-## 14. Domande frequenti
+## 15. Domande frequenti
 
 **Ho sbagliato un controllo: come lo correggo?** Apri il veicolo, trova il controllo e premi
 "Correggi o elimina".
