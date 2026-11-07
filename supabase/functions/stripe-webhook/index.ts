@@ -4,8 +4,15 @@
 // firma (`Stripe-Signature`) sul corpo grezzo, poi aggiorna stato e piano dell'abbonamento dell'officina
 // con le funzioni del database di T180 (`aggiorna_abbonamento_stripe`, `registra_evento_stripe`), con
 // la service role. Ogni evento si elabora una volta sola: quelli già in `stripe_eventi` rispondono 200
-// `{ duplicato: true }`. Se il database dà errore la risposta è 500 e l'evento non si registra: Stripe
-// lo rimanda più tardi.
+// `{ duplicato: true }`. Errori del database (T212):
+// - permanenti (`errorePermanente` di `eventi.ts`: abbonamento non trovato, stato o piano non validi,
+//   subscription di un'altra officina…): nessun tentativo li correggerà, quindi l'evento si scrive nel log,
+//   si registra come un evento riuscito e la risposta è 200 `{ ricevuto: true, scartato: '<chiave>' }`.
+//   Altrimenti Stripe lo rimanderebbe per tre giorni, fino a disattivare l'endpoint;
+// - tutti gli altri (rete, database non raggiungibile…): risposta 500 e l'evento non si registra, così
+//   Stripe lo rimanda più tardi.
+// Se `aggiorna_abbonamento_stripe` ignora l'evento senza errore (abbonamento ATTIVO con un'altra
+// subscription, T224) il webhook lo scrive nel log con le due subscription.
 //
 // Segreti (supabase secrets set): STRIPE_WEBHOOK_SECRET (il `whsec_…` dell'endpoint), STRIPE_PRICE_STARTER
 // e STRIPE_PRICE_PRO (gli id `price_…` dei due piani; se mancano, il piano non cambia).
@@ -16,7 +23,7 @@
 // Nessun SDK di Stripe: solo Web Crypto (`firma.ts`).
 import { createClient } from 'npm:@supabase/supabase-js@2.117.2';
 import { verificaFirma } from './firma.ts';
-import { aggiornamentoDaEvento } from './eventi.ts';
+import { aggiornamentoDaEvento, errorePermanente, subscriptionIgnorata } from './eventi.ts';
 
 const env = (nome: string): string => {
   const valore = Deno.env.get(nome);
@@ -66,6 +73,9 @@ Deno.serve(async (richiesta) => {
     pro: Deno.env.get('STRIPE_PRICE_PRO') ?? null,
   });
 
+  // Chiave d'errore permanente del database: l'evento si registra lo stesso e Stripe riceve 200.
+  let scartato: string | null = null;
+
   if (aggiornamento) {
     const { error } = await supabase.rpc('aggiorna_abbonamento_stripe', {
       p_officina_id: aggiornamento.officina_id,
@@ -74,7 +84,15 @@ Deno.serve(async (richiesta) => {
       p_stato: aggiornamento.stato,
       p_piano: aggiornamento.piano,
     });
-    if (error) return erroreDatabase(`aggiornamento (${type} ${id})`, error.message);
+    if (error) {
+      if (!errorePermanente(error.message)) {
+        return erroreDatabase(`aggiornamento (${type} ${id})`, error.message);
+      }
+      console.error('Webhook di Stripe: evento scartato,', type, id, error.message);
+      scartato = error.message;
+    } else if (aggiornamento.officina_id && aggiornamento.subscription) {
+      await segnalaSeIgnorato(type, id, aggiornamento.officina_id, aggiornamento.subscription);
+    }
   }
 
   const { data: nuovo, error: erroreRegistra } = await supabase.rpc('registra_evento_stripe', {
@@ -87,9 +105,54 @@ Deno.serve(async (richiesta) => {
   return Response.json({
     ricevuto: true,
     duplicato: nuovo === false,
-    aggiornato: aggiornamento !== null,
+    aggiornato: aggiornamento !== null && scartato === null,
+    ...(scartato !== null ? { scartato } : {}),
   });
 });
+
+// Solo diagnostica: un errore di questa lettura finisce nel log e non cambia la risposta a Stripe.
+async function segnalaSeIgnorato(
+  type: string,
+  id: string,
+  officinaId: string,
+  subscription: string,
+): Promise<void> {
+  try {
+    const { data, error } = await supabase
+      .from('abbonamenti')
+      .select('stripe_subscription_id')
+      .eq('officina_id', officinaId)
+      .maybeSingle();
+    if (error) {
+      console.warn(
+        'Webhook di Stripe: controllo della subscription non riuscito,',
+        type,
+        id,
+        error.message,
+      );
+      return;
+    }
+    const collegata = data?.stripe_subscription_id ?? null;
+    if (subscriptionIgnorata({ subscription }, collegata)) {
+      console.warn(
+        "Webhook di Stripe: evento ignorato (abbonamento con un'altra subscription),",
+        type,
+        id,
+        'evento:',
+        subscription,
+        'collegata:',
+        collegata,
+      );
+    }
+  } catch (errore) {
+    console.warn(
+      'Webhook di Stripe: controllo della subscription non riuscito,',
+      type,
+      id,
+      String(errore),
+    );
+  }
+}
 
 // 500: Stripe ritenta. Il messaggio del database resta nei log, non va a Stripe.
 function erroreDatabase(fase: string, messaggio: string): Response {

@@ -7,12 +7,12 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261107-00 (T223 `partitaIvaUnica()` in `aiuti.ts`; T217 `giaSalvato` esatto),
-> nel treno. T196 ora può partire: T158 è unito al treno. Idee in coda: T221 (bozze legali), T222 (avviso
+> Ultima sessione: ciclo 20261107-03 (T225 `elimina_account()` rifiuta chi ha un aiuto su strada in corso;
+> T212 il webhook di Stripe scarta con 200 gli errori permanenti e logga gli eventi ignorati), nel treno.
+> T196 ora può partire: T158 è unito al treno. Idee in coda: T221 (bozze legali), T222 (avviso
 > di aggiornamento), T228 (e2e di T220 più severo e focus dopo il ridisegno) e T230 (riga oltre 110
 > caratteri nella voce T193 di `NOTES.md`).
-> Stripe, prossimo lavoro: T212 (webhook: tratta `SUBSCRIPTION_DI_ALTRA_OFFICINA` e
-> `ABBONAMENTO_STRIPE_PRESENTE` e logga gli eventi ignorati).
+> Stripe, prossimo lavoro: guida per Davide (T204).
 > Aiuto su strada: resta T159 (guide).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
@@ -48,8 +48,8 @@
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
 - [~] Fase 7: **Stripe** — fatti il database (T180), il webhook (T185), il checkout (T189) e la regola di
-  una sola subscription (T189b, T224), pagina Abbonamento (T192), portale (T195); restano webhook (T212)
-  e guida (T204)
+  una sola subscription (T189b, T224), pagina Abbonamento (T192), portale (T195), webhook (T212); resta la
+  guida (T204)
 - [x] Promemoria: la registrazione web passa `termini_versione` nei metadati di `signUp` — fatto (T056,
   2026-10-29): la spunta dei termini è obbligatoria e il trigger (T054) copia la versione nel profilo
 

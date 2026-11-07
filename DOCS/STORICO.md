@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-07 — ciclo 20261107-03 — T225 T212
+
+**Fatto**
+
+- T225: `elimina_account()` ora rifiuta con `RICHIESTA_STRADA_IN_CORSO` chi ha un aiuto su strada in corso
+  (APERTA non scaduta o ACCETTATA da meno di 24 ore). Migrazione 20261107000100, pgTAP
+  `elimina-account-strada.test.sql` (8 asserzioni): lo esegue la CI.
+- T212: il webhook di Stripe non fa più ritentare per tre giorni gli eventi che il database non potrà mai
+  applicare: un errore con chiave permanente si registra e risponde 200 con `scartato`; gli altri errori
+  danno ancora 500. Gli eventi ignorati da T224 finiscono nel log con le due subscription.
+- Il treno è in arrivo (PR). Gate del supervisore approvati 2/2 al primo giro.
+- Controlli veloci verdi: 613 test, JS iniziale 63,3 kB; pgTAP di T225 da vedere in CI.
+
 ### Sessione agenti — 2026-11-07 — ciclo 20261107-00 — T223 T217
 
 **Fatto**
