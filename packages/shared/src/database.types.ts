@@ -904,6 +904,7 @@ export type Database = {
         Row: {
           cognome: string;
           created_at: string;
+          email_notifiche: boolean;
           id: string;
           nome: string;
           ruolo: Database['public']['Enums']['ruolo'];
@@ -915,6 +916,7 @@ export type Database = {
         Insert: {
           cognome?: string;
           created_at?: string;
+          email_notifiche?: boolean;
           id: string;
           nome?: string;
           ruolo?: Database['public']['Enums']['ruolo'];
@@ -926,6 +928,7 @@ export type Database = {
         Update: {
           cognome?: string;
           created_at?: string;
+          email_notifiche?: boolean;
           id?: string;
           nome?: string;
           ruolo?: Database['public']['Enums']['ruolo'];
