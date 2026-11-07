@@ -103,3 +103,25 @@ test('dopo la richiesta la pagina invita ad attivare gli avvisi, una volta sola'
   await expect(cliente.getByText('In attesa di risposta')).toBeVisible();
   await expect(invito).toHaveCount(0);
 });
+
+test('il cliente spegne le email di riserva e la scelta resta dopo il ricaricamento', async ({
+  browser,
+}) => {
+  const cliente = await entra(browser, await nuovoAccountCliente('Elisa'));
+  await cliente.goto('/notifiche');
+  await expect(cliente.getByRole('heading', { name: 'Email' })).toBeVisible();
+  const interruttore = cliente.getByRole('switch', {
+    name: "Ricevi le notifiche anche per email se l'avviso sul telefono non arriva",
+  });
+  // Un account nuovo parte con le email accese
+  await expect(interruttore).toBeChecked();
+
+  await interruttore.uncheck();
+  // Il salvataggio disabilita l'interruttore finché non è finito
+  await expect(interruttore).toBeEnabled();
+  await expect(interruttore).not.toBeChecked();
+
+  await cliente.reload();
+  await expect(cliente.getByRole('heading', { name: 'Email' })).toBeVisible();
+  await expect(interruttore).not.toBeChecked();
+});
