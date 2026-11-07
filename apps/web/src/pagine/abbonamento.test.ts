@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { avvisoPagamento, mostraPagamento, testoStato } from './abbonamento';
+import { avvisoPagamento, mostraPagamento, mostraPortale, testoStato } from './abbonamento';
 import type { AbbonamentoOfficina } from '../lib/abbonamento';
 
 // Ambiente node, senza DOM: le icone (SVG creati con `document`) qui non servono
@@ -9,6 +9,7 @@ const abb = (o: Partial<AbbonamentoOfficina>): AbbonamentoOfficina => ({
   piano: 'STARTER',
   stato: 'PROVA',
   prova_fino_al: '2999-01-01',
+  stripe_customer_id: null,
   ...o,
 });
 
@@ -53,5 +54,30 @@ describe('avvisoPagamento', () => {
   it('altri valori: nessun avviso', () => {
     expect(avvisoPagamento(null)).toBeNull();
     expect(avvisoPagamento('boh')).toBeNull();
+  });
+});
+
+describe('mostraPortale', () => {
+  it('nessun abbonamento → no', () => {
+    expect(mostraPortale(null)).toBe(false);
+  });
+  it('pilota, anche con id → no', () => {
+    expect(mostraPortale(abb({ piano: 'PILOTA', stripe_customer_id: 'cus_1' }))).toBe(false);
+  });
+  it('piano a carico senza id → no', () => {
+    expect(mostraPortale(abb({ piano: 'STARTER', stripe_customer_id: null }))).toBe(false);
+  });
+  it('piano a carico con id → sì, in qualsiasi stato', () => {
+    expect(mostraPortale(abb({ piano: 'STARTER', stripe_customer_id: 'cus_1' }))).toBe(true);
+    expect(mostraPortale(abb({ piano: 'PRO', stato: 'ATTIVO', stripe_customer_id: 'cus_1' }))).toBe(
+      true,
+    );
+    expect(
+      mostraPortale(abb({ piano: 'PRO', stato: 'SCADUTO', stripe_customer_id: 'cus_1' })),
+    ).toBe(true);
+  });
+  it('id vuoto o di soli spazi → no', () => {
+    expect(mostraPortale(abb({ stripe_customer_id: '' }))).toBe(false);
+    expect(mostraPortale(abb({ stripe_customer_id: '  ' }))).toBe(false);
   });
 });
