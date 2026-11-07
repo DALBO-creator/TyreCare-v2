@@ -2631,6 +2631,18 @@ Response: `codiceDaErrore` ne legge il JSON `{ errore }` (se la lettura fallisce
 GIA_ATTIVO, ABBONAMENTO_DA_SISTEMARE); ogni altro codice dà "Non riusciamo ad aprire il pagamento. Riprova
 tra poco." I testi stanno in `MESSAGGI_PAGAMENTO` (apostrofi dritti, come il resto dell'app).
 
+## Abbonamento: Gestisci il pagamento (portale Stripe) (T200)
+
+**File coinvolti:** `apps/web/src/lib/abbonamento.ts`, `apps/web/src/pagine/abbonamento.ts`.
+**Come funziona:** `AbbonamentoOfficina` legge anche `stripe_customer_id`; `mostraPortale` è vero se il piano
+non è PILOTA e l'id non è vuoto. Il pulsante `data-portale` si aggiunge a ciò che c'è già, in qualsiasi
+stato.
+`apriPortale` invoca `stripe-portale` con `{ officina_id }` e fa `location.assign(url)`; gli errori passano da
+`messaggioPagamento(codiceDaErrore)`. `collegaAzione()` gestisce il click dei due pulsanti, ognuno con il suo
+box d'errore. Finché il portale non è attivato su Stripe la funzione dà 502 `STRIPE` (messaggio chiaro);
+il 409 `NESSUN_PAGAMENTO` diventa «Non risulta ancora nessun pagamento.» Nessun e2e: il seed non ha
+`stripe_customer_id`.
+
 ## Intervento su strada — database (T139, R18)
 
 **File coinvolti:** `supabase/migrations/20261031000200_intervento_strada.sql`,
