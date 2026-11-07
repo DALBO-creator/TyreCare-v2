@@ -234,8 +234,9 @@ Hai diritto di:
   link dei report che hai creato: sono registri dell'officina, non dati che hai fornito tu
   [DA COMPLETARE: confermare con il consulente]. Non contiene nemmeno i dati tecnici delle iscrizioni push.
 - **«Elimina il tuo account»**: cancella l'account, con quanto indicato nella sezione 4. Non si può
-  eliminare se sei un amministratore, se sei titolare di un'officina o se hai prenotazioni in corso
-  (richieste, proposte o confermate): prima vanno concluse o annullate.
+  eliminare se sei un amministratore, se sei titolare di un'officina, se hai prenotazioni in corso
+  (richieste, proposte o confermate) o se hai una richiesta di aiuto su strada in corso (aperta, o
+  accettata da meno di 24 ore): prima vanno concluse o annullate.
 
 Per ciò che non puoi fare dall'app, o se non riesci ad accedere, scrivi a
 [DA COMPLETARE: email per le richieste privacy] indicando l'email del tuo account. Rispondiamo entro un

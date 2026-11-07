@@ -1916,7 +1916,9 @@ POMERIGGIO); senza appuntamento non contano; gli altri stati no.
 `apps/web/src/pagine/comune.ts`, `apps/web/src/pagine/accedi.ts`, `e2e/tests/elimina-account.spec.ts`.
 **Come funziona:** da Profilo → "Elimina il tuo account" (`/profilo/elimina`) si legge la spiegazione e si
 conferma con "Sì, elimina". `eliminaAccount()` (`lib/profilo.ts`) chiama la funzione SQL `elimina_account`.
-Le chiavi di rifiuto `TITOLARE_DI_OFFICINA`, `PRENOTAZIONI_IN_CORSO` e `ACCOUNT_AMMINISTRATORE` le traduce
+Le chiavi di rifiuto `TITOLARE_DI_OFFICINA`, `PRENOTAZIONI_IN_CORSO`, `RICHIESTA_STRADA_IN_CORSO`
+(«Hai una richiesta di aiuto su strada in corso: annullala da «Aiuto su strada» e riprova.», T225/T226) e
+`ACCOUNT_AMMINISTRATORE` le traduce
 `messaggioEliminazione` e le mostra il dialogo di `chiediConferma`. Il link è visibile a tutti: i casi
 vietati li decide il database.
 
@@ -3302,3 +3304,18 @@ completa. In simulazione l'update si annulla. La risposta e `import_log` non han
 la prima riga in ordine di data (poi codice documento). Si completa anche una gomma già smontata, se copre
 la data della riga. Il reimport salta i documenti già presenti prima del passo 1b: per provare il passo
 serve un documento nuovo.
+
+## Notifiche: scelta delle email di riserva (T198)
+
+**File coinvolti:** `apps/web/src/lib/notifiche.ts` (`leggiEmailNotifiche`, `salvaEmailNotifiche`),
+`apps/web/src/pagine/notifiche.ts`, `e2e/tests/notifiche.spec.ts`.
+**Come funziona:** sotto «Avvisi sul telefono» la pagina Notifiche ha la sezione «Email» con un
+interruttore (`role="switch"`) legato a `profiles.email_notifiche` (T199). La colonna si legge nel
+`Promise.all` insieme alle notifiche. Al `change` il valore si salva subito; `invia-notifica` con `false`
+non manda l'email.
+
+### Codice complesso
+`lib/notifiche.ts` — `salvaEmailNotifiche` fa `update(...).eq('id', uid).select().single()`: `PGRST116`
+(nessuna riga) diventa `ErroreModulo`, gli altri errori restano `Error`. `pagine/notifiche.ts` — durante il
+salvataggio l'input è disabilitato; se fallisce torna al valore di prima e compare un `role="alert"`
+(`.tc-push__errore`). Se la lettura iniziale fallisce va in errore tutta la pagina (idea in `NEXT.md`).

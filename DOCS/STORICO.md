@@ -4,6 +4,29 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-07 — ciclo 20261107-18 — T198 T226
+
+**Fatto**
+
+- T198: nella pagina Notifiche il cliente sceglie se ricevere le notifiche anche per email quando l'avviso
+  sul telefono non arriva (interruttore legato a `profiles.email_notifiche`, salvataggio immediato); il testo
+  della pagina vuota cita appuntamenti, controlli delle gomme e aiuto su strada. E2e `notifiche.spec.ts`.
+- T226: l'eliminazione dell'account con una richiesta di aiuto su strada in corso mostra «Hai una richiesta
+  di aiuto su strada in corso: annullala da «Aiuto su strada» e riprova.» (chiave di T225).
+- Il treno è in arrivo (PR). Gate del supervisore approvati 2/2 (revisione a coppia: 1 giro ciascuno).
+- Controlli veloci verdi: 628 unit test, build ok, JS iniziale 63,5 kB; l'e2e nuovo di T198 non è stato
+  eseguito in locale (niente Docker): lo verifica la CI.
+
+**Idee**
+
+- Pagina Notifiche: spazio `mt-3` sopra la sezione Email anche quando «Avvisi sul telefono» è nascosta
+  (usare `gap` sul contenitore).
+- `.tc-push__errore` usa `--tc-brand`: controllare il contrasto del testo rosso piccolo sul nero
+  (`--tc-rosso-chiaro`).
+- L'interruttore Email è visibile anche a officina e admin: coerente (colonna di ogni profilo), da
+  confermare.
+- Se `leggiEmailNotifiche` fallisce va in errore l'intera pagina Notifiche (lettura nel `Promise.all`).
+
 ### Sessione agenti — 2026-11-07 — ciclo 20261107-15 — T199 T203
 
 **Fatto**

@@ -88,6 +88,8 @@ const ERRORI_ELIMINAZIONE: Record<string, string> = {
   TITOLARE_DI_OFFICINA:
     "Sei il titolare di un'officina: scrivici con «Invia un commento» per chiudere l'officina e l'account.",
   PRENOTAZIONI_IN_CORSO: 'Hai appuntamenti in corso: annullali da «Appuntamenti» e riprova.',
+  RICHIESTA_STRADA_IN_CORSO:
+    'Hai una richiesta di aiuto su strada in corso: annullala da «Aiuto su strada» e riprova.',
   ACCOUNT_AMMINISTRATORE: "L'account amministratore non si elimina dall'app.",
 };
 
