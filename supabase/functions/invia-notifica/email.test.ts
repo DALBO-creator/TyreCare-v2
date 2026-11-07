@@ -44,6 +44,12 @@ describe('componiEmailNotifica', () => {
     expect(email.testo).not.toContain('//appuntamenti');
   });
 
+  it('testo semplice con il piede: perché arriva e come spegnerla', () => {
+    expect(email.testo).toContain(
+      "--\nRicevi questa email perché l'avviso sul telefono non è arrivato. Puoi spegnere le email in TyreCare, pagina Notifiche.\n",
+    );
+  });
+
   it('HTML con titolo e testo protetti, pulsante e piede', () => {
     expect(email.html).toContain('Prenotazione &lt;confermata&gt;');
     expect(email.html).toContain('Ci vediamo &quot;domani&quot; &amp; l&#39;auto');
@@ -51,7 +57,7 @@ describe('componiEmailNotifica', () => {
     expect(email.html).toContain('href="https://tyrecare.it/appuntamenti"');
     expect(email.html).toContain('Apri TyreCare');
     expect(email.html).toContain(
-      'Ricevi questa email perché non hai attivato le notifiche push su nessun dispositivo.',
+      'Ricevi questa email perché l&#39;avviso sul telefono non è arrivato. Puoi spegnere le email in TyreCare, pagina Notifiche.',
     );
   });
 

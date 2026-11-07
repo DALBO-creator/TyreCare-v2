@@ -3268,3 +3268,37 @@ messaggio reale lo rivelano.
 → «Solo l'amministratore può farlo.»; gli altri errori si rilanciano (`Object.hasOwn`, non `in`).
 `admin-officine.ts` — dopo il ridisegno il focus va all'`h1` alla chiusura del dialogo (evento `close`,
 una volta sola): con il dialogo modale aperto la pagina è inerte e il focus non si può spostare prima.
+
+## Email di riserva: preferenza dell'utente (T199)
+
+**File coinvolti:** `supabase/migrations/20261107000200_email_notifiche.sql`,
+`supabase/functions/invia-notifica/index.ts` (`inviaEmailDiRiserva`),
+`supabase/functions/invia-notifica/email.ts` (`PIEDE`),
+`supabase/tests/database/email-notifiche.test.sql`.
+**Come funziona:** `profiles.email_notifiche` (boolean, not null, default true) dice se l'utente vuole le
+email di riserva. La modifica solo il proprietario o l'admin (policy «profiles: modifica propria o admin»);
+non c'è un trigger di protezione, perché è una scelta e non una prova. `EMAIL_NOTIFICHE` resta spenta (R9);
+il raggruppamento delle email (R26) non è fatto. «Scarica i tuoi dati» usa `select('*')`: la colonna entra da
+sola.
+
+### Codice complesso
+`invia-notifica/index.ts` — `inviaEmailDiRiserva` legge la colonna con la service role prima di chiamare
+Resend: con `false`, profilo assente o errore di lettura non parte nessuna email e la risposta è
+`email: false`. `email.ts` — `PIEDE` è unico per «nessun dispositivo» e «push fallite» e dice dove spegnere le
+email (pagina Notifiche: l'interruttore arriva con T198).
+
+## Import dei controlli: completamento della stessa gomma (T203, R27)
+
+**File coinvolti:** `supabase/migrations/20261107000300_import_controlli_completa.sql` (`importa_controlli`),
+`supabase/tests/database/import-controlli-completa.test.sql`.
+**Come funziona:** dopo la ricerca «1) stessa gomma» c'è il passo «1b»: ognuno tra `misura`, `marca` e `dot`
+vuoto o nullo nel database prende il valore del file (`btrim`, senza minuscole, come l'insert). I campi
+pieni non si sovrascrivono: se sono diversi è un'altra gomma (R15) e si smonta e si monta. `modello` non si
+completa. In simulazione l'update si annulla. La risposta e `import_log` non hanno contatori nuovi.
+
+### Codice complesso
+`importa_controlli`, passo 1b — l'update parte solo se almeno un campo cambia, così un reimport non tocca
+`updated_at`. Una gomma con i tre campi vuoti corrisponde a qualunque riga della sua posizione: la completa
+la prima riga in ordine di data (poi codice documento). Si completa anche una gomma già smontata, se copre
+la data della riga. Il reimport salta i documenti già presenti prima del passo 1b: per provare il passo
+serve un documento nuovo.

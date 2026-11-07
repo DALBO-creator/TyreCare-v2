@@ -30,7 +30,7 @@ export const linkAssoluto = (sitoUrl: string, link: string | null | undefined): 
 };
 
 const PIEDE =
-  'Ricevi questa email perché non hai attivato le notifiche push su nessun dispositivo.';
+  "Ricevi questa email perché l'avviso sul telefono non è arrivato. Puoi spegnere le email in TyreCare, pagina Notifiche.";
 
 export const componiEmailNotifica = (
   { titolo, testo, link }: NotificaEmail,

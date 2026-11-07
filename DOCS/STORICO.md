@@ -4,6 +4,32 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-07 — ciclo 20261107-15 — T199 T203
+
+**Fatto**
+
+- T199: email di riserva con preferenza dell'utente: nuova colonna `profiles.email_notifiche` (default true,
+  la cambia l'utente sul proprio profilo); `invia-notifica` la rispetta prima di chiamare Resend; piede
+  dell'email riscritto. Migrazione 20261107000200, pgTAP `email-notifiche.test.sql` (13 asserzioni, con i
+  casi negati cliente→titolare e titolare→cliente).
+- T203: l'import dei controlli completa la «stessa gomma» (R15) con DOT, marca e misura del file quando nel
+  database sono vuoti; i campi pieni non cambiano mai (R27). Migrazione 20261107000300, pgTAP
+  `import-controlli-completa.test.sql` (30 asserzioni).
+- Il treno è in arrivo (PR). Gate del supervisore approvati 2/2 (revisione a coppia: 1 giro ciascuno).
+- Controlli veloci verdi: 622 unit test, JS iniziale 63,3 kB; pgTAP non eseguiti in locale (niente Docker):
+  li verifica la CI.
+
+**Decisioni**
+
+- T199: profilo assente o errore di lettura della preferenza → niente email (scelta tecnica prudente).
+
+**Idee**
+
+- Test automatico di `invia-notifica` per «preferenza false → niente email», da fare quando si accendono le
+  email di riserva (R9).
+- L'anteprima dell'import potrebbe dire quante gomme verrebbero completate (contatore nuovo in risposta e
+  in `import_log`).
+
 ### Sessione agenti — 2026-11-07 — ciclo 20261107-09 — T196 T221
 
 **Fatto**

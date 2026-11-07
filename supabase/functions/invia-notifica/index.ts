@@ -13,6 +13,8 @@
 // Variabili facoltative: EMAIL_NOTIFICHE ('si' per accendere), RESEND_API_KEY, EMAIL_MITTENTE
 // (es. "TyreCare <notifiche@dominio>"), SITO_URL (es. https://dominio). Senza EMAIL_NOTIFICHE=si il
 // comportamento è quello di prima e la risposta ha `email: false`.
+// Preferenza dell'utente (T199): prima dell'email si legge `profiles.email_notifiche` del destinatario;
+// con `false`, profilo assente o errore di lettura niente email (`email: false`), Resend non si chiama.
 import { createClient } from 'npm:@supabase/supabase-js@2.117.2';
 import webpush from 'npm:web-push@3.6.7';
 import { componiEmailNotifica } from './email.ts';
@@ -93,12 +95,25 @@ Deno.serve(async (richiesta) => {
 
 // Manda la notifica per email con Resend; `true` solo se Resend l'ha accettata. Non lancia per
 // configurazione mancante o destinatario senza email: scrive l'errore e restituisce `false`.
+// Prima controlla la preferenza del destinatario (`email_notifiche`, T199).
 async function inviaEmailDiRiserva(notifica: {
   destinatario_id: string;
   titolo: string;
   testo: string;
   link: string | null;
 }): Promise<boolean> {
+  const { data: profilo, error: erroreProfilo } = await supabase
+    .from('profiles')
+    .select('email_notifiche')
+    .eq('id', notifica.destinatario_id)
+    .maybeSingle();
+  if (erroreProfilo) {
+    console.error('Email di riserva: preferenza non letta', erroreProfilo.message);
+    return false;
+  }
+  // Profilo assente (account eliminato nel frattempo) o email spente dall'utente: niente email
+  if (!profilo || profilo.email_notifiche === false) return false;
+
   const chiave = Deno.env.get('RESEND_API_KEY');
   const mittente = Deno.env.get('EMAIL_MITTENTE');
   const sitoUrl = Deno.env.get('SITO_URL');
