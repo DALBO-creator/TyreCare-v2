@@ -7,11 +7,12 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261107-15 (T199 preferenza per le email di riserva; T203 l'import dei controlli
-> completa la stessa gomma), nel treno. Idee in coda: T222 (avviso di aggiornamento), T228 (e2e di T220
-> più severo e focus dopo il ridisegno), T230 (riga oltre 110 caratteri nella voce T193 di `NOTES.md`),
-> controllo axe di `/admin/officine`, motivo del rifiuto scritto dall'admin, test di `invia-notifica` con
-> preferenza spenta e contatore delle gomme completate nell'anteprima dell'import.
+> Ultima sessione: ciclo 20261107-18 (T198 interruttore delle email di riserva nelle Notifiche; T226
+> eliminazione account con aiuto su strada in corso), nel treno. Idee in coda: T222 (avviso di
+> aggiornamento), T228 (e2e di T220 più severo e focus dopo il ridisegno), T230 (riga oltre 110
+> caratteri nella voce T193 di `NOTES.md`), controllo axe di `/admin/officine`, motivo del rifiuto
+> scritto dall'admin, test di `invia-notifica` con preferenza spenta, contatore delle gomme completate
+> nell'anteprima dell'import, spazio e contrasto della sezione Email nelle Notifiche.
 > Stripe, prossimo lavoro: guida per Davide (T204).
 > Aiuto su strada: resta T159 (guide).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
@@ -45,8 +46,8 @@
   lettura di .xls/.xlsx/.ods, schermata "Associa le colonne", associazioni salvate per officina
 - [~] Fase 5: **email di riserva** — fatta nel codice (T066, 2026-10-28) ma spenta; resta accenderla dopo
   l'email dal dominio di TyreCare (P23): comando in `NOTES.md` → "Notifiche: email di riserva (T066)"
-  Promemoria: prima di accendere `EMAIL_NOTIFICHE` serve l'interruttore nella pagina Notifiche (T198):
-  la colonna `profiles.email_notifiche` c'è già (T199), ma ancora non si può cambiare dall'app
+  L'interruttore nella pagina Notifiche c'è (T198, colonna `profiles.email_notifiche` di T199): prima di
+  accendere `EMAIL_NOTIFICHE` resta il dominio (P23)
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
 - [~] Fase 7: **Stripe** — fatti il database (T180), il webhook (T185), il checkout (T189) e la regola di
