@@ -3252,3 +3252,19 @@ dire "record già presente" e l'errore non va mostrato.
 come lo scrive Postgres, e non come sottostringa: altrimenti `x_veicoli_pkey` con tabella `veicoli`
 risultava già salvato e l'errore spariva. Se Postgres cambiasse il formato del messaggio, i test con il
 messaggio reale lo rivelano.
+
+## Rifiuto delle richieste di affiliazione dall'app (T196)
+
+**File coinvolti:** `apps/web/src/pagine/admin-officine.ts`, `apps/web/src/lib/admin.ts`
+(`rifiutaAffiliazione`, `ERRORI_RIFIUTO`), `e2e/tests/admin-rifiuta.spec.ts`.
+**Come funziona:** le officine IN_ATTESA hanno «Rifiuta la richiesta» (stile `tc-pulsante-elimina` con
+`mt-0`) accanto ad «Attiva». `chiediConferma` → `rifiutaAffiliazione(id)` →
+`rpc('rifiuta_affiliazione', { p_officina_id })`, senza motivo dalla pagina. La funzione SQL avvisa i membri
+(«Richiesta non accettata») e cancella l'officina: la partita IVA torna libera.
+
+### Codice complesso
+`apps/web/src/lib/admin.ts` — `ERRORI_RIFIUTO` traduce `OFFICINA_NON_TROVATA`, `OFFICINA_NON_IN_ATTESA`,
+`ABBONAMENTO_STRIPE_PRESENTE` (prima si annulla la subscription su Stripe) e `MOTIVO_TROPPO_LUNGO`; `42501`
+→ «Solo l'amministratore può farlo.»; gli altri errori si rilanciano (`Object.hasOwn`, non `in`).
+`admin-officine.ts` — dopo il ridisegno il focus va all'`h1` alla chiusura del dialogo (evento `close`,
+una volta sola): con il dialogo modale aperto la pagina è inerte e il focus non si può spostare prima.

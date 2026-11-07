@@ -148,7 +148,8 @@ in cui lo sarà.
   [DA COMPLETARE: da quando vale l'annullamento (subito o a fine periodo pagato) e rimborsi]
 - **Alla scadenza.** Se la prova finisce senza un abbonamento, o un pagamento non riesce, lo stato
   dell'officina diventa «scaduto». Per ora nessuna funzione viene bloccata: lo stato si vede nella
-  pagina «Abbonamento». Un abbonamento annullato si può riattivare da quella pagina.
+  pagina «Abbonamento». Quando il pagamento online sarà attivo, un abbonamento annullato si potrà
+  riattivare da quella pagina.
   [DA COMPLETARE: se e quando, in futuro, le funzioni verranno limitate alle officine con abbonamento
   scaduto, e con quale preavviso]
 

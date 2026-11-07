@@ -19,10 +19,10 @@
 
 Le bozze di DPA e registro sono state aggiunte il 2026-10-22 (compito T014), quella della procedura per le
 violazioni il 2026-10-24 (compito T037), quella del registro degli accessi con le istruzioni sulle copie di
-sicurezza ([`../pilota/copie-di-sicurezza.md`](../pilota/copie-di-sicurezza.md)) con T048. Da fare in
-seguito: contratto di abbonamento per le officine (P19), a cui il DPA rimanda. Le condizioni di
-abbonamento e pagamento con Stripe sono in bozza nei termini (§10), nell'informativa e nel registro (A7)
-con T190; recesso, fatturazione e IVA restano da completare.
+sicurezza ([`../pilota/copie-di-sicurezza.md`](../pilota/copie-di-sicurezza.md)) con T048. Il contratto di
+abbonamento per le officine non è più "da fare": le condizioni di abbonamento e pagamento con Stripe sono in
+bozza nei termini (§10), nell'informativa e nel registro (A7) con T190, e il DPA rimanda ai termini §10.
+Restano da completare recesso, fatturazione e IVA.
 
 ## Come sono state scritte
 
@@ -35,8 +35,9 @@ con T190; recesso, fatturazione e IVA restano da completare.
   (aggiornato con T058: «Scarica i tuoi dati» ed «Elimina il tuo account» nel Profilo, esportazione per
   l'officina, pulizia delle notifiche). Le prenotazioni passate, invece, non si cancellano ancora da sole.
   Eccezione: la sezione «Aiuto su strada» (termini §7, informativa, registro A6) descrive la funzione
-  decisa con R18 (T139–T144): sul ramo `main` c'è solo il database (T139), le pagine arrivano con
-  T140–T144. Va riletta quando la funzione è completa e non va data al consulente come già attiva.
+  decisa con R18 (T139–T144): sul ramo `main` ci sono il database e le pagine, quella del cliente
+  (`/strada`) e quella dell'officina (`/officina/strada`). Va riletta se la funzione cambia, ma si può
+  dare al consulente come funzione presente.
 
 ## Cosa manca (da completare prima di darle al consulente)
 
@@ -50,7 +51,7 @@ Nei documenti sono segnati con `[DA COMPLETARE: …]`. Si possono compilare nell
 - [DA COMPLETARE: eventuale PEC e responsabile della protezione dei dati (DPO), se nominato]
 - [DA COMPLETARE: dominio e indirizzo web di TyreCare (P23)]
 - Scelte da fare (meglio con il consulente): tempi di conservazione, età minima, regione dei server di
-  Vercel e di Resend, ruolo di Stripe, recesso e fatturazione dell'abbonamento (P19), foro competente.
+  Vercel e di Resend, ruolo di Stripe, recesso, fatturazione e IVA dell'abbonamento, foro competente.
   Piani, prezzi e prova sono decisi (R5, R19, R29) e stanno nell'app, non nei termini.
 
 ## Da fare prima del lancio (misure di sicurezza che oggi mancano)
