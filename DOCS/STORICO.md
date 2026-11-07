@@ -4,6 +4,30 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-07 — ciclo 20261107-21 — T200 T201
+
+**Fatto**
+
+- T200: nella pagina Abbonamento il pulsante «Gestisci il pagamento» (portale Stripe) compare per chi ha
+  `stripe_customer_id` e non è PILOTA; errori `NESSUN_PAGAMENTO` e `STRIPE`; il testo di
+  `ABBONAMENTO_DA_SISTEMARE` rimanda al portale. Nessun e2e nuovo (il seed non ha `stripe_customer_id`).
+  Ramo `agenti/T200-gestisci-pagamento` (89e1dcd).
+- T201 (area C4, presa da C2): bozze legali allineate al database sulla conservazione delle prenotazioni
+  (informativa §4, registro B6 con la riga Conservazione, README); «Cancellazione automatica» da `[~]` a
+  `[x]`, con «i tempi restano da confermare con il consulente». Ramo
+  `agenti/T201-conservazione-prenotazioni` (94f08ba).
+- Gate del supervisore approvati 2/2 al 1o giro. Prova d'insieme verde: 635 test in 58 file, Node 24, JS
+  iniziale 63,5 kB su 70.
+- Decisione al posto di Davide (R32): testo dell'errore `STRIPE` (502 di checkout e portale) «Il servizio di
+  pagamento non è disponibile in questo momento: riprova più tardi o scrivici con «Invia un commento».»
+
+**Idee**
+
+- T238: portale Stripe anche per PILOTA con `stripe_customer_id` (la funzione lo accetta per poter annullare).
+- T239: allineare `NOTES.md` (righe ~1703–1705) e `DOCS/pilota/guida-cliente.md` (riga ~33) alla pulizia
+  delle prenotazioni a 24 mesi; nel README legale nominare i job (`pulizia-notifiche`,
+  `pulizia-prenotazioni`) invece delle funzioni.
+
 ### Sessione agenti — 2026-11-07 — ciclo 20261107-18 — T198 T226
 
 **Fatto**

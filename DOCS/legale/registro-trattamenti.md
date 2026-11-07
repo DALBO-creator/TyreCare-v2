@@ -165,7 +165,7 @@ dell'accordo firmato]
   per i promemoria push, i servizi push dei browser — README, domande 4 e 5];
 - **conservazione:** quella decisa dall'officina; alla fine del contratto restituzione o cancellazione
   entro [DA COMPLETARE: N giorni] (DPA §13), con la copia scaricabile dall'officina. Cancellazione
-  automatica solo per le notifiche (A2); le prenotazioni passate non si cancellano da sole;
+  automatica solo per le notifiche (A2) e per le prenotazioni (B6: 24 mesi dopo il giorno dell'appuntamento);
 - **misure:** M1–M6. L'amministratore di TyreCare nell'app non vede questi dati.
 
 ## B1. Anagrafica dei clienti dell'officina
@@ -223,6 +223,7 @@ dell'accordo firmato]
 | Interessati | Clienti che prenotano; membri dell'officina che le gestiscono |
 | Dati | Officina, servizio, nome e telefono di chi prenota, targa e descrizione del veicolo, giorno e fascia, note, stato, orario proposto o confermato, messaggio dell'officina, chi l'ha gestita (tabella `prenotazioni`) |
 | Destinatari | Il cliente che ha prenotato; i membri dell'officina scelta |
+| Conservazione | Il job notturno `pulizia-prenotazioni` cancella le prenotazioni 24 mesi dopo il giorno dell'appuntamento, in qualsiasi stato; con loro spariscono le notifiche collegate. Cancellate subito con l'account del cliente che le ha fatte |
 | Nota | [DA COMPLETARE: la richiesta la crea il cliente (TyreCare titolare, informativa §1.a) e la gestisce l'officina: confermare con il consulente se va in Parte A, in Parte B o se è contitolarità — README, domanda 6] |
 
 ## B7. Import dal gestionale

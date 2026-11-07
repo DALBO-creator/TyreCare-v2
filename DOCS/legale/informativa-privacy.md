@@ -162,7 +162,8 @@ I tempi previsti sono:
   da sola dopo 24 ore se l'officina non la chiude; le richieste chiuse, annullate o scadute (con posizione,
   telefono, descrizione e targa) vengono cancellate dopo **90 giorni**; se elimini il tuo account, le tue
   richieste di aiuto su strada vengono cancellate subito con l'account;
-- **prenotazioni**: non si cancellano da sole [DA COMPLETARE: periodo, es. N mesi dopo l'appuntamento];
+- **prenotazioni**: un job notturno le cancella automaticamente 24 mesi dopo il giorno dell'appuntamento,
+  in qualsiasi stato; con loro spariscono le notifiche collegate;
 - **iscrizioni push**: finché non disattivi le notifiche push nell'app o dal browser (in quel caso
   l'iscrizione viene eliminata);
 - **dati caricati dall'officina** (clienti, veicoli, pneumatici, controlli, inviti, registro import): per

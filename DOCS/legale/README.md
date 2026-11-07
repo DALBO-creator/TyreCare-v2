@@ -33,7 +33,8 @@ Restano da completare recesso, fatturazione e IVA.
   di analisi o di profilazione, nessun font o script caricato da siti terzi.
 - Non si promettono funzioni che l'app non ha: si scrive come fatto solo ciò che è sul ramo `main`
   (aggiornato con T058: «Scarica i tuoi dati» ed «Elimina il tuo account» nel Profilo, esportazione per
-  l'officina, pulizia delle notifiche). Le prenotazioni passate, invece, non si cancellano ancora da sole.
+  l'officina, pulizia delle notifiche). Le prenotazioni si cancellano da sole 24 mesi dopo il giorno
+  dell'appuntamento (T197).
   Eccezione: la sezione «Aiuto su strada» (termini §7, informativa, registro A6) descrive la funzione
   decisa con R18 (T139–T144): sul ramo `main` ci sono il database e le pagine, quella del cliente
   (`/strada`) e quella dell'officina (`/officina/strada`). Va riletta se la funzione cambia, ma si può
@@ -75,9 +76,10 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
   (T040, file JSON; senza inviti e link dei report, scelta R13).
 - [x] **Cancellazione dell'account** dall'app: fatto. Funzione SQL `elimina_account()` (T038) e pulsante
   «Elimina il tuo account» nel Profilo (T039); domanda 14 ancora aperta.
-- [~] **Cancellazione automatica** dei dati scaduti secondo i tempi di conservazione: in parte. Notifiche
-  (T049, job notturno `pulisci_notifiche`: le lette dopo 180 giorni, tutte dopo 365; scelta R6) sì;
-  prenotazioni passate ancora no.
+- [x] **Cancellazione automatica** dei dati scaduti secondo i tempi di conservazione: fatto. Notifiche
+  (T049, job notturno `pulisci_notifiche`: le lette dopo 180 giorni, tutte dopo 365; scelta R6), aiuto su
+  strada (90 giorni dopo la chiusura) e prenotazioni (T197, job notturno `pulisci_prenotazioni`: 24 mesi
+  dopo il giorno dell'appuntamento; scelta R25). I tempi restano da confermare con il consulente.
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
   quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
   rivedere; restano da completare i contatti e il termine del DPA §12.1.

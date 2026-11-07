@@ -17,7 +17,12 @@ describe('messaggioPagamento', () => {
     ['GIA_ATTIVO', "L'abbonamento è già attivo."],
     [
       'ABBONAMENTO_DA_SISTEMARE',
-      "L'ultimo pagamento non è riuscito: scrivici con «Invia un commento» per sistemarlo.",
+      "L'ultimo pagamento non è riuscito: aggiorna la carta con «Gestisci il pagamento».",
+    ],
+    ['NESSUN_PAGAMENTO', 'Non risulta ancora nessun pagamento.'],
+    [
+      'STRIPE',
+      'Il servizio di pagamento non è disponibile in questo momento: riprova più tardi o scrivici con «Invia un commento».',
     ],
   ])('%s', (codice, testo) => {
     expect(messaggioPagamento(codice)).toBe(testo);
