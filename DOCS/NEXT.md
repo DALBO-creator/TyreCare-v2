@@ -7,11 +7,10 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261107-03 (T225 `elimina_account()` rifiuta chi ha un aiuto su strada in corso;
-> T212 il webhook di Stripe scarta con 200 gli errori permanenti e logga gli eventi ignorati), nel treno.
-> T196 ora può partire: T158 è unito al treno. Idee in coda: T221 (bozze legali), T222 (avviso
-> di aggiornamento), T228 (e2e di T220 più severo e focus dopo il ridisegno) e T230 (riga oltre 110
-> caratteri nella voce T193 di `NOTES.md`).
+> Ultima sessione: ciclo 20261107-09 (T196 rifiuto delle richieste di affiliazione dall'app; T221 bozze
+> legali allineate all'app), nel treno. Idee in coda: T222 (avviso di aggiornamento), T228 (e2e di T220
+> più severo e focus dopo il ridisegno), T230 (riga oltre 110 caratteri nella voce T193 di `NOTES.md`),
+> controllo axe di `/admin/officine` e motivo del rifiuto scritto dall'admin.
 > Stripe, prossimo lavoro: guida per Davide (T204).
 > Aiuto su strada: resta T159 (guide).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del

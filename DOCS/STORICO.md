@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-07 — ciclo 20261107-09 — T196 T221
+
+**Fatto**
+
+- T196: l'amministratore rifiuta dall'app una richiesta di affiliazione IN_ATTESA (pulsante «Rifiuta la
+  richiesta» con conferma; l'utente riceve «Richiesta non accettata»). `rifiutaAffiliazione` con la mappa
+  `ERRORI_RIFIUTO`, 8 unit test, e2e `admin-rifiuta.spec.ts`.
+- T221: bozze legali allineate all'app di oggi: il DPA rimanda ai Termini §10 (restano recesso, fatturazione
+  e IVA), tolte le sigle interne dalle bozze per il consulente, README aggiornato (aiuto su strada presente,
+  contratto nei Termini §10); piani nominati (Starter, Pro, Officina pilota); 21 tabelle in `public`.
+- Il treno è in arrivo (PR). Gate del supervisore approvati 2/2 (revisione a coppia: 2 giri ciascuno).
+- Controlli veloci verdi: 621 unit test, JS iniziale 26,6 kB; e2e `admin-rifiuta.spec.ts` non eseguito in
+  locale (niente Docker): lo verifica la CI.
+
 ### Sessione agenti — 2026-11-07 — ciclo 20261107-03 — T225 T212
 
 **Fatto**
