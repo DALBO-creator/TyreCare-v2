@@ -1708,7 +1708,8 @@ database, senza pulsante nell'app. La sparizione delle prenotazioni passate è u
 ## Eliminazione dell'account e aiuto su strada (T225)
 
 **File coinvolti:** migrazione `20261107000100`, pgTAP
-`supabase/tests/database/elimina-account-strada.test.sql` (8 asserzioni, verificate dalla CI).
+`supabase/tests/database/elimina-account-strada.test.sql`
+(8 asserzioni, le esegue la CI con `npm run db:test`).
 **Come funziona:** `elimina_account()` controlla nell'ordine ADMIN, TITOLARE, prenotazioni in corso, aiuto su
 strada in corso. Blocca una richiesta del chiamante APERTA con `scade_il >= now()` o ACCETTATA con
 `accettata_il` nelle ultime 24 ore (stessi limiti di `crea_richiesta_strada`). Le richieste oltre i limiti le
@@ -2948,8 +2949,8 @@ officina non uuid → null; status da ignorare (`incomplete`) → nessun aggiorn
 ## Webhook di Stripe: errori permanenti ed eventi ignorati (T212)
 
 **File coinvolti:** `supabase/functions/stripe-webhook/eventi.ts`, `index.ts` e i loro test.
-**Come funziona:** se il database rifiuta un evento con un errore che non cambierà mai, il webhook lo scarta:
-scrive nel log, registra l'evento in `stripe_eventi` e risponde 200
+**Come funziona:** se il database rifiuta un evento con un errore che non cambierà mai, il webhook
+lo scarta: scrive nel log, registra l'evento in `stripe_eventi` e risponde 200
 `{ ricevuto: true, scartato: '<chiave>' }`. Gli altri errori restano 500, così Stripe ritenta.
 Dopo un aggiornamento riuscito rilegge `stripe_subscription_id` dell'officina: se è diverso da quello
 dell'evento (evento ignorato da T224), `console.warn` con le due subscription. È solo diagnostica.
