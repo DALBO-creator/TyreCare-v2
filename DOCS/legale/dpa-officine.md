@@ -6,8 +6,9 @@ Versione: [DA COMPLETARE: data e numero di versione]
 
 Questo accordo ("Accordo") regola il trattamento dei dati personali che TyreCare svolge **per conto
 dell'officina** quando l'officina usa TyreCare. Fa parte del contratto di abbonamento (o di prova) tra le
-parti ("Contratto") [DA COMPLETARE: riferimento al contratto di abbonamento, PLAN §P19]. Va firmato con
-**ogni officina** prima di caricare in TyreCare dati di clienti reali (PLAN §P8, §P17).
+parti ("Contratto") (le condizioni di abbonamento sono nei «Termini di servizio», §10)
+[DA COMPLETARE: recesso, fatturazione e IVA, ancora aperti in quella sezione]. Va firmato con
+**ogni officina** prima di caricare in TyreCare dati di clienti reali.
 
 ## 1. Parti
 
@@ -142,7 +143,7 @@ che devono essere negati.
 - gli operatori inseriscono e modificano clienti, veicoli, pneumatici e controlli della propria officina;
 - l'account amministratore nell'app **non** ha accesso ai Dati dell'Officina (clienti, veicoli,
   pneumatici, controlli, prenotazioni): vede i profili degli account e gestisce lo stato di affiliazione
-  delle officine (PLAN §P12).
+  delle officine.
 
 **Cifratura in transito.** L'app e i suoi utenti comunicano con il server solo con connessioni cifrate
 (HTTPS/TLS): l'app è servita da Vercel e parla con il database e l'autenticazione attraverso le interfacce
