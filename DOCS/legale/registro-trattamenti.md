@@ -133,7 +133,8 @@ README, "Da fare prima del lancio"]
 
 ## A7. Abbonamenti delle officine
 
-Il pagamento online non è ancora attivo (decisione di prodotto del 2026-11-01): la scheda descrive il trattamento che parte con l'accensione.
+Il pagamento online non è ancora attivo (decisione di prodotto del 2026-11-01):
+la scheda descrive il trattamento che parte con l'accensione.
 
 | Voce | Contenuto |
 |------|-----------|

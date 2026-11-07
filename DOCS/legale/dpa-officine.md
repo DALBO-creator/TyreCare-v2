@@ -6,7 +6,7 @@ Versione: [DA COMPLETARE: data e numero di versione]
 
 Questo accordo ("Accordo") regola il trattamento dei dati personali che TyreCare svolge **per conto
 dell'officina** quando l'officina usa TyreCare. Fa parte del contratto di abbonamento (o di prova) tra le
-parti ("Contratto") (le condizioni di abbonamento sono nei «Termini di servizio», §10)
+parti ("Contratto"; le condizioni di abbonamento sono nei «Termini di servizio», §10)
 [DA COMPLETARE: recesso, fatturazione e IVA, ancora aperti in quella sezione]. Va firmato con
 **ogni officina** prima di caricare in TyreCare dati di clienti reali.
 
