@@ -152,6 +152,32 @@ export async function attivaOfficina(id: string): Promise<void> {
   if (error) traduciErrore(error);
 }
 
+/** Messaggi delle chiavi d'errore di `rifiuta_affiliazione` (la chiave è il `message` dell'eccezione SQL). */
+export const ERRORI_RIFIUTO: Record<string, string> = {
+  OFFICINA_NON_TROVATA: 'Officina non trovata: ricarica la pagina e riprova.',
+  OFFICINA_NON_IN_ATTESA: 'Questa officina non è più in attesa: ricarica la pagina.',
+  ABBONAMENTO_STRIPE_PRESENTE:
+    'Questa officina ha un abbonamento su Stripe: annullalo prima dalla dashboard di Stripe.',
+  MOTIVO_TROPPO_LUNGO: 'Il motivo è troppo lungo (al massimo 300 caratteri).',
+};
+
+/**
+ * Rifiuta la richiesta di un'officina IN_ATTESA: la funzione SQL avvisa i membri e cancella l'officina (R24).
+ * Nessun motivo dalla pagina per ora.
+ */
+export async function rifiutaAffiliazione(id: string): Promise<void> {
+  const { error } = await getSupabase().rpc('rifiuta_affiliazione', { p_officina_id: id });
+  if (!error) return;
+  if (codiceErrore(error) === '42501') {
+    throw new ErroreModulo("Solo l'amministratore può farlo.", undefined, '42501');
+  }
+  const chiave = error.message;
+  if (Object.hasOwn(ERRORI_RIFIUTO, chiave)) {
+    throw new ErroreModulo(ERRORI_RIFIUTO[chiave]!, undefined, chiave);
+  }
+  throw error;
+}
+
 /** Sospende l'officina: sparisce ai clienti. */
 export async function sospendiOfficina(id: string): Promise<void> {
   const { error } = await getSupabase().rpc('sospendi_officina', { p_officina_id: id });

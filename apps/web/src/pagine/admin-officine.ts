@@ -1,10 +1,11 @@
 import { PIANI, PianoSchema, type Piano } from '@tyrecare/shared';
-import { Building2, Check, Pause } from 'lucide';
+import { Building2, Check, Pause, X } from 'lucide';
 import {
   attivaOfficina,
   cambiaPianoOfficina,
   caricaOfficineAdmin,
   ETICHETTE_STATO_ABBONAMENTO,
+  rifiutaAffiliazione,
   sospendiOfficina,
   type OfficinaAdmin,
 } from '../lib/admin';
@@ -33,9 +34,18 @@ function riga(o: OfficinaAdmin): string {
       ? `<button type="button" class="btn btn-outline-light" data-sospendi="${o.id}">
           ${icona(Pause)} Sospendi
         </button>`
-      : `<button type="button" class="btn btn-primary" data-attiva="${o.id}">
-          ${icona(Check)} Attiva
-        </button>`;
+      : `<div class="d-flex flex-wrap gap-2">
+          <button type="button" class="btn btn-primary" data-attiva="${o.id}">
+            ${icona(Check)} Attiva
+          </button>
+          ${
+            o.stato_affiliazione === 'IN_ATTESA'
+              ? `<button type="button" class="btn btn-outline-danger" data-rifiuta="${o.id}">
+            ${icona(X)} Rifiuta la richiesta
+          </button>`
+              : ''
+          }
+        </div>`;
   return `
     <div class="tc-lista__riga flex-column align-items-stretch">
       <div class="d-flex justify-content-between align-items-start gap-2">
@@ -175,6 +185,39 @@ export async function mostraAdminOfficine(app: HTMLElement): Promise<void> {
         );
       });
     }
+
+    app.querySelectorAll<HTMLButtonElement>('[data-rifiuta]').forEach((pulsante) => {
+      const o = officine.find((x) => x.id === pulsante.getAttribute('data-rifiuta'));
+      if (!o) return;
+      pulsante.addEventListener('click', () =>
+        chiediConferma({
+          titolo: 'Rifiutare la richiesta?',
+          testo: `Rifiuti la richiesta di «${o.ragione_sociale}»? L’officina verrà cancellata e chi l’ha chiesta riceverà un avviso.`,
+          pulsante: 'Rifiuta',
+          iconaPulsante: X,
+          inCorso: 'Rifiuto…',
+          origine: pulsante,
+          azione: async () => {
+            await rifiutaAffiliazione(o.id);
+            try {
+              officine = await caricaOfficineAdmin();
+            } catch (errore) {
+              await gestisciErroreCaricamento(app, n, errore);
+              return;
+            }
+            if (!ancoraAttuale(n)) return;
+            disegna();
+            // Il pulsante è sparito: il focus va al titolo. Finché il dialogo modale è aperto la pagina è
+            // inerte e focus() non farebbe nulla: si aspetta la chiusura (`origine` non è più nel DOM,
+            // quindi il dialogo non rimette il focus altrove).
+            const dialogo = document.querySelector<HTMLDialogElement>('dialog.tc-dialogo');
+            const aTitolo = () => app.querySelector<HTMLElement>('h1')?.focus();
+            if (dialogo?.open) dialogo.addEventListener('close', aTitolo, { once: true });
+            else aTitolo();
+          },
+        }),
+      );
+    });
   };
   disegna();
 }
