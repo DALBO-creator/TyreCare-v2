@@ -3272,7 +3272,8 @@ una volta sola): con il dialogo modale aperto la pagina è inerte e il focus non
 ## Email di riserva: preferenza dell'utente (T199)
 
 **File coinvolti:** `supabase/migrations/20261107000200_email_notifiche.sql`,
-`supabase/functions/invia-notifica/index.ts` (`inviaEmailDiRiserva`), `supabase/functions/invia-notifica/email.ts` (`PIEDE`),
+`supabase/functions/invia-notifica/index.ts` (`inviaEmailDiRiserva`),
+`supabase/functions/invia-notifica/email.ts` (`PIEDE`),
 `supabase/tests/database/email-notifiche.test.sql`.
 **Come funziona:** `profiles.email_notifiche` (boolean, not null, default true) dice se l'utente vuole le
 email di riserva. La modifica solo il proprietario o l'admin (policy «profiles: modifica propria o admin»);
