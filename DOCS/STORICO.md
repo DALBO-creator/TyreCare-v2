@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-08 — ciclo 20261108-03 — T222 T205
+
+**Fatto**
+
+- T222: l'avviso «nuova versione» entra con il paragrafo vuoto e scrive il testo al giro successivo
+  (`setTimeout` 0), così il `role="status"` viene annunciato; 6 test DOM con happy-dom 21.0.4.
+- T205: guida officine, nuova sezione 14 «Abbonamento» (prova di 30 giorni, piani, «Attiva l'abbonamento»,
+  ritorno dal pagamento, «Gestisci il pagamento»); rinumerate 15–16, tolta «In arrivo».
+- Gate del supervisore approvati 2/2 al 1o giro. Controlli veloci verdi (641 test).
+
+**Idee**
+
+- T241: le bozze legali (termini 133/142/151, informativa 65, registro trattamenti 136) dicono ancora
+  «pagamento online non ancora attivo»: da rivedere quando i pagamenti si attivano (vicina a T229).
+
 ### Sessione agenti — 2026-11-08 — ciclo 20261108-00 — T204 T159
 
 **Fatto**
