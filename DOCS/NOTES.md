@@ -3384,3 +3384,17 @@ I testi sono copiati dal codice di `pagine/abbonamento.ts`: se cambia un testo, 
 «Attiva l'abbonamento» compare per PROVA, SCADUTO, ANNULLATO (`mostraPagamento`); «Gestisci il pagamento» solo
 con un cliente Stripe (`mostraPortale`); il pilota non vede né l'uno né l'altro. Al ritorno da Stripe
 la pagina legge `?pagamento=ok|annullato`.
+
+## Affiliazione: avviso di riattivazione (T219)
+
+**File coinvolti:** migrazione `supabase/migrations/20261108000100_attiva_officina_riattivazione.sql`, pgTAP
+`supabase/tests/database/attiva-officina-riattivazione.test.sql` (20 asserzioni).
+**Come funziona:** `attiva_officina` sceglie il testo dell'avviso `AFFILIAZIONE_ATTIVATA` ai titolari in base
+allo stato di partenza. Da IN_ATTESA: "La tua officina è attiva", con invito a caricare i dati e link
+`/clienti/importa`. Da SOSPESA: "La tua officina è di nuovo attiva", "<ragione sociale> è di nuovo visibile
+ai clienti.", link `/clienti`. Da ATTIVA nessun avviso. Tipo e firma della funzione non cambiano.
+
+### Codice complesso
+`attiva_officina` blocca la riga con `select stato_affiliazione … for update` prima dell'update: lo stato
+letto non può cambiare sotto i piedi e decide il testo. Da ATTIVA l'update non cambia nulla e `row_count`
+è 0, quindi nessun avviso (come in T191).

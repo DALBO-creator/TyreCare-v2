@@ -7,14 +7,15 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> Ultima sessione: ciclo 20261108-03 (T222 avviso di aggiornamento annunciato e provato; T205 guida
-> officine, sezione Abbonamento), nel treno.
+> Ultima sessione: ciclo 20261108-09 (T219 avviso «di nuovo attiva» per l'officina riattivata da
+> SOSPESA), nel treno.
 > Idee in coda: T228 (e2e di T220 più severo e focus dopo il
 > ridisegno), T230 (riga oltre 110 caratteri nella voce T193 di `NOTES.md`), controllo axe di
 > `/admin/officine`, motivo del rifiuto scritto dall'admin, test di `invia-notifica` con preferenza
 > spenta, contatore delle gomme completate nell'anteprima dell'import, spazio e contrasto della sezione
 > Email nelle Notifiche.
-> Prossimi compiti pronti: T219 (officina riattivata), poi la pianificazione della domenica. Idee nuove:
+> Prossimi compiti pronti: la pianificazione della domenica. Idee nuove: avviso ai titolari quando
+> `sospendi_officina` sospende l'officina;
 > T240 (guida cliente, passo 7: «Chiama» compare solo se l'officina ha un telefono, altrimenti la notifica
 > dice «ti chiamerà al numero che hai indicato»); T241 (bozze legali: termini 133/142/151, informativa 65,
 > registro trattamenti 136 dicono ancora «pagamento online non ancora attivo»; rivederle quando i pagamenti

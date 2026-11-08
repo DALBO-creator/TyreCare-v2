@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-08 — ciclo 20261108-09 — T219
+
+**Fatto**
+
+- T219: `attiva_officina` legge lo stato precedente (`for update`): un'officina riattivata da SOSPESA
+  riceve «La tua officina è di nuovo attiva» (link `/clienti`) invece del benvenuto con l'invito a
+  importare. Migrazione 20261108000100 e pgTAP `attiva-officina-riattivazione.test.sql` (20 asserzioni).
+- Gate del supervisore approvato al 1o giro. Controlli veloci verdi (641 test); pgTAP non eseguito nel
+  cloud, lo verifica la CI.
+
+**Idee**
+
+- `sospendi_officina` non avvisa i titolari della sospensione («La tua officina è stata sospesa»).
+
 ### Sessione agenti — 2026-11-08 — ciclo 20261108-03 — T222 T205
 
 **Fatto**
