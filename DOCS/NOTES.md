@@ -2424,9 +2424,9 @@ misure dello pneumatico. Il cliente usa un contesto nuovo: registrazione con i t
 ## Guida all'uso per le officine (T053)
 
 **File coinvolti:** `DOCS/pilota/guida-officina.md`, `DOCS/PLAN.md` (indice).
-**Come funziona:** documento unico per le officine, con una sezione per funzione. In fondo "In arrivo":
-il pagamento dell'abbonamento; quando esce, la voce diventa una sezione ("Primi passi" è già un paragrafo
-della §1).
+**Come funziona:** documento unico per le officine, con una sezione per funzione. La sezione
+"In arrivo" non c'è più: il pagamento dell'abbonamento è la sezione 14 "Abbonamento" (T205);
+"Primi passi" è già un paragrafo della §1.
 
 ### Codice complesso
 - Ogni nome tra virgolette esiste tale e quale nel codice: si controlla con
@@ -3356,4 +3356,31 @@ dei pulsanti sono copiati da `apps/web/src/pagine/dati-officina.ts`, `pagine/str
 
 ### Codice complesso
 Se cambiano i numeri (2 ore, 3 richieste all'ora, 24 ore, 5–100 km) vanno aggiornate entrambe le guide. La
-sezione «In arrivo» della guida resta per T205.
+sezione «In arrivo» della guida è stata sostituita dalla sezione 14 «Abbonamento» (T205).
+
+## Avviso di aggiornamento: annuncio e test (T222)
+
+**File coinvolti:** `apps/web/src/ui/aggiornamento.ts`, `apps/web/src/ui/aggiornamento.test.ts`,
+`apps/web/package.json`.
+**Come funziona:** quando c'è una nuova versione dell'app compare un riquadro con `role="status"` e i pulsanti
+«Aggiorna» e «Più tardi». I test DOM (6) girano con `happy-dom` 21.0.4, scelto per file.
+
+### Codice complesso
+`mostraAvvisoAggiornamento` inserisce il riquadro con `.tc-aggiornamento__testo` vuoto e riscrive il testo,
+preso dall'HTML iniziale, con `setTimeout(…, 0)`: una regione live annuncia le modifiche, non il contenuto
+presente all'inserimento. `htmlAvvisoAggiornamento()` contiene sempre il testo. «Più tardi» premuto prima del
+timer scrive in un nodo staccato (innocuo). `aggiornaCorrente` è stato di modulo: «Più tardi» lo azzera e i
+test lo usano per pulire. I test DOM usano `// @vitest-environment happy-dom` per file; il resto resta in
+ambiente node.
+
+## Guida officine: sezione Abbonamento (T205)
+
+**File coinvolti:** `DOCS/pilota/guida-officina.md` (sezione 14), `apps/web/src/pagine/abbonamento.ts`.
+**Come funziona:** la sezione 14 «Abbonamento» descrive la pagina: prova di 30 giorni, piani, «Attiva
+l'abbonamento», ritorno dal pagamento, «Gestisci il pagamento». Le sezioni seguenti sono 15–16.
+
+### Codice complesso
+I testi sono copiati dal codice di `pagine/abbonamento.ts`: se cambia un testo, si aggiorna la guida.
+«Attiva l'abbonamento» compare per PROVA, SCADUTO, ANNULLATO (`mostraPagamento`); «Gestisci il pagamento» solo
+con un cliente Stripe (`mostraPortale`); il pilota non vede né l'uno né l'altro. Al ritorno da Stripe
+la pagina legge `?pagamento=ok|annullato`.
