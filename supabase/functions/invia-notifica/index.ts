@@ -6,6 +6,8 @@
 // scaduti (404/410) vengono eliminati.
 //
 // Segreti (supabase secrets set): VAPID_PUBLIC_KEY, VAPID_PRIVATE_KEY, PUSH_SEGRETO.
+// Facoltativa: VAPID_CONTATTO (contatto per i servizi push, es. mailto:indirizzo; vuota o assente =
+// mailto:albodavide1@gmail.com, R37).
 // SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY li fornisce Supabase.
 //
 // Email di riserva (T066), facoltativa e spenta finché non c'è il dominio di TyreCare: se nessuna push
@@ -15,9 +17,12 @@
 // comportamento è quello di prima e la risposta ha `email: false`.
 // Preferenza dell'utente (T199): prima dell'email si legge `profiles.email_notifiche` del destinatario;
 // con `false`, profilo assente o errore di lettura niente email (`email: false`), Resend non si chiama.
+//
+// Il flusso è in `invio.ts` (provato con vitest); qui solo il cablaggio con Deno, `web-push` e il
+// database (service role).
 import { createClient } from 'npm:@supabase/supabase-js@2.117.2';
 import webpush from 'npm:web-push@3.6.7';
-import { componiEmailNotifica } from './email.ts';
+import { gestisciNotifica, type DbNotifica } from './invio.ts';
 
 const env = (nome: string): string => {
   const valore = Deno.env.get(nome);
@@ -26,116 +31,56 @@ const env = (nome: string): string => {
 };
 
 webpush.setVapidDetails(
-  'mailto:albodavide1@gmail.com',
+  Deno.env.get('VAPID_CONTATTO') || 'mailto:albodavide1@gmail.com',
   env('VAPID_PUBLIC_KEY'),
   env('VAPID_PRIVATE_KEY'),
 );
 const supabase = createClient(env('SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'));
 
-Deno.serve(async (richiesta) => {
-  if (richiesta.headers.get('x-segreto') !== env('PUSH_SEGRETO')) {
-    return new Response('Non autorizzato', { status: 401 });
-  }
-  const { notifica_id } = (await richiesta.json()) as { notifica_id?: string };
-  if (!notifica_id) return new Response('notifica_id mancante', { status: 400 });
+const db: DbNotifica = {
+  async notifica(id) {
+    const { data, error } = await supabase
+      .from('notifiche')
+      .select('id, destinatario_id, titolo, testo, link')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data ?? null;
+  },
+  async iscrizioni(profileId) {
+    const { data, error } = await supabase
+      .from('iscrizioni_push')
+      .select('id, endpoint, p256dh, auth')
+      .eq('profile_id', profileId);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
+  async cancellaIscrizione(id) {
+    // L'errore non si controlla, come prima di T113: al prossimo invio si riprova
+    await supabase.from('iscrizioni_push').delete().eq('id', id);
+  },
+  async preferenzaEmail(profileId) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('email_notifiche')
+      .eq('id', profileId)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return data ?? null;
+  },
+  async emailUtente(utenteId) {
+    const { data, error } = await supabase.auth.admin.getUserById(utenteId);
+    if (error) throw new Error(error.message);
+    return data.user?.email || null;
+  },
+};
 
-  const { data: notifica, error } = await supabase
-    .from('notifiche')
-    .select('id, destinatario_id, titolo, testo, link')
-    .eq('id', notifica_id)
-    .maybeSingle();
-  if (error) return new Response(error.message, { status: 500 });
-  if (!notifica) return new Response('Notifica non trovata', { status: 404 });
-
-  const { data: iscrizioni, error: errore } = await supabase
-    .from('iscrizioni_push')
-    .select('id, endpoint, p256dh, auth')
-    .eq('profile_id', notifica.destinatario_id);
-  if (errore) return new Response(errore.message, { status: 500 });
-
-  // Stesso formato letto dal service worker (`public/sw-push.js`)
-  const contenuto = JSON.stringify({
-    titolo: notifica.titolo,
-    testo: notifica.testo,
-    link: notifica.link,
-    id: notifica.id,
-  });
-
-  let inviate = 0;
-  await Promise.all(
-    (iscrizioni ?? []).map(async (i) => {
-      try {
-        await webpush.sendNotification(
-          { endpoint: i.endpoint, keys: { p256dh: i.p256dh, auth: i.auth } },
-          contenuto,
-          { TTL: 60 * 60 * 24, urgency: 'high' },
-        );
-        inviate++;
-      } catch (e) {
-        const stato = (e as { statusCode?: number }).statusCode;
-        if (stato === 404 || stato === 410) {
-          await supabase.from('iscrizioni_push').delete().eq('id', i.id);
-        } else {
-          console.error('Push non inviata', stato, (e as Error).message);
-        }
-      }
-    }),
-  );
-
-  let email = false;
-  if (inviate === 0 && Deno.env.get('EMAIL_NOTIFICHE') === 'si') {
-    try {
-      email = await inviaEmailDiRiserva(notifica);
-    } catch (e) {
-      console.error('Email non inviata', (e as Error).message);
-    }
-  }
-  return Response.json({ inviate, dispositivi: iscrizioni?.length ?? 0, email });
-});
-
-// Manda la notifica per email con Resend; `true` solo se Resend l'ha accettata. Non lancia per
-// configurazione mancante o destinatario senza email: scrive l'errore e restituisce `false`.
-// Prima controlla la preferenza del destinatario (`email_notifiche`, T199).
-async function inviaEmailDiRiserva(notifica: {
-  destinatario_id: string;
-  titolo: string;
-  testo: string;
-  link: string | null;
-}): Promise<boolean> {
-  const { data: profilo, error: erroreProfilo } = await supabase
-    .from('profiles')
-    .select('email_notifiche')
-    .eq('id', notifica.destinatario_id)
-    .maybeSingle();
-  if (erroreProfilo) {
-    console.error('Email di riserva: preferenza non letta', erroreProfilo.message);
-    return false;
-  }
-  // Profilo assente (account eliminato nel frattempo) o email spente dall'utente: niente email
-  if (!profilo || profilo.email_notifiche === false) return false;
-
-  const chiave = Deno.env.get('RESEND_API_KEY');
-  const mittente = Deno.env.get('EMAIL_MITTENTE');
-  const sitoUrl = Deno.env.get('SITO_URL');
-  if (!chiave || !mittente || !sitoUrl) {
-    console.error('Email di riserva: mancano RESEND_API_KEY, EMAIL_MITTENTE o SITO_URL');
-    return false;
-  }
-  const { data, error } = await supabase.auth.admin.getUserById(notifica.destinatario_id);
-  if (error) {
-    console.error('Email di riserva: utente non letto', error.message);
-    return false;
-  }
-  const indirizzo = data.user?.email;
-  if (!indirizzo) return false;
-
-  const { oggetto, testo, html } = componiEmailNotifica(notifica, sitoUrl);
-  const risposta = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: { Authorization: 'Bearer ' + chiave, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ from: mittente, to: [indirizzo], subject: oggetto, text: testo, html }),
-  });
-  if (!risposta.ok) console.error('Email di riserva: Resend ha risposto', risposta.status);
-  await risposta.body?.cancel(); // il corpo non serve: chiuderlo evita risorse aperte in Deno
-  return risposta.ok;
-}
+Deno.serve((richiesta) =>
+  gestisciNotifica(richiesta, {
+    env: (nome) => Deno.env.get(nome) || undefined,
+    fetchFn: (url, init) => fetch(url, init),
+    inviaPush: (sottoscrizione, contenuto, opzioni) =>
+      webpush.sendNotification(sottoscrizione, contenuto, opzioni),
+    db,
+  }),
+);
