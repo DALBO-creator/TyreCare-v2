@@ -7,6 +7,10 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
+> **Prima, da Davide (2026-11-08):** pubblicare le migrazioni sul cloud (`npx supabase db push`, il cloud
+> è fermo a metà ottobre: è la causa probabile degli errori su commenti e *Appuntamenti*), poi caricare
+> la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
+> restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
 > Ultima sessione: ciclo 20261108-09 (T219 avviso «di nuovo attiva» per l'officina riattivata da
 > SOSPESA), nel treno.
 > Idee in coda: T228 (e2e di T220 più severo e focus dopo il

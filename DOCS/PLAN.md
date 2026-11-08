@@ -21,6 +21,7 @@
 | [`pilota/guida-officina.md`](pilota/guida-officina.md) | Guida completa per le officine: ogni funzione con i nomi esatti di pulsanti e voci | Pilota (Fase 6) |
 | [`pilota/guida-cliente.md`](pilota/guida-cliente.md) | Guida di una pagina per i clienti dell'officina: invito, garage, appuntamento, notifiche, dati | Pilota (Fase 6) |
 | [`pilota/crea-officina.md`](pilota/crea-officina.md) | Passi per Davide: creare l'account e l'officina del titolare, attivarla dopo il DPA, password dimenticata | Pilota (Fase 6) |
+| [`pilota/demo-la-santi.md`](pilota/demo-la-santi.md) | Passi per Davide: allineare il cloud, caricare la demo per il titolare di LA SANTI GOMME, cosa mostrare, pulizia | Prima di ogni demo |
 | [`legale/registro-accessi.md`](legale/registro-accessi.md) | Bozza: chi del personale accede ai dati delle officine, quando, cosa annotare | Dopo la revisione del consulente |
 | [`pilota/copie-di-sicurezza.md`](pilota/copie-di-sicurezza.md) | Bozza: copia a mano con la CLI, conservazione, prova di ripristino in locale | Pilota (Fase 6) |
 | [`pilota/piano-pilota.md`](pilota/piano-pilota.md) | Bozza: piano del pilota con LA SANTI GOMME (8 settimane), cosa misurare, criteri per passare alla Fase 7 | Pilota (Fase 6) |

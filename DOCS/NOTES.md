@@ -3398,3 +3398,31 @@ ai clienti.", link `/clienti`. Da ATTIVA nessun avviso. Tipo e firma della funzi
 `attiva_officina` blocca la riga con `select stato_affiliazione … for update` prima dell'update: lo stato
 letto non può cambiare sotto i piedi e decide il testo. Da ATTIVA l'update non cambia nulla e `row_count`
 è 0, quindi nessun avviso (come in T191).
+
+## Demo per il titolare di LA SANTI GOMME (2026-11-08)
+
+**File coinvolti:** `supabase/demo/la-santi-gomme.sql`, guida `DOCS/pilota/demo-la-santi.md`.
+**Come funziona:** script da incollare nel SQL Editor del cloud, dopo `db push`. Trova l'officina del
+titolare e l'account cliente dalle email in `demo_param`, controlla che lo schema abbia le ultime
+migrazioni, svuota i dati di prova di entrambi, trasforma l'officina in «La Santi Gomme» (piano PILOTA
+ATTIVO) e carica servizi, clienti, veicoli, gomme, controlli con misure, appuntamenti, una richiesta su
+strada, due import e le notifiche. Stampa un riepilogo dei conteggi. Non è una migrazione né parte del
+`seed.sql`: non gira mai da solo.
+
+### Codice complesso
+- **Date relative:** `pg_temp.g(p, fascia)` parte da `oggi_in_italia() + p` e si sposta (avanti se `p >= 0`,
+  indietro se negativo) finché `fasce_aperte(orari, giorno)` contiene la fascia: niente appuntamenti di
+  domenica o di sabato pomeriggio. `pg_temp.ora(giorno, 'HH:MI')` dà l'istante in ora italiana.
+- **Id fissi** con prefissi `de0…` (account finti), `de1…` clienti, `de2…` veicoli, `de3VVTT0…` gomme
+  (veicolo, treno, posizione), `de4…` controlli, `de5…` prenotazioni, `de6…` servizi: i riferimenti tra
+  tabelle si scrivono senza ricerche, e rieseguire lo script li cancella e li ricrea.
+- **Trigger spenti** (`prenotazioni_notifica`, `controlli_notifica_esito`, `notifiche_push`) con
+  `alter table … disable trigger` nella stessa transazione: le notifiche automatiche avrebbero l'ora di
+  adesso e le push partirebbero davvero. Le notifiche sono scritte a mano con gli stessi testi dei trigger
+  (`testo_quando`, `testo_veicolo`) e, per `CAMBIO_STAGIONE` ed `ESITO_CONTROLLO`, la stessa `chiave`:
+  così i job non le ripetono.
+- **Account finti:** `prenotazioni.cliente_id` è obbligatorio, quindi gli appuntamenti degli altri clienti
+  hanno 7 utenti `auth.users` senza password utilizzabile, email `.invalid` e `raw_app_meta_data.demo =
+  true`; si tolgono con una riga (`delete from auth.users where raw_app_meta_data ->> 'demo' = 'true'`).
+- Gli oggetti temporanei sono `create or replace` / `on commit drop`: il SQL Editor può riusare la stessa
+  connessione e lo script resta rieseguibile.
