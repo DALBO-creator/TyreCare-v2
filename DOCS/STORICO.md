@@ -4,6 +4,40 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione 2026-11-08 — demo per il titolare di LA SANTI GOMME
+
+**Fatto**
+
+- Richiesta di Davide: preparare l'app per mostrarla al titolare di LA SANTI GOMME (officina di prova →
+  «La Santi Gomme», Via della Scienza 6, Travagliato BS, orari del sito, 6 servizi), svuotare e riempire i
+  due account (`albodavide1@gmail.com` officina, `albodavidexd@gmail.com` cliente) con dati realistici.
+- Script `supabase/demo/la-santi-gomme.sql` (una transazione, rieseguibile, date relative al giorno di
+  esecuzione nelle fasce aperte): 6 servizi, 11 clienti, 12 veicoli in stati diversi, 15 controlli (2
+  mesi di storico per i 2 veicoli del cliente), 18 appuntamenti in tutti gli stati, aiuto su strada, 2
+  import, notifiche lette e da leggere scritte a mano con trigger spenti (niente push vere). 7 clienti
+  finti dell'app (`*@demo.tyrecare.invalid`, `raw_app_meta_data.demo`) perché ogni appuntamento ha un
+  account. Guida per Davide: `DOCS/pilota/demo-la-santi.md`.
+- Provato su un Postgres 16 locale con uno strato minimo che imita Supabase (`auth`, `cron`, `net`,
+  `vault`) e tutte le 47 migrazioni: script eseguito due volte di fila, letture con la RLS come titolare e
+  come cliente, invio di un commento come utente dell'app.
+- I due errori segnalati dal telefono (commento «Qualcosa è andato storto», *Appuntamenti* «Non riusciamo
+  a caricare i tuoi dati»): causa più probabile il database cloud **senza le migrazioni dopo metà
+  ottobre** (ultimo `db push` registrato nello storico; da allora ~35 migrazioni, tra cui `commenti`),
+  mentre Vercel pubblica il codice nuovo. Con lo schema completo le due operazioni funzionano. Da fare
+  da Davide: `npx supabase db push` (sezione 1 della guida). Niente codice dell'app cambiato.
+
+**Non fatto / limiti**
+
+- Niente accesso al cloud da questa sessione (né Supabase né il sito): lo script non è stato eseguito in
+  produzione e la causa degli errori non è verificata sul cloud.
+- Coordinate dell'officina approssimative (geocodifica non raggiungibile): da correggere in *Dati
+  dell'officina*. Partita IVA lasciata quella di prova.
+
+**Idee**
+
+- Avviso quando il database cloud resta indietro rispetto alle migrazioni di `main` (in
+  `IMPLEMENTAZIONI.md`).
+
 ### Sessione agenti — 2026-11-08 — ciclo 20261108-09 — T219
 
 **Fatto**
