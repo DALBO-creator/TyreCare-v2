@@ -158,6 +158,19 @@ describe('gestisciNotifica', () => {
     expect(fetchFn).not.toHaveBeenCalled();
   });
 
+  it('dispositivo 404 → cancellato anche quello, inviate: 0', async () => {
+    const db = dbFinto({ iscrizioni: vi.fn(async () => [ISCR_A]) });
+    const { dip } = dipendenze({ PUSH_SEGRETO: SEGRETO }, db, {
+      inviaPush: async () => {
+        throw Object.assign(new Error('Not Found'), { statusCode: 404 });
+      },
+    });
+    const r = await gestisciNotifica(richiesta({ notifica_id: NOTIFICA_ID }), dip);
+    expect(await r.json()).toEqual({ inviate: 0, dispositivi: 1, email: false });
+    expect(db.cancellaIscrizione).toHaveBeenCalledTimes(1);
+    expect(db.cancellaIscrizione).toHaveBeenCalledWith('i-a');
+  });
+
   it('errore push diverso da 404/410 → nessuna cancellazione, solo log', async () => {
     const db = dbFinto({ iscrizioni: vi.fn(async () => [ISCR_A]) });
     const { dip } = dipendenze({ PUSH_SEGRETO: SEGRETO }, db, {
