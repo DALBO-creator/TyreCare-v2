@@ -264,6 +264,47 @@ export type Database = {
           },
         ];
       };
+      errori_app: {
+        Row: {
+          agente: string;
+          autore_id: string;
+          created_at: string;
+          dettaglio: string;
+          id: string;
+          messaggio: string;
+          percorso: string;
+          versione: string;
+        };
+        Insert: {
+          agente?: string;
+          autore_id?: string;
+          created_at?: string;
+          dettaglio?: string;
+          id: string;
+          messaggio: string;
+          percorso?: string;
+          versione?: string;
+        };
+        Update: {
+          agente?: string;
+          autore_id?: string;
+          created_at?: string;
+          dettaglio?: string;
+          id?: string;
+          messaggio?: string;
+          percorso?: string;
+          versione?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'errori_app_autore_id_fkey';
+            columns: ['autore_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       import_log: {
         Row: {
           clienti_aggiornati: number;
@@ -1259,6 +1300,7 @@ export type Database = {
       };
       oggi_in_italia: { Args: Record<PropertyKey, never>; Returns: string };
       orari_validi: { Args: { p_orari: Json }; Returns: boolean };
+      pulisci_errori_app: { Args: { p_adesso?: string }; Returns: number };
       pulisci_eventi_stripe: { Args: { p_adesso?: string }; Returns: number };
       pulisci_notifiche: { Args: { p_adesso?: string }; Returns: number };
       pulisci_prenotazioni: { Args: { p_oggi?: string }; Returns: number };
@@ -1349,6 +1391,7 @@ export type Database = {
         Returns: string;
       };
       unisci_clienti: { Args: { p_da: string; p_in: string }; Returns: undefined };
+      versione_database: { Args: Record<PropertyKey, never>; Returns: string };
     };
     Enums: {
       fascia_oraria: 'MATTINA' | 'POMERIGGIO';
