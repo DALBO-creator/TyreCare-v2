@@ -2277,8 +2277,19 @@ verificato finirebbe nello spam; senza `EMAIL_NOTIFICHE=si` il comportamento è 
   `SITO_URL + link` (barre normalizzate, link vuoto -> home); `& < > " '` protetti; pulsante "Apri TyreCare";
   piede che spiega perché arriva.
 - L'email parte anche quando ci sono dispositivi ma tutte le push falliscono (es. iscrizioni scadute).
-- ESLint ignora `supabase/functions/**` e Deno non è nella CI: `index.ts` non è coperto da test,
-  solo `email.ts`.
+- ESLint ignora `supabase/functions/**` e Deno non è nella CI: `index.ts` non è coperto da test; dal T113 il
+  flusso è provato in `invio.test.ts` (oltre a `email.test.ts`).
+
+**File coinvolti (T113):** `supabase/functions/invia-notifica/invio.ts` (+ `invio.test.ts`, 12 test vitest),
+`supabase/functions/invia-notifica/index.ts`.
+**Come funziona (T113):** la logica sta in `invio.ts`, `gestisciNotifica(richiesta, dipendenze)`. Flusso:
+401 senza autorizzazione valida, 400 per corpo non valido, 404/500 se la notifica manca o la lettura
+fallisce; poi le push ai dispositivi del destinatario, la cancellazione dei dispositivi che rispondono
+404/410 (iscrizioni scadute) e l'email di riserva descritta sopra. `index.ts` è solo cablaggio: collega le
+variabili d'ambiente, `fetch`, `webpush` e le letture con la service role. Nessun cambio di comportamento.
+I test passano dipendenze finte, come `stripe-portale/portale.ts`, quindi ora la logica è coperta.
+Variabile **facoltativa** `VAPID_CONTATTO` (es. `mailto:indirizzo`): contatto per i servizi push; vuota o
+assente vale `mailto:albodavide1@gmail.com` (R37).
 
 ## Router: pagina non disponibile (T095)
 
@@ -3153,7 +3164,8 @@ copre solo l'HTML (vitest web gira in ambiente node).
 
 ### Codice complesso
 `apps/web/src/ui/aggiornamento.ts:19` — `aggiornaCorrente` è una variabile di modulo: tiene il callback
-dell'avviso aperto, così una seconda chiamata ne sostituisce solo il callback invece di creare un'altra copia.
+dell'avviso aperto, così una seconda chiamata ne sostituisce solo il callback invece di creare un'altra
+copia.
 `apps/web/src/ui/aggiornamento.ts:24` — `document.querySelector('[data-aggiornamento]')` fa uscire subito
 se il riquadro c'è già: l'unicità si controlla nel DOM, non con un flag.
 
@@ -3426,3 +3438,21 @@ strada, due import e le notifiche. Stampa un riepilogo dei conteggi. Non è una 
   true`; si tolgono con una riga (`delete from auth.users where raw_app_meta_data ->> 'demo' = 'true'`).
 - Gli oggetti temporanei sono `create or replace` / `on commit drop`: il SQL Editor può riusare la stessa
   connessione e lo script resta rieseguibile.
+
+## Monitoraggio del pilota (database, T244)
+
+**File coinvolti:** migrazione `supabase/migrations/20261108000200_monitoraggio.sql`, pgTAP
+`supabase/tests/database/monitoraggio.test.sql` (31 asserzioni, non eseguito nel cloud: lo verifica la CI),
+`packages/shared/src/database.types.ts` (aggiornato a mano).
+**Come funziona:** `versione_database()` è una funzione plpgsql che risponde solo all'ADMIN (`42501` agli
+altri). La tabella `errori_app` raccoglie gli errori dell'app: l'`id` lo genera il browser (un reinvio dà
+`23505`, non un duplicato), ognuno inserisce solo i propri, solo l'admin li legge, nessuno li modifica o
+cancella. Ogni account può inviarne 30 in 24 ore. `pulisci_errori_app(p_adesso)` elimina quelli più vecchi
+di 30 giorni ed è chiamata solo dal job `pulizia-errori-app` (`50 1 * * *` UTC). Le righe seguono l'account
+con `on delete cascade`.
+
+### Codice complesso
+- `limita_errori_app` è un trigger `security definer`: l'autore non può leggere le sue righe (select solo
+  admin), quindi il conteggio deve girare con i privilegi del proprietario.
+- Il trigger forza `created_at` (il browser non sceglie la data) e prende un advisory lock per account: due
+  inserimenti simultanei non superano il limite. Dal 31° in 24 ore lancia `TROPPI_ERRORI`.

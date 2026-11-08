@@ -4,6 +4,17 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-09 — ciclo 20261109-00 — T244 T113
+
+**Fatto**
+
+- T244: migrazione del monitoraggio del pilota (`versione_database()` solo ADMIN; `errori_app` con RLS,
+  limite 30 in 24 ore, pulizia dopo 30 giorni con il job delle 01:50 UTC), tipi a mano, pgTAP 31
+  asserzioni (non eseguito nel cloud, lo verifica la CI).
+- T113: la logica di `invia-notifica` passa in `invio.ts` (`gestisciNotifica(richiesta, dipendenze)`),
+  `index.ts` resta solo cablaggio; 12 test vitest; contatto VAPID da `VAPID_CONTATTO` (facoltativa);
+  nessun cambio di comportamento.
+
 ### Sessione 2026-11-08 — demo per il titolare di LA SANTI GOMME
 
 **Fatto**
