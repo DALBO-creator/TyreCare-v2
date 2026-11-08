@@ -39,5 +39,13 @@ export function mostraAvvisoAggiornamento(aggiorna: () => void): void {
     aggiornaCorrente = null;
   });
 
+  // Annuncio: il riquadro entra con il paragrafo vuoto e il testo si scrive al giro successivo,
+  // così il lettore di schermo vede una modifica della regione `role="status"` e la legge.
+  const paragrafo = riquadro.querySelector<HTMLElement>('.tc-aggiornamento__testo')!;
+  const testo = paragrafo.textContent ?? '';
+  paragrafo.textContent = '';
   document.body.append(riquadro);
+  setTimeout(() => {
+    paragrafo.textContent = testo; // se il riquadro è già stato chiuso, scrive in un nodo staccato: innocuo
+  }, 0);
 }
