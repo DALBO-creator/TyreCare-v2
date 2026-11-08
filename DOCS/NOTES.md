@@ -2424,9 +2424,9 @@ misure dello pneumatico. Il cliente usa un contesto nuovo: registrazione con i t
 ## Guida all'uso per le officine (T053)
 
 **File coinvolti:** `DOCS/pilota/guida-officina.md`, `DOCS/PLAN.md` (indice).
-**Come funziona:** documento unico per le officine, con una sezione per funzione. La sezione "In arrivo" non c'è più:
-il pagamento dell'abbonamento è la sezione 14 "Abbonamento" (T205); "Primi passi" è già un paragrafo
-della §1.
+**Come funziona:** documento unico per le officine, con una sezione per funzione. La sezione
+"In arrivo" non c'è più: il pagamento dell'abbonamento è la sezione 14 "Abbonamento" (T205);
+"Primi passi" è già un paragrafo della §1.
 
 ### Codice complesso
 - Ogni nome tra virgolette esiste tale e quale nel codice: si controlla con
@@ -3360,7 +3360,8 @@ sezione «In arrivo» della guida è stata sostituita dalla sezione 14 «Abbonam
 
 ## Avviso di aggiornamento: annuncio e test (T222)
 
-**File coinvolti:** `apps/web/src/` (avviso «nuova versione» e relativo test), `apps/web/package.json`.
+**File coinvolti:** `apps/web/src/ui/aggiornamento.ts`, `apps/web/src/ui/aggiornamento.test.ts`,
+`apps/web/package.json`.
 **Come funziona:** quando c'è una nuova versione dell'app compare un riquadro con `role="status"` e i pulsanti
 «Aggiorna» e «Più tardi». I test DOM (6) girano con `happy-dom` 21.0.4, scelto per file.
 
