@@ -7,13 +7,13 @@
 ## Prossima sessione
 
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> **Prima, da Davide (2026-11-08):** pubblicare le migrazioni sul cloud (`npx supabase db push`, il cloud
-> è fermo a metà ottobre: è la causa probabile degli errori su commenti e *Appuntamenti*), poi caricare
+> **Prima, da Davide (2026-11-08):** pubblicare le migrazioni sul cloud seguendo
+> `DOCS/pilota/pubblicazione.md` (D10; il cloud è fermo a metà ottobre: è la causa probabile degli errori su
+> commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261109-03 (T251 «Scarica i tuoi dati» con le richieste su strada; T252
-> controllo automatico dello script della demo), nel treno. La frase dell'informativa resta da
-> aggiornare con T250. Prossimi: T245, T208.
+> Ultima sessione: ciclo 20261109-15 (T245 guida di pubblicazione D10; T208 contatore delle richieste su
+> strada nella home officina), nel treno. Prossimi: T228, T233.
 > Idee in coda: T228 (e2e di T220 più severo e focus dopo il
 > ridisegno), controllo axe di `/admin/officine`, motivo del rifiuto scritto dall'admin, contatore delle
 > gomme completate nell'anteprima dell'import, spazio e contrasto della sezione Email nelle Notifiche.
