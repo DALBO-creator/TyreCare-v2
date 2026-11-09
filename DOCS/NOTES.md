@@ -3512,4 +3512,28 @@ aiuto su strada vicine» con link a `/officina/strada`.
 - In `home-officina.ts` il 4° elemento del `Promise.all` risolve `{ strada, vicine }` e conta solo se
   `officinaOffreStrada` è vero; un errore vale 0, così la home non si rompe.
 - Il plurale è scritto a mano (`plurale()` non esiste). L'e2e parte dal conteggio già mostrato, perché
-  le righe sono condivise e il test puo' essere rieseguito (retry).
+  le righe sono condivise e il test può essere rieseguito (retry).
+
+## Aiuto su strada: focus dopo l'annullo (T228)
+
+**File coinvolti:** `apps/web/src/pagine/strada.ts`, `e2e/tests/strada.spec.ts`.
+**Come funziona:** dopo un annullo, riuscito o fallito, la pagina si ridisegna e il focus va sul nuovo
+pulsante `[data-annulla]` oppure sull'`h1` (`tabindex="-1"`). L'e2e dell'annullo fallito conta le GET di
+`richieste_strada` (`expect.poll`, 12 s) e verifica dove sta il focus.
+
+### Codice complesso
+`apps/web/src/pagine/strada.ts` — `focusDopoRidisegno()` sposta il focus dopo il ridisegno causato da un
+annullo. Col dialogo modale aperto la pagina è inerte, quindi si aspetta il suo `close` prima di spostarlo.
+Il ripristino del focus di `conferma.ts` su `origine` non interferisce, perché `origine` non è più nel DOM.
+Il timer di aggiornamento non sposta mai il focus.
+
+## Accessibilità: pagine dell'amministratore (T233)
+
+**File coinvolti:** `e2e/tests/accessibilita.spec.ts`.
+**Come funziona:** il blocco `amministratore` controlla con axe `/admin/officine` e `/admin/commenti`,
+entrando come amministratore, con la `controllaAccessibilita` condivisa dalle altre pagine.
+
+### Codice complesso
+`e2e/tests/accessibilita.spec.ts` — `/admin/officine` registra un'officina nuova che resta in attesa (non
+usa il seed) e verifica i pulsanti «Attiva» e «Rifiuta la richiesta» prima di lanciare axe. `/admin/commenti`
+è provata con lo stato che trova. Il timeout è 180 s perché i due account fanno due accessi.

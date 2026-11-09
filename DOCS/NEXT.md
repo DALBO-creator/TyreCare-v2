@@ -12,10 +12,10 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261109-15 (T245 guida di pubblicazione D10; T208 contatore delle richieste su
-> strada nella home officina), nel treno. Prossimi: T228, T233.
-> Idee in coda: T228 (e2e di T220 più severo e focus dopo il
-> ridisegno), controllo axe di `/admin/officine`, motivo del rifiuto scritto dall'admin, contatore delle
+> Ultima sessione: ciclo 20261109-18 (T228 focus dopo l'annullo su strada; T233 axe su `/admin/officine` e
+> `/admin/commenti`), nel treno; in CI controllare `color-contrast` di `tc-pulsante-elimina`.
+> Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito,
+> motivo del rifiuto scritto dall'admin, contatore delle
 > gomme completate nell'anteprima dell'import, spazio e contrasto della sezione Email nelle Notifiche.
 > Prossimi compiti pronti: la pianificazione della domenica. Idee nuove: avviso ai titolari quando
 > `sospendi_officina` sospende l'officina;
