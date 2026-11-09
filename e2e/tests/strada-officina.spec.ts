@@ -9,6 +9,10 @@ import { accedi, entra, nuovoAccountCliente, unico } from './aiuti';
 
 const TELEFONO_OFFICINA = '+39 011 1234567';
 
+// Testo esatto dell'avviso nella home dell'officina (singolare o plurale)
+const avvisoVicine = (n: number) =>
+  n === 1 ? '1 richiesta di aiuto su strada vicina' : `${n} richieste di aiuto su strada vicine`;
+
 async function spegniAiutoSuStrada(browser: Browser): Promise<void> {
   const titolare = await entra(browser, 'titolare@tyrecare.test');
   try {
@@ -53,6 +57,10 @@ test('il titolare attiva l’aiuto, l’operatore accetta una richiesta e il tit
   // Con il servizio attivo la home ha il link
   await page.goto('/');
   await expect(page.getByRole('link', { name: 'Richieste su strada' })).toBeVisible();
+  // Un tentativo precedente caduto dopo l'invio lascia una richiesta aperta per ore: si parte dal conteggio
+  // già mostrato dall'avviso (0 se non c'è)
+  const avviso = page.locator('a.tc-avviso[href="/officina/strada"]');
+  const prima = (await avviso.count()) ? Number.parseInt((await avviso.innerText()).trim(), 10) : 0;
 
   // Il cliente, a poco più di un chilometro da Gomme Rossi
   const contesto = await browser.newContext({
@@ -69,12 +77,11 @@ test('il titolare attiva l’aiuto, l’operatore accetta una richiesta e il tit
     await cliente.getByRole('button', { name: 'Usa la mia posizione e invia' }).click();
     await expect(cliente.getByText("Stiamo cercando un'officina vicina")).toBeVisible();
 
-    // Il titolare, dalla home, vede quante richieste vicine aspettano (il cliente è l'unico, e la richiesta
-    // è aperta)
+    // Il titolare, dalla home, vede una richiesta vicina in più
     await page.goto('/');
     await expect(page.getByRole('link', { name: 'Richieste su strada' })).toBeVisible();
     await expect(
-      page.getByRole('link', { name: '1 richiesta di aiuto su strada vicina', exact: true }),
+      page.getByRole('link', { name: avvisoVicine(prima + 1), exact: true }),
     ).toHaveAttribute('href', '/officina/strada');
 
     // L'operatore la vede e la accetta
