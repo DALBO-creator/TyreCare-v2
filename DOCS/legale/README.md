@@ -161,5 +161,5 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
     ragione sociale e codice dell'officina. Che **ruolo** ha Stripe (titolare autonomo, responsabile o
     altro)? Come si regola il **trasferimento extra UE** (Stripe ha società negli USA)? Servono
     clausole nel contratto con le officine? Mancano anche recesso, fatturazione e IVA, e da quando vale
-    l'annullamento (subito o a fine periodo). Il pagamento non è ancora attivo: le bozze non vanno date
-    come funzione già in uso.
+    l'annullamento (subito o a fine periodo). Il pagamento online vale dalla data di attivazione ancora da
+    fissare: finché non c'è, le bozze non vanno date come funzione già in uso.

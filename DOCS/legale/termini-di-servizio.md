@@ -127,11 +127,18 @@ pneumatici. Sono un aiuto, non una garanzia: possono arrivare in ritardo o non a
 telefono è spento, le notifiche sono disattivate o su iPhone l'app non è installata nella schermata Home).
 Le notifiche push si possono disattivare in qualsiasi momento.
 
+Se nessuna notifica push arriva sul tuo telefono, TyreCare può mandare la stessa notifica anche per email,
+all'indirizzo del tuo account. Queste email di riserva valgono dal [DA COMPLETARE: data di attivazione
+delle email di riserva] e si spengono con l'interruttore «Email» della pagina «Notifiche».
+
 ## 10. Abbonamento delle officine
 
 Questa sezione riguarda le officine. Le funzioni di abbonamento e pagamento descritte qui sotto si
-accendono per gradi: il pagamento online **non è ancora attivo** e queste condizioni valgono dal momento
-in cui lo sarà.
+accendono per gradi. Il pagamento online con Stripe vale **dal [DA COMPLETARE: data di attivazione dei
+pagamenti online]**. Prima di quella data non c'è nessun pagamento online: l'officina ha la prova
+gratuita o il piano «Officina pilota», nessuna carta viene richiesta e nessuna funzione viene bloccata
+(vedi sotto). Le condizioni sul pagamento, sul rinnovo e sull'annullamento valgono dalla data di
+attivazione.
 
 - **Prova gratuita di 30 giorni.** Ogni officina nuova ha 30 giorni di prova, contando anche il giorno
   della registrazione. La pagina «Abbonamento» mostra l'ultimo giorno della prova (incluso) e quanti
@@ -139,17 +146,17 @@ in cui lo sarà.
 - **Piani e prezzi.** I piani (Starter e Pro) e i prezzi sono nella pagina «Abbonamento» dell'app e nella
   pagina pubblica «Per le officine»; qui non sono ripetuti. Le officine del pilota hanno il piano
   «Officina pilota», senza pagamento durante il pilota.
-- **Pagamento.** Quando il pagamento online sarà attivo, l'abbonamento si paga ogni mese con carta,
+- **Pagamento.** Dalla data di attivazione l'abbonamento si paga ogni mese con carta,
   tramite Stripe: la pagina di pagamento è di Stripe. I dati della carta li tratta Stripe e TyreCare non
   li vede (vedi l'[informativa privacy](informativa-privacy.md)).
 - **Rinnovo.** L'abbonamento si rinnova ogni mese in automatico, finché non viene annullato.
-- **Annullamento e carta.** Quando il pagamento sarà attivo, dalla pagina «Abbonamento», con «Gestisci il
-  pagamento» (il portale di Stripe), il titolare potrà cambiare carta e annullare l'abbonamento.
+- **Annullamento e carta.** Dalla data di attivazione, dalla pagina «Abbonamento», con «Gestisci il
+  pagamento» (il portale di Stripe), il titolare può cambiare carta e annullare l'abbonamento.
   [DA COMPLETARE: da quando vale l'annullamento (subito o a fine periodo pagato) e rimborsi]
 - **Alla scadenza.** Se la prova finisce senza un abbonamento, o un pagamento non riesce, lo stato
   dell'officina diventa «scaduto». Per ora nessuna funzione viene bloccata: lo stato si vede nella
-  pagina «Abbonamento». Quando il pagamento online sarà attivo, un abbonamento annullato si potrà
-  riattivare da quella pagina.
+  pagina «Abbonamento». Dalla data di attivazione, un abbonamento annullato si può riattivare da quella
+  pagina.
   [DA COMPLETARE: se e quando, in futuro, le funzioni verranno limitate alle officine con abbonamento
   scaduto, e con quale preavviso]
 
