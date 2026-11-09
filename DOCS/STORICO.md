@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-09 — ciclo 20261109-21 — T241 T247 T238 T236
+
+**Fatto**
+
+- T241: le bozze legali valgono prima e dopo l'accensione di Stripe («dal [DA COMPLETARE: data di
+  attivazione dei pagamenti online]»; prima, le condizioni di oggi, anche a prova scaduta). Informativa,
+  registro A2 e termini §9 descrivono le email di riserva (partono se la push non parte verso nessun
+  dispositivo), con Resend tra i fornitori.
+- T247: la pagina admin «Officine» ha un riquadro «Database» che confronta l'ultima migrazione dell'app
+  (costante di build di Vite) con `versione_database()`; avviso giallo se il database è indietro.
+  `statoDatabase`, `leggiVersioneDatabase`, unit test ed e2e `admin-versione.spec.ts`.
+- T238: «Gestisci il pagamento» compare anche per l'officina PILOTA con una subscription Stripe ancora viva,
+  così può annullare il vecchio abbonamento dall'app; `caricaAbbonamento` legge `stripe_subscription_id`;
+  3 test nuovi su `mostraPortale`.
+- T236: pagina Notifiche: la sezione Email non lascia più spazio in cima (via `mt-3`, gap del contenitore a
+  1rem) e gli errori di push ed email usano `--tc-rosso-chiaro`.
+
 ### Sessione agenti — 2026-11-09 — ciclo 20261109-18 — T228 T233
 
 **Fatto**
