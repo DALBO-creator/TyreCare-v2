@@ -88,8 +88,10 @@ test('se l’annullo fallisce la pagina mostra ancora la richiesta e il dialogo 
       targa: null,
       officina: null,
     };
+    let letture = 0;
     await page.route('**/rest/v1/richieste_strada?*', async (route) => {
       if (route.request().method() !== 'GET') return route.fallback();
+      letture++;
       const oggetto = (await route.request().headerValue('accept'))?.includes('vnd.pgrst.object');
       return route.fulfill({ json: oggetto ? riga : [riga] });
     });
@@ -108,12 +110,16 @@ test('se l’annullo fallisce la pagina mostra ancora la richiesta e il dialogo 
 
     await annulla.click();
     const dialogo = page.getByRole('dialog');
+    const prima = letture;
     await dialogo.getByRole('button', { name: 'Annulla la richiesta' }).click();
     await expect(
       dialogo.getByText(
         'Questa richiesta non è più disponibile: è già stata chiusa, annullata o è scaduta.',
       ),
     ).toBeVisible();
+    // La pagina sotto si è ridisegnata (nuova lettura) e il timer è ripartito: se smettesse di
+    // aggiornarsi, nessuna GET nuova partirebbe entro il giro del timer (15 s)
+    await expect.poll(() => letture, { timeout: 12_000 }).toBeGreaterThan(prima);
 
     // Chiuso il dialogo, la pagina sotto mostra lo stato vero, non il caricamento
     await dialogo.getByRole('button', { name: 'Annulla', exact: true }).click();
@@ -121,6 +127,8 @@ test('se l’annullo fallisce la pagina mostra ancora la richiesta e il dialogo 
     await expect(stato).toBeVisible();
     await expect(page.getByText(descrizione)).toBeVisible();
     await expect(annulla).toBeEnabled();
+    // Il vecchio pulsante è stato sostituito dal ridisegno: il focus va sul nuovo, non si perde sul body
+    await expect(page.locator('[data-annulla]')).toBeFocused();
   } finally {
     await contesto.close();
   }

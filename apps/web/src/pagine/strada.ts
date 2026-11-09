@@ -127,6 +127,30 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
     });
   };
 
+  /**
+   * Dopo un annullo la pagina è stata ridisegnata e il vecchio pulsante non c'è più: il focus va al nuovo
+   * `[data-annulla]` se la richiesta è ancora in corso, altrimenti al titolo `h1` (ha `tabindex="-1"`).
+   * Si attende prima il ridisegno (`ridisegno`) e poi, se il dialogo modale è ancora aperto, il suo `close`
+   * (finché è aperto la pagina è inerte e `focus()` non farebbe nulla; con l'errore resta aperto fino a
+   * quando l'utente lo chiude). Ordine in `conferma.ts`: il suo listener di `close` (registrato prima del
+   * nostro) rimette il focus su `origine` solo se è ancora nel DOM; qui `origine` è stato sostituito dal
+   * ridisegno, quindi non sovrascrive il nostro focus. Il timer non sposta mai il focus: lo fa solo l'annullo.
+   */
+  const focusDopoRidisegno = (ridisegno: Promise<void>): void => {
+    const dialogo = document.querySelector<HTMLDialogElement>('dialog.tc-dialogo');
+    const sposta = () => {
+      if (!ancoraAttuale(n)) return;
+      (
+        app.querySelector<HTMLElement>('[data-annulla]') ?? app.querySelector<HTMLElement>('h1')
+      )?.focus();
+    };
+    const dopo = () => {
+      if (dialogo?.open) dialogo.addEventListener('close', sposta, { once: true });
+      else sposta();
+    };
+    void ridisegno.then(dopo, () => undefined);
+  };
+
   const mostraRichiesta = (r: RichiestaInCorso): void => {
     const accettata = r.stato === 'ACCETTATA';
     const officina = r.officina;
@@ -177,11 +201,14 @@ export async function mostraStrada(app: HTMLElement): Promise<void> {
             await annullaRichiestaStrada(r.id);
           } catch (e) {
             generazione.nuova();
-            if (ancoraAttuale(n)) void disegna();
+            if (ancoraAttuale(n)) focusDopoRidisegno(disegna());
             throw e;
           }
           generazione.nuova();
-          if (ancoraAttuale(n)) await disegna();
+          if (ancoraAttuale(n)) {
+            await disegna();
+            focusDopoRidisegno(Promise.resolve());
+          }
         },
       }),
     );
