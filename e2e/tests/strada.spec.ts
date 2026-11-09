@@ -117,8 +117,8 @@ test('se l’annullo fallisce la pagina mostra ancora la richiesta e il dialogo 
         'Questa richiesta non è più disponibile: è già stata chiusa, annullata o è scaduta.',
       ),
     ).toBeVisible();
-    // La pagina sotto si è ridisegnata (nuova lettura) e il timer è ripartito: se smettesse di
-    // aggiornarsi, nessuna GET nuova partirebbe entro il giro del timer (15 s)
+    // Dopo l'errore la pagina sotto rilegge lo stato (disegna() riparte e riaccende il timer):
+    // se smettesse di aggiornarsi nessuna GET nuova partirebbe
     await expect.poll(() => letture, { timeout: 12_000 }).toBeGreaterThan(prima);
 
     // Chiuso il dialogo, la pagina sotto mostra lo stato vero, non il caricamento
