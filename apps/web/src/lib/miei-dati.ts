@@ -15,6 +15,7 @@ export interface PartiMieiDati {
   clientiOfficine: unknown[];
   garage: VeicoloGarage[];
   prenotazioni: unknown[];
+  richiesteStrada: unknown[];
   notifiche: unknown[];
   commenti: unknown[];
   officineLavoro: unknown[];
@@ -30,6 +31,7 @@ export interface MieiDati {
   clienti_officine: unknown[];
   garage: VeicoloGarage[];
   prenotazioni: unknown[];
+  richieste_strada: unknown[];
   notifiche: unknown[];
   commenti: unknown[];
   officine_lavoro: unknown[];
@@ -46,6 +48,7 @@ export function componiMieiDati(parti: PartiMieiDati, generatoIl: string): MieiD
     clienti_officine: parti.clientiOfficine,
     garage: parti.garage,
     prenotazioni: parti.prenotazioni,
+    richieste_strada: parti.richiesteStrada,
     notifiche: parti.notifiche,
     commenti: parti.commenti,
     officine_lavoro: parti.officineLavoro,
@@ -71,6 +74,7 @@ export async function raccogliMieiDati(): Promise<MieiDati> {
     clientiOfficine,
     garage,
     prenotazioni,
+    richiesteStrada,
     notifiche,
     commenti,
     officineLavoro,
@@ -97,6 +101,14 @@ export async function raccogliMieiDati(): Promise<MieiDati> {
     leggiTutte((da, a) =>
       supabase
         .from('prenotazioni')
+        .select('*')
+        .eq('cliente_id', utente.id)
+        .order('id')
+        .range(da, a),
+    ),
+    leggiTutte((da, a) =>
+      supabase
+        .from('richieste_strada')
         .select('*')
         .eq('cliente_id', utente.id)
         .order('id')
@@ -138,6 +150,7 @@ export async function raccogliMieiDati(): Promise<MieiDati> {
       clientiOfficine,
       garage,
       prenotazioni,
+      richiesteStrada,
       notifiche,
       commenti,
       officineLavoro,

@@ -11,8 +11,9 @@
 > è fermo a metà ottobre: è la causa probabile degli errori su commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261109-00 (T244 monitoraggio del pilota nel database; T113 logica di
-> `invia-notifica` in `invio.ts` con test), nel treno. Prossimi: T251, T252, T245, T208.
+> Ultima sessione: ciclo 20261109-03 (T251 «Scarica i tuoi dati» con le richieste su strada; T252
+> controllo automatico dello script della demo), nel treno. La frase dell'informativa resta da
+> aggiornare con T250. Prossimi: T245, T208.
 > Idee in coda: T228 (e2e di T220 più severo e focus dopo il
 > ridisegno), controllo axe di `/admin/officine`, motivo del rifiuto scritto dall'admin, contatore delle
 > gomme completate nell'anteprima dell'import, spazio e contrasto della sezione Email nelle Notifiche.

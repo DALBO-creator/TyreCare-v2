@@ -17,5 +17,6 @@ test('il cliente scarica i suoi dati dal Profilo', async ({ page }) => {
   expect(dati.versione).toBe(1);
   expect(dati.account.email).toBe('cliente@tyrecare.test');
   expect(JSON.stringify(dati.garage)).toContain('AB123CD');
+  expect(Array.isArray(dati.richieste_strada)).toBe(true);
   expect(typeof dati.iscrizioni_push).toBe('number');
 });
