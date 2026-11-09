@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-09 — ciclo 20261109-15 — T245 T208
+
+**Fatto**
+
+- T245: nuova guida `DOCS/pilota/pubblicazione.md` (D10) per portare migrazioni e funzioni in produzione
+  dopo ogni treno (migration list, `db push --dry-run` e `db push`, deploy di `invia-notifica` e delle
+  funzioni Stripe, controllo, errori, mai `db reset`); la demo rimanda alla guida; la lista di lancio ha la
+  voce D10 e indica dove sono R1-R41.
+- T208: la home dell'officina mostra un avviso giallo «N richieste di aiuto su strada vicine» con link a
+  `/officina/strada`, solo a servizio attivo e conteggio > 0; nuovo modulo leggero `lib/strada-conta.ts`;
+  JS iniziale 63,5 -> 63,6 kB.
+- Corsia coordinata dal direttore (revisione a coppia non indipendente); gate supervisore 2/2 al 2o giro
+  (rilievi del 1o giro risolti: tabella «Pubblicazioni fatte» e prerequisiti in T245, e2e fragile al retry
+  in T208); controlli veloci verdi: 664 test, JS iniziale 63,6 kB; e2e (anche strada-officina) e pgTAP in CI.
+
 ### Sessione agenti — 2026-11-09 — ciclo 20261109-03 — T251 T252
 
 **Fatto**

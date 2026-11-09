@@ -3485,3 +3485,31 @@ schema in modo che lo script non giri più. Non controlla valori né tipi delle 
   `tabella.colonna`. Guardia anti-vuoto: almeno 10 insert, 10 tabelle e `prenotazioni.officina_id`.
 - Limiti noti: un `insert` senza elenco di colonne o un `--` dentro una stringa SQL sfuggono al controllo
   (oggi nello script non ce ne sono).
+
+## Pubblicazione in produzione (D10)
+
+**File coinvolti:** `DOCS/pilota/pubblicazione.md`, `DOCS/pilota/demo-la-santi.md`, lista di lancio.
+**Come funziona:** il cloud non si aggiorna da solo. Dopo ogni treno che cambia `supabase/` Davide segue la
+guida: migration list, `db push --dry-run` e `db push`, deploy di `invia-notifica` e delle funzioni Stripe,
+controllo, errori comuni; mai `db reset` su produzione. La demo rimanda alla guida.
+
+### Codice complesso
+- Lo sha pubblicato si annota nella tabella «Pubblicazioni fatte» in fondo alla guida. La prima volta la
+  tabella è vuota: si pubblica tutto. Ogni volta si salva la tabella aggiornata.
+- Il controllo finale passerà al riquadro admin di T247.
+
+## Contatore richieste su strada nella home officina (T208)
+
+**File coinvolti:** `apps/web/src/lib/strada-conta.ts`, `apps/web/src/pagine/home-officina.ts`,
+`e2e/tests/strada-officina.spec.ts`.
+**Come funziona:** a servizio attivo e con conteggio > 0 la home mostra un avviso giallo «N richieste di
+aiuto su strada vicine» con link a `/officina/strada`.
+
+### Codice complesso
+- `contaRichiesteStradaVicine` (`strada-conta.ts`, usa solo getSupabase) chiama la rpc
+  `richieste_strada_vicine` e restituisce il numero di righe (errore rilanciato, null → 0). È separato da
+  `strada-officina.ts` perché quello importa zod (dritte T056/T144): resta fuori dal JS iniziale.
+- In `home-officina.ts` il 4° elemento del `Promise.all` risolve `{ strada, vicine }` e conta solo se
+  `officinaOffreStrada` è vero; un errore vale 0, così la home non si rompe.
+- Il plurale è scritto a mano (`plurale()` non esiste). L'e2e parte dal conteggio già mostrato, perché
+  le righe sono condivise e il test puo' essere rieseguito (retry).
