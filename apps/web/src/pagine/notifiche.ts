@@ -85,7 +85,7 @@ const ETICHETTA_EMAIL = "Ricevi le notifiche anche per email se l'avviso sul tel
 
 function sezioneEmail(attiva: boolean): string {
   return `
-    <section class="tc-push mt-3" aria-labelledby="tc-email-titolo">
+    <section class="tc-push" aria-labelledby="tc-email-titolo">
       <span class="tc-lista__icona">${icona(Mail)}</span>
       <div class="tc-push__testo">
         <h2 id="tc-email-titolo" class="tc-push__titolo">Email</h2>
@@ -145,7 +145,7 @@ export async function mostraNotifiche(app: HTMLElement): Promise<void> {
 
   app.innerHTML = paginaApp(`
     ${intestazioneSottopagina('Notifiche', 'Le tue')}
-    <div class="tc-contenuto">
+    <div class="tc-contenuto tc-notifiche__contenuto">
       <div data-sezione-push></div>
       ${sezioneEmail(emailAttive)}
       ${

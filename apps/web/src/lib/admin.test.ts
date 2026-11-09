@@ -3,9 +3,11 @@ import {
   ERRORI_RIFIUTO,
   formattaDataOra,
   leggiAbbonamentoEmbed,
+  leggiVersioneDatabase,
   nomeAutore,
   ordinaOfficineAdmin,
   rifiutaAffiliazione,
+  statoDatabase,
 } from './admin';
 
 const rpc = vi.fn();
@@ -105,5 +107,44 @@ describe('rifiutaAffiliazione', () => {
     const strano = { message: 'toString' };
     rpc.mockResolvedValueOnce({ error: strano });
     await expect(rifiutaAffiliazione('abc')).rejects.toBe(strano);
+  });
+});
+
+describe('statoDatabase', () => {
+  it('confronta la migrazione attesa con quella del database', () => {
+    expect(statoDatabase('20261108000200', '20261108000200')).toBe('AGGIORNATO');
+    expect(statoDatabase('20261108000200', '20261107000100')).toBe('INDIETRO');
+    expect(statoDatabase('20261108000200', '20261109000000')).toBe('AVANTI');
+  });
+
+  it('funzione assente (null) = indietro; attesa vuota = sconosciuto', () => {
+    expect(statoDatabase('20261108000200', null)).toBe('INDIETRO');
+    expect(statoDatabase('', '20261108000200')).toBe('SCONOSCIUTO');
+    expect(statoDatabase('', null)).toBe('SCONOSCIUTO');
+  });
+
+  it('usa solo i primi 14 caratteri della versione presente', () => {
+    expect(statoDatabase('20261108000200', '20261108000200_extra')).toBe('AGGIORNATO');
+  });
+});
+
+describe('leggiVersioneDatabase', () => {
+  it('restituisce la versione', async () => {
+    rpc.mockResolvedValueOnce({ data: '20261108000200', error: null });
+    expect(await leggiVersioneDatabase()).toBe('20261108000200');
+    expect(rpc).toHaveBeenLastCalledWith('versione_database');
+  });
+
+  it('funzione assente (PGRST202 o 42883) = null', async () => {
+    rpc.mockResolvedValueOnce({ data: null, error: { code: 'PGRST202', message: 'x' } });
+    expect(await leggiVersioneDatabase()).toBeNull();
+    rpc.mockResolvedValueOnce({ data: null, error: { code: '42883', message: 'x' } });
+    expect(await leggiVersioneDatabase()).toBeNull();
+  });
+
+  it('gli altri errori vengono rilanciati', async () => {
+    const errore = { code: '42501', message: 'negato' };
+    rpc.mockResolvedValueOnce({ data: null, error: errore });
+    await expect(leggiVersioneDatabase()).rejects.toBe(errore);
   });
 });

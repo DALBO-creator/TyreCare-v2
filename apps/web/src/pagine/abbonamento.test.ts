@@ -10,6 +10,7 @@ const abb = (o: Partial<AbbonamentoOfficina>): AbbonamentoOfficina => ({
   stato: 'PROVA',
   prova_fino_al: '2999-01-01',
   stripe_customer_id: null,
+  stripe_subscription_id: null,
   ...o,
 });
 
@@ -61,8 +62,27 @@ describe('mostraPortale', () => {
   it('nessun abbonamento → no', () => {
     expect(mostraPortale(null)).toBe(false);
   });
-  it('pilota, anche con id → no', () => {
+  it('pilota con cliente ma senza subscription → no', () => {
     expect(mostraPortale(abb({ piano: 'PILOTA', stripe_customer_id: 'cus_1' }))).toBe(false);
+  });
+  it('pilota con cliente e subscription → sì', () => {
+    expect(
+      mostraPortale(
+        abb({ piano: 'PILOTA', stripe_customer_id: 'cus_1', stripe_subscription_id: 'sub_1' }),
+      ),
+    ).toBe(true);
+  });
+  it('pilota con subscription vuota o di soli spazi → no', () => {
+    for (const sub of ['', '  ']) {
+      expect(
+        mostraPortale(
+          abb({ piano: 'PILOTA', stripe_customer_id: 'cus_1', stripe_subscription_id: sub }),
+        ),
+      ).toBe(false);
+    }
+  });
+  it('pilota con subscription ma senza cliente → no', () => {
+    expect(mostraPortale(abb({ piano: 'PILOTA', stripe_subscription_id: 'sub_1' }))).toBe(false);
   });
   it('piano a carico senza id → no', () => {
     expect(mostraPortale(abb({ piano: 'STARTER', stripe_customer_id: null }))).toBe(false);

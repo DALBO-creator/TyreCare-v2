@@ -1,7 +1,27 @@
+import { readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
+// Versione delle migrazioni dell'app (T247): i primi 14 caratteri dell'ultimo file di
+// supabase/migrations, per confrontarla con quella del database (pagina admin «Officine»).
+function ultimaMigrazione(): string {
+  try {
+    const cartella = fileURLToPath(new URL('../../supabase/migrations', import.meta.url));
+    const file = readdirSync(cartella)
+      .filter((nome) => /^\d{14}_.*\.sql$/.test(nome))
+      .sort();
+    return file.at(-1)?.slice(0, 14) ?? '';
+  } catch {
+    return '';
+  }
+}
+
 export default defineConfig({
+  define: {
+    __ULTIMA_MIGRAZIONE__: JSON.stringify(ultimaMigrazione()),
+    __VERSIONE_APP__: JSON.stringify(process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'locale'),
+  },
   css: {
     preprocessorOptions: {
       scss: {

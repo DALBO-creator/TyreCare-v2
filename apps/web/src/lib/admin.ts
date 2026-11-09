@@ -234,3 +234,28 @@ export async function caricaCommentiAdmin(): Promise<CommentoAdmin[]> {
     autore: nomeAutore(r.profiles),
   }));
 }
+
+export type StatoDatabase = 'AGGIORNATO' | 'INDIETRO' | 'AVANTI' | 'SCONOSCIUTO';
+
+/**
+ * Versione delle migrazioni del database (funzione SQL `versione_database`, solo admin).
+ * `null` se la funzione non esiste ancora (PGRST202 / 42883): il database è indietro.
+ */
+export async function leggiVersioneDatabase(): Promise<string | null> {
+  const { data, error } = await getSupabase().rpc('versione_database');
+  if (error) {
+    const codice = codiceErrore(error);
+    if (codice === 'PGRST202' || codice === '42883') return null;
+    throw error;
+  }
+  return typeof data === 'string' ? data : null;
+}
+
+/** Confronta la migrazione attesa dall'app con quella del database (14 cifre, ordine lessicografico). */
+export function statoDatabase(attesa: string, presente: string | null): StatoDatabase {
+  if (!attesa) return 'SCONOSCIUTO';
+  if (presente === null) return 'INDIETRO';
+  const p = presente.slice(0, 14);
+  if (p === attesa) return 'AGGIORNATO';
+  return p < attesa ? 'INDIETRO' : 'AVANTI';
+}

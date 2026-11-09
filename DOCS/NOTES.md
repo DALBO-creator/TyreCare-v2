@@ -3535,5 +3535,62 @@ entrando come amministratore, con la `controllaAccessibilita` condivisa dalle al
 
 ### Codice complesso
 `e2e/tests/accessibilita.spec.ts` — `/admin/officine` registra un'officina nuova che resta in attesa (non
-usa il seed) e verifica i pulsanti «Attiva» e «Rifiuta la richiesta» prima di lanciare axe. `/admin/commenti`
+usa il seed) e verifica i pulsanti «Attiva» e «Rifiuta la richiesta» prima di lanciare axe.
+`/admin/commenti`
 è provata con lo stato che trova. Il timeout è 180 s perché i due account fanno due accessi.
+
+## Bozze legali: Stripe ed email di riserva (T241)
+
+**File coinvolti:** `DOCS/legale/termini-di-servizio.md`, `informativa-privacy.md`, `registro-trattamenti.md`,
+`README.md`.
+**Come funziona:** termini §10, informativa, registro A7 e README domanda 16 usano il segnaposto della data
+di attivazione dei pagamenti online, da sostituire all'accensione di Stripe; prima valgono le condizioni di
+oggi, anche a prova scaduta. Informativa, registro A2 e termini §9 descrivono le email di riserva, con
+Resend tra i fornitori.
+
+### Codice complesso
+Le email di riserva riflettono T066/T199: partono solo con `inviate === 0` (la push non è partita verso
+nessun dispositivo), all'indirizzo dell'account; l'interruttore «Email» è `profiles.email_notifiche`. Sono
+spente finché manca il dominio: `[DA COMPLETARE: data di attivazione delle email di riserva]`. I ruoli
+privacy di Stripe e Resend restano aperti.
+
+## Amministratore: versione del database (T247)
+
+**File coinvolti:** `apps/web/vite.config.ts`, `apps/web/src/lib/admin.ts`,
+`apps/web/src/pagine/admin-officine.ts`, `e2e/tests/admin-versione.spec.ts`.
+**Come funziona:** la pagina «Officine» ha un riquadro «Database» che confronta l'ultima migrazione
+dell'app con quella restituita da `versione_database()`; avviso giallo se il database è indietro.
+
+### Codice complesso
+`vite.config.ts` legge `supabase/migrations` e definisce `__ULTIMA_MIGRAZIONE__` (14 cifre dell'ultimo
+file, `''` se non leggibile) e `__VERSIONE_APP__` (sha Vercel a 7 caratteri o `locale`). In vitest non
+esistono: si leggono con `typeof … === 'string'`. `leggiVersioneDatabase()` chiama la rpc
+`versione_database`; `PGRST202`/`42883` → `null` = indietro. `statoDatabase(attesa, presente)` è pura
+(attesa vuota → SCONOSCIUTO, null → INDIETRO, altrimenti confronto lessicografico). La versione si
+legge in parallelo all'elenco delle officine, con catch locale.
+
+## Portale Stripe per il pilota con subscription viva (T238)
+
+**File coinvolti:** `apps/web/src/lib/abbonamento.ts`, `apps/web/src/pagine/abbonamento.ts`,
+`apps/web/src/pagine/abbonamento.test.ts`.
+**Come funziona:** «Gestisci il pagamento» compare anche per l'officina PILOTA con una subscription Stripe
+ancora viva, così può annullare il vecchio abbonamento dall'app. `caricaAbbonamento` legge
+`stripe_subscription_id`; per PILOTA una frase spiega che il pulsante serve a gestire o annullare il vecchio
+pagamento.
+
+### Codice complesso
+`mostraPortale` è vero con `stripe_customer_id` non vuoto e (piano ≠ PILOTA oppure
+`stripe_subscription_id` non vuoto). Il cliente serve sempre perché `stripe-portale` lo legge dal database.
+Nessun checkout per PILOTA (dritta T189).
+
+## Notifiche: spazio e contrasto (T236)
+
+**File coinvolti:** `apps/web/src/pagine/notifiche.ts`, `apps/web/src/styles/_prenotazioni.scss`.
+**Come funziona:** la sezione Email non lascia più spazio in cima (via `mt-3`, gap del contenitore a 1rem) e
+gli errori di push ed email usano `--tc-rosso-chiaro`. L'interruttore Email resta per tutti i ruoli (anche
+l'officina riceve notifiche).
+
+### Codice complesso
+Il contenitore è `.tc-contenuto.tc-notifiche__contenuto` (griglia, `gap: 1rem`, vince anche sul media query
+di `_garage.scss`); sezioni ed elenco non hanno margini propri. `[data-sezione-push]:empty` è nascosto e non
+crea gap. `.tc-push__errore` usa `--tc-rosso-chiaro`.

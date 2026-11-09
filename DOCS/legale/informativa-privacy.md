@@ -62,7 +62,8 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
   cliente su Stripe e l'identificativo dell'abbonamento su Stripe (tabella `abbonamenti`);
 - per creare il cliente su Stripe, TyreCare gli manda l'email del titolare, la ragione sociale
   dell'officina e l'identificativo dell'officina nell'app (un codice che l'app assegna a ogni officina);
-- il pagamento online non è ancora attivo: finché non lo è, questi dati non sono scambiati con Stripe.
+- questi dati sono scambiati con Stripe dal [DA COMPLETARE: data di attivazione dei pagamenti online];
+  prima di quella data il pagamento online non c'è e non partono dati verso Stripe.
 
 **Clienti e veicoli dell'officina** (inseriti o importati dall'officina)
 
@@ -108,6 +109,15 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
 
 - indirizzo dell'iscrizione generato dal tuo browser e le relative chiavi tecniche, necessari per
   recapitare le notifiche sul tuo dispositivo.
+
+**Email di riserva delle notifiche**
+
+- se l'app non riesce a mandare la notifica push a nessun tuo dispositivo (per esempio perché non hai
+  attivato le notifiche push), TyreCare manda la stessa notifica (titolo, testo
+  e collegamento) per email, all'indirizzo del tuo account, tramite Resend;
+- puoi spegnerle in ogni momento con l'interruttore «Email» della pagina «Notifiche» dell'app;
+- queste email sono spente in tutta l'app e partono dal [DA COMPLETARE: data di attivazione delle email
+  di riserva], quando sarà pronto il dominio di TyreCare per l'invio.
 
 **Import dal gestionale** (solo officine)
 
@@ -201,8 +211,8 @@ ancora da definire, vedi la tabella):
 |-----------|---------|------|
 | Supabase Inc. | Database, autenticazione, invio delle notifiche push (funzioni sul server) | Server nell'Unione europea (regione eu-west-1, Irlanda) |
 | Vercel Inc. | Ospita l'applicazione web (i file dell'app) | [DA COMPLETARE: regione; società con sede negli USA] |
-| Resend (Plus Five Five, Inc.) | Invio delle email automatiche (es. conferma dell'indirizzo email, recupero della password) | [DA COMPLETARE: regione; società con sede negli USA] |
-| Stripe | Pagamento degli abbonamenti delle officine con carta (quando il pagamento sarà attivo) | [DA COMPLETARE: ruolo di Stripe e sede, da confermare con il consulente — README, domanda 16] |
+| Resend (Plus Five Five, Inc.) | Invio delle email automatiche (es. conferma dell'indirizzo email, recupero della password) e delle email di riserva delle notifiche (quando attive) | [DA COMPLETARE: regione; società con sede negli USA] |
+| Stripe | Pagamento degli abbonamenti delle officine con carta (dalla data di attivazione del pagamento online) | [DA COMPLETARE: ruolo di Stripe e sede, da confermare con il consulente — README, domanda 16] |
 | Servizi push del browser (Google per Chrome e Android, Apple per Safari e iPhone, Mozilla per Firefox, o altri a seconda del browser) | Recapitano le notifiche push sul tuo dispositivo; il servizio lo sceglie il tuo browser | Possono trovarsi fuori dall'UE |
 
 [DA COMPLETARE: verificare con il consulente la denominazione esatta dei fornitori e le garanzie per i

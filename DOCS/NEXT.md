@@ -12,17 +12,16 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261109-18 (T228 focus dopo l'annullo su strada; T233 axe su `/admin/officine` e
-> `/admin/commenti`), nel treno; in CI controllare `color-contrast` di `tc-pulsante-elimina`.
+> Ultima sessione: ciclo 20261109-21 (T241 bozze legali Stripe/email di riserva; T247 riquadro Database
+> dell'admin; T238 portale per il PILOTA; T236 sezione Email), nel treno; in CI controllare l'e2e nuovo
+> `admin-versione.spec.ts`.
 > Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito,
 > motivo del rifiuto scritto dall'admin, contatore delle
-> gomme completate nell'anteprima dell'import, spazio e contrasto della sezione Email nelle Notifiche.
+> gomme completate nell'anteprima dell'import.
 > Prossimi compiti pronti: la pianificazione della domenica. Idee nuove: avviso ai titolari quando
 > `sospendi_officina` sospende l'officina;
 > T240 (guida cliente, passo 7: «Chiama» compare solo se l'officina ha un telefono, altrimenti la notifica
-> dice «ti chiamerà al numero che hai indicato»); T241 (bozze legali: termini 133/142/151, informativa 65,
-> registro trattamenti 136 dicono ancora «pagamento online non ancora attivo»; rivederle quando i pagamenti
-> si attivano, vicina a T229).
+> dice «ti chiamerà al numero che hai indicato»).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
 > pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
 > dettagli in `STORICO.md`.
