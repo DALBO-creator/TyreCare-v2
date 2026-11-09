@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-09 — ciclo 20261109-18 — T228 T233
+
+**Fatto**
+
+- T228: aiuto su strada, dopo un annullo (riuscito o fallito) il focus va sul nuovo `[data-annulla]` o
+  sull'`h1`, aspettando il `close` del dialogo (`focusDopoRidisegno()`); l'e2e dell'annullo fallito conta le
+  GET di `richieste_strada` e verifica il focus.
+- T233: axe controlla anche `/admin/officine` (con un'officina in attesa creata dal test, quindi con
+  «Attiva» e «Rifiuta la richiesta») e `/admin/commenti`, come amministratore.
+- Corsia coordinata dal direttore; gate supervisore 2/2 al 1o giro; prova d'insieme verde: 664 test, JS
+  iniziale 63,6 kB; e2e da vedere in CI (niente Docker). Da vedere in CI: possibile `color-contrast` di
+  `tc-pulsante-elimina` (`_officina.scss` ~377); focus dopo annullo riuscito non coperto da test.
+
 ### Sessione agenti — 2026-11-09 — ciclo 20261109-15 — T245 T208
 
 **Fatto**
