@@ -5,8 +5,10 @@ import {
   cambiaPianoOfficina,
   caricaOfficineAdmin,
   ETICHETTE_STATO_ABBONAMENTO,
+  leggiVersioneDatabase,
   rifiutaAffiliazione,
   sospendiOfficina,
+  statoDatabase,
   type OfficinaAdmin,
 } from '../lib/admin';
 import { esc } from '../lib/html';
@@ -84,11 +86,41 @@ function riga(o: OfficinaAdmin): string {
     </div>`;
 }
 
+/** Riquadro «Database»: l'app pubblicata e il database di produzione hanno le stesse migrazioni? */
+type EsitoVersione = { presente: string | null } | { errore: string };
+
+function riquadroDatabase(esito: EsitoVersione): string {
+  const attesa = typeof __ULTIMA_MIGRAZIONE__ === 'string' ? __ULTIMA_MIGRAZIONE__ : '';
+  const versione = typeof __VERSIONE_APP__ === 'string' ? __VERSIONE_APP__ : 'locale';
+  const coda = `<div class="small text-secondary mt-1">Versione dell'app: ${esc(versione)}</div>`;
+  let corpo: string;
+  if ('errore' in esito) {
+    corpo = `<div class="tc-avviso tc-avviso--rosso" role="alert">Non siamo riusciti a leggere la versione del database: ${esc(esito.errore)}</div>`;
+  } else {
+    const stato = statoDatabase(attesa, esito.presente);
+    if (stato === 'AGGIORNATO') {
+      corpo = `<div class="tc-avviso tc-avviso--verde" role="status">Database aggiornato (migrazione ${esc(attesa)})</div>`;
+    } else if (stato === 'INDIETRO') {
+      const dove =
+        esito.presente === null
+          ? 'non ha ancora la funzione di controllo'
+          : `il database è alla ${esc(esito.presente.slice(0, 14))}`;
+      corpo = `<div class="tc-avviso tc-avviso--giallo" role="status">Il database è indietro: l'app si aspetta la migrazione ${esc(attesa)}, ${dove}. Pubblica le migrazioni: guida <code>DOCS/pilota/pubblicazione.md</code>.</div>`;
+    } else if (stato === 'AVANTI') {
+      corpo = `<div class="tc-avviso tc-avviso--info" role="status">Il database ha migrazioni più nuove dell'app pubblicata: aspetta il prossimo rilascio di Vercel.</div>`;
+    } else {
+      corpo = `<p class="small mb-0">Versione delle migrazioni dell'app non disponibile in questa build.</p>`;
+    }
+  }
+  return `<section class="mb-3" aria-label="Database" data-riquadro-database>${corpo}${coda}</section>`;
+}
+
 export async function mostraAdminOfficine(app: HTMLElement): Promise<void> {
   const n = visualizzazioneCorrente();
   app.innerHTML = paginaApp(caricamento());
 
   let officine: OfficinaAdmin[];
+  let esitoVersione: EsitoVersione = { presente: null };
   try {
     const { profilo } = await caricaDatiUtente();
     if (profilo.ruolo !== 'ADMIN') {
@@ -98,7 +130,15 @@ export async function mostraAdminOfficine(app: HTMLElement): Promise<void> {
         <div class="tc-contenuto"><p>Pagina riservata all'amministratore.</p></div>`);
       return;
     }
+    // La versione si legge in parallelo; un suo errore non blocca l'elenco (resta nel riquadro)
+    const versione = leggiVersioneDatabase().then(
+      (presente): EsitoVersione => ({ presente }),
+      (e: unknown): EsitoVersione => ({
+        errore: e instanceof Error ? e.message : String((e as { message?: unknown })?.message ?? e),
+      }),
+    );
     officine = await caricaOfficineAdmin();
+    esitoVersione = await versione;
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
     return;
@@ -109,6 +149,7 @@ export async function mostraAdminOfficine(app: HTMLElement): Promise<void> {
     app.innerHTML = paginaApp(`
       ${intestazioneSottopagina('Officine', 'Amministratore')}
       <div class="tc-contenuto">
+        ${riquadroDatabase(esitoVersione)}
         ${
           officine.length
             ? `<div class="tc-lista">${officine.map(riga).join('')}</div>`

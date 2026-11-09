@@ -7,3 +7,7 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+/** Definite da `vite.config.ts` (non esistono in vitest: leggerle con `typeof … === 'string'`). */
+declare const __ULTIMA_MIGRAZIONE__: string;
+declare const __VERSIONE_APP__: string;
