@@ -69,6 +69,14 @@ test('il titolare attiva l’aiuto, l’operatore accetta una richiesta e il tit
     await cliente.getByRole('button', { name: 'Usa la mia posizione e invia' }).click();
     await expect(cliente.getByText("Stiamo cercando un'officina vicina")).toBeVisible();
 
+    // Il titolare, dalla home, vede quante richieste vicine aspettano (il cliente è l'unico, e la richiesta
+    // è aperta)
+    await page.goto('/');
+    await expect(page.getByRole('link', { name: 'Richieste su strada' })).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: '1 richiesta di aiuto su strada vicina', exact: true }),
+    ).toHaveAttribute('href', '/officina/strada');
+
     // L'operatore la vede e la accetta
     await operatore.goto('/officina/strada');
     await expect(operatore.getByRole('heading', { name: 'Richieste su strada' })).toBeVisible();

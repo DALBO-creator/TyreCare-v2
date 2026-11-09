@@ -37,6 +37,7 @@ import {
 import { contaRichiesteDaConfermare } from '../lib/prenotazioni';
 import type { DatiUtente } from '../lib/profilo';
 import { ancoraAttuale, mostraPagina } from '../lib/router';
+import { contaRichiesteStradaVicine } from '../lib/strada-conta';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import { STATI, badgeStato } from '../ui/stato';
@@ -78,8 +79,9 @@ export async function mostraHomeOfficina(
   let richieste: number;
   let passi: PassoPrimiPassi[] | null;
   let strada: boolean;
+  let vicine: number;
   try {
-    [veicoli, richieste, passi, strada] = await Promise.all([
+    [veicoli, richieste, passi, { strada, vicine }] = await Promise.all([
       caricaVeicoli({ officinaId: attiva.officina.id }),
       // Solo un avviso: se non si legge, la home si mostra lo stesso
       contaRichiesteDaConfermare(attiva.officina.id, oggiInItalia()).catch(() => 0),
@@ -87,8 +89,14 @@ export async function mostraHomeOfficina(
       eTitolare(dati.officine, attiva.officina.id)
         ? leggiStatoPrimiPassi(attiva.officina.id).then(passiPrimiPassi, () => null)
         : Promise.resolve(null),
-      // Il link compare solo se l'officina offre il servizio; se non si legge, niente link
-      officinaOffreStrada(attiva.officina.id).catch(() => false),
+      // Il link compare solo se l'officina offre il servizio; se non si legge, niente link. Le richieste
+      // vicine si contano solo a servizio attivo (nessuna chiamata in più se è spento): solo un avviso
+      officinaOffreStrada(attiva.officina.id)
+        .then(async (offre) => ({
+          strada: offre,
+          vicine: offre ? await contaRichiesteStradaVicine(attiva.officina.id).catch(() => 0) : 0,
+        }))
+        .catch(() => ({ strada: false, vicine: 0 })),
     ]);
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
@@ -132,6 +140,19 @@ export async function mostraHomeOfficina(
               <p class="mb-0">
                 <strong>${richieste === 1 ? '1 richiesta' : `${richieste} richieste`} di appuntamento</strong>
                 da confermare
+              </p>
+              ${icona(ChevronRight)}
+            </a>`
+          : ''
+      }
+
+      ${
+        vicine
+          ? `<a class="tc-avviso tc-avviso--giallo tc-avviso--link" href="/officina/strada">
+              ${icona(Truck)}
+              <p class="mb-0">
+                <strong>${vicine === 1 ? '1 richiesta' : `${vicine} richieste`} di aiuto su strada
+                ${vicine === 1 ? 'vicina' : 'vicine'}</strong>
               </p>
               ${icona(ChevronRight)}
             </a>`
