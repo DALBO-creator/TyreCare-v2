@@ -1,6 +1,14 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { PASSWORD, accedi, emailNuova } from './aiuti';
+import {
+  PASSWORD,
+  accedi,
+  emailNuova,
+  entra,
+  nuovoAccountCliente,
+  partitaIvaUnica,
+  unico,
+} from './aiuti';
 
 /**
  * Analizza la pagina già caricata: nessuna violazione WCAG 2 A/AA di impatto grave o critico.
@@ -126,5 +134,42 @@ test.describe('titolare (Gomme Rossi)', () => {
     await page.getByRole('button', { name: 'Salva cliente' }).click();
     await expect(page.locator('[aria-invalid="true"]').first()).toBeVisible();
     await controllaAccessibilita(page, '/clienti/nuovo (con errori)');
+  });
+});
+
+test.describe('amministratore', () => {
+  test("/admin/officine con un'officina in attesa: nessuna violazione di accessibilità grave", async ({
+    page,
+    browser,
+  }) => {
+    test.setTimeout(180_000);
+    // Non dipende dal seed (le altre prove attivano o sospendono officine): se ne registra una nuova,
+    // che resta in attesa, così compaiono i pulsanti «Attiva» e «Rifiuta la richiesta».
+    const ragioneSociale = `Gomme Axe ${unico()}`;
+    await accedi(page, await nuovoAccountCliente('Marta'));
+    await page.goto('/officina/registra');
+    await page.getByLabel('Ragione sociale').fill(ragioneSociale);
+    await page.getByLabel('Partita IVA').fill(partitaIvaUnica());
+    await page.getByLabel('Città').fill('Torino');
+    await page.getByRole('button', { name: 'Invia la richiesta' }).click();
+    await expect(page.getByText('Officina in attesa')).toBeVisible();
+
+    const admin = await entra(browser, 'admin@tyrecare.test');
+    await admin.goto('/admin/officine');
+    await expect(admin.getByRole('heading', { level: 1, name: 'Officine' })).toBeVisible();
+    const riga = admin.locator('.tc-lista__riga').filter({ hasText: ragioneSociale });
+    await expect(riga.getByRole('button', { name: 'Attiva' })).toBeVisible();
+    await expect(riga.getByRole('button', { name: 'Rifiuta la richiesta' })).toBeVisible();
+    await controllaAccessibilita(admin, '/admin/officine');
+  });
+
+  // Elenco vuoto o con commenti, a seconda di cosa hanno scritto gli altri test: la pagina è la stessa
+  test('/admin/commenti: nessuna violazione di accessibilità grave', async ({ page }) => {
+    await accedi(page, 'admin@tyrecare.test');
+    await page.goto('/admin/commenti');
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Commenti degli utenti' }),
+    ).toBeVisible();
+    await controllaAccessibilita(page, '/admin/commenti');
   });
 });
