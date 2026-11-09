@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-09 — ciclo 20261109-03 — T251 T252
+
+**Fatto**
+
+- T251: «Scarica i tuoi dati» include anche le richieste di aiuto su strada (`richieste_strada`, filtrate
+  per `cliente_id`), completando la portabilità (art. 20) dopo T139–T143; unit test del filtro ed e2e;
+  `versione: 1` invariata. La frase dell'informativa sul contenuto del file la aggiorna T250.
+- T252: nuovo `apps/web/src/demo-la-santi.test.ts`: gli `insert into public.*` dello script della demo (14
+  insert, 12 tabelle) devono usare solo colonne di `Insert` in `database.types.ts` e coprire quelle
+  obbligatorie; una migrazione che rompe lo script fa fallire i controlli veloci.
+- Corsia coordinata dal direttore (revisione a coppia non indipendente); gate 2/2 al primo giro; prova
+  d'insieme verde: 660 test, JS iniziale 63,5 kB.
+
 ### Sessione agenti — 2026-11-09 — ciclo 20261109-00 — T244 T113
 
 **Fatto**

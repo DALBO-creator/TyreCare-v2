@@ -3456,3 +3456,32 @@ con `on delete cascade`.
   admin), quindi il conteggio deve girare con i privilegi del proprietario.
 - Il trigger forza `created_at` (il browser non sceglie la data) e prende un advisory lock per account: due
   inserimenti simultanei non superano il limite. Dal 31° in 24 ore lancia `TROPPI_ERRORI`.
+
+## Scarica i tuoi dati: richieste su strada (T251)
+
+**File coinvolti:** `apps/web/src/lib/miei-dati.ts`, `apps/web/src/lib/miei-dati.test.ts`.
+**Come funziona:** `raccogliMieiDati` aggiunge al file la chiave `richieste_strada`, dopo `prenotazioni`
+(chiave aggiunta, quindi `versione: 1` resta). La tabella si legge con `leggiTutte`, che scorre le pagine.
+
+### Codice complesso
+- `.eq('cliente_id', utente.id)` è indispensabile: la RLS apre `richieste_strada` anche alle officine
+  vicine e a quella che ha accettato, quindi senza filtro il file conterrebbe richieste di altri.
+- `.order('id')` va prima di `.range`: senza un ordine stabile le pagine possono ripetere o saltare righe.
+- Il test usa un Supabase finto (`vi.mock`) minimo, con il ramo `then` per i conteggi: da aggiornare se la
+  funzione userà altri metodi.
+
+## Test di coerenza dello script demo LA SANTI GOMME (T252)
+
+**File coinvolti:** `apps/web/src/demo-la-santi.test.ts`, `supabase/demo/la-santi-gomme.sql`,
+`packages/shared/src/database.types.ts`.
+**Come funziona:** il test legge come testo lo script e i tipi, e fallisce se una migrazione ha cambiato lo
+schema in modo che lo script non giri più. Non controlla valori né tipi delle colonne.
+
+### Codice complesso
+- Dallo script estrae gli `insert into public.*` (liste di colonne anche a capo, commenti `--` tolti;
+  `demo_*` e `auth.users` esclusi). Dai tipi prende `public.Tables` e, per ogni tabella, il blocco `Insert`
+  a graffe bilanciate (`?` = colonna facoltativa).
+- Fallisce per tabella assente, colonna non presente in `Insert` o obbligatoria mai scritta, con messaggio
+  `tabella.colonna`. Guardia anti-vuoto: almeno 10 insert, 10 tabelle e `prenotazioni.officina_id`.
+- Limiti noti: un `insert` senza elenco di colonne o un `--` dentro una stringa SQL sfuggono al controllo
+  (oggi nello script non ce ne sono).
