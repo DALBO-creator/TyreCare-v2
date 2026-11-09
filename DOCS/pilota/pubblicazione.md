@@ -19,13 +19,21 @@ git diff --stat <ultimo-pubblicato>..origin/main -- supabase/
 
 `<ultimo-pubblicato>` è lo sha dell'ultima riga della tabella «Pubblicazioni fatte» in fondo a questa
 pagina. Se il comando non scrive niente, non c'è niente da pubblicare. Se elenca file, fai i passi 2-6.
+Se la tabella è vuota (prima volta), salta questo controllo e fai i passi 2-6.
 
-## 2. Prerequisiti (una volta sola)
+## 2. Prerequisiti
+
+Ogni volta:
 
 ```powershell
 git checkout main
 git pull
 npm ci
+```
+
+Una volta sola:
+
+```powershell
 npx supabase login
 npx supabase link --project-ref <ref>
 ```
@@ -76,7 +84,8 @@ Il webhook ha `--no-verify-jwt` perché Stripe non manda il JWT di Supabase (la 
   - SQL Editor di Supabase: `select max(version) from supabase_migrations.schema_migrations;` deve dare il
     numero all'inizio del nome dell'ultimo file in `supabase/migrations/` (per esempio
     `20261108000200` per `20261108000200_monitoraggio.sql`).
-- Poi aggiungi una riga alla tabella qui sotto.
+- Poi aggiungi una riga alla tabella qui sotto e salva la modifica nel repository (commit e push su
+  `main`, o con una PR): altrimenti il passo 1 della volta dopo non trova lo sha.
 
 ## Se il push si ferma con un errore
 
