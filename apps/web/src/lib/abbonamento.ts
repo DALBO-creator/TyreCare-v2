@@ -9,13 +9,15 @@ export interface AbbonamentoOfficina {
   prova_fino_al: string;
   /** Cliente Stripe; assente finché l'officina non ha mai pagato. */
   stripe_customer_id: string | null;
+  /** Subscription Stripe; per il pilota è il vecchio abbonamento ancora da annullare. */
+  stripe_subscription_id: string | null;
 }
 
 /** Abbonamento dell'officina; lo leggono solo titolare e admin. `null` se non esiste. */
 export async function caricaAbbonamento(officinaId: string): Promise<AbbonamentoOfficina | null> {
   const { data, error } = await getSupabase()
     .from('abbonamenti')
-    .select('piano, stato, prova_fino_al, stripe_customer_id')
+    .select('piano, stato, prova_fino_al, stripe_customer_id, stripe_subscription_id')
     .eq('officina_id', officinaId)
     .maybeSingle();
   if (error) throw error;

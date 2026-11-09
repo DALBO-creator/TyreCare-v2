@@ -74,9 +74,16 @@ export function mostraPagamento(a: AbbonamentoOfficina | null): boolean {
   );
 }
 
-/** Pulsante "Gestisci il pagamento": solo chi ha già un cliente Stripe e non è nel pilota. */
+/**
+ * Pulsante "Gestisci il pagamento": serve un cliente Stripe; nel pilota (gratuito) solo se c'è ancora
+ * una subscription viva da gestire o annullare.
+ */
 export function mostraPortale(a: AbbonamentoOfficina | null): boolean {
-  return a !== null && a.piano !== 'PILOTA' && !!a.stripe_customer_id?.trim();
+  return (
+    a !== null &&
+    !!a.stripe_customer_id?.trim() &&
+    (a.piano !== 'PILOTA' || !!a.stripe_subscription_id?.trim())
+  );
 }
 
 function cartaPiano(piano: Exclude<Piano, 'PILOTA'>): string {
@@ -133,6 +140,10 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
     azione = '<p class="mb-0">Il tuo abbonamento è a posto: non devi fare nulla.</p>';
   }
   if (mostraPortale(abbonamento)) {
+    if (abbonamento?.piano === 'PILOTA') {
+      azione +=
+        '<p class="small text-body-secondary mb-0 mt-3">Il pilota è gratuito: usa «Gestisci il pagamento» per gestire o annullare il vecchio abbonamento.</p>';
+    }
     azione += `
       <div class="tc-avviso tc-avviso--rosso mb-3 mt-3" data-errore-portale role="alert" tabindex="-1" hidden></div>
       <button type="button" class="btn btn-outline-primary w-100 mt-3" data-portale>Gestisci il pagamento</button>`;
