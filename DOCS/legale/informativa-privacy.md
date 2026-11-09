@@ -112,7 +112,8 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
 
 **Email di riserva delle notifiche**
 
-- se nessuna notifica push è arrivata sul tuo telefono, TyreCare manda la stessa notifica (titolo, testo
+- se l'app non riesce a mandare la notifica push a nessun tuo dispositivo (per esempio perché non hai
+  attivato le notifiche push), TyreCare manda la stessa notifica (titolo, testo
   e collegamento) per email, all'indirizzo del tuo account, tramite Resend;
 - puoi spegnerle in ogni momento con l'interruttore «Email» della pagina «Notifiche» dell'app;
 - queste email sono spente in tutta l'app e partono dal [DA COMPLETARE: data di attivazione delle email

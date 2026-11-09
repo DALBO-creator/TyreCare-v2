@@ -69,12 +69,12 @@ README, "Da fare prima del lancio"]
 
 | Voce | Contenuto |
 |------|-----------|
-| Finalità | Avvisare gli utenti dei cambi di stato delle prenotazioni, dei promemoria del giorno prima, dell'esito dei controlli e del cambio stagionale degli pneumatici. Se nessuna push è arrivata, la stessa notifica va per email all'indirizzo dell'account (email di riserva, via Resend; l'utente la spegne con l'interruttore «Email» della pagina Notifiche; spente in tutta l'app dal [DA COMPLETARE: data di attivazione delle email di riserva]) |
+| Finalità | Avvisare gli utenti dei cambi di stato delle prenotazioni, dei promemoria del giorno prima, dell'esito dei controlli e del cambio stagionale degli pneumatici. Se l'app non riesce a mandare la push a nessun dispositivo dell'utente (per esempio perché non ha attivato le push), la stessa notifica va per email all'indirizzo dell'account (email di riserva, via Resend; l'utente la spegne con l'interruttore «Email» della pagina Notifiche; spente in tutta l'app dal [DA COMPLETARE: data di attivazione delle email di riserva]) |
 | Base giuridica | Esecuzione del contratto (art. 6.1.b) per le prenotazioni; promemoria: [DA COMPLETARE: contratto, legittimo interesse o consenso — README, domanda 1] |
 | Interessati | Utenti con account (clienti e membri delle officine) |
 | Dati | Destinatario, tipo, titolo, testo, collegamento, data di lettura (tabella `notifiche`); i testi possono citare targa, officina, data dell'appuntamento |
 | Destinatari | Solo il destinatario (M1); sub-responsabile Supabase (database, job pianificati `pg_cron`); Resend, solo per le email di riserva |
-| Trasferimenti extra UE | Nessuno per il database (UE); Resend è una società USA [DA COMPLETARE: regione e garanzie — README, domanda 4] |
+| Trasferimenti extra UE | Nessuno per il database (UE); Resend è una società USA [DA COMPLETARE: regione e garanzie — README, domanda 5] |
 | Conservazione | Il job notturno `pulizia-notifiche` cancella le lette dopo 180 giorni e tutte dopo 365 [DA COMPLETARE: confermare i tempi] |
 | Misure | M1–M4; l'utente può solo leggere e segnare come lette le proprie notifiche, non crearle |
 
