@@ -1,7 +1,8 @@
 # Lista di controllo del lancio
 
 Pagina per Davide. **Bozza**: spunta le caselle nell'ordine; ogni voce rimanda al documento da seguire.
-Le voci D3, D5, D7, D8 e D9 sono le azioni che gli agenti ti hanno lasciato da fare. Nessun dato reale qui.
+Le voci D3, D5, D7, D8, D9 e D10 sono le azioni che gli agenti ti hanno lasciato da fare.
+Nessun dato reale qui.
 Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
 
 ## Prima di creare l'officina (Fase 6 — Pilota)
@@ -15,7 +16,8 @@ Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
 - [ ] **Revisione legale (D7).** Dai al consulente le bozze e le sue domande; correggi i testi con le sue
   risposte. Guida: [`../legale/README.md`](../legale/README.md) → "Domande per il consulente" e "Da fare
   prima del lancio".
-- [ ] **Decisioni da confermare.** `[DA COMPLETARE: decisioni R1–R15 da confermare]`
+- [ ] **Decisioni da confermare.** Sono in
+  `progetti/tyrecare/decisioni-rimandate.md` nel repository ai-org (R1–R41): leggile e conferma o cambia.
 - [ ] **DPA firmato.** Fai firmare all'officina l'accordo sul trattamento dei dati, nella versione rivista.
   Documento: [`../legale/dpa-officine.md`](../legale/dpa-officine.md). Senza, niente dati veri dei clienti.
 - [ ] **Account ADMIN in produzione (D9).** Rendi amministratore il tuo account nel progetto Supabase di
@@ -33,6 +35,9 @@ Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
 
 ## Avvio con LA SANTI GOMME (Fase 6 — Pilota)
 
+- [ ] **Database e funzioni pubblicati (D10).** Porta sul cloud le migrazioni e le funzioni dell'ultimo
+  treno unito, così l'app pubblicata da Vercel non è più avanti del database. Da rifare dopo ogni treno che
+  cambia `supabase/`. Guida: [`pubblicazione.md`](pubblicazione.md).
 - [ ] **Officina creata.** Account del titolare e officina in produzione. Documento:
   [`crea-officina.md`](crea-officina.md).
 - [ ] **Officina attivata**, dopo il DPA firmato: da admin, voce "Officine da attivare" del Profilo

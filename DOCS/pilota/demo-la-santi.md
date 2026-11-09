@@ -19,19 +19,8 @@ Gli agenti non possono pubblicare sul cloud: va fatto da te. Sulla copia locale 
 l'invio del commento e l'elenco degli appuntamenti dell'officina funzionano (provati con la RLS, come
 utente dell'app).
 
-Dal PC con la CLI già collegata al progetto (cartella del repository, `main` aggiornato):
-
-```powershell
-npx supabase migration list          # colonna "Remote" vuota = migrazione mancante sul cloud
-npx supabase db push --dry-run       # elenca cosa verrebbe applicato, senza toccare niente
-npx supabase db push                 # le applica, in ordine
-```
-
-In alternativa, solo per controllare, nel SQL Editor:
-
-```sql
-select max(version) from supabase_migrations.schema_migrations;  -- deve essere 20261108000100
-```
+Segui la procedura di [`pubblicazione.md`](pubblicazione.md), passi 2 e 3 (`migration list`, `db push
+--dry-run`, `db push`) e il controllo del passo 6: l'ultima migrazione oggi è `20261108000200`.
 
 Poi riprova dal telefono *Profilo → Invia un commento* e *Appuntamenti*. Se un `db push` si ferma con un
 errore, non insistere: copia il messaggio e passalo alla prossima sessione. Se dopo il push i due errori
