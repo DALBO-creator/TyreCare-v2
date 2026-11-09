@@ -408,8 +408,13 @@ form .tc-pulsante-elimina {
 
   &__errore {
     margin-top: 0.5rem;
-    color: var(--tc-brand);
+    color: var(--tc-rosso-chiaro);
   }
+}
+
+// Pagina Notifiche: sezioni e elenco distanziati dal gap; la sezione push vuota è nascosta (niente gap)
+.tc-contenuto.tc-notifiche__contenuto {
+  gap: 1rem;
 }
 
 [data-sezione-push]:empty {
