@@ -127,7 +127,8 @@ pneumatici. Sono un aiuto, non una garanzia: possono arrivare in ritardo o non a
 telefono è spento, le notifiche sono disattivate o su iPhone l'app non è installata nella schermata Home).
 Le notifiche push si possono disattivare in qualsiasi momento.
 
-Se nessuna notifica push arriva sul tuo telefono, TyreCare può mandare la stessa notifica anche per email,
+Se l'app non riesce a mandare la notifica push a nessun tuo dispositivo (per esempio perché non hai
+attivato le notifiche push), TyreCare può mandare la stessa notifica anche per email,
 all'indirizzo del tuo account. Queste email di riserva valgono dal [DA COMPLETARE: data di attivazione
 delle email di riserva] e si spengono con l'interruttore «Email» della pagina «Notifiche».
 
@@ -136,8 +137,8 @@ delle email di riserva] e si spengono con l'interruttore «Email» della pagina 
 Questa sezione riguarda le officine. Le funzioni di abbonamento e pagamento descritte qui sotto si
 accendono per gradi. Il pagamento online con Stripe vale **dal [DA COMPLETARE: data di attivazione dei
 pagamenti online]**. Prima di quella data non c'è nessun pagamento online: l'officina ha la prova
-gratuita o il piano «Officina pilota», nessuna carta viene richiesta e nessuna funzione viene bloccata
-(vedi sotto). Le condizioni sul pagamento, sul rinnovo e sull'annullamento valgono dalla data di
+gratuita o il piano «Officina pilota» o, a prova finita, lo stato «scaduto», senza blocchi; nessuna carta
+viene richiesta (vedi sotto). Le condizioni sul pagamento, sul rinnovo e sull'annullamento valgono dalla data di
 attivazione.
 
 - **Prova gratuita di 30 giorni.** Ogni officina nuova ha 30 giorni di prova, contando anche il giorno
