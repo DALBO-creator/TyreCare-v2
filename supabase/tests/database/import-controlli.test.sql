@@ -88,8 +88,8 @@ select throws_ok(
 select pg_temp.come('a0000000-0000-4000-8000-000000000002'); -- titolare di Gomme Rossi
 select is(
   public.importa_controlli(:rossi, (select righe from righe_a), 'controlli.csv', 0, true),
-  '{"controlli_nuovi": 3, "controlli_gia_presenti": 0, "pneumatici_nuovi": 4, "misure_nuove": 6,
-    "misure_saltate": 0, "targhe_non_trovate": ["ZZ999ZZ"]}'::jsonb,
+  '{"controlli_nuovi": 3, "controlli_gia_presenti": 0, "pneumatici_nuovi": 4, "pneumatici_completati": 0,
+    "misure_nuove": 6, "misure_saltate": 0, "targhe_non_trovate": ["ZZ999ZZ"]}'::jsonb,
   'simulazione: conteggi giusti e targa sconosciuta elencata'
 );
 
@@ -105,8 +105,8 @@ select is(
 select pg_temp.come('a0000000-0000-4000-8000-000000000002');
 select is(
   public.importa_controlli(:rossi, (select righe from righe_a), 'controlli.csv', 2, false),
-  '{"controlli_nuovi": 3, "controlli_gia_presenti": 0, "pneumatici_nuovi": 4, "misure_nuove": 6,
-    "misure_saltate": 0, "targhe_non_trovate": ["ZZ999ZZ"]}'::jsonb,
+  '{"controlli_nuovi": 3, "controlli_gia_presenti": 0, "pneumatici_nuovi": 4, "pneumatici_completati": 0,
+    "misure_nuove": 6, "misure_saltate": 0, "targhe_non_trovate": ["ZZ999ZZ"]}'::jsonb,
   'import: gli stessi conteggi della simulazione'
 );
 
@@ -139,8 +139,8 @@ select results_eq(
 -- ---------------------------------------------------------------- reimport
 select is(
   public.importa_controlli(:rossi, (select righe from righe_a)) - 'targhe_non_trovate',
-  '{"controlli_nuovi": 0, "controlli_gia_presenti": 3, "pneumatici_nuovi": 0, "misure_nuove": 0,
-    "misure_saltate": 0}'::jsonb,
+  '{"controlli_nuovi": 0, "controlli_gia_presenti": 3, "pneumatici_nuovi": 0, "pneumatici_completati": 0,
+    "misure_nuove": 0, "misure_saltate": 0}'::jsonb,
   'reimportare lo stesso file: 3 controlli già presenti e nulla di nuovo'
 );
 reset role;
@@ -155,8 +155,8 @@ select is(
 select pg_temp.come('a0000000-0000-4000-8000-000000000002');
 select is(
   public.importa_controlli(:rossi, (select righe from righe_b)),
-  '{"controlli_nuovi": 3, "controlli_gia_presenti": 0, "pneumatici_nuovi": 4, "misure_nuove": 6,
-    "misure_saltate": 0, "targhe_non_trovate": []}'::jsonb,
+  '{"controlli_nuovi": 3, "controlli_gia_presenti": 0, "pneumatici_nuovi": 4, "pneumatici_completati": 0,
+    "misure_nuove": 6, "misure_saltate": 0, "targhe_non_trovate": []}'::jsonb,
   'le stesse righe in ordine inverso: stessi conteggi'
 );
 reset role;
@@ -225,8 +225,8 @@ select is(
     pg_temp.r('T43E1', 'ZZ435AA', '2026-05-05', 'ANT_SX', 'Michelin', 'ESTIVO'),
     pg_temp.r('T43E1', 'ZZ435AA', '2026-05-05', 'ANT_SX', 'Michelin', 'ESTIVO')
   )),
-  '{"controlli_nuovi": 1, "controlli_gia_presenti": 0, "pneumatici_nuovi": 1, "misure_nuove": 1,
-    "misure_saltate": 1, "targhe_non_trovate": []}'::jsonb,
+  '{"controlli_nuovi": 1, "controlli_gia_presenti": 0, "pneumatici_nuovi": 1, "pneumatici_completati": 0,
+    "misure_nuove": 1, "misure_saltate": 1, "targhe_non_trovate": []}'::jsonb,
   'la stessa posizione due volte nel documento: la seconda misura è saltata'
 );
 

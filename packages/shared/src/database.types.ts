@@ -317,6 +317,7 @@ export type Database = {
           misure_nuove: number;
           nome_file: string;
           officina_id: string;
+          pneumatici_completati: number;
           pneumatici_nuovi: number;
           righe_importate: number;
           righe_scartate: number;
@@ -335,6 +336,7 @@ export type Database = {
           misure_nuove?: number;
           nome_file?: string;
           officina_id: string;
+          pneumatici_completati?: number;
           pneumatici_nuovi?: number;
           righe_importate: number;
           righe_scartate?: number;
@@ -353,6 +355,7 @@ export type Database = {
           misure_nuove?: number;
           nome_file?: string;
           officina_id?: string;
+          pneumatici_completati?: number;
           pneumatici_nuovi?: number;
           righe_importate?: number;
           righe_scartate?: number;
