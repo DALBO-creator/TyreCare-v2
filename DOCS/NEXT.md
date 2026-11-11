@@ -12,12 +12,9 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261111-18 (T243 contatore delle gomme completate nell'import dei controlli; T211
-> eventi Stripe fuori ordine e un cliente Stripe per officina), nel treno; la CI esegue le due migrazioni e i
-> pgTAP nuovi o cambiati (`import-controlli*.test.sql`, `stripe-ordine-eventi.test.sql`,
-> `abbonamenti-stripe.test.sql`).
-> Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito,
-> motivo del rifiuto scritto dall'admin.
+> Ultima sessione: ciclo 20261111-21 (T246 guida `DOCS/pilota/email-dominio.md` per la voce D3; T234 motivo
+> del rifiuto scritto dall'admin nel dialogo di conferma), nel treno.
+> Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito.
 > Prossimi compiti pronti: la pianificazione della domenica; T235 (anteprima con il contatore delle gomme
 > completate, la parte della pagina che segue T243). Idee nuove: avviso ai titolari quando
 > `sospendi_officina` sospende l'officina;
@@ -55,7 +52,8 @@
 - [~] Fase 5: **email di riserva** — fatta nel codice (T066, 2026-10-28) ma spenta; resta accenderla dopo
   l'email dal dominio di TyreCare (P23): comando in `NOTES.md` → "Notifiche: email di riserva (T066)"
   L'interruttore nella pagina Notifiche c'è (T198, colonna `profiles.email_notifiche` di T199): prima di
-  accendere `EMAIL_NOTIFICHE` resta il dominio (P23)
+  accendere `EMAIL_NOTIFICHE` resta il dominio (P23);
+  i passi per verificare il dominio e accendere le email sono in `DOCS/pilota/email-dominio.md` (D3)
 - [x] Fase 4: capienza nell'interfaccia — fatta (T020–T021, 2026-10-23)
 - [ ] Fase 4: slot orari automatici (più avanti)
 - [~] Fase 7: **Stripe** — fatti il database (T180), il webhook (T185), il checkout (T189) e la regola di

@@ -4,6 +4,17 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-11 — ciclo 20261111-21 — T246 T234
+
+**Fatto**
+
+- T246: nuova guida `DOCS/pilota/email-dominio.md` per la voce D3 (dominio verificato su Resend, SMTP di
+  Supabase, segreti `EMAIL_NOTIFICHE`/`RESEND_API_KEY`/`EMAIL_MITTENTE`/`SITO_URL`, prove finali); la voce D3
+  di `lista-lancio.md` rimanda alla guida; il passo finale porta alle idee T076 e T210.
+- T234: `chiediConferma` accetta un campo di testo facoltativo (`campo`) e passa il testo ad `azione`; nel
+  rifiuto dell'affiliazione l'admin può scrivere un motivo (max 300) che arriva nell'avviso a chi aveva
+  chiesto; e2e aggiunto.
+
 ### Sessione agenti — 2026-11-11 — ciclo 20261111-18 — T243 T211
 
 **Fatto**
