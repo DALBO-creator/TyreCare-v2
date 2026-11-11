@@ -24,6 +24,17 @@ const MAX_INVII = 5;
 const giaInviati = new Set<string>();
 let invii = 0;
 
+/**
+ * `erroreDiRete` scarta ogni `TypeError` (è quello di `fetch`), ma qui perderebbe i bug di programma
+ * («Cannot read properties of undefined»): un `TypeError` è di rete solo se il messaggio lo dice
+ * (Chrome, Firefox, Safari, import dinamico di un modulo).
+ */
+function erroreDiReteDaScartare(errore: unknown): boolean {
+  if (errore instanceof TypeError)
+    return /failed to fetch|networkerror|load failed/i.test(errore.message);
+  return erroreDiRete(errore);
+}
+
 /** Solo per i test: riparte da zero i doppioni e il contatore. */
 export function _azzeraPerTest(): void {
   giaInviati.clear();
@@ -63,7 +74,7 @@ export function preparaErrore(errore: unknown, contesto?: string): RigaErrore {
  */
 export function segnalaErrore(errore: unknown, contesto?: string): void {
   try {
-    if (errore instanceof ErroreModulo || erroreDiRete(errore)) return;
+    if (errore instanceof ErroreModulo || erroreDiReteDaScartare(errore)) return;
     if (!sessioneCorrente() || !navigator.onLine) return;
     if (invii >= MAX_INVII) return;
     const riga = preparaErrore(errore, contesto);

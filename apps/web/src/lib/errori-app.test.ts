@@ -85,7 +85,15 @@ describe('segnalaErrore', () => {
     segnalaErrore({ message: 'TypeError: Failed to fetch' });
     segnalaErrore(new ErroreModulo('campo'));
     expect(insert).not.toHaveBeenCalled();
+    segnalaErrore(new TypeError('Failed to fetch dynamically imported module: x'));
+    segnalaErrore({ message: 'TypeError: Failed to fetch', code: '' });
+    expect(insert).not.toHaveBeenCalled();
     segnalaErrore(new Error('altro'));
+    expect(insert).toHaveBeenCalledTimes(1);
+  });
+
+  it('invia i TypeError di programma', () => {
+    segnalaErrore(new TypeError("Cannot read properties of undefined (reading 'x')"));
     expect(insert).toHaveBeenCalledTimes(1);
   });
 
