@@ -211,17 +211,18 @@ select throws_ok(
   'il piano PILOTA non arriva da Stripe'
 );
 
--- Stesso cliente su due abbonamenti: per cliente non si sceglie a caso.
+-- Stesso cliente su due abbonamenti: da T211 il database non lo permette più (indice unico), così la
+-- ricerca per cliente non deve mai scegliere a caso.
 reset role;
 update public.abbonamenti set stripe_customer_id = 'cus_test_doppio' where officina_id = :express;
-update public.abbonamenti set stripe_customer_id = 'cus_test_doppio' where officina_id = :rossi;
-select pg_temp.come_servizio();
 select throws_ok(
-  $$select public.aggiorna_abbonamento_stripe(null, 'cus_test_doppio', null, 'ANNULLATO', null)$$,
-  'P0001', 'ABBONAMENTO_NON_TROVATO',
-  'cliente Stripe su due abbonamenti: nessuno dei due si aggiorna'
+  format(
+    $$update public.abbonamenti set stripe_customer_id = 'cus_test_doppio' where officina_id = %L$$,
+    :rossi
+  ),
+  '23505', 'duplicate key value violates unique constraint "abbonamenti_stripe_customer_id_unico"',
+  'cliente Stripe su due abbonamenti: il secondo è rifiutato (un cliente per officina)'
 );
-reset role;
 update public.abbonamenti set stripe_customer_id = 'cus_test_rossi' where officina_id = :rossi;
 update public.abbonamenti set stripe_customer_id = null where officina_id = :express;
 

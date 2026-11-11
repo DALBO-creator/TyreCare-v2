@@ -1,8 +1,9 @@
 // Dagli eventi di Stripe all'aggiornamento dell'abbonamento in TyreCare (T185). La usa `index.ts`.
 // Senza import, così la provano anche i test di vitest (project `funzioni`).
 //
-// Il risultato di `aggiornamentoDaEvento` va così com'è a `aggiorna_abbonamento_stripe` (migrazione
-// 20261102000100): l'abbonamento si cerca per officina, poi per abbonamento Stripe, poi per cliente.
+// Il risultato di `aggiornamentoDaEvento`, con `momentoEvento`, va così com'è a
+// `aggiorna_abbonamento_stripe_evento` (migrazione 20261108000400, T211): l'abbonamento si cerca per
+// officina, poi per abbonamento Stripe, poi per cliente; gli eventi più vecchi dell'ultimo si ignorano.
 
 export type StatoAbbonamento = 'ATTIVO' | 'SCADUTO' | 'ANNULLATO';
 export type PianoAbbonamento = 'STARTER' | 'PRO';
@@ -118,9 +119,22 @@ export function aggiornamentoDaEvento(
 }
 
 /**
+ * Momento dell'evento per `aggiorna_abbonamento_stripe_evento` (T211): il `created` di Stripe (secondi
+ * dall'epoca) in ISO 8601. `null` se manca, non è un numero o non è una data valida: il database allora
+ * applica l'evento senza controllarne l'ordine.
+ */
+export function momentoEvento(evento: unknown): string | null {
+  const created = oggetto(evento)?.created;
+  if (typeof created !== 'number' || !Number.isFinite(created)) return null;
+  const data = new Date(created * 1000);
+  return Number.isNaN(data.getTime()) ? null : data.toISOString();
+}
+
+/**
  * Chiavi d'errore del database che nessun nuovo tentativo può correggere (T212): l'evento si registra,
  * Stripe riceve 200 e non lo rimanda per tre giorni fino a disattivare l'endpoint.
  * `CLIENTE_STRIPE_DIVERSO` oggi la lancia solo `collega_cliente_stripe`: è qui per sicurezza.
+ * `CLIENTE_STRIPE_DI_ALTRA_OFFICINA` (T211): il cliente Stripe dell'evento è già di un'altra officina.
  */
 const CHIAVI_PERMANENTI: ReadonlySet<string> = new Set([
   'ABBONAMENTO_NON_TROVATO',
@@ -128,6 +142,7 @@ const CHIAVI_PERMANENTI: ReadonlySet<string> = new Set([
   'PIANO_NON_VALIDO',
   'CLIENTE_STRIPE_DIVERSO',
   'SUBSCRIPTION_DI_ALTRA_OFFICINA',
+  'CLIENTE_STRIPE_DI_ALTRA_OFFICINA',
 ]);
 
 /** `true` solo se il messaggio d'errore del database è esattamente una delle chiavi permanenti. */
@@ -136,7 +151,7 @@ export function errorePermanente(messaggio: string): boolean {
 }
 
 /**
- * `true` se `aggiorna_abbonamento_stripe` ha ignorato l'evento senza errore (T224, R30): dopo la
+ * `true` se `aggiorna_abbonamento_stripe_evento` ha ignorato l'evento senza errore (T224, R30): dopo la
  * chiamata l'abbonamento resta collegato a una subscription diversa da quella dell'evento. Solo
  * diagnostica per i log: un vuoto da una parte o dall'altra non è un confronto.
  */
