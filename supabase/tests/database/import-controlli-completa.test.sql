@@ -4,7 +4,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(30);
+select plan(40);
 
 create function pg_temp.come(p_utente uuid) returns void language plpgsql as $$
 begin
@@ -231,8 +231,8 @@ select is(
     pg_temp.r('T203C1', 'ZZ203AA', '2026-03-10', '205/55 R16', 'Michelin', '3823'),
     pg_temp.r('T203E1', 'ZZ204AA', '2026-03-10', '205/55 R16', 'Pirelli', '2124')
   )) - 'targhe_non_trovate',
-  '{"controlli_nuovi": 0, "controlli_gia_presenti": 5, "pneumatici_nuovi": 0, "misure_nuove": 0,
-    "misure_saltate": 0}'::jsonb,
+  '{"controlli_nuovi": 0, "controlli_gia_presenti": 5, "pneumatici_nuovi": 0, "pneumatici_completati": 0,
+    "misure_nuove": 0, "misure_saltate": 0}'::jsonb,
   '(d) reimport dello stesso file: 5 controlli già presenti e nulla di nuovo'
 );
 reset role;
@@ -270,6 +270,96 @@ select is(
    where m.pneumatico_id = 'e2030000-0000-4000-8000-000000000001'),
   2,
   'la gomma completata ha le misure dei due documenti'
+);
+
+-- ================================================================ T243: contatore pneumatici_completati
+-- Due veicoli nuovi con una gomma ANT_SX senza DOT: ZZ206AA e ZZ207AA.
+reset role;
+insert into public.veicoli (id, officina_id, cliente_officina_id, targa, marca, modello)
+select ('d2030000-0000-4000-8000-00000000000' || n)::uuid, :rossi, 'c0000000-0000-4000-8000-000000000001',
+  'ZZ20' || n || 'AA', 'Fiat', 'Panda'
+from generate_series(6, 7) n;
+insert into public.pneumatici (id, officina_id, veicolo_id, posizione, stagione, misura, marca, modello, dot, montato_il)
+values
+  ('e2030000-0000-4000-8000-000000000006', :rossi, 'd2030000-0000-4000-8000-000000000006', 'ANT_SX',
+   'INVERNALE', '205/55 R16', 'Michelin', 'Alpin 6', null, '2026-01-01'),
+  ('e2030000-0000-4000-8000-000000000007', :rossi, 'd2030000-0000-4000-8000-000000000007', 'ANT_SX',
+   'INVERNALE', '205/55 R16', 'Michelin', 'Alpin 6', null, '2026-01-01');
+
+-- Stato di partenza (dritta T100)
+select is(
+  (select dot is null from public.pneumatici where id = 'e2030000-0000-4000-8000-000000000006'),
+  true,
+  'T243 prima: la gomma di ZZ206AA non ha DOT'
+);
+select is(
+  (select dot is null from public.pneumatici where id = 'e2030000-0000-4000-8000-000000000007'),
+  true,
+  'T243 prima: la gomma di ZZ207AA non ha DOT'
+);
+
+-- Simulazione: conta le due gomme che completerebbe, non scrive niente
+select pg_temp.come('a0000000-0000-4000-8000-000000000002');
+select is(
+  public.importa_controlli(:rossi, jsonb_build_array(
+    pg_temp.r('T243S1', 'ZZ206AA', '2026-03-10', '205/55 R16', 'Michelin', '3823'),
+    pg_temp.r('T243S2', 'ZZ207AA', '2026-03-10', '205/55 R16', 'Michelin', '2124')
+  ), 'simula-t243.csv', 0, true),
+  '{"controlli_nuovi": 2, "controlli_gia_presenti": 0, "pneumatici_nuovi": 0, "pneumatici_completati": 2,
+    "misure_nuove": 2, "misure_saltate": 0, "targhe_non_trovate": []}'::jsonb,
+  'T243 simulazione: pneumatici_completati = 2 (due gomme senza DOT che il file completerebbe)'
+);
+reset role;
+select ok(
+  (select bool_and(dot is null) and count(*) = 2 from public.pneumatici
+   where id in ('e2030000-0000-4000-8000-000000000006', 'e2030000-0000-4000-8000-000000000007')),
+  'T243 simulazione: le due gomme restano senza DOT'
+);
+select is(
+  (select count(*)::int from public.controlli where codice_documento like 'T243S%')
+    + (select count(*)::int from public.import_log where nome_file = 'simula-t243.csv'),
+  0,
+  'T243 simulazione: nessun controllo e nessuna riga in import_log'
+);
+
+-- Import vero: la gomma di ZZ207AA prende il DOT, il contatore è 1 in risposta e nel registro
+select pg_temp.come('a0000000-0000-4000-8000-000000000002');
+select is(
+  (public.importa_controlli(:rossi, jsonb_build_array(
+    pg_temp.r('T243A1', 'ZZ207AA', '2026-03-10', '205/55 R16', 'Michelin', '2124')
+  ), 'contatore-t243.csv')->>'pneumatici_completati')::int,
+  1,
+  'T243 import: una gomma con DOT vuoto completata, pneumatici_completati = 1 nella risposta'
+);
+reset role;
+select is(
+  (select dot from public.pneumatici where id = 'e2030000-0000-4000-8000-000000000007'),
+  '2124',
+  'T243 import: la gomma di ZZ207AA prende il DOT del file'
+);
+select results_eq(
+  $$select pneumatici_completati, pneumatici_nuovi, controlli_nuovi
+    from public.import_log where nome_file = 'contatore-t243.csv'$$,
+  $$values (1, 0, 1)$$,
+  'T243 import: import_log salva pneumatici_completati = 1'
+);
+
+-- Reimport dello stesso file: niente da completare
+select pg_temp.come('a0000000-0000-4000-8000-000000000002');
+select is(
+  public.importa_controlli(:rossi, jsonb_build_array(
+    pg_temp.r('T243A1', 'ZZ207AA', '2026-03-10', '205/55 R16', 'Michelin', '2124')
+  ), 'contatore-t243-bis.csv'),
+  '{"controlli_nuovi": 0, "controlli_gia_presenti": 1, "pneumatici_nuovi": 0, "pneumatici_completati": 0,
+    "misure_nuove": 0, "misure_saltate": 0, "targhe_non_trovate": []}'::jsonb,
+  'T243 reimport: pneumatici_completati = 0'
+);
+reset role;
+select results_eq(
+  $$select pneumatici_completati, controlli_nuovi
+    from public.import_log where nome_file = 'contatore-t243-bis.csv'$$,
+  $$values (0, 0)$$,
+  'T243 reimport: import_log salva pneumatici_completati = 0'
 );
 
 select * from finish();
