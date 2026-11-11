@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-11 — ciclo 20261111-18 — T243 T211
+
+**Fatto**
+
+- T243: la risposta di `importa_controlli` e `import_log` hanno il contatore `pneumatici_completati`
+  (migrazione 20261108000300): le gomme già presenti che il passo 1b (T203) completa con DOT, marca o
+  misura, anche in simulazione; 10 casi pgTAP nuovi.
+- T211: un evento Stripe in ritardo non riporta indietro l'abbonamento (`stripe_evento_il`, funzione nuova
+  `aggiorna_abbonamento_stripe_evento`, `created` dell'evento); un cliente Stripe per officina (indice
+  unico), altrimenti `CLIENTE_STRIPE_DI_ALTRA_OFFICINA`, errore permanente.
+- Verifiche: 678 test vitest verdi, build ok; pgTAP non eseguiti in locale: li verifica la CI.
+- Corsia coordinata dal direttore; gate del supervisore approvato al 1o giro per entrambi i compiti.
+
 ### Sessione agenti — 2026-11-09 — ciclo 20261109-21 — T241 T247 T238 T236
 
 **Fatto**

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   aggiornamentoDaEvento,
   errorePermanente,
+  momentoEvento,
   pianoDaPrezzo,
   statoDaStripe,
   subscriptionIgnorata,
@@ -182,6 +183,30 @@ describe('aggiornamentoDaEvento', () => {
   });
 });
 
+describe('momentoEvento', () => {
+  it('created in secondi → ISO 8601', () => {
+    expect(momentoEvento({ id: 'evt_prova', created: 1_762_768_800 })).toBe(
+      '2025-11-10T10:00:00.000Z',
+    );
+    expect(momentoEvento({ created: 0 })).toBe('1970-01-01T00:00:00.000Z');
+  });
+
+  it('created mancante, non numerico o non valido → null', () => {
+    expect(momentoEvento({ id: 'evt_prova' })).toBeNull();
+    expect(momentoEvento({ created: '1762768800' })).toBeNull();
+    expect(momentoEvento({ created: null })).toBeNull();
+    expect(momentoEvento({ created: Number.NaN })).toBeNull();
+    expect(momentoEvento({ created: Number.POSITIVE_INFINITY })).toBeNull();
+    expect(momentoEvento({ created: 1e20 })).toBeNull();
+  });
+
+  it('evento che non è un oggetto → null', () => {
+    expect(momentoEvento(null)).toBeNull();
+    expect(momentoEvento('evt_prova')).toBeNull();
+    expect(momentoEvento([1_762_768_800])).toBeNull();
+  });
+});
+
 describe('errorePermanente', () => {
   it.each([
     ['ABBONAMENTO_NON_TROVATO', true],
@@ -189,6 +214,8 @@ describe('errorePermanente', () => {
     ['PIANO_NON_VALIDO', true],
     ['CLIENTE_STRIPE_DIVERSO', true],
     ['SUBSCRIPTION_DI_ALTRA_OFFICINA', true],
+    ['CLIENTE_STRIPE_DI_ALTRA_OFFICINA', true],
+    ['CLIENTE_STRIPE_DI_ALTRA_OFFICINA (riga 1)', false],
     ['TypeError: fetch failed', false],
     ['', false],
     ['errore: ABBONAMENTO_NON_TROVATO (riga 3)', false],

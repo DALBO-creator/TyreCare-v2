@@ -31,6 +31,7 @@ export type Database = {
           prova_fino_al: string;
           stato: string;
           stripe_customer_id: string | null;
+          stripe_evento_il: string | null;
           stripe_subscription_id: string | null;
           updated_at: string;
         };
@@ -41,6 +42,7 @@ export type Database = {
           prova_fino_al?: string;
           stato?: string;
           stripe_customer_id?: string | null;
+          stripe_evento_il?: string | null;
           stripe_subscription_id?: string | null;
           updated_at?: string;
         };
@@ -51,6 +53,7 @@ export type Database = {
           prova_fino_al?: string;
           stato?: string;
           stripe_customer_id?: string | null;
+          stripe_evento_il?: string | null;
           stripe_subscription_id?: string | null;
           updated_at?: string;
         };
@@ -317,6 +320,7 @@ export type Database = {
           misure_nuove: number;
           nome_file: string;
           officina_id: string;
+          pneumatici_completati: number;
           pneumatici_nuovi: number;
           righe_importate: number;
           righe_scartate: number;
@@ -335,6 +339,7 @@ export type Database = {
           misure_nuove?: number;
           nome_file?: string;
           officina_id: string;
+          pneumatici_completati?: number;
           pneumatici_nuovi?: number;
           righe_importate: number;
           righe_scartate?: number;
@@ -353,6 +358,7 @@ export type Database = {
           misure_nuove?: number;
           nome_file?: string;
           officina_id?: string;
+          pneumatici_completati?: number;
           pneumatici_nuovi?: number;
           righe_importate?: number;
           righe_scartate?: number;
@@ -1176,6 +1182,17 @@ export type Database = {
       aggiorna_abbonamento_stripe: {
         Args: {
           p_customer: string;
+          p_officina_id: string;
+          p_piano: string;
+          p_stato: string;
+          p_subscription: string;
+        };
+        Returns: undefined;
+      };
+      aggiorna_abbonamento_stripe_evento: {
+        Args: {
+          p_customer: string;
+          p_evento_il: string;
           p_officina_id: string;
           p_piano: string;
           p_stato: string;

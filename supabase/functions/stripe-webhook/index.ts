@@ -2,16 +2,18 @@
 //
 // Stripe la chiama quando un abbonamento viene confermato, rinnovato, sospeso o annullato. Verifica la
 // firma (`Stripe-Signature`) sul corpo grezzo, poi aggiorna stato e piano dell'abbonamento dell'officina
-// con le funzioni del database di T180 (`aggiorna_abbonamento_stripe`, `registra_evento_stripe`), con
-// la service role. Ogni evento si elabora una volta sola: quelli già in `stripe_eventi` rispondono 200
-// `{ duplicato: true }`. Errori del database (T212):
+// con le funzioni del database (`aggiorna_abbonamento_stripe_evento` di T211, `registra_evento_stripe` di
+// T180), con la service role. Il `created` dell'evento va al database: un evento più vecchio dell'ultimo
+// applicato si ignora senza errore (Stripe non garantisce l'ordine). Ogni evento si elabora una volta
+// sola: quelli già in `stripe_eventi` rispondono 200 `{ duplicato: true }`. Errori del database (T212):
 // - permanenti (`errorePermanente` di `eventi.ts`: abbonamento non trovato, stato o piano non validi,
-//   subscription di un'altra officina…): nessun tentativo li correggerà, quindi l'evento si scrive nel log,
-//   si registra come un evento riuscito e la risposta è 200 `{ ricevuto: true, scartato: '<chiave>' }`.
+//   subscription o cliente Stripe di un'altra officina…): nessun tentativo li correggerà, quindi
+//   l'evento si scrive nel log, si registra come un evento riuscito e la risposta è 200
+//   `{ ricevuto: true, scartato: '<chiave>' }`.
 //   Altrimenti Stripe lo rimanderebbe per tre giorni, fino a disattivare l'endpoint;
 // - tutti gli altri (rete, database non raggiungibile…): risposta 500 e l'evento non si registra, così
 //   Stripe lo rimanda più tardi.
-// Se `aggiorna_abbonamento_stripe` ignora l'evento senza errore (abbonamento ATTIVO con un'altra
+// Se `aggiorna_abbonamento_stripe_evento` ignora l'evento senza errore (abbonamento ATTIVO con un'altra
 // subscription, T224) il webhook lo scrive nel log con le due subscription.
 //
 // Segreti (supabase secrets set): STRIPE_WEBHOOK_SECRET (il `whsec_…` dell'endpoint), STRIPE_PRICE_STARTER
@@ -23,7 +25,12 @@
 // Nessun SDK di Stripe: solo Web Crypto (`firma.ts`).
 import { createClient } from 'npm:@supabase/supabase-js@2.117.2';
 import { verificaFirma } from './firma.ts';
-import { aggiornamentoDaEvento, errorePermanente, subscriptionIgnorata } from './eventi.ts';
+import {
+  aggiornamentoDaEvento,
+  errorePermanente,
+  momentoEvento,
+  subscriptionIgnorata,
+} from './eventi.ts';
 
 const env = (nome: string): string => {
   const valore = Deno.env.get(nome);
@@ -77,12 +84,13 @@ Deno.serve(async (richiesta) => {
   let scartato: string | null = null;
 
   if (aggiornamento) {
-    const { error } = await supabase.rpc('aggiorna_abbonamento_stripe', {
+    const { error } = await supabase.rpc('aggiorna_abbonamento_stripe_evento', {
       p_officina_id: aggiornamento.officina_id,
       p_customer: aggiornamento.customer,
       p_subscription: aggiornamento.subscription,
       p_stato: aggiornamento.stato,
       p_piano: aggiornamento.piano,
+      p_evento_il: momentoEvento(evento),
     });
     if (error) {
       if (!errorePermanente(error.message)) {
