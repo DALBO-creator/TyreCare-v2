@@ -31,6 +31,7 @@ export type Database = {
           prova_fino_al: string;
           stato: string;
           stripe_customer_id: string | null;
+          stripe_evento_il: string | null;
           stripe_subscription_id: string | null;
           updated_at: string;
         };
@@ -41,6 +42,7 @@ export type Database = {
           prova_fino_al?: string;
           stato?: string;
           stripe_customer_id?: string | null;
+          stripe_evento_il?: string | null;
           stripe_subscription_id?: string | null;
           updated_at?: string;
         };
@@ -51,6 +53,7 @@ export type Database = {
           prova_fino_al?: string;
           stato?: string;
           stripe_customer_id?: string | null;
+          stripe_evento_il?: string | null;
           stripe_subscription_id?: string | null;
           updated_at?: string;
         };
@@ -1176,6 +1179,17 @@ export type Database = {
       aggiorna_abbonamento_stripe: {
         Args: {
           p_customer: string;
+          p_officina_id: string;
+          p_piano: string;
+          p_stato: string;
+          p_subscription: string;
+        };
+        Returns: undefined;
+      };
+      aggiorna_abbonamento_stripe_evento: {
+        Args: {
+          p_customer: string;
+          p_evento_il: string;
           p_officina_id: string;
           p_piano: string;
           p_stato: string;
