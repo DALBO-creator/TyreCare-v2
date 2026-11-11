@@ -3594,3 +3594,34 @@ l'officina riceve notifiche).
 Il contenitore è `.tc-contenuto.tc-notifiche__contenuto` (griglia, `gap: 1rem`, vince anche sul media query
 di `_garage.scss`); sezioni ed elenco non hanno margini propri. `[data-sezione-push]:empty` è nascosto e non
 crea gap. `.tc-push__errore` usa `--tc-rosso-chiaro`.
+
+## Import dei controlli: contatore delle gomme completate (T243)
+
+**File coinvolti:** `supabase/migrations/20261108000300_*.sql`, `supabase/tests/database/import.test.sql`.
+**Come funziona:** la risposta di `importa_controlli` e la colonna `import_log.pneumatici_completati`
+(default 0, check >= 0) dicono quante gomme già presenti il passo 1b (T203) ha completato con DOT, marca o
+misura. Le gomme nuove restano in `pneumatici_nuovi`; un reimport dà 0.
+
+### Codice complesso
+Il conteggio usa `get diagnostics row_count` dopo l'update del passo 1b, che tocca la riga solo se un
+campo cambia. Si contano gli aggiornamenti, non le gomme distinte: una gomma completata in due passi
+conta 2. In simulazione l'update parte nella sottotransazione annullata da TCSIM e il contatore (variabile
+locale) sopravvive: l'anteprima mostra lo stesso numero dell'import vero.
+
+## Stripe: ordine degli eventi e cliente unico (T211)
+
+**File coinvolti:** `supabase/migrations/20261108000400_stripe_ordine_eventi.sql` (colonna
+`stripe_evento_il`, funzione `aggiorna_abbonamento_stripe_evento`, indice
+`abbonamenti_stripe_customer_id_unico`, `collega_cliente_stripe`),
+`supabase/functions/stripe-webhook/{index,eventi}.ts`,
+`supabase/tests/database/stripe-ordine-eventi.test.sql`.
+**Come funziona:** `stripe_evento_il` è il `created` dell'ultimo evento applicato. Il webhook chiama la
+funzione con il `created` dell'evento (`momentoEvento` di `eventi.ts` lo converte): un evento più vecchio
+viene ignorato senza errore, uno uguale o più nuovo si applica. Un cliente Stripe appartiene a una sola
+officina, altrimenti `CLIENTE_STRIPE_DI_ALTRA_OFFICINA` (errore permanente, niente nuovi tentativi).
+
+### Codice complesso
+La funzione blocca la riga (`for update`); senza momento applica e non cancella quello salvato (`greatest`).
+Il nome è nuovo perché un parametro in più creerebbe un overload ambiguo per PostgREST: la vecchia
+funzione resta ma non è usata. L'indice unico è parziale. `unique_violation` si distingue con `get stacked
+diagnostics constraint_name` (subscription / cliente / altro: nell'ultimo caso l'errore originale).

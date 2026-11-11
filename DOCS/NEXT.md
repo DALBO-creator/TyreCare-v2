@@ -12,12 +12,12 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261109-21 (T241 bozze legali Stripe/email di riserva; T247 riquadro Database
-> dell'admin; T238 portale per il PILOTA; T236 sezione Email), nel treno; in CI controllare l'e2e nuovo
-> `admin-versione.spec.ts`.
+> Ultima sessione: ciclo 20261111-18 (T243 contatore delle gomme completate nell'import dei controlli; T211
+> eventi Stripe fuori ordine e un cliente Stripe per officina), nel treno; la CI esegue le due migrazioni e i
+> pgTAP nuovi o cambiati (`import-controlli*.test.sql`, `stripe-ordine-eventi.test.sql`,
+> `abbonamenti-stripe.test.sql`).
 > Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito,
-> motivo del rifiuto scritto dall'admin, contatore delle
-> gomme completate nell'anteprima dell'import.
+> motivo del rifiuto scritto dall'admin, contatore delle gomme completate nell'anteprima dell'import (T235).
 > Prossimi compiti pronti: la pianificazione della domenica. Idee nuove: avviso ai titolari quando
 > `sospendi_officina` sospende l'officina;
 > T240 (guida cliente, passo 7: «Chiama» compare solo se l'officina ha un telefono, altrimenti la notifica
