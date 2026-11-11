@@ -17,8 +17,9 @@
 > pgTAP nuovi o cambiati (`import-controlli*.test.sql`, `stripe-ordine-eventi.test.sql`,
 > `abbonamenti-stripe.test.sql`).
 > Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito,
-> motivo del rifiuto scritto dall'admin, contatore delle gomme completate nell'anteprima dell'import (T235).
-> Prossimi compiti pronti: la pianificazione della domenica. Idee nuove: avviso ai titolari quando
+> motivo del rifiuto scritto dall'admin.
+> Prossimi compiti pronti: la pianificazione della domenica; T235 (anteprima con il contatore delle gomme
+> completate, la parte della pagina che segue T243). Idee nuove: avviso ai titolari quando
 > `sospendi_officina` sospende l'officina;
 > T240 (guida cliente, passo 7: «Chiama» compare solo se l'officina ha un telefono, altrimenti la notifica
 > dice «ti chiamerà al numero che hai indicato»).

@@ -3597,7 +3597,8 @@ crea gap. `.tc-push__errore` usa `--tc-rosso-chiaro`.
 
 ## Import dei controlli: contatore delle gomme completate (T243)
 
-**File coinvolti:** `supabase/migrations/20261108000300_*.sql`, `supabase/tests/database/import.test.sql`.
+**File coinvolti:** `supabase/migrations/20261108000300_import_controlli_contatore.sql`,
+`packages/shared/src/database.types.ts`, `supabase/tests/database/import-controlli{,-completa}.test.sql`.
 **Come funziona:** la risposta di `importa_controlli` e la colonna `import_log.pneumatici_completati`
 (default 0, check >= 0) dicono quante gomme già presenti il passo 1b (T203) ha completato con DOT, marca o
 misura. Le gomme nuove restano in `pneumatici_nuovi`; un reimport dà 0.
