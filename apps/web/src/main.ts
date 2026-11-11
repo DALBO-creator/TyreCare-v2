@@ -2,6 +2,7 @@ import '@fontsource-variable/inter';
 import './styles/main.scss';
 import { registerSW } from 'virtual:pwa-register';
 import { inizializzaAuth, sessioneCorrente } from './lib/auth';
+import { segnalaErrore } from './lib/errori-app';
 import { fermaNotifiche } from './lib/notifiche';
 import { pigra } from './lib/pigra';
 import {
@@ -18,6 +19,13 @@ import { mostraHome } from './pagine/home';
 import { mostraNonTrovata } from './pagine/non-trovata';
 import { mostraRegistrati } from './pagine/registrati';
 import { mostraAvvisoAggiornamento } from './ui/aggiornamento';
+
+// Errori non gestiti: arrivano all'amministratore (ignora gli `error` di risorse senza dettagli)
+window.addEventListener('error', (evento) => {
+  const errore = evento.error ?? evento.message;
+  if (errore) segnalaErrore(errore);
+});
+window.addEventListener('unhandledrejection', (evento) => segnalaErrore(evento.reason));
 
 const ROTTE: Rotta[] = [
   { percorso: '/', accesso: 'utente', titolo: '', mostra: mostraHome },
