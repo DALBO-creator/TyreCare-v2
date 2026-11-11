@@ -103,7 +103,8 @@ npx supabase secrets set EMAIL_NOTIFICHE=si RESEND_API_KEY=<chiave-resend> EMAIL
 
 - `EMAIL_NOTIFICHE=si` accende la funzione; senza, il comportamento resta quello di prima.
 - `EMAIL_MITTENTE` deve usare il dominio verificato al passo 3.
-- `SITO_URL` senza barra finale: serve per i link dentro le email.
+- `SITO_URL` senza barra finale: serve per i link dentro le email e lo usano anche i pagamenti
+  (funzioni Stripe, `return_url`) per riportare l'utente al sito.
 - Non serve ripubblicare la funzione ([`pubblicazione.md`](pubblicazione.md)): i segreti valgono subito.
   Se cambi dominio o chiave, ripeti solo questo comando.
 

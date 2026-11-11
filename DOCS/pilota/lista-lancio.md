@@ -8,9 +8,9 @@ Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
 ## Prima di creare l'officina (Fase 6 — Pilota)
 
 - [ ] **Dominio e email (D3).** Scegli e compra il dominio di TyreCare (verifica prima che il marchio sia
-  libero) e passalo agli agenti: preparano i record da copiare in Resend e Supabase. Serve per accendere le
-  email di riserva (P23). Guida: [`../PLAN.md`](../PLAN.md) §7 (domanda sul nome); poi i passi in
-  [`email-dominio.md`](email-dominio.md).
+  libero) e passalo agli agenti. Serve per accendere le
+  email di riserva (P23). Guida: [`../PLAN.md`](../PLAN.md) §7 (domanda sul nome); poi segui i passi in
+  [`email-dominio.md`](email-dominio.md); gli agenti riprendono dopo (T076, T210).
 - [ ] **Dati del titolare (D5).** Scrivi ragione sociale, indirizzo, partita IVA e contatti di chi è
   titolare del trattamento, così le bozze legali non hanno più `[DA COMPLETARE]` sui tuoi dati. Guida:
   [`../legale/README.md`](../legale/README.md).
