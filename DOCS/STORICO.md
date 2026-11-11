@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-12 — ciclo 20261112-00 — T248 T262
+
+**Fatto**
+
+- T248: gli errori non gestiti (`error`, `unhandledrejection`) e le pagine che non si caricano finiscono in
+  `errori_app` con `segnalaErrore`; filtri: sessione, online, rete, `ErroreModulo`, doppioni, 5 invii per
+  caricamento; JS iniziale +0,08 kB.
+- T262: test DOM happy-dom delle pagine accedi, registrati e password dimenticata (8 test: errori con
+  `aria-invalid`, credenziali errate, `termini_versione` in `signUp`, schermata «Controlla la posta»).
+- Verifiche: prova d'insieme verde (65 file, 699 test vitest, build ok); JS iniziale `index-*.js` 26,78 kB
+  contro 26,70 kB di main (+0,08 kB).
+- Corsia coordinata dal direttore; gate del supervisore: T248 approvato al 2o giro (1o giro: il filtro
+  `erroreDiRete` scartava ogni `TypeError`, corretto con un filtro locale), T262 al 1o.
+
 ### Sessione agenti — 2026-11-11 — ciclo 20261111-21 — T246 T234
 
 **Fatto**

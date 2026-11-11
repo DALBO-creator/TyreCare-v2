@@ -3641,3 +3641,35 @@ La funzione blocca la riga (`for update`); senza momento applica e non cancella 
 Il nome è nuovo perché un parametro in più creerebbe un overload ambiguo per PostgREST: la vecchia
 funzione resta ma non è usata. L'indice unico è parziale. `unique_violation` si distingue con `get stacked
 diagnostics constraint_name` (subscription / cliente / altro: nell'ultimo caso l'errore originale).
+
+## Raccolta degli errori dell'app (R33)
+
+**File coinvolti:** `apps/web/src/lib/errori-app.ts`, `apps/web/src/main.ts` (listener),
+`apps/web/src/pagine/comune.ts` (`gestisciErroreCaricamento`).
+**Come funziona:** `segnalaErrore(errore, contesto?)` scrive in `errori_app`, fire-and-forget: non lancia e
+non attende (rifiuti di invio, RLS e trigger ignorati). I listener `error` e `unhandledrejection` di
+`main.ts` e le pagine che non si caricano lo chiamano. `preparaErrore` tronca ai check della tabella:
+percorso 200 (senza query e hash: inviti e report hanno codici), messaggio 500 mai vuoto (con il contesto
+in testa, es. `[caricamento] …`), dettaglio 2000 (stack), versione 40, agente 300; niente `autore_id`
+(default `auth.uid()`).
+
+### Codice complesso
+Non si invia: senza sessione, offline, `ErroreModulo`, errori di rete, stesso percorso+messaggio già inviato
+(`Set` di modulo), oltre 5 invii per caricamento (`_azzeraPerTest` li azzera nei test). Un `TypeError` è di
+rete solo se il messaggio dice `failed to fetch|networkerror|load failed`: `erroreDiRete` di `lib/rete.ts`
+li scarterebbe tutti, anche i bug veri. Il listener `error` può ricevere «Script error.» di script di altri
+domini: i doppioni la limitano a una riga per pagina.
+
+## Test DOM delle pagine di accesso
+
+**File coinvolti:** i test delle pagine accedi, registrati e password dimenticata (happy-dom, 8 test).
+**Come funziona:** le pagine si montano in `#app`; si finge solo `../lib/supabase` (`getSupabase` e
+`chiaveSessione`), mentre `lib/auth` e `ui/modulo` restano veri: così si provano le traduzioni degli errori
+e i metadati di `signUp` (`termini_versione`). Si coprono errori con `aria-invalid`, credenziali errate e
+la schermata «Controlla la posta».
+
+### Codice complesso
+Il finto Supabase usa `vi.fn` creati con `vi.hoisted`, perché `vi.mock` è sollevato in cima al file.
+L'invio è `form.requestSubmit()` e l'attesa `vi.waitFor`; ogni «nessuna chiamata» si verifica solo dopo che
+l'errore è comparso, altrimenti passerebbe a vuoto. Credenziali errate:
+`new AuthError(msg, 400, 'invalid_credentials')`.

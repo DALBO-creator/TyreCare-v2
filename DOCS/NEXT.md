@@ -12,8 +12,8 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261111-21 (T246 guida `DOCS/pilota/email-dominio.md` per la voce D3; T234 motivo
-> del rifiuto scritto dall'admin nel dialogo di conferma), nel treno.
+> Ultima sessione: ciclo 20261112-00 (T248 raccolta degli errori dell'app, R33; T262 test DOM delle pagine di
+> accesso), nel treno. Per R33 restano la pagina admin (T249) e le bozze legali (T250).
 > Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito.
 > Prossimi compiti pronti: la pianificazione della domenica; T235 (anteprima con il contatore delle gomme
 > completate, la parte della pagina che segue T243). Idee nuove: avviso ai titolari quando
