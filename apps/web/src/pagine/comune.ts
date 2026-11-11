@@ -2,6 +2,7 @@ import { CircleCheck } from 'lucide';
 import type { Enums, Posizione, Stagione, Usura } from '@tyrecare/shared';
 import { esci } from '../lib/auth';
 import { ErroreModulo } from '../lib/errori';
+import { segnalaErrore } from '../lib/errori-app';
 import { esc } from '../lib/html';
 import { sessioneNonValida } from '../lib/profilo';
 import { ancoraAttuale, vaiA } from '../lib/router';
@@ -115,6 +116,7 @@ export async function gestisciErroreCaricamento(
     await esci();
     return;
   }
+  if (!(errore instanceof ErroreModulo)) segnalaErrore(errore, 'caricamento');
   if (!ancoraAttuale(n)) return;
   app.innerHTML = paginaApp(
     erroreCaricamento(errore instanceof ErroreModulo ? errore.message : undefined),
