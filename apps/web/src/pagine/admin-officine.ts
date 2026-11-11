@@ -238,8 +238,9 @@ export async function mostraAdminOfficine(app: HTMLElement): Promise<void> {
           iconaPulsante: X,
           inCorso: 'Rifiuto…',
           origine: pulsante,
-          azione: async () => {
-            await rifiutaAffiliazione(o.id);
+          campo: { etichetta: 'Motivo (facoltativo)', max: 300 },
+          azione: async (motivo) => {
+            await rifiutaAffiliazione(o.id, motivo);
             try {
               officine = await caricaOfficineAdmin();
             } catch (errore) {

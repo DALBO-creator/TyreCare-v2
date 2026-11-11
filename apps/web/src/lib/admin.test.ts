@@ -86,6 +86,21 @@ describe('rifiutaAffiliazione', () => {
     expect(rpc).toHaveBeenLastCalledWith('rifiuta_affiliazione', { p_officina_id: 'abc' });
   });
 
+  it('manda il motivo senza spazi ai bordi', async () => {
+    rpc.mockResolvedValueOnce({ error: null });
+    await rifiutaAffiliazione('abc', '  Partita IVA non valida \n');
+    expect(rpc).toHaveBeenLastCalledWith('rifiuta_affiliazione', {
+      p_officina_id: 'abc',
+      p_motivo: 'Partita IVA non valida',
+    });
+  });
+
+  it('un motivo di soli spazi non viene mandato', async () => {
+    rpc.mockResolvedValueOnce({ error: null });
+    await rifiutaAffiliazione('abc', '   ');
+    expect(rpc).toHaveBeenLastCalledWith('rifiuta_affiliazione', { p_officina_id: 'abc' });
+  });
+
   for (const [chiave, messaggio] of Object.entries(messaggi)) {
     it(`${chiave} → messaggio esatto e chiave nell’errore`, async () => {
       rpc.mockResolvedValueOnce({ error: { message: chiave } });

@@ -11,7 +11,9 @@ interface Conferma {
   /** Verbo + oggetto, come il pulsante che apre il dialogo (es. "Elimina veicolo"). */
   pulsante: string;
   /** Azione da eseguire: se fallisce, l'errore compare nel dialogo, che resta aperto. */
-  azione: () => Promise<void>;
+  azione: (testo?: string) => Promise<void>;
+  /** Campo di testo facoltativo sopra i pulsanti: il suo valore arriva ad `azione`. */
+  campo?: { etichetta: string; max: number };
   /** Icona del pulsante di conferma (predefinita: il cestino). */
   iconaPulsante?: IconNode;
   /** Testo del pulsante mentre l'azione è in corso (predefinito: "Eliminazione…"). */
@@ -33,6 +35,7 @@ export function chiediConferma({
   testo,
   pulsante,
   azione,
+  campo,
   origine,
   iconaPulsante = Trash2,
   inCorso = 'Eliminazione…',
@@ -43,7 +46,16 @@ export function chiediConferma({
   dialogo.setAttribute('aria-describedby', 'tc-dialogo-testo');
   dialogo.innerHTML = `
     <h2 id="tc-dialogo-titolo" class="tc-dialogo__titolo">${esc(titolo)}</h2>
-    <p id="tc-dialogo-testo" class="tc-dialogo__testo">${esc(testo)}</p>
+    <p id="tc-dialogo-testo" class="tc-dialogo__testo">${esc(testo)}</p>${
+      campo
+        ? `
+    <div class="mb-3">
+      <label for="tc-dialogo-campo" class="form-label">${esc(campo.etichetta)}</label>
+      <textarea id="tc-dialogo-campo" class="form-control" rows="3" maxlength="${esc(String(campo.max))}"></textarea>
+      <p class="form-text text-end mb-0" data-contatore aria-live="polite">0 / ${esc(String(campo.max))}</p>
+    </div>`
+        : ''
+    }
     <div class="tc-avviso tc-avviso--rosso" role="alert" hidden></div>
     <div class="tc-dialogo__azioni">
       <button type="button" class="btn btn-primary btn-lg" data-conferma>
@@ -56,6 +68,11 @@ export function chiediConferma({
   const conferma = dialogo.querySelector<HTMLButtonElement>('[data-conferma]')!;
   const errore = dialogo.querySelector<HTMLElement>('[role="alert"]')!;
   const testoConferma = conferma.innerHTML;
+  const area = dialogo.querySelector<HTMLTextAreaElement>('#tc-dialogo-campo');
+  const contatore = dialogo.querySelector<HTMLElement>('[data-contatore]');
+  area?.addEventListener('input', () => {
+    if (contatore && campo) contatore.textContent = `${area.value.length} / ${campo.max}`;
+  });
   // Chi aveva il focus prima (il pulsante "Elimina…"): lo riprende se si annulla
   const prima = origine ?? (document.activeElement as HTMLElement | null);
 
@@ -76,15 +93,17 @@ export function chiediConferma({
   conferma.addEventListener('click', async () => {
     errore.hidden = true;
     conferma.disabled = annulla.disabled = true;
+    if (area) area.disabled = true;
     conferma.setAttribute('aria-busy', 'true');
     conferma.innerHTML = `<span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
       ${esc(inCorso)}`;
     try {
-      await azione();
+      await azione(area?.value);
       // L'azione di solito cambia pagina: il dialogo si chiude senza restituire il focus
       if (dialogo.open) dialogo.close();
     } catch (e) {
       conferma.disabled = annulla.disabled = false;
+      if (area) area.disabled = false;
       conferma.removeAttribute('aria-busy');
       conferma.innerHTML = testoConferma;
       errore.innerHTML = `<p class="mb-0">${esc(
