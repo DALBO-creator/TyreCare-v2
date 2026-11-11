@@ -163,10 +163,14 @@ export const ERRORI_RIFIUTO: Record<string, string> = {
 
 /**
  * Rifiuta la richiesta di un'officina IN_ATTESA: la funzione SQL avvisa i membri e cancella l'officina (R24).
- * Nessun motivo dalla pagina per ora.
+ * Il motivo (facoltativo, max 300) arriva nell'avviso a chi ha chiesto; si manda solo se non è vuoto.
  */
-export async function rifiutaAffiliazione(id: string): Promise<void> {
-  const { error } = await getSupabase().rpc('rifiuta_affiliazione', { p_officina_id: id });
+export async function rifiutaAffiliazione(id: string, motivo?: string): Promise<void> {
+  const m = motivo?.trim();
+  const { error } = await getSupabase().rpc(
+    'rifiuta_affiliazione',
+    m ? { p_officina_id: id, p_motivo: m } : { p_officina_id: id },
+  );
   if (!error) return;
   if (codiceErrore(error) === '42501') {
     throw new ErroreModulo("Solo l'amministratore può farlo.", undefined, '42501');
