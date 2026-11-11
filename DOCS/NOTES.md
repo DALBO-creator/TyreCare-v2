@@ -3285,7 +3285,8 @@ messaggio reale lo rivelano.
 (`rifiutaAffiliazione`, `ERRORI_RIFIUTO`), `e2e/tests/admin-rifiuta.spec.ts`.
 **Come funziona:** le officine IN_ATTESA hanno «Rifiuta la richiesta» (stile `tc-pulsante-elimina` con
 `mt-0`) accanto ad «Attiva». `chiediConferma` → `rifiutaAffiliazione(id)` →
-`rpc('rifiuta_affiliazione', { p_officina_id })`, senza motivo dalla pagina. La funzione SQL avvisa i membri
+`rpc('rifiuta_affiliazione', { p_officina_id })` (dal T234 con il motivo facoltativo).
+La funzione SQL avvisa i membri
 («Richiesta non accettata») e cancella l'officina: la partita IVA torna libera.
 
 ### Codice complesso
@@ -3294,6 +3295,20 @@ messaggio reale lo rivelano.
 → «Solo l'amministratore può farlo.»; gli altri errori si rilanciano (`Object.hasOwn`, non `in`).
 `admin-officine.ts` — dopo il ridisegno il focus va all'`h1` alla chiusura del dialogo (evento `close`,
 una volta sola): con il dialogo modale aperto la pagina è inerte e il focus non si può spostare prima.
+
+## Dialogo di conferma con campo di testo (T234)
+
+**File coinvolti:** `apps/web/src/ui/conferma.ts` (`chiediConferma`), `apps/web/src/lib/admin.ts`
+(`rifiutaAffiliazione`), `apps/web/src/pagine/admin-officine.ts`, `e2e/tests/admin-rifiuta.spec.ts`.
+**Come funziona:** `chiediConferma` accetta `campo?: { etichetta, max }`. Se c'è, sopra i pulsanti compaiono
+`<label>`, `<textarea id="tc-dialogo-campo">` con `maxlength` e un contatore «n / max». `azione(testo?)`
+riceve il valore grezzo: trim e scelta di non mandare un vuoto spettano al chiamante (`rifiutaAffiliazione`
+manda `p_motivo` solo se non vuoto dopo `trim`). Il motivo (max 300) arriva nell'avviso a chi aveva chiesto.
+
+### Codice complesso
+`conferma.ts` — senza `campo` l'HTML è identico a prima (ternario che vale ''). Durante l'azione la textarea
+è disabilitata con i pulsanti e riabilitata se l'azione fallisce; il focus iniziale resta su «Annulla». Il
+limite di 300 è anche nella funzione SQL (`MOTIVO_TROPPO_LUNGO`).
 
 ## Email di riserva: preferenza dell'utente (T199)
 
