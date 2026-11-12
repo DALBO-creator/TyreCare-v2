@@ -247,6 +247,14 @@ function riepilogoAnteprima(
             a un pneumatico del veicolo e non verrà importata.
           </p>`
         : ''
+    }
+    ${
+      c.pneumatici_completati > 0
+        ? `<p class="text-body-secondary small mb-0" data-completate>
+            ${plurale(c.pneumatici_completati, 'gomma già registrata sarà completata', 'gomme già registrate saranno completate')}
+            con i dati del file
+          </p>`
+        : ''
     }`;
 }
 
@@ -318,6 +326,14 @@ async function importa(
         <div class="tc-avviso tc-avviso--verde" role="status">
           <p class="mb-0">Import completato: ${esc(frase(c))}.</p>
         </div>
+        ${
+          c.pneumatici_completati > 0
+            ? `<p class="mb-0" data-completate>
+                ${plurale(c.pneumatici_completati, 'gomma già registrata è stata completata', 'gomme già registrate sono state completate')}
+                con i dati del file
+              </p>`
+            : ''
+        }
         ${avvisoTarghe(c.targhe_non_trovate)}
         <a class="btn btn-primary btn-lg w-100" href="/">Torna ai veicoli</a>
       </section>`;
