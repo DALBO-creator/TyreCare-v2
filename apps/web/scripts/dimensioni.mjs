@@ -7,7 +7,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
-const SOGLIA_JS_KB = 70; // 2026-10-30: misurati 60,7 kB gzip + 15%, arrotondato al kB superiore
+// 2026-11-12: misurati 118,4 kB gzip + 15%, arrotondato. Il valore del 2026-10-30 (60,7 kB) veniva da una
+// build senza VITE_SUPABASE_*: senza chiave `getSupabase()` lancia sempre e Rolldown toglie supabase-js
+// dal bundle. Con le variabili vere (produzione) il codice iniziale è ~118 kB e i deploy fallivano.
+const SOGLIA_JS_KB = 137;
 const SOGLIA_CSS_KB = 40; // 2026-10-30: limite fisso per il CSS (gzip, 1 kB = 1000 byte)
 
 const dist = new URL('../dist/', import.meta.url);

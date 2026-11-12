@@ -37,9 +37,16 @@
   scadenza (al massimo 1 ora, `jwt_expiry`).
 - Nessun codice di recupero della 2FA: se si perde il telefono si toglie il fattore dall'editor SQL (vedi
   `NOTES.md`).
-- `npm run build` locale: il controllo delle dimensioni segnala JS iniziale 118 kB oltre la soglia di 70 kB,
-  **già così su `main`** (117,8 kB senza queste modifiche); il typecheck di `e2e` fallisce per
-  `@axe-core/playwright` mancante in locale. Non toccati.
+- Il typecheck di `e2e` fallisce per `@axe-core/playwright` mancante in locale (non toccato).
+
+**Scoperto dopo il push (stesso giorno)**
+
+- **I deploy di produzione su Vercel fallivano da almeno 4 giorni**: `scripts/dimensioni.mjs` (soglia 70 kB)
+  misurato su una build senza `VITE_SUPABASE_*`, dove supabase-js sparisce dal bundle; con le variabili vere il
+  codice iniziale è ~118 kB. Soglia portata a 137 kB (118,4 + 15%), motivo nel commento dello script. Il sito
+  pubblicato era fermo a una versione vecchia.
+- **Le anteprime Vercel erano nere**: `VITE_SUPABASE_ANON_KEY` è impostata solo per *Production* (la URL anche
+  per *Preview*); senza chiave `getSupabase()` lancia all'avvio. Da aggiungere da Davide nella dashboard.
 
 ### Sessione 2026-11-08 — demo per il titolare di LA SANTI GOMME
 
