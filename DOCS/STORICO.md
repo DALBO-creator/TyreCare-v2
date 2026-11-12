@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-12 — ciclo 20261112-03 — T242 T235
+
+**Fatto**
+
+- T242: i titolari di un'officina sospesa ricevono un avviso nell'app («La tua officina è sospesa», link
+  `/commento`); nuovo valore `AFFILIAZIONE_SOSPESA` di `tipo_notifica` (migrazione 20261108000500), icona
+  `CirclePause`; nuovo pgTAP `sospendi-officina-avviso.test.sql` (18 asserzioni, verifica in CI).
+- T235: l'anteprima e l'esito dell'import dei controlli dicono quante gomme già registrate vengono completate
+  con DOT, marca o misura del file (`pneumatici_completati` di T243); chiave facoltativa nello schema
+  (assente = 0); unit test e un e2e nuovo (verifica in CI).
+- Verifiche: prova d'insieme: 685 test vitest, JS iniziale 26,70 kB.
+- Corsia C1 coordinata dal direttore; gate del supervisore approvati al 1o giro.
+- Nota: il treno precedente #90 ha avuto l'e2e rosso per una porta occupata sul runner (`supabase start`),
+  rilanciato senza commit e unito.
+
 ### Sessione agenti — 2026-11-12 — ciclo 20261112-00 — T248 T262
 
 **Fatto**
@@ -13,7 +28,7 @@
   caricamento; JS iniziale +0,08 kB.
 - T262: test DOM happy-dom delle pagine accedi, registrati e password dimenticata (8 test: errori con
   `aria-invalid`, credenziali errate, `termini_versione` in `signUp`, schermata «Controlla la posta»).
-- Verifiche: prova d'insieme verde (65 file, 699 test vitest, build ok); JS iniziale `index-*.js` 26,78 kB
+- Verifiche: prova d'insieme verde (65 file, 700 test vitest, build ok); JS iniziale `index-*.js` 26,78 kB
   contro 26,70 kB di main (+0,08 kB).
 - Corsia coordinata dal direttore; gate del supervisore: T248 approvato al 2o giro (1o giro: il filtro
   `erroreDiRete` scartava ogni `TypeError`, corretto con un filtro locale), T262 al 1o.

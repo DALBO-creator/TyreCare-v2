@@ -3426,6 +3426,20 @@ ai clienti.", link `/clienti`. Da ATTIVA nessun avviso. Tipo e firma della funzi
 letto non può cambiare sotto i piedi e decide il testo. Da ATTIVA l'update non cambia nulla e `row_count`
 è 0, quindi nessun avviso (come in T191).
 
+## Avviso di sospensione dell'officina (T242, R36)
+
+**File coinvolti:** migrazione `supabase/migrations/20261108000500_sospendi_officina_avviso.sql`,
+`apps/web/src/pagine/notifiche.ts` (icona), pgTAP `supabase/tests/database/sospendi-officina-avviso.test.sql`.
+**Come funziona:** quando l'admin sospende un'officina (`sospendi_officina`), ogni TITOLARE riceve una
+notifica `AFFILIAZIONE_SOSPESA`: titolo «La tua officina è sospesa», testo «<ragione sociale> non è più
+visibile ai clienti. Per sapere perché scrivici con «Invia un commento».», link `/commento`. Gli operatori
+non sono avvisati; il ruolo dei titolari non cambia (R14). L'icona è `CirclePause`.
+
+### Codice complesso
+Come in `attiva_officina` (T191/T219) la transizione si riconosce da `get diagnostics … row_count` dopo
+l'update con `where stato_affiliazione is distinct from 'SOSPESA'`: già SOSPESA o due sospensioni insieme
+danno un solo avviso. Il nuovo valore enum si usa solo nel corpo plpgsql.
+
 ## Demo per il titolare di LA SANTI GOMME (2026-11-08)
 
 **File coinvolti:** `supabase/demo/la-santi-gomme.sql`, guida `DOCS/pilota/demo-la-santi.md`.
@@ -3623,6 +3637,21 @@ Il conteggio usa `get diagnostics row_count` dopo l'update del passo 1b, che toc
 campo cambia. Si contano gli aggiornamenti, non le gomme distinte: una gomma completata in due passi
 conta 2. In simulazione l'update parte nella sottotransazione annullata da TCSIM e il contatore (variabile
 locale) sopravvive: l'anteprima mostra lo stesso numero dell'import vero.
+
+## Import controlli: gomme completate in anteprima ed esito (T235)
+
+**File coinvolti:** `apps/web/src/lib/importa-controlli.ts` (`leggiConteggiControlli`),
+`apps/web/src/pagine/importa-controlli.ts`, `lib/importa-controlli.test.ts`, `e2e/tests/import-controlli.spec.ts`.
+**Come funziona:** la pagina mostra quante gomme già registrate sono state completate con DOT, marca o misura
+del file (`pneumatici_completati` di T243). La riga compare solo se N > 0, in anteprima (`data-completate`,
+testo piccolo) e nell'esito, con `plurale()`. Il conteggio è quello reale della funzione SQL anche in
+simulazione (conta gli aggiornamenti, non le gomme distinte; reimport = 0): l'anteprima non promette più di
+quanto succede (T044).
+
+### Codice complesso
+`leggiConteggiControlli` legge `pneumatici_completati` come chiave facoltativa: assente = 0 (database non
+ancora aggiornato); presente ma non intero >= 0, anche `null`, è un errore che nomina la chiave. e2e: la gomma
+nasce con un primo import a DOT vuoto, poi un secondo file con DOT e documento nuovo la completa.
 
 ## Stripe: ordine degli eventi e cliente unico (T211)
 

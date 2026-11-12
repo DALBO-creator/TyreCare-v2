@@ -12,12 +12,11 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261112-00 (T248 raccolta degli errori dell'app, R33; T262 test DOM delle pagine di
-> accesso), nel treno. Per R33 restano la pagina admin (T249) e le bozze legali (T250).
+> Ultima sessione: ciclo 20261112-03 (T242 avviso ai titolari quando l'officina è sospesa, R36; T235 anteprima
+> ed esito dell'import con le gomme completate), nel treno. Per R33 restano la pagina admin (T249) e le bozze
+> legali (T250).
 > Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito.
-> Prossimi compiti pronti: la pianificazione della domenica; T235 (anteprima con il contatore delle gomme
-> completate, la parte della pagina che segue T243). Idee nuove: avviso ai titolari quando
-> `sospendi_officina` sospende l'officina;
+> Prossimi compiti pronti: la pianificazione della domenica. Idee nuove:
 > T240 (guida cliente, passo 7: «Chiama» compare solo se l'officina ha un telefono, altrimenti la notifica
 > dice «ti chiamerà al numero che hai indicato»).
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
