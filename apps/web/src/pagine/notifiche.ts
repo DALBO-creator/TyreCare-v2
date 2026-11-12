@@ -9,6 +9,7 @@ import {
   CalendarPlus,
   CalendarX,
   CircleCheck,
+  CirclePause,
   CircleX,
   ClipboardCheck,
   LifeBuoy,
@@ -53,6 +54,7 @@ const ICONE: Record<Enums<'tipo_notifica'>, IconNode> = {
   AFFILIAZIONE_RICHIESTA: Building2,
   AFFILIAZIONE_ATTIVATA: BadgeCheck,
   AFFILIAZIONE_RIFIUTATA: CircleX,
+  AFFILIAZIONE_SOSPESA: CirclePause,
 };
 
 function rigaNotifica(n: Notifica): string {
