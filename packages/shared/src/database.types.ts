@@ -1441,7 +1441,8 @@ export type Database = {
         | 'STRADA_ANNULLATA'
         | 'AFFILIAZIONE_RICHIESTA'
         | 'AFFILIAZIONE_ATTIVATA'
-        | 'AFFILIAZIONE_RIFIUTATA';
+        | 'AFFILIAZIONE_RIFIUTATA'
+        | 'AFFILIAZIONE_SOSPESA';
       usura: 'REGOLARE' | 'INTERNA' | 'ESTERNA' | 'CENTRALE' | 'BORDI';
     };
     CompositeTypes: {
@@ -1589,6 +1590,7 @@ export const Constants = {
         'AFFILIAZIONE_RICHIESTA',
         'AFFILIAZIONE_ATTIVATA',
         'AFFILIAZIONE_RIFIUTATA',
+        'AFFILIAZIONE_SOSPESA',
       ],
       usura: ['REGOLARE', 'INTERNA', 'ESTERNA', 'CENTRALE', 'BORDI'],
     },
