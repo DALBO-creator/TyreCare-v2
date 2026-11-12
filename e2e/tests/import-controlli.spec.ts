@@ -66,6 +66,64 @@ test('il titolare importa i controlli di un veicolo e reimportarli non li duplic
   await expect(page.getByRole('button', { name: 'Importa i controlli' })).toHaveCount(0);
 });
 
+test('il titolare vede quante gomme già registrate saranno completate col DOT del file', async ({
+  page,
+}) => {
+  const id = unico();
+  const targa = `L${id.slice(-7)}`;
+
+  await accedi(page, 'titolare@tyrecare.test');
+  const clienteId = await creaCliente(page, { nome: 'Completate', cognome: `Import${id}` });
+  await creaVeicolo(page, clienteId, { targa, marca: 'Fiat', modello: 'Panda' });
+
+  // Stessa gomma (posizione, marca, misura); il DOT è vuoto nel primo file e pieno nel secondo
+  const riga = (doc: string, data: string, dot: string) => [
+    doc,
+    targa,
+    data,
+    '40000',
+    'ANT_SX',
+    '5,5',
+    '2,2',
+    'REGOLARE',
+    '',
+    'ESTIVO',
+    '205/55 R16',
+    'Pirelli',
+    'Cinturato',
+    dot,
+    '',
+  ];
+  const file = (nome: string, righe: string[][]) => ({
+    name: `${nome}-${id}.csv`,
+    mimeType: 'text/csv',
+    buffer: Buffer.from(csvControlli(righe), 'utf8'),
+  });
+  const senzaDot = file('senza-dot', [riga(`C1${id}`, '15/01/2026', '')]);
+  const conDot = file('con-dot', [riga(`C2${id}`, '20/03/2026', '2321')]);
+
+  // Primo import: crea la gomma senza DOT, niente da completare
+  await page.goto('/clienti/importa-controlli');
+  await page.getByLabel('File CSV o Excel').setInputFiles(senzaDot);
+  await expect(page.getByText(/^1 controllo nuovo · 0 già presenti/)).toBeVisible();
+  await expect(page.locator('[data-completate]')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Importa i controlli' }).click();
+  await expect(page.getByText(/^Import completato: 1 controllo nuovo/)).toBeVisible();
+  await expect(page.locator('[data-completate]')).toHaveCount(0);
+
+  // Secondo file: la gomma già registrata prende il DOT, in anteprima e nell'esito
+  await page.goto('/clienti/importa-controlli');
+  await page.getByLabel('File CSV o Excel').setInputFiles(conDot);
+  await expect(
+    page.getByText('1 gomma già registrata sarà completata con i dati del file'),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'Importa i controlli' }).click();
+  await expect(page.getByText(/^Import completato: 1 controllo nuovo/)).toBeVisible();
+  await expect(
+    page.getByText('1 gomma già registrata è stata completata con i dati del file'),
+  ).toBeVisible();
+});
+
 test("l'operatore non può importare i controlli", async ({ page }) => {
   await accedi(page, 'operatore@tyrecare.test');
   await page.goto('/clienti/importa-controlli');

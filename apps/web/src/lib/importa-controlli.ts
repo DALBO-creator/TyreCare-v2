@@ -13,6 +13,8 @@ export interface ConteggiControlli {
   misure_nuove: number;
   /** Misure di posizioni che non si possono agganciare a un pneumatico: non importate. */
   misure_saltate: number;
+  /** Gomme già registrate che hanno preso DOT, marca o misura dal file (0 se il database non lo dice). */
+  pneumatici_completati: number;
   /** Targhe del file che non corrispondono a nessun veicolo (al massimo 50, senza doppioni). */
   targhe_non_trovate: string[];
 }
@@ -39,11 +41,16 @@ export function leggiConteggiControlli(dati: unknown): ConteggiControlli {
     }
     numeri[campo] = v;
   }
+  // Chiave facoltativa: assente (database non ancora aggiornato) vale 0
+  const completati = d.pneumatici_completati === undefined ? 0 : d.pneumatici_completati;
+  if (typeof completati !== 'number' || !Number.isInteger(completati) || completati < 0) {
+    throw new Error("Risposta dell'import non valida (pneumatici_completati).");
+  }
   const targhe = d.targhe_non_trovate ?? [];
   if (!Array.isArray(targhe) || !targhe.every((t) => typeof t === 'string')) {
     throw new Error("Risposta dell'import non valida (targhe_non_trovate).");
   }
-  return { ...numeri, targhe_non_trovate: targhe };
+  return { ...numeri, pneumatici_completati: completati, targhe_non_trovate: targhe };
 }
 
 interface ImportControlli {

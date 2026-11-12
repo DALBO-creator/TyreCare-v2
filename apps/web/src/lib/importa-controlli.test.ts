@@ -7,6 +7,7 @@ const valido = {
   pneumatici_nuovi: 4,
   misure_nuove: 8,
   misure_saltate: 0,
+  pneumatici_completati: 3,
   targhe_non_trovate: ['AB123CD'],
 };
 
@@ -19,6 +20,18 @@ describe('leggiConteggiControlli', () => {
     const senza: Record<string, unknown> = { ...valido };
     delete senza.targhe_non_trovate;
     expect(leggiConteggiControlli(senza).targhe_non_trovate).toEqual([]);
+  });
+
+  it('senza pneumatici_completati vale 0 (database non ancora aggiornato)', () => {
+    const senza: Record<string, unknown> = { ...valido };
+    delete senza.pneumatici_completati;
+    expect(leggiConteggiControlli(senza).pneumatici_completati).toBe(0);
+  });
+
+  it.each([-1, 1.5, '2', null])('rifiuta pneumatici_completati = %j', (v) => {
+    expect(() => leggiConteggiControlli({ ...valido, pneumatici_completati: v })).toThrow(
+      /pneumatici_completati/,
+    );
   });
 
   it.each([null, 'x', 3, [], undefined])('rifiuta %j', (dati) => {
