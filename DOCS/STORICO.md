@@ -14,7 +14,7 @@
 - T235: l'anteprima e l'esito dell'import dei controlli dicono quante gomme già registrate vengono completate
   con DOT, marca o misura del file (`pneumatici_completati` di T243); chiave facoltativa nello schema
   (assente = 0); unit test e un e2e nuovo (verifica in CI).
-- Verifiche: prova d'insieme: 685 test vitest, JS iniziale 26,70 kB.
+- Verifiche: prova d'insieme: 705 test vitest sul treno (65 file), JS iniziale 26,78 kB come main.
 - Corsia C1 coordinata dal direttore; gate del supervisore approvati al 1o giro.
 - Nota: il treno precedente #90 ha avuto l'e2e rosso per una porta occupata sul runner (`supabase start`),
   rilanciato senza commit e unito.
