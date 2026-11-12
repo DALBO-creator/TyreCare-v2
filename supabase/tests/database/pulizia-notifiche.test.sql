@@ -53,7 +53,7 @@ select is((select quante from esito), 3, 'restituisce quante ne ha cancellate');
 set local role authenticated;
 select set_config(
   'request.jwt.claims',
-  json_build_object('sub', 'a0000000-0000-4000-8000-000000000002', 'role', 'authenticated')::text,
+  json_build_object('sub', 'a0000000-0000-4000-8000-000000000002', 'role', 'authenticated', 'aal', 'aal2')::text,
   true
 );
 select throws_ok(

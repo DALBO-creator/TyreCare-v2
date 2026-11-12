@@ -10,11 +10,11 @@ import {
   type OfficinaAdmin,
 } from '../lib/admin';
 import { esc } from '../lib/html';
-import { caricaDatiUtente } from '../lib/profilo';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { chiediConferma } from '../ui/conferma';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
+import { accessoAdmin } from './admin-comune';
 import {
   ETICHETTE_STATO_OFFICINA,
   formattaData,
@@ -90,14 +90,7 @@ export async function mostraAdminOfficine(app: HTMLElement): Promise<void> {
 
   let officine: OfficinaAdmin[];
   try {
-    const { profilo } = await caricaDatiUtente();
-    if (profilo.ruolo !== 'ADMIN') {
-      if (!ancoraAttuale(n)) return;
-      app.innerHTML = paginaApp(`
-        ${intestazioneSottopagina('Officine', 'Amministratore')}
-        <div class="tc-contenuto"><p>Pagina riservata all'amministratore.</p></div>`);
-      return;
-    }
+    if (!(await accessoAdmin(app, n, 'Officine'))) return;
     officine = await caricaOfficineAdmin();
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);

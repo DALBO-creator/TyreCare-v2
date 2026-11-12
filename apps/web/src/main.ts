@@ -171,6 +171,25 @@ const ROTTE: Rotta[] = [
     titolo: 'Abbonamento',
     mostra: pigra(() => import('./pagine/abbonamento'), 'mostraAbbonamento'),
   },
+  // Area amministratore: ruolo ADMIN e verifica in due passaggi (lo controlla anche il database)
+  {
+    percorso: '/admin',
+    accesso: 'utente',
+    titolo: 'Pannello amministratore',
+    mostra: pigra(() => import('./pagine/admin'), 'mostraAdmin'),
+  },
+  {
+    percorso: '/admin/utenti',
+    accesso: 'utente',
+    titolo: 'Account',
+    mostra: pigra(() => import('./pagine/admin-utenti'), 'mostraAdminUtenti'),
+  },
+  {
+    percorso: '/admin/registro',
+    accesso: 'utente',
+    titolo: 'Registro delle azioni',
+    mostra: pigra(() => import('./pagine/admin-registro'), 'mostraAdminRegistro'),
+  },
   {
     percorso: '/admin/officine',
     accesso: 'utente',

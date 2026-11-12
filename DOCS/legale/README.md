@@ -83,14 +83,14 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
   quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
   rivedere; restano da completare i contatti e il termine del DPA §12.1.
-- [ ] **Autenticazione a due fattori** per titolari delle officine e amministratori: disattivata
-  (`[auth.mfa.totp]` con `enroll_enabled = false` in `supabase/config.toml`).
+- [~] **Autenticazione a due fattori** per titolari delle officine e amministratori: **fatta per
+  l'amministratore** (2026-11-12, obbligatoria: `is_admin()` richiede `aal2`; azioni dell'admin nel registro
+  `admin_registro`); per i titolari resta da fare.
 - [ ] **Regole sulle password più robuste:** oggi solo lunghezza minima 8 (`password_requirements = ""`) e
   `secure_password_change = false` (cambio password senza riautenticazione recente).
 - [~] **Intestazioni di sicurezza del sito:** in parte fatto (T036): intestazioni attive (nosniff,
-  X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS senza `includeSubDomains`); la CSP è in sola
-  osservazione (`Content-Security-Policy-Report-Only`) e va resa obbligatoria dopo aver controllato la
-  console del sito pubblicato (`apps/web/vercel.json`).
+  X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS senza `includeSubDomains`); la CSP è applicata dal
+  2026-11-12 (`apps/web/vercel.json`, più COOP): da controllare la console del sito pubblicato.
 - [ ] **Protezione dagli abusi** su registrazione e accesso (captcha): non configurata; oggi ci sono solo i
   limiti di frequenza di Supabase.
 - [ ] **Regioni dei fornitori:** Vercel (nessuna regione impostata in `vercel.json`), Resend e la funzione

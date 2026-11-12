@@ -431,6 +431,15 @@ dominio (SPF/DKIM su Resend) li configura **una volta** il titolare; poi si aggi
 Supabase. Non serve più chiedere a ogni officina chi gestisce il suo dominio. Sostituisce l'"SMTP definitivo con
 il dominio di LA SANTI GOMME".
 
+### P24 — Area amministratore protetta dalla 2FA ✅
+
+**Decisione (2026-11-12, richiesta del titolare):** l'area `/admin` è del solo titolare di TyreCare. L'account
+ADMIN funziona da amministratore **solo dopo la verifica in due passaggi** (TOTP, `aal2` controllato da
+`is_admin()` nel database); il ruolo ADMIN si assegna solo dall'editor SQL; ogni azione dell'admin finisce
+in un registro che nessuno può modificare dall'app. Strumenti: riepilogo della piattaforma, ricerca e
+correzione degli account (dati, ruolo, conferma email, nuova password, sessioni, blocco), officine,
+commenti, registro. Dettagli in `NOTES.md` → "Pannello amministratore e 2FA".
+
 ## B4. Aspetti legali e privacy
 
 ### P17 — GDPR ✅

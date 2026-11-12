@@ -1,10 +1,10 @@
 import { MessageSquare } from 'lucide';
 import { caricaCommentiAdmin, formattaDataOra, type CommentoAdmin } from '../lib/admin';
 import { esc } from '../lib/html';
-import { caricaDatiUtente } from '../lib/profilo';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
+import { accessoAdmin } from './admin-comune';
 import { gestisciErroreCaricamento, intestazioneSottopagina } from './comune';
 
 // Pagina dell'amministratore (T103): i commenti mandati con "Invia un commento". Sola lettura.
@@ -27,14 +27,7 @@ export async function mostraAdminCommenti(app: HTMLElement): Promise<void> {
 
   let commenti: CommentoAdmin[];
   try {
-    const { profilo } = await caricaDatiUtente();
-    if (profilo.ruolo !== 'ADMIN') {
-      if (!ancoraAttuale(n)) return;
-      app.innerHTML = paginaApp(`
-        ${intestazioneSottopagina('Commenti degli utenti', 'Amministratore')}
-        <div class="tc-contenuto"><p>Pagina riservata all'amministratore.</p></div>`);
-      return;
-    }
+    if (!(await accessoAdmin(app, n, 'Commenti degli utenti'))) return;
     commenti = await caricaCommentiAdmin();
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);

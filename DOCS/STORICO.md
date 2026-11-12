@@ -4,6 +4,43 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione 2026-11-12 — pannello amministratore e sicurezza (branch `claude/pannello-admin`)
+
+**Fatto**
+
+- Richiesta di Davide: un'area amministratore accessibile solo a lui, con strumenti di amministrazione e
+  correzione rapida, e l'app più robusta lato sicurezza. Da ora si lavora in branch.
+- Migrazione `20261112000100_pannello_admin.sql`:
+  - `is_admin()` vale solo con la **verifica in due passaggi** (claim `aal` = `aal2`): con la sola
+    password l'account ADMIN è un utente normale per RLS e funzioni;
+  - il ruolo **ADMIN si dà e si toglie solo dal database** (trigger `proteggi_ruolo_admin`);
+  - **registro delle azioni** `admin_registro` (solo lettura per l'admin, scritto da trigger su profiles,
+    officine, officina_utenti, abbonamenti e dalle funzioni nuove);
+  - funzioni `admin_riepilogo`, `admin_cerca_utenti`, `admin_correggi_profilo`, `admin_cambia_ruolo`,
+    `admin_conferma_email`, `admin_blocca_utente`, `admin_disconnetti_utente`.
+- Pagine nuove: `/admin` (numeri, «Da guardare», strumenti), `/admin/utenti` (ricerca e azioni rapide:
+  correggi dati e ruolo, conferma email, email per nuova password, chiudi sessioni, blocca/sblocca),
+  `/admin/registro`. Ingresso comune `pagine/admin-comune.ts` con la schermata della 2FA (registrazione
+  dell'app con QR la prima volta, poi codice); la usano anche `/admin/officine` e `/admin/commenti`.
+  Link «Pannello amministratore» nel Profilo.
+- Sicurezza del sito: CSP **applicata** (non più Report-Only) con `object-src 'none'` e
+  `upgrade-insecure-requests`, più `Cross-Origin-Opener-Policy: same-origin` (`vercel.json`).
+- TOTP acceso in `supabase/config.toml`; nel seed l'admin di prova ha una 2FA con chiave nota (solo
+  locale); gli e2e calcolano il codice (`codiceTotp` in `e2e/tests/aiuti.ts`).
+- Test: pgTAP `pannello-admin.test.sql` (24) e `aal2` nelle sessioni simulate di tutti gli altri file
+  (44 file, 951 test verdi); unitari `admin-pannello.test.ts` (651 in tutto verdi); e2e
+  `admin-pannello.spec.ts` (2) più i 7 e2e admin esistenti verdi.
+
+**Non fatto / limiti**
+
+- Il blocco e «Chiudi le sessioni» tolgono i refresh token: il token già emesso resta valido fino alla
+  scadenza (al massimo 1 ora, `jwt_expiry`).
+- Nessun codice di recupero della 2FA: se si perde il telefono si toglie il fattore dall'editor SQL (vedi
+  `NOTES.md`).
+- `npm run build` locale: il controllo delle dimensioni segnala JS iniziale 118 kB oltre la soglia di 70 kB,
+  **già così su `main`** (117,8 kB senza queste modifiche); il typecheck di `e2e` fallisce per
+  `@axe-core/playwright` mancante in locale. Non toccati.
+
 ### Sessione 2026-11-08 — demo per il titolare di LA SANTI GOMME
 
 **Fatto**
