@@ -4,7 +4,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(39);
+select plan(49);
 
 -- Simula una richiesta dal client con il JWT dell'utente indicato.
 create function pg_temp.come(p_utente uuid) returns void language plpgsql as $$
@@ -295,6 +295,70 @@ select is(
   (select command from cron.job where jobname = 'pulizia-eventi-stripe'),
   'select public.pulisci_eventi_stripe()',
   'il job chiama la funzione'
+);
+
+-- ---------------------------------------------------------------- motivo degli eventi scartati (T231)
+select pg_temp.come_servizio();
+select public.registra_evento_stripe('evt_test_motivo', 'customer.subscription.updated');
+select is(
+  public.annota_evento_stripe('evt_test_motivo', 'ABBONAMENTO_NON_TROVATO'),
+  true,
+  'annota_evento_stripe su un evento registrato: true'
+);
+select is(
+  (select motivo from public.stripe_eventi where id = 'evt_test_motivo'),
+  'ABBONAMENTO_NON_TROVATO',
+  'il motivo è salvato sull''evento'
+);
+select is(
+  public.annota_evento_stripe('evt_test_inesistente', 'ABBONAMENTO_NON_TROVATO'),
+  false,
+  'annota_evento_stripe su un evento mai registrato: false'
+);
+
+select pg_temp.come(:titolare); -- titolare di Gomme Rossi
+select throws_ok(
+  $$select public.annota_evento_stripe('evt_test_motivo', 'MOTIVO_DEL_TITOLARE')$$,
+  '42501', null,
+  'il titolare non può annotare eventi di Stripe'
+);
+select throws_ok(
+  'select motivo from public.stripe_eventi',
+  '42501', null,
+  'il titolare non legge il motivo degli eventi'
+);
+reset role;
+select is(
+  (select motivo from public.stripe_eventi where id = 'evt_test_motivo'),
+  'ABBONAMENTO_NON_TROVATO',
+  'il tentativo del titolare non ha cambiato il motivo'
+);
+select ok(
+  not has_function_privilege('authenticated', 'public.annota_evento_stripe(text, text)', 'execute')
+  and not has_function_privilege('anon', 'public.annota_evento_stripe(text, text)', 'execute')
+  and has_function_privilege('service_role', 'public.annota_evento_stripe(text, text)', 'execute'),
+  'annota_evento_stripe: solo il service role la chiama'
+);
+
+select pg_temp.come_servizio();
+select public.annota_evento_stripe('evt_test_motivo', repeat('x', 250));
+select is(
+  (select char_length(motivo) from public.stripe_eventi where id = 'evt_test_motivo'),
+  200,
+  'un motivo di 250 caratteri si salva troncato a 200'
+);
+select public.annota_evento_stripe('evt_test_motivo', null);
+select is(
+  (select motivo from public.stripe_eventi where id = 'evt_test_motivo'),
+  null,
+  'un motivo nullo cancella quello presente'
+);
+reset role;
+select throws_ok(
+  $$insert into public.stripe_eventi (id, tipo, motivo)
+    values ('evt_test_lungo', 'invoice.paid', repeat('x', 201))$$,
+  '23514', null,
+  'la tabella rifiuta un motivo più lungo di 200 caratteri'
 );
 
 select * from finish();
