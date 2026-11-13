@@ -1096,16 +1096,19 @@ export type Database = {
       stripe_eventi: {
         Row: {
           id: string;
+          motivo: string | null;
           ricevuto_il: string;
           tipo: string;
         };
         Insert: {
           id: string;
+          motivo?: string | null;
           ricevuto_il?: string;
           tipo: string;
         };
         Update: {
           id?: string;
+          motivo?: string | null;
           ricevuto_il?: string;
           tipo?: string;
         };
@@ -1200,6 +1203,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      annota_evento_stripe: { Args: { p_id: string; p_motivo: string }; Returns: boolean };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
       annulla_richiesta_strada: { Args: { p_id: string }; Returns: undefined };

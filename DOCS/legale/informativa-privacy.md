@@ -126,6 +126,17 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
   conservato**: restano solo i dati importati e questo registro;
 - associazioni di colonne salvate dall'officina per i suoi file (nomi delle colonne, chi le ha create).
 
+**Errori dell'app** (solo se hai un account)
+
+- quando l'app incontra un errore non gestito o una pagina che non si carica (non gli errori di rete né
+  quelli dei moduli, come una password sbagliata), il tuo browser ne manda un resoconto a TyreCare:
+  l'indirizzo della pagina in cui eri, senza la parte dopo `?` o `#` (dove stanno i codici dei link di
+  invito e dei report), il messaggio dell'errore (fino a 500 caratteri), il dettaglio tecnico (fino a 2000
+  caratteri), la versione dell'app, il browser che usi (fino a 300 caratteri), il tuo account e la data;
+- l'app ne manda al massimo 5 per ogni caricamento e il database ne accetta al massimo 30 al giorno per
+  utente; non si usa nessun servizio esterno di raccolta degli errori;
+- li legge solo l'amministratore di TyreCare, dalla pagina di amministrazione degli errori.
+
 **Dati tecnici**
 
 - i fornitori che ospitano l'app e il database (vedi §5) registrano dati tecnici delle connessioni, come
@@ -147,6 +158,7 @@ dispositivo **solo** se invii una richiesta di aiuto su strada (vedi sopra).
 | Avvisarti nell'app e con le push dei cambi di stato delle prenotazioni | Notifiche, iscrizioni push | Esecuzione del contratto (art. 6.1.b); le push solo se le attivi nel browser |
 | Promemoria del giorno prima, esito del controllo, cambio stagionale degli pneumatici | Notifiche, iscrizioni push, veicoli e pneumatici | [DA COMPLETARE: esecuzione del contratto, legittimo interesse o consenso — vedi README, domanda 1] |
 | Gestione dell'officina: clienti, veicoli, controlli, import dal gestionale | Dati caricati dall'officina | Trattamento per conto dell'officina (art. 28); la base giuridica è quella scelta dall'officina titolare |
+| Correggere i malfunzionamenti dell'app | Errori dell'app, account | [DA COMPLETARE: base giuridica, proposta legittimo interesse (art. 6.1.f) — vedi README, domanda 17] |
 | Sicurezza del servizio, prevenzione di abusi, difesa in giudizio | Dati tecnici, account | Legittimo interesse (art. 6.1.f) |
 | Gestire l'abbonamento dell'officina e il suo pagamento con carta tramite Stripe | Dati delle officine, abbonamento | Esecuzione del contratto (art. 6.1.b) |
 | Obblighi di legge (es. fiscali, per gli abbonamenti delle officine) | Dati delle officine | Obbligo legale (art. 6.1.c) |
@@ -160,9 +172,9 @@ l'officina possa contattarti.
 
 ## 4. Per quanto tempo conserviamo i dati
 
-L'app cancella da sola **le notifiche e le richieste di aiuto su strada** (vedi sotto): gli altri
-dati restano finché non vengono eliminati dall'officina, dall'interessato o alla chiusura dell'account.
-I tempi previsti sono:
+L'app cancella da sola **le notifiche, le richieste di aiuto su strada e gli errori dell'app** (vedi
+sotto): gli altri dati restano finché non vengono eliminati dall'officina, dall'interessato o alla chiusura
+dell'account. I tempi previsti sono:
 
 - **account e profilo**: finché l'account è attivo; dopo la richiesta di cancellazione
   [DA COMPLETARE: entro quanti giorni];
@@ -172,6 +184,8 @@ I tempi previsti sono:
   da sola dopo 24 ore se l'officina non la chiude; le richieste chiuse, annullate o scadute (con posizione,
   telefono, descrizione e targa) vengono cancellate dopo **90 giorni**; se elimini il tuo account, le tue
   richieste di aiuto su strada vengono cancellate subito con l'account;
+- **errori dell'app**: un job notturno li cancella dopo **30 giorni**; se elimini il tuo account, i tuoi
+  errori vengono cancellati subito con l'account;
 - **prenotazioni**: un job notturno le cancella automaticamente 24 mesi dopo il giorno dell'appuntamento,
   in qualsiasi stato; con loro spariscono le notifiche collegate;
 - **iscrizioni push**: finché non disattivi le notifiche push nell'app o dal browser (in quel caso
@@ -184,9 +198,10 @@ I tempi previsti sono:
 - **dati tecnici dei fornitori**: per i tempi indicati dai fornitori [DA COMPLETARE].
 
 Se elimini il tuo account vengono eliminati anche il tuo profilo, le tue prenotazioni (anche quelle
-passate), le tue notifiche, le tue iscrizioni push e i tuoi commenti. Le schede cliente, i veicoli, i
-controlli, gli inviti e i registri di importazione caricati da un'officina restano all'officina (titolare),
-che li gestisce secondo le sue regole: il collegamento con il tuo account viene tolto.
+passate), le tue notifiche, le tue iscrizioni push, i tuoi commenti, le tue richieste di aiuto su strada e i
+tuoi errori dell'app. Le schede cliente, i veicoli, i controlli, gli inviti e i registri di importazione
+caricati da un'officina restano all'officina (titolare), che li gestisce secondo le sue regole: il
+collegamento con il tuo account viene tolto.
 
 ## 5. A chi comunichiamo i dati
 
@@ -240,10 +255,12 @@ Hai diritto di:
 **Come fare:** dal tuo **Profilo** nell'app.
 
 - **«Scarica i tuoi dati»**: un file (JSON) con il tuo profilo, la tua email, le tue schede nelle officine,
-  il garage, le prenotazioni, le notifiche, i commenti, le officine in cui lavori e il numero di
-  dispositivi con le notifiche push attive. **Non** contiene gli inviti dell'officina che hai usato né i
-  link dei report che hai creato: sono registri dell'officina, non dati che hai fornito tu
-  [DA COMPLETARE: confermare con il consulente]. Non contiene nemmeno i dati tecnici delle iscrizioni push.
+  il garage, le prenotazioni, le richieste di aiuto su strada, le notifiche, i commenti, le officine in cui
+  lavori e il numero di dispositivi con le notifiche push attive. **Non** contiene gli inviti dell'officina
+  che hai usato né i link dei report che hai creato: sono registri dell'officina, non dati che hai fornito
+  tu [DA COMPLETARE: confermare con il consulente]. Non contiene nemmeno i dati tecnici delle iscrizioni
+  push né gli errori dell'app (sono resoconti tecnici letti solo dall'amministratore, non dati che hai
+  fornito tu) [DA COMPLETARE: confermare con il consulente — README, domanda 17].
 - **«Elimina il tuo account»**: cancella l'account, con quanto indicato nella sezione 4. Non si può
   eliminare se sei un amministratore, se sei titolare di un'officina, se hai prenotazioni in corso
   (richieste, proposte o confermate) o se hai una richiesta di aiuto su strada in corso (aperta, o

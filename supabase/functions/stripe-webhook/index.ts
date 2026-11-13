@@ -109,6 +109,23 @@ Deno.serve(async (richiesta) => {
   });
   if (erroreRegistra) return erroreDatabase('registrazione evento', erroreRegistra.message);
 
+  // Il motivo dello scarto resta sull'evento anche dopo che i log della funzione sono spariti.
+  // Anche con `nuovo === false` (consegna contemporanea): stesso evento, stesso motivo.
+  // Solo diagnostica: un errore finisce nel log e non cambia la risposta a Stripe.
+  if (scartato !== null) {
+    try {
+      const { error: erroreAnnota } = await supabase.rpc('annota_evento_stripe', {
+        p_id: id,
+        p_motivo: scartato,
+      });
+      if (erroreAnnota) {
+        console.error('Webhook di Stripe: motivo non salvato,', type, id, erroreAnnota.message);
+      }
+    } catch (e) {
+      console.error('Webhook di Stripe: motivo non salvato,', type, id, String(e));
+    }
+  }
+
   // `nuovo` è false solo se una consegna contemporanea dello stesso evento l'ha registrato prima.
   return Response.json({
     ricevuto: true,
