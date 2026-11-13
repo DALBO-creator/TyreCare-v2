@@ -1719,6 +1719,26 @@ richiesta. Con l'account le richieste spariscono a cascata. Il testo per l'utent
 
 ---
 
+## Annullare l'ultimo import (T265)
+
+**File coinvolti:** `supabase/migrations/20261108000800_annulla_import.sql` (colonne `import_id`,
+`import_log.annullato_il`, funzioni `importa_clienti_veicoli` e `annulla_import`), `annulla-import.test.sql`.
+La pagina arriva con T266.
+**Come funziona:** `importa_clienti_veicoli` genera all'inizio l'id della riga di `import_log` e lo scrive in
+`import_id` dei clienti e dei veicoli creati, non di quelli aggiornati. `annulla_import(p_import_id)`
+controlla in ordine: titolare (altrimenti 42501, anche se l'import non esiste; l'admin non è ammesso),
+`IMPORT_GIA_ANNULLATO`, `IMPORT_NON_ULTIMO` (esiste un CLIENTI_VEICOLI più recente; i CONTROLLI non contano),
+`IMPORT_SCADUTO` (oltre 7 giorni). Poi toglie i veicoli e i clienti mai usati e restituisce
+`{veicoli_tolti, clienti_tolti, veicoli_tenuti, clienti_tenuti}`. I dati aggiornati dall'import non tornano
+come prima (R40). Limite noto: le policy di update lasciano ai membri scrivere `import_id` a mano.
+
+### Codice complesso
+La riga di `import_log` si inserisce alla fine, con i conteggi: per questo le FK di `import_id` sono
+`deferrable initially deferred` (controllo al commit). La funzione è `security definer` con `search_path ''`;
+blocca le righe con `for update`. Cancella i veicoli senza pneumatici, controlli, misure, prenotazioni o
+richieste su strada con la stessa targa nella stessa officina (queste due senza FK), poi i clienti senza
+veicoli, account o inviti.
+
 ## Import dei controlli (database, T043)
 
 **File coinvolti:** `supabase/migrations/` (nuova migrazione `importa_controlli`: funzione, 4 colonne di
@@ -3719,7 +3739,7 @@ l'errore è comparso, altrimenti passerebbe a vuoto. Credenziali errate:
 ## Scollegare un cliente (database)
 
 **File coinvolti:** `supabase/migrations/20261108000600_*.sql` (funzione `public.scollega_cliente`), il suo
-test pgTAP. L'interfaccia arriva con T259.
+test pgTAP. L'interfaccia è in T259 (voce sotto).
 **Come funziona:** `scollega_cliente(p_cliente_id)` toglie l'account collegato a un cliente
 (`clienti_officina.profile_id` torna vuoto): serve quando l'invito l'ha accettato la persona sbagliata (R38).
 La chiamano il TITOLARE dell'officina del cliente, l'ADMIN e chi non ha un utente; gli altri ricevono 42501,
@@ -3731,6 +3751,21 @@ non cambiano: il cliente si può reinvitare e non riceve avvisi.
 La funzione è `security definer`: la scrittura supera `proteggi_collegamento_cliente` perché `current_user` è
 il proprietario, mentre l'update diretto resta vietato. Blocca la riga (`for update`) come `accetta_invito`,
 così uno scollegamento e un'accettazione in parallelo non si sovrappongono.
+
+## Scollegare un cliente dall'app (T259)
+
+**File coinvolti:** `apps/web/src/pagine/cliente.ts`, `apps/web/src/lib/officina.ts` (`scollegaCliente`),
+unit test ed e2e `scollega-cliente.spec.ts`.
+**Come funziona:** nella sezione «App TyreCare» un cliente collegato mostra al solo titolare il pulsante
+«Scollega l'account», che apre `chiediConferma`. `scollegaCliente(id)` chiama la rpc `scollega_cliente`
+senza riprova (una seconda chiamata darebbe `CLIENTE_NON_COLLEGATO`); traduce 42501, `CLIENTE_NON_COLLEGATO`
+e `CLIENTE_NON_TROVATO` in `ErroreModulo` e rilancia gli sconosciuti; l'errore compare nel dialogo, che
+resta aperto. Il database impedisce l'azione agli altri ruoli (42501).
+
+### Codice complesso
+Dopo il successo: `await mostraPagina()` e poi il focus su `#tc-app` con `setTimeout`. Durante `azione` il
+dialogo modale è ancora aperto e rende inerte la pagina: si chiude subito dopo, e solo allora il focus
+funziona.
 
 ## Test unitari di `lib/prenotazioni.ts`
 
