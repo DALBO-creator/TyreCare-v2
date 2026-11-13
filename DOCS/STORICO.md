@@ -4,6 +4,24 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-13 — ciclo 20261113-18 — T240 T249
+
+**Fatto**
+
+- T240: la guida cliente dice quando compare «Chiama» nell'aiuto su strada (solo con il telefono
+  dell'officina; altrimenti la notifica «Resta dove sei: ti chiamerà al numero che hai indicato») e che gli
+  appuntamenti si cancellano dopo 24 mesi; il README legale nomina i job `pulizia-notifiche`,
+  `pulizia-prenotazioni` e `richieste-strada`.
+- T249: nuova pagina amministratore `/admin/errori` («Errori dell'app», dal Profilo): errori degli ultimi
+  30 giorni raggruppati per messaggio, con le ultime 10 occorrenze per gruppo; unit test ed e2e.
+- Verifiche: prova d'insieme 738 test vitest (67 file), JS iniziale 64,2 kB su 70, CSS 31,7 kB.
+- Corsia C4 coordinata dal direttore, 2 esecutori Sonnet in parallelo; revisione in 2 giri per entrambi,
+  gate del supervisore approvati al 1o giro.
+- Idee emerse: README legale, «Cancellazione automatica»: aggiungere gli errori dell'app (30 giorni, job
+  `pulizia-errori-app`); filtro per versione o percorso; «Elimina gruppo» per l'admin (serve la policy
+  delete su `errori_app`). Nota: l'e2e di T249 usa `cliente@tyrecare.test` (limite 30 errori in 24 ore per
+  autore): in locale, dopo molte esecuzioni, conviene un utente apposta.
+
 ### Sessione agenti — 2026-11-13 — ciclo 20261113-15 — T258 T267
 
 **Fatto**

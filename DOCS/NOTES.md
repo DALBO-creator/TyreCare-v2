@@ -1701,9 +1701,10 @@ ADMIN (`ACCOUNT_AMMINISTRATORE`), i titolari di un'officina (`TITOLARE_DI_OFFICI
 RICHIESTA, PROPOSTA o CONFERMATA (`PRENOTAZIONI_IN_CORSO`); altrimenti fa `delete from auth.users`.
 Con l'account spariscono, a cascata, profilo, `officina_utenti`, **le prenotazioni fatte come cliente
 (anche quelle passate)**, notifiche, iscrizioni push e commenti. Restano all'officina, scollegati
-(`set null`): `clienti_officina`, veicoli, controlli, inviti e import. Per ora esiste solo la funzione nel
-database, senza pulsante nell'app. La sparizione delle prenotazioni passate è una domanda per il consulente
-(`DOCS/legale/README.md`, domanda 14).
+(`set null`): `clienti_officina`, veicoli, controlli, inviti e import. Il pulsante "Elimina il tuo account"
+è nel Profilo (T039). Le prenotazioni passate spariscono con l'account; le altre si cancellano da sole
+24 mesi dopo il giorno (T197, R25). Se sia compatibile con gli obblighi di conservazione è una domanda per
+il consulente (`DOCS/legale/README.md`, domanda 14).
 
 ## Eliminazione dell'account e aiuto su strada (T225)
 
@@ -3731,3 +3732,19 @@ catena (`select/eq/gte/in/order`) che registra `[metodo, ...argomenti]` ed è th
 filtri esatti (`['eq','cliente_id',uid]`). La sessione è finta con `vi.mock('./auth')`. Le rpc finte
 restituiscono `{data, error, status}` con status diverso da 0, perché `conRiprova` non ripeta. Gli errori
 attesi (`ERRORI`) diventano `ErroreModulo` con campo e codice, gli altri sono rilanciati identici.
+
+## Pagina amministratore: Errori dell'app (T249)
+
+**File coinvolti:** `apps/web/src/lib/admin-errori.ts`, la pagina `/admin/errori` (dal Profilo), unit test
+ed e2e.
+**Come funziona:** `lib/admin-errori.ts` legge `errori_app` con `leggiTutte` (`created_at desc`, poi `id`;
+filtro `created_at >= adesso - 30 giorni`). La RLS mostra le righe solo all'ADMIN: la pagina controlla il
+ruolo solo per non mostrare una pagina vuota. Gli errori sono raggruppati per messaggio; di ogni gruppo si
+vedono le ultime 10 occorrenze.
+
+### Codice complesso
+`raggruppaErrori` è pura: la chiave è il messaggio, i gruppi sono ordinati per `ultima` decrescente, percorsi
+e versioni sono distinti senza vuoti, `utenti` conta gli `autore_id` distinti, le occorrenze sono tagliate a
+10. La pagina usa `<details>` e `<pre>` (`overflow-wrap: anywhere`); dell'utente mostra solo i primi 8
+caratteri dell'id. L'e2e provoca l'errore con un `throw` in `setTimeout` (lo prende il listener `error` di
+`main.ts`) e l'admin ricarica con `toPass` finché arriva.
