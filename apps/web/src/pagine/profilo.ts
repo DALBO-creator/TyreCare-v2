@@ -1,4 +1,5 @@
 import {
+  Bug,
   Building2,
   ChevronRight,
   ClipboardList,
@@ -123,6 +124,7 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
               <nav class="tc-lista" aria-labelledby="tc-admin">
                 ${link(Building2, `Officine da attivare${inAttesa === null ? '' : ` (${inAttesa})`}`, '/admin/officine')}
                 ${link(MessageSquare, 'Commenti degli utenti', '/admin/commenti')}
+                ${link(Bug, "Errori dell'app", '/admin/errori')}
               </nav>
             </section>`
           : ''
