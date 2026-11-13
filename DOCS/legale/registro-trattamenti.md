@@ -149,6 +149,19 @@ descrive il trattamento dall'attivazione.
 | Conservazione | Per la durata dell'abbonamento; dati fiscali per il tempo di legge [DA COMPLETARE: es. 10 anni, come nell'informativa §4] |
 | Misure | M1–M5; la riga dell'abbonamento la leggono il titolare e l'amministratore (gli operatori no) e la scrivono solo l'amministratore e le funzioni sul server (il webhook di Stripe verifica la firma) |
 
+## A8. Errori dell'app
+
+| Voce | Contenuto |
+|------|-----------|
+| Finalità | Correggere i malfunzionamenti dell'app: gli errori non gestiti e quelli di caricamento delle pagine (non gli errori di rete né dei moduli) di chi ha un account arrivano a TyreCare invece che a un servizio esterno |
+| Base giuridica | [DA COMPLETARE: base giuridica, proposta legittimo interesse (art. 6.1.f) — README, domanda 17] |
+| Interessati | Utenti con account che incontrano un errore |
+| Dati | Pagina senza parametri (≤ 200 caratteri), messaggio (≤ 500), dettaglio tecnico (≤ 2000), versione dell'app, browser (≤ 300), account (autore), data (tabella `errori_app`) |
+| Destinatari | Solo l'amministratore di TyreCare (pagina di amministrazione degli errori); sub-responsabile Supabase (database, job `pg_cron`); nessun servizio esterno di raccolta degli errori |
+| Trasferimenti extra UE | Nessuno (database nell'UE) |
+| Conservazione | Il job notturno `pulizia-errori-app` (ogni notte all'1:50 UTC) cancella gli errori più vecchi di 30 giorni; cancellati subito con l'account dell'utente |
+| Misure | M1–M4; ognuno scrive solo a proprio nome, non può leggere né modificare né eliminare; l'app ne invia al massimo 5 per caricamento e il database ne accetta 30 al giorno per utente; non entrano in «Scarica i tuoi dati» |
+
 ---
 
 # Parte B — TyreCare responsabile per conto delle officine
