@@ -21,11 +21,14 @@ test('l’amministratore legge gli errori dell’app; il titolare no', async ({ 
   await admin.getByRole('link', { name: "Errori dell'app" }).click();
   await expect(admin).toHaveURL(/\/admin\/errori/);
   await expect(admin.getByRole('heading', { name: "Errori dell'app" })).toBeVisible();
+  // Il messaggio compare anche nello stack (<pre>): si usa il <summary> del gruppo
+  const voce = admin.locator('summary').filter({ hasText: messaggio });
   await expect(async () => {
     await admin.reload();
-    await expect(admin.getByText(messaggio)).toBeVisible({ timeout: 3000 });
+    await expect(voce).toBeVisible({ timeout: 3000 });
   }).toPass({ timeout: 30_000 });
-  await admin.getByText(messaggio).click();
+  await voce.click();
+  await expect(admin.locator('details[open] pre').first()).toContainText(messaggio);
   await expect(admin.getByText(/utente [0-9a-f]{8}/).first()).toBeVisible();
 
   // Il titolare vede il messaggio riservato, non gli errori
