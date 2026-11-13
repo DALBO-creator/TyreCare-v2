@@ -2987,6 +2987,18 @@ dell'evento (evento ignorato da T224), `console.warn` con le due subscription. √
 `SUBSCRIPTION_DI_ALTRA_OFFICINA`. Con un 500 Stripe ritenta per tre giorni e poi disattiva l'endpoint: per
 questi errori non serve. `subscriptionIgnorata` decide se loggare l'evento ignorato.
 
+## Stripe: motivo degli eventi scartati (T231)
+
+**File coinvolti:** `supabase/migrations/20261108000700_stripe_eventi_motivo.sql`,
+`supabase/functions/stripe-webhook/index.ts`.
+**Come funziona:** quando `aggiorna_abbonamento_stripe_evento` d√† un errore permanente il webhook registra
+lo stesso l'evento e risponde 200 (come prima), poi chiama `annota_evento_stripe(id, motivo)`, che salva il
+messaggio in `stripe_eventi.motivo` (al massimo 200 caratteri, con un check sulla colonna). La funzione
+restituisce true se l'evento esiste; un motivo nullo cancella quello presente. Un errore dell'annotazione
+va solo nel log (try/catch) e non cambia la risposta. Per vedere gli scarti, dalla console:
+`select * from stripe_eventi where motivo is not null`. La pulizia notturna li cancella dopo 30 giorni;
+nessuna email o notifica.
+
 ## Uscita senza rete (`esci`, `lib/auth.ts`, T174)
 
 **File coinvolti:** `apps/web/src/lib/auth.ts`, `apps/web/src/lib/auth.test.ts`.

@@ -4,6 +4,28 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-13 — ciclo 20261113-21 — T231 T250
+
+**Fatto**
+
+- T231: gli eventi di Stripe scartati per un errore permanente salvano la chiave d'errore in
+  `stripe_eventi.motivo` (migrazione `20261108000700_stripe_eventi_motivo.sql`, funzione
+  `annota_evento_stripe` solo service role, troncata a 200 caratteri); si legge dalla console di Supabase
+  anche dopo che i log della funzione sono spariti; risposta del webhook invariata; 10 casi pgTAP nuovi.
+- T250: bozze legali aggiornate con gli errori dell'app (R33): voce nell'informativa §2/§3/§4/§6 (base
+  giuridica `[DA COMPLETARE]`, proposta legittimo interesse), trattamento A8 nel registro, domanda 17 nel
+  README per il consulente; «Scarica i tuoi dati» ora cita anche le richieste di aiuto su strada e dice che
+  gli errori dell'app non ci sono.
+- Verifiche: prova d'insieme 738 test vitest (67 file), JS iniziale 64,2 kB su 70; pgTAP di T231 da
+  verificare con la CI `database`.
+- Corsia C1 coordinata dal direttore (create_session assente): esecutore-senior Opus (T231) ed esecutore
+  Sonnet (T250, fuori area) in parallelo; revisione 1 giro per T231, 2 per T250 (un esempio di percorso
+  sbagliato corretto: l'indirizzo salvato contiene gli id, si tolgono solo `?` e `#`); gate del
+  supervisore approvati.
+- Idee emerse: conteggio degli eventi Stripe scartati nel pannello admin; frasi superate fuori campo:
+  «21 tabelle» nel README legale e nel registro (M1), voci «Sentry» in `PLAN.md` e `IMPLEMENTAZIONI.md`
+  (R33 ha scelto la tabella interna).
+
 ### Sessione agenti — 2026-11-13 — ciclo 20261113-18 — T240 T249
 
 **Fatto**
