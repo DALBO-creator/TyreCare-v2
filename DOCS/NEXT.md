@@ -12,8 +12,8 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261113-21 (T231 motivo degli eventi Stripe scartati; T250 bozze legali sugli
-> errori dell'app, R33), nel treno. Per R38 resta l'interfaccia (T259).
+> Ultima sessione: ciclo 20261114-00 (T265 annullo dell'ultimo import, database; T259 «Scollega l'account»),
+> nel treno. Per R40 resta la pagina dell'annullo (T266).
 > Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito.
 > Prossimi compiti pronti: la pianificazione della domenica.
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
@@ -34,7 +34,8 @@
   sicurezza (T036), la CSP è solo Report-Only; fatta la bozza della procedura per le violazioni T037;
   esportazione: clienti e veicoli da `/clienti/importa` (T030), i dati personali dal profilo (T040), i
   controlli da `/clienti/importa` (T041))
-- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, preferenze, annullare un import
+- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, preferenze,
+  trigger di protezione su `import_id`
 - [ ] P23: quale **dominio di TyreCare** usare per le email e quando configurarne i DNS su Resend
   (SPF/DKIM), una volta sola
 

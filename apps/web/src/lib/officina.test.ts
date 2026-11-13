@@ -1,9 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { OfficinaUtente } from './profilo';
 
-vi.mock('./supabase', () => ({ getSupabase: () => ({}) }));
+const rpc = vi.hoisted(() => vi.fn());
+vi.mock('./supabase', () => ({ getSupabase: () => ({ rpc }) }));
 
-import { eTitolare, giaSalvato, officinaAttiva, scegliOfficina } from './officina';
+import { ErroreModulo } from './errori';
+import { eTitolare, giaSalvato, officinaAttiva, scegliOfficina, scollegaCliente } from './officina';
 
 const officina = (id: string, ruolo: OfficinaUtente['ruolo']): OfficinaUtente => ({
   ruolo,
@@ -130,5 +132,35 @@ describe('giaSalvato', () => {
       message: 'duplicate key value violates unique constraint "veicoli_pkey"',
     };
     expect(giaSalvato(e, 'veicoli')).toBe(true);
+  });
+});
+
+describe('scollegaCliente', () => {
+  beforeEach(() => rpc.mockReset());
+
+  it('chiama la funzione con il cliente', async () => {
+    rpc.mockResolvedValue({ error: null });
+    await scollegaCliente('c1');
+    expect(rpc).toHaveBeenCalledWith('scollega_cliente', { p_cliente_id: 'c1' });
+  });
+
+  it('CLIENTE_NON_COLLEGATO: messaggio in italiano', async () => {
+    rpc.mockResolvedValue({ error: { message: 'CLIENTE_NON_COLLEGATO', code: 'P0001' } });
+    const e = await scollegaCliente('c1').catch((x: unknown) => x);
+    expect(e).toBeInstanceOf(ErroreModulo);
+    expect((e as Error).message).toBe('Il cliente non è più collegato: ricarica la pagina.');
+  });
+
+  it('42501: solo il titolare', async () => {
+    rpc.mockResolvedValue({ error: { message: 'Accesso riservato', code: '42501' } });
+    await expect(scollegaCliente('c1')).rejects.toThrow(
+      'Solo il titolare può scollegare un cliente.',
+    );
+  });
+
+  it('errore sconosciuto: rilanciato', async () => {
+    const errore = { message: 'boh', code: 'XX000' };
+    rpc.mockResolvedValue({ error: errore });
+    await expect(scollegaCliente('c1')).rejects.toBe(errore);
   });
 });

@@ -1,4 +1,4 @@
-import { GitMerge, Mail, MailCheck, Pencil, Phone, Plus, Send, Smartphone } from 'lucide';
+import { GitMerge, Mail, MailCheck, Pencil, Phone, Plus, Send, Smartphone, Unlink } from 'lucide';
 import { esc } from '../lib/html';
 import { annullaInvito, caricaInvitoInCorso, type InvitoInCorso } from '../lib/inviti';
 import {
@@ -6,11 +6,13 @@ import {
   caricaVeicoli,
   eTitolare,
   nominativo,
+  scollegaCliente,
   type SchedaCliente,
   type VeicoloInElenco,
 } from '../lib/officina';
 import { caricaDatiUtente } from '../lib/profilo';
 import { ancoraAttuale, mostraPagina, visualizzazioneCorrente } from '../lib/router';
+import { chiediConferma } from '../ui/conferma';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import {
@@ -96,7 +98,7 @@ export async function mostraCliente(app: HTMLElement): Promise<void> {
         ${cliente.note ? `<p class="tc-scheda-note">${esc(cliente.note)}</p>` : ''}
       </section>
 
-      ${sezioneApp(cliente, invito)}
+      ${sezioneApp(cliente, invito, titolare)}
 
       <section aria-labelledby="tc-veicoli">
         <h2 id="tc-veicoli" class="tc-etichetta">${veicoli.length === 1 ? 'Veicolo' : 'Veicoli'}</h2>
@@ -123,20 +125,28 @@ export async function mostraCliente(app: HTMLElement): Promise<void> {
     </div>`);
 
   collegaAnnullaInvito(app, cliente.id);
+  collegaScollega(app, cliente.id);
 }
 
 /**
  * Collegamento all'app TyreCare: già collegato, invito in corso (con "Invia di nuovo" e "Annulla"),
  * oppure il pulsante per invitare il cliente.
  */
-function sezioneApp(c: SchedaCliente, invito: InvitoInCorso | null): string {
+function sezioneApp(c: SchedaCliente, invito: InvitoInCorso | null, titolare: boolean): string {
   const invita = `/cliente/invito?id=${c.id}`;
   let corpo: string;
   if (c.profile_id) {
     corpo = `
       <div class="tc-lista">
         ${riga(Smartphone, "Usa l'app TyreCare", 'Vede i suoi veicoli e i controlli nel suo garage')}
-      </div>`;
+      </div>${
+        titolare
+          ? `
+      <button type="button" class="btn btn-outline-light btn-lg w-100 mt-3" data-scollega-cliente>
+        ${icona(Unlink)} Scollega l'account
+      </button>`
+          : ''
+      }`;
   } else if (invito) {
     corpo = `
       <div class="tc-lista">
@@ -166,7 +176,7 @@ function sezioneApp(c: SchedaCliente, invito: InvitoInCorso | null): string {
   }
   return `
     <section aria-labelledby="tc-app">
-      <h2 id="tc-app" class="tc-etichetta">App TyreCare</h2>
+      <h2 id="tc-app" class="tc-etichetta" tabindex="-1">App TyreCare</h2>
       ${corpo}
     </section>`;
 }
@@ -184,6 +194,29 @@ function collegaAnnullaInvito(app: HTMLElement, clienteId: string): void {
       mostraErroreInBox(errore, messaggioErrore(e));
     }
   });
+}
+
+/** "Scollega l'account" (solo titolare): dopo la conferma la sezione torna a "Invita nell'app". */
+function collegaScollega(app: HTMLElement, clienteId: string): void {
+  const pulsante = app.querySelector<HTMLButtonElement>('[data-scollega-cliente]');
+  pulsante?.addEventListener('click', () =>
+    chiediConferma({
+      titolo: "Scollegare l'account?",
+      testo:
+        "Il cliente non vedrà più i suoi veicoli di questa officina nell'app. Potrai invitarlo di nuovo.",
+      pulsante: "Scollega l'account",
+      iconaPulsante: Unlink,
+      inCorso: 'Scollegamento…',
+      origine: pulsante,
+      azione: async () => {
+        await scollegaCliente(clienteId);
+        await mostraPagina();
+        // Il dialogo si chiude solo dopo questa azione e finché è modale la pagina è inerte: il
+        // focus va dato dopo la chiusura (dialog.close() è sincrono) e dopo il ridisegno.
+        setTimeout(() => app.querySelector<HTMLElement>('#tc-app')?.focus());
+      },
+    }),
+  );
 }
 
 function contatti(c: SchedaCliente): string {

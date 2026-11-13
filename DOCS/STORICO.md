@@ -4,6 +4,24 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-14 — ciclo 20261114-00 — T265 T259
+
+**Fatto**
+
+- T265: `annulla_import(p_import_id)` toglie i clienti e i veicoli creati dall'ultimo import
+  CLIENTI_VEICOLI (meno di 7 giorni, solo il titolare) e mai usati. Colonne nuove `import_id` (FK
+  `deferrable initially deferred`) su `clienti_officina` e `veicoli`, più `import_log.annullato_il`
+  (migrazione `20261108000800_annulla_import.sql`); pgTAP `annulla-import.test.sql` (24 test, li verifica la
+  CI). La pagina arriva con T266.
+- T259: nella scheda di un cliente collegato il titolare può scollegarlo dall'app con una conferma
+  (`scollegaCliente` su `scollega_cliente`, T258); la sezione si ridisegna con «Invita nell'app» e il focus
+  sul titolo; unit test ed e2e `scollega-cliente.spec.ts`.
+- Verifiche: prova d'insieme con format, lint e typecheck verdi, 742 test vitest, JS iniziale 64,3 kB su 70;
+  pgTAP ed e2e da verificare con la CI.
+- Corsia C1: T265 all'esecutore-senior, T259 (fuori area C2) all'esecutore; gate del supervisore approvati
+  (T259 al 2° giro: il focus).
+- Idea emersa: trigger di protezione su `import_id` (le policy di update lasciano ai membri scriverlo a mano).
+
 ### Sessione agenti — 2026-11-13 — ciclo 20261113-21 — T231 T250
 
 **Fatto**

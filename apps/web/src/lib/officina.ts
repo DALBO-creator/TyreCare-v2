@@ -470,6 +470,25 @@ export async function unisciClienti(da: string, in_: string): Promise<void> {
   }
 }
 
+const ERRORI_SCOLLEGA: Record<string, string> = {
+  CLIENTE_NON_COLLEGATO: 'Il cliente non è più collegato: ricarica la pagina.',
+  CLIENTE_NON_TROVATO: 'Il cliente non esiste più: ricarica la pagina.',
+};
+
+/**
+ * Scollega il cliente dal suo account dell'app (solo TITOLARE): i veicoli restano nell'officina ma
+ * il cliente non li vede più. Nessuna riprova: una seconda chiamata darebbe CLIENTE_NON_COLLEGATO.
+ */
+export async function scollegaCliente(id: string): Promise<void> {
+  const { error } = await getSupabase().rpc('scollega_cliente', { p_cliente_id: id });
+  if (!error) return;
+  if (codiceErrore(error) === '42501') {
+    throw new ErroreModulo('Solo il titolare può scollegare un cliente.', undefined, error.message);
+  }
+  const testo = ERRORI_SCOLLEGA[error.message];
+  throw testo ? new ErroreModulo(testo, undefined, error.message) : error;
+}
+
 /** Elimina un controllo con le sue misure (TITOLARE e OPERATORE). */
 export const eliminaControllo = (id: string) =>
   elimina('controlli', id, 'Non hai i permessi per eliminare questo controllo.');

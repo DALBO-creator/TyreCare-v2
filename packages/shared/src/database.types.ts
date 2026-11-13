@@ -110,6 +110,7 @@ export type Database = {
           created_at: string;
           email: string | null;
           id: string;
+          import_id: string | null;
           nome: string;
           note: string;
           officina_id: string;
@@ -126,6 +127,7 @@ export type Database = {
           created_at?: string;
           email?: string | null;
           id?: string;
+          import_id?: string | null;
           nome?: string;
           note?: string;
           officina_id: string;
@@ -142,6 +144,7 @@ export type Database = {
           created_at?: string;
           email?: string | null;
           id?: string;
+          import_id?: string | null;
           nome?: string;
           note?: string;
           officina_id?: string;
@@ -152,6 +155,13 @@ export type Database = {
           updated_at?: string;
         };
         Relationships: [
+          {
+            foreignKeyName: 'clienti_officina_import_id_fkey';
+            columns: ['import_id'];
+            isOneToOne: false;
+            referencedRelation: 'import_log';
+            referencedColumns: ['id'];
+          },
           {
             foreignKeyName: 'clienti_officina_officina_id_fkey';
             columns: ['officina_id'];
@@ -310,6 +320,7 @@ export type Database = {
       };
       import_log: {
         Row: {
+          annullato_il: string | null;
           clienti_aggiornati: number;
           clienti_nuovi: number;
           controlli_gia_presenti: number;
@@ -329,6 +340,7 @@ export type Database = {
           veicoli_nuovi: number;
         };
         Insert: {
+          annullato_il?: string | null;
           clienti_aggiornati?: number;
           clienti_nuovi?: number;
           controlli_gia_presenti?: number;
@@ -348,6 +360,7 @@ export type Database = {
           veicoli_nuovi?: number;
         };
         Update: {
+          annullato_il?: string | null;
           clienti_aggiornati?: number;
           clienti_nuovi?: number;
           controlli_gia_presenti?: number;
@@ -1120,6 +1133,7 @@ export type Database = {
           cliente_officina_id: string | null;
           created_at: string;
           id: string;
+          import_id: string | null;
           marca: string;
           modello: string;
           officina_id: string;
@@ -1133,6 +1147,7 @@ export type Database = {
           cliente_officina_id?: string | null;
           created_at?: string;
           id?: string;
+          import_id?: string | null;
           marca?: string;
           modello?: string;
           officina_id: string;
@@ -1146,6 +1161,7 @@ export type Database = {
           cliente_officina_id?: string | null;
           created_at?: string;
           id?: string;
+          import_id?: string | null;
           marca?: string;
           modello?: string;
           officina_id?: string;
@@ -1161,6 +1177,13 @@ export type Database = {
             isOneToOne: false;
             referencedRelation: 'clienti_officina';
             referencedColumns: ['id', 'officina_id'];
+          },
+          {
+            foreignKeyName: 'veicoli_import_id_fkey';
+            columns: ['import_id'];
+            isOneToOne: false;
+            referencedRelation: 'import_log';
+            referencedColumns: ['id'];
           },
           {
             foreignKeyName: 'veicoli_officina_id_fkey';
@@ -1204,6 +1227,7 @@ export type Database = {
         Returns: undefined;
       };
       annota_evento_stripe: { Args: { p_id: string; p_motivo: string }; Returns: boolean };
+      annulla_import: { Args: { p_import_id: string }; Returns: Json };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
       annulla_richiesta_strada: { Args: { p_id: string }; Returns: undefined };
