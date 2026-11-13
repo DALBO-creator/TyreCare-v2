@@ -192,6 +192,12 @@ const ROTTE: Rotta[] = [
     mostra: pigra(() => import('./pagine/admin-commenti'), 'mostraAdminCommenti'),
   },
   {
+    percorso: '/admin/errori',
+    accesso: 'utente',
+    titolo: "Errori dell'app",
+    mostra: pigra(() => import('./pagine/admin-errori'), 'mostraAdminErrori'),
+  },
+  {
     percorso: '/officina/chiusura',
     accesso: 'utente',
     titolo: 'Nuova chiusura',
