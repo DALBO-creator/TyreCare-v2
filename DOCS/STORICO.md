@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-13 — ciclo 20261113-15 — T258 T267
+
+**Fatto**
+
+- T258: nuova funzione `scollega_cliente`: il titolare dell'officina (o l'admin) toglie l'account collegato
+  a un cliente, utile quando l'invito l'ha accettato la persona sbagliata (R38); pgTAP con i casi negati.
+  L'interfaccia resta a T259.
+- T267: `apps/web/src/lib/prenotazioni.test.ts` con 25 unit test delle funzioni di prenotazione (richiesta,
+  risposta di officina e cliente, annullamento, conteggio richieste, registrazione cliente): argomenti
+  esatti di rpc e filtri, errori di Supabase sempre rilanciati; nessun cambio al codice.
+- Verifiche: 730 test vitest sul treno, build ok; pgTAP affidato alla CI.
+- Corsia C1 coordinata dal direttore: esecutore-senior Opus su T258, esecutore Sonnet su T267; gate del
+  supervisore approvato al 1o giro.
+
 ### Sessione agenti — 2026-11-12 — ciclo 20261112-03 — T242 T235
 
 **Fatto**

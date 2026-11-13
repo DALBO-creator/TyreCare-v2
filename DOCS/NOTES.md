@@ -3702,3 +3702,32 @@ Il finto Supabase usa `vi.fn` creati con `vi.hoisted`, perché `vi.mock` è soll
 L'invio è `form.requestSubmit()` e l'attesa `vi.waitFor`; ogni «nessuna chiamata» si verifica solo dopo che
 l'errore è comparso, altrimenti passerebbe a vuoto. Credenziali errate:
 `new AuthError(msg, 400, 'invalid_credentials')`.
+
+## Scollegare un cliente (database)
+
+**File coinvolti:** `supabase/migrations/20261108000600_*.sql` (funzione `public.scollega_cliente`), il suo
+test pgTAP. L'interfaccia arriva con T259.
+**Come funziona:** `scollega_cliente(p_cliente_id)` toglie l'account collegato a un cliente
+(`clienti_officina.profile_id` torna vuoto): serve quando l'invito l'ha accettato la persona sbagliata (R38).
+La chiamano il TITOLARE dell'officina del cliente, l'ADMIN e chi non ha un utente; gli altri ricevono 42501,
+anche per un cliente inesistente, così non si scopre quali clienti esistono. Le chiavi d'errore sono
+`CLIENTE_NON_TROVATO` (solo admin o senza utente) e `CLIENTE_NON_COLLEGATO`. Prenotazioni, notifiche e inviti
+non cambiano: il cliente si può reinvitare e non riceve avvisi.
+
+### Codice complesso
+La funzione è `security definer`: la scrittura supera `proteggi_collegamento_cliente` perché `current_user` è
+il proprietario, mentre l'update diretto resta vietato. Blocca la riga (`for update`) come `accetta_invito`,
+così uno scollegamento e un'accettazione in parallelo non si sovrappongono.
+
+## Test unitari di `lib/prenotazioni.ts`
+
+**File coinvolti:** `apps/web/src/lib/prenotazioni.test.ts` (25 test; nessun cambio al codice).
+**Come funziona:** provano richiesta, risposta di officina e cliente, annullamento, conteggio delle richieste
+e registrazione del cliente: argomenti esatti di `rpc` e filtri, errori di Supabase sempre rilanciati.
+
+### Codice complesso
+Supabase è finto con `vi.mock('./supabase')`: `rpc` è un `vi.fn()`, `from` restituisce un costruttore a
+catena (`select/eq/gte/in/order`) che registra `[metodo, ...argomenti]` ed è thenable, così si asseriscono i
+filtri esatti (`['eq','cliente_id',uid]`). La sessione è finta con `vi.mock('./auth')`. Le rpc finte
+restituiscono `{data, error, status}` con status diverso da 0, perché `conRiprova` non ripeta. Gli errori
+attesi (`ERRORI`) diventano `ErroreModulo` con campo e codice, gli altri sono rilanciati identici.
