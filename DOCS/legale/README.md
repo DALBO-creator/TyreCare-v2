@@ -77,9 +77,9 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 - [x] **Cancellazione dell'account** dall'app: fatto. Funzione SQL `elimina_account()` (T038) e pulsante
   «Elimina il tuo account» nel Profilo (T039); domanda 14 ancora aperta.
 - [x] **Cancellazione automatica** dei dati scaduti secondo i tempi di conservazione: fatto. Notifiche
-  (T049, job notturno `pulisci_notifiche`: le lette dopo 180 giorni, tutte dopo 365; scelta R6), aiuto su
-  strada (90 giorni dopo la chiusura) e prenotazioni (T197, job notturno `pulisci_prenotazioni`: 24 mesi
-  dopo il giorno dell'appuntamento; scelta R25). I tempi restano da confermare con il consulente.
+  (T049, job notturno `pulizia-notifiche`: le lette dopo 180 giorni, tutte dopo 365; scelta R6), aiuto su
+  strada (job `richieste-strada`, ogni 10 minuti: 90 giorni dopo la chiusura) e prenotazioni (T197, job
+  notturno `pulizia-prenotazioni`: 24 mesi dopo il giorno dell'appuntamento; scelta R25). I tempi restano da confermare con il consulente.
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
   quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
   rivedere; restano da completare i contatti e il termine del DPA §12.1.
