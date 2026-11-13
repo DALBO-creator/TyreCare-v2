@@ -167,7 +167,8 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 17. **Errori dell'app (informativa §2, §3, §4 e §6, registro A8, R33).** Gli errori non gestiti e quelli
     di caricamento delle pagine di chi ha un account (indirizzo della pagina senza la parte dopo `?` e
     `#`, messaggio, dettaglio tecnico, versione, browser, account) vanno in una tabella che legge solo
-    l'amministratore e si cancella dopo 30 giorni e con l'account; nessun servizio esterno. Quale è la **base giuridica** (proposta:
+    l'amministratore e si cancella dopo 30 giorni e con l'account; nessun servizio esterno.
+    Quale è la **base giuridica** (proposta:
     legittimo interesse, art. 6.1.f, per correggere i malfunzionamenti)? Va bene **escluderli** dal file
     «Scarica i tuoi dati» (sono resoconti tecnici, non dati forniti dall'utente) e dire nell'informativa
     che non ci sono?
