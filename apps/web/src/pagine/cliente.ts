@@ -211,8 +211,9 @@ function collegaScollega(app: HTMLElement, clienteId: string): void {
       azione: async () => {
         await scollegaCliente(clienteId);
         await mostraPagina();
-        // mostraPagina ridisegna e può mettere il focus sul titolo della pagina: lo sposto dopo
-        app.querySelector<HTMLElement>('#tc-app')?.focus();
+        // Il dialogo si chiude solo dopo questa azione e finché è modale la pagina è inerte: il
+        // focus va dato dopo la chiusura (dialog.close() è sincrono) e dopo il ridisegno.
+        setTimeout(() => app.querySelector<HTMLElement>('#tc-app')?.focus());
       },
     }),
   );
