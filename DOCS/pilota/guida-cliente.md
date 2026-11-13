@@ -22,6 +22,7 @@ Bozza del 2026-10-31, da stampare o mandare ai clienti. Pochi passi, nell'ordine
    "Chiedi un appuntamento". Scegli servizio, veicolo, giorno e fascia, poi invia. È **una richiesta**:
    resta "In attesa di risposta" finché l'officina non la conferma ("Confermato"), non propone un altro
    orario ("Nuovo orario proposto") o non la rifiuta ("Non accettato").
+   Gli appuntamenti si cancellano da soli 24 mesi dopo il giorno.
 6. **Attiva le notifiche.** Tocca "Notifiche" nella barra. Nella sezione "Avvisi sul telefono" premi
    "Avvisami su questo dispositivo": ti avvisiamo quando l'officina risponde, anche con l'app chiusa.
    - **iPhone:** gli avvisi funzionano solo con l'app nella schermata Home. Apri il sito con Safari, tocca
@@ -32,7 +33,8 @@ Bozza del 2026-10-31, da stampare o mandare ai clienti. Pochi passi, nell'ordine
    - Scrivi "Cosa è successo", controlla il "Telefono" e, se vuoi, la "Targa (facoltativa)". Poi tocca
      "Usa la mia posizione e invia" e consenti la posizione al telefono: la vede solo l'officina che accetta.
    - Le officine vicine vedono distanza e descrizione. La prima che accetta ti avvisa: vedi il suo nome e
-     "Chiama" con il telefono. L'intervento lo concordi con lei.
+     "Chiama" con il telefono, se l'officina ne ha uno. Se non ce l'ha, la notifica dice "Resta dove sei:
+     ti chiamerà al numero che hai indicato": aspetta la sua chiamata. L'intervento lo concordi con lei.
    - Se nessuna officina accetta entro 2 ore, la richiesta scade: richiama un soccorso stradale (o rifai
      la richiesta). Puoi farne al massimo 3 all'ora, anche annullate.
    - Non ti serve più? "Annulla la richiesta".
