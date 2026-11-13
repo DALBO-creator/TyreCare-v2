@@ -130,8 +130,8 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
 
 - quando l'app incontra un errore non gestito o una pagina che non si carica (non gli errori di rete né
   quelli dei moduli, come una password sbagliata), il tuo browser ne manda un resoconto a TyreCare:
-  la pagina in cui eri, senza i parametri dell'indirizzo (ad esempio `/garage/:id`, non il codice del
-  veicolo), il messaggio dell'errore (fino a 500 caratteri), il dettaglio tecnico (fino a 2000
+  l'indirizzo della pagina in cui eri, senza la parte dopo `?` o `#` (dove stanno i codici dei link di
+  invito e dei report), il messaggio dell'errore (fino a 500 caratteri), il dettaglio tecnico (fino a 2000
   caratteri), la versione dell'app, il browser che usi (fino a 300 caratteri), il tuo account e la data;
 - l'app ne manda al massimo 5 per ogni caricamento e il database ne accetta al massimo 30 al giorno per
   utente; non si usa nessun servizio esterno di raccolta degli errori;
@@ -173,9 +173,8 @@ l'officina possa contattarti.
 ## 4. Per quanto tempo conserviamo i dati
 
 L'app cancella da sola **le notifiche, le richieste di aiuto su strada e gli errori dell'app** (vedi
-sotto): gli altri
-dati restano finché non vengono eliminati dall'officina, dall'interessato o alla chiusura dell'account.
-I tempi previsti sono:
+sotto): gli altri dati restano finché non vengono eliminati dall'officina, dall'interessato o alla chiusura
+dell'account. I tempi previsti sono:
 
 - **account e profilo**: finché l'account è attivo; dopo la richiesta di cancellazione
   [DA COMPLETARE: entro quanti giorni];
@@ -199,10 +198,10 @@ I tempi previsti sono:
 - **dati tecnici dei fornitori**: per i tempi indicati dai fornitori [DA COMPLETARE].
 
 Se elimini il tuo account vengono eliminati anche il tuo profilo, le tue prenotazioni (anche quelle
-passate), le tue notifiche, le tue iscrizioni push, i tuoi commenti, le tue richieste di aiuto su
-strada e i tuoi errori dell'app. Le schede cliente, i veicoli, i
-controlli, gli inviti e i registri di importazione caricati da un'officina restano all'officina (titolare),
-che li gestisce secondo le sue regole: il collegamento con il tuo account viene tolto.
+passate), le tue notifiche, le tue iscrizioni push, i tuoi commenti, le tue richieste di aiuto su strada e i
+tuoi errori dell'app. Le schede cliente, i veicoli, i controlli, gli inviti e i registri di importazione
+caricati da un'officina restano all'officina (titolare), che li gestisce secondo le sue regole: il
+collegamento con il tuo account viene tolto.
 
 ## 5. A chi comunichiamo i dati
 
@@ -256,13 +255,12 @@ Hai diritto di:
 **Come fare:** dal tuo **Profilo** nell'app.
 
 - **«Scarica i tuoi dati»**: un file (JSON) con il tuo profilo, la tua email, le tue schede nelle officine,
-  il garage, le prenotazioni, le richieste di aiuto su strada, le notifiche, i commenti, le officine
-  in cui lavori e il numero di
-  dispositivi con le notifiche push attive. **Non** contiene gli inviti dell'officina che hai usato né i
-  link dei report che hai creato: sono registri dell'officina, non dati che hai fornito tu
-  [DA COMPLETARE: confermare con il consulente]. Non contiene nemmeno i dati tecnici delle iscrizioni push né gli errori dell'app
-  (sono resoconti tecnici letti solo dall'amministratore, non dati che hai fornito tu) [DA COMPLETARE:
-  confermare con il consulente — README, domanda 17].
+  il garage, le prenotazioni, le richieste di aiuto su strada, le notifiche, i commenti, le officine in cui
+  lavori e il numero di dispositivi con le notifiche push attive. **Non** contiene gli inviti dell'officina
+  che hai usato né i link dei report che hai creato: sono registri dell'officina, non dati che hai fornito
+  tu [DA COMPLETARE: confermare con il consulente]. Non contiene nemmeno i dati tecnici delle iscrizioni
+  push né gli errori dell'app (sono resoconti tecnici letti solo dall'amministratore, non dati che hai
+  fornito tu) [DA COMPLETARE: confermare con il consulente — README, domanda 17].
 - **«Elimina il tuo account»**: cancella l'account, con quanto indicato nella sezione 4. Non si può
   eliminare se sei un amministratore, se sei titolare di un'officina, se hai prenotazioni in corso
   (richieste, proposte o confermate) o se hai una richiesta di aiuto su strada in corso (aperta, o
