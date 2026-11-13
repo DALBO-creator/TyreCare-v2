@@ -29,7 +29,12 @@ test('l’amministratore legge gli errori dell’app; il titolare no', async ({ 
   }).toPass({ timeout: 30_000 });
   await voce.click();
   await expect(admin.locator('details[open] pre').first()).toContainText(messaggio);
-  await expect(admin.getByText(/utente [0-9a-f]{8}/).first()).toBeVisible();
+  await expect(
+    admin
+      .locator('details[open]')
+      .getByText(/utente [0-9a-f]{8}/)
+      .first(),
+  ).toBeVisible();
 
   // Il titolare vede il messaggio riservato, non gli errori
   const titolare = await entra(browser, 'titolare@tyrecare.test');
