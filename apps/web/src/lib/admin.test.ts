@@ -58,8 +58,8 @@ describe('formattaDataOra', () => {
 
 describe('leggiAbbonamentoEmbed', () => {
   it('legge l’oggetto, l’array e il valore assente', () => {
-    const a = { piano: 'PILOTA', stato: 'PROVA' } as const;
-    const atteso = { piano: 'PILOTA', statoAbbonamento: 'PROVA' };
+    const a = { piano: 'ANNUALE', stato: 'PROVA' } as const;
+    const atteso = { piano: 'ANNUALE', statoAbbonamento: 'PROVA' };
     expect(leggiAbbonamentoEmbed(a)).toEqual(atteso);
     expect(leggiAbbonamentoEmbed([a])).toEqual(atteso);
     expect(leggiAbbonamentoEmbed([])).toEqual({ piano: null, statoAbbonamento: null });
@@ -71,8 +71,6 @@ describe('rifiutaAffiliazione', () => {
   const messaggi: Record<string, string> = {
     OFFICINA_NON_TROVATA: 'Officina non trovata: ricarica la pagina e riprova.',
     OFFICINA_NON_IN_ATTESA: 'Questa officina non è più in attesa: ricarica la pagina.',
-    ABBONAMENTO_STRIPE_PRESENTE:
-      'Questa officina ha un abbonamento su Stripe: annullalo prima dalla dashboard di Stripe.',
     MOTIVO_TROPPO_LUNGO: 'Il motivo è troppo lungo (al massimo 300 caratteri).',
   };
 

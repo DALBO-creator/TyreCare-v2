@@ -55,15 +55,13 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
 
 **Abbonamento delle officine** (titolari)
 
-- i **dati della carta** (numero, scadenza, codice) li inserisci nella pagina di pagamento di Stripe e li
-  tratta Stripe: TyreCare non li vede e non li conserva;
-- TyreCare conserva solo il piano scelto (Starter, Pro oppure Officina pilota), lo stato
-  dell'abbonamento (prova, attivo, scaduto, annullato), la fine della prova, l'identificativo del
-  cliente su Stripe e l'identificativo dell'abbonamento su Stripe (tabella `abbonamenti`);
-- per creare il cliente su Stripe, TyreCare gli manda l'email del titolare, la ragione sociale
-  dell'officina e l'identificativo dell'officina nell'app (un codice che l'app assegna a ogni officina);
-- questi dati sono scambiati con Stripe dal [DA COMPLETARE: data di attivazione dei pagamenti online];
-  prima di quella data il pagamento online non c'è e non partono dati verso Stripe.
+- nell'app **non c'è nessun pagamento**: installazione e abbonamento si pagano con bonifico su fattura,
+  quindi TyreCare non tratta dati di carte di pagamento;
+- TyreCare conserva il piano (mensile o annuale), lo stato dell'abbonamento (prova, attivo, scaduto,
+  sospeso), la fine della prova, le date di inizio e di scadenza, se l'installazione è stata pagata e
+  quando, l'importo concordato e le note interne di chi amministra TyreCare (tabella `abbonamenti`);
+- i dati di fatturazione (intestazione, partita IVA, importi) sono trattati fuori dall'app per emettere
+  le fatture [DA COMPLETARE: strumento di fatturazione usato].
 
 **Clienti e veicoli dell'officina** (inseriti o importati dall'officina)
 
@@ -160,7 +158,7 @@ dispositivo **solo** se invii una richiesta di aiuto su strada (vedi sopra).
 | Gestione dell'officina: clienti, veicoli, controlli, import dal gestionale | Dati caricati dall'officina | Trattamento per conto dell'officina (art. 28); la base giuridica è quella scelta dall'officina titolare |
 | Correggere i malfunzionamenti dell'app | Errori dell'app, account | [DA COMPLETARE: base giuridica, proposta legittimo interesse (art. 6.1.f) — vedi README, domanda 17] |
 | Sicurezza del servizio, prevenzione di abusi, difesa in giudizio | Dati tecnici, account | Legittimo interesse (art. 6.1.f) |
-| Gestire l'abbonamento dell'officina e il suo pagamento con carta tramite Stripe | Dati delle officine, abbonamento | Esecuzione del contratto (art. 6.1.b) |
+| Gestire l'abbonamento dell'officina (pagato con bonifico su fattura, fuori dall'app) | Dati delle officine, abbonamento | Esecuzione del contratto (art. 6.1.b) |
 | Obblighi di legge (es. fiscali, per gli abbonamenti delle officine) | Dati delle officine | Obbligo legale (art. 6.1.c) |
 
 TyreCare **non** invia comunicazioni promozionali e **non** profila gli utenti. Se in futuro lo farà, ti
@@ -193,7 +191,7 @@ dell'account. I tempi previsti sono:
 - **dati caricati dall'officina** (clienti, veicoli, pneumatici, controlli, inviti, registro import): per
   il tempo deciso dall'officina titolare e, quando l'officina smette di usare TyreCare,
   [DA COMPLETARE: restituzione e cancellazione entro … — vedi README, domanda 2];
-- **dati delle officine per gli abbonamenti** (anche piano, stato e identificativi Stripe): per il tempo
+- **dati delle officine per gli abbonamenti** (piano, stato, date e importi): per il tempo
   previsto dalla legge (es. 10 anni per i documenti fiscali) [DA COMPLETARE: confermare];
 - **dati tecnici dei fornitori**: per i tempi indicati dai fornitori [DA COMPLETARE].
 
@@ -219,15 +217,13 @@ I dati non vengono venduti né ceduti a terzi per scopi propri. Possono vederli:
   delle officine; vi accede solo chi gestisce il sistema, quando serve per assistenza, sicurezza o
   manutenzione [DA COMPLETARE: definire con il consulente, vedi README, domanda 9].
 
-TyreCare si serve di questi **fornitori**, nominati responsabili del trattamento (per Stripe il ruolo è
-ancora da definire, vedi la tabella):
+TyreCare si serve di questi **fornitori**, nominati responsabili del trattamento:
 
 | Fornitore | Cosa fa | Dove |
 |-----------|---------|------|
 | Supabase Inc. | Database, autenticazione, invio delle notifiche push (funzioni sul server) | Server nell'Unione europea (regione eu-west-1, Irlanda) |
 | Vercel Inc. | Ospita l'applicazione web (i file dell'app) | [DA COMPLETARE: regione; società con sede negli USA] |
 | Resend (Plus Five Five, Inc.) | Invio delle email automatiche (es. conferma dell'indirizzo email, recupero della password) e delle email di riserva delle notifiche (quando attive) | [DA COMPLETARE: regione; società con sede negli USA] |
-| Stripe | Pagamento degli abbonamenti delle officine con carta (dalla data di attivazione del pagamento online) | [DA COMPLETARE: ruolo di Stripe e sede, da confermare con il consulente — README, domanda 16] |
 | Servizi push del browser (Google per Chrome e Android, Apple per Safari e iPhone, Mozilla per Firefox, o altri a seconda del browser) | Recapitano le notifiche push sul tuo dispositivo; il servizio lo sceglie il tuo browser | Possono trovarsi fuori dall'UE |
 
 [DA COMPLETARE: verificare con il consulente la denominazione esatta dei fornitori e le garanzie per i

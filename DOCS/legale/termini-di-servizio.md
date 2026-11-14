@@ -134,30 +134,25 @@ delle email di riserva] e si spengono con l'interruttore «Email» della pagina 
 
 ## 10. Abbonamento delle officine
 
-Questa sezione riguarda le officine. Le funzioni di abbonamento e pagamento descritte qui sotto si
-accendono per gradi. Il pagamento online con Stripe vale **dal [DA COMPLETARE: data di attivazione dei
-pagamenti online]**. Prima di quella data non c'è nessun pagamento online: l'officina ha la prova
-gratuita o il piano «Officina pilota» o, a prova finita, lo stato «scaduto», senza blocchi; nessuna carta
-viene richiesta (vedi sotto). Le condizioni sul pagamento, sul rinnovo e sull'annullamento valgono dalla data di
-attivazione.
+Questa sezione riguarda le officine. Nell'app non c'è nessun pagamento: installazione e abbonamento si
+pagano a TyreCare con bonifico, su fattura.
 
-- **Prova gratuita di 30 giorni.** Ogni officina nuova ha 30 giorni di prova, contando anche il giorno
-  della registrazione. La pagina «Abbonamento» mostra l'ultimo giorno della prova (incluso) e quanti
-  giorni restano. Per iniziare la prova non serve la carta.
-- **Piani e prezzi.** I piani (Starter e Pro) e i prezzi sono nella pagina «Abbonamento» dell'app e nella
-  pagina pubblica «Per le officine»; qui non sono ripetuti. Le officine del pilota hanno il piano
-  «Officina pilota», senza pagamento durante il pilota.
-- **Pagamento.** Dalla data di attivazione l'abbonamento si paga ogni mese con carta,
-  tramite Stripe: la pagina di pagamento è di Stripe. I dati della carta li tratta Stripe e TyreCare non
-  li vede (vedi l'[informativa privacy](informativa-privacy.md)).
-- **Rinnovo.** L'abbonamento si rinnova ogni mese in automatico, finché non viene annullato.
-- **Annullamento e carta.** Dalla data di attivazione, dalla pagina «Abbonamento», con «Gestisci il
-  pagamento» (il portale di Stripe), il titolare può cambiare carta e annullare l'abbonamento.
-  [DA COMPLETARE: da quando vale l'annullamento (subito o a fine periodo pagato) e rimborsi]
-- **Alla scadenza.** Se la prova finisce senza un abbonamento, o un pagamento non riesce, lo stato
-  dell'officina diventa «scaduto». Per ora nessuna funzione viene bloccata: lo stato si vede nella
-  pagina «Abbonamento». Dalla data di attivazione, un abbonamento annullato si può riattivare da quella
-  pagina.
+- **Prova gratuita di 30 giorni.** Ogni officina ha 30 giorni di prova, contando anche il giorno in cui
+  viene attivata. La pagina «Abbonamento» mostra l'ultimo giorno della prova (incluso) e quanti giorni
+  restano.
+- **Prezzi.** L'installazione (una tantum) e l'abbonamento, mensile oppure annuale, hanno i prezzi
+  indicati nella pagina «Abbonamento» dell'app e nella pagina pubblica «Per le officine», IVA esclusa;
+  qui non sono ripetuti. Un importo diverso concordato con TyreCare compare nella pagina «Abbonamento».
+- **Pagamento.** Con bonifico, su fattura di TyreCare. Ricevuto il pagamento, TyreCare aggiorna la
+  scadenza dell'abbonamento, che il titolare vede nella pagina «Abbonamento».
+  [DA COMPLETARE: termini di pagamento e dati per il bonifico]
+- **Rinnovo e cambio di piano.** Il rinnovo non è automatico: per rinnovare o cambiare piano il titolare
+  scrive a TyreCare dalla pagina «Abbonamento». Prima della scadenza l'app manda un avviso.
+  [DA COMPLETARE: recesso e rimborsi]
+- **Alla scadenza.** Se la prova o il periodo pagato finiscono senza rinnovo, lo stato
+  dell'abbonamento diventa «scaduto» e il titolare riceve un avviso. TyreCare può sospendere un'officina
+  con l'abbonamento scaduto: un'officina sospesa non è più visibile ai clienti finché non viene
+  riattivata. [DA COMPLETARE: dopo quanti giorni dalla scadenza]
   [DA COMPLETARE: se e quando, in futuro, le funzioni verranno limitate alle officine con abbonamento
   scaduto, e con quale preavviso]
 

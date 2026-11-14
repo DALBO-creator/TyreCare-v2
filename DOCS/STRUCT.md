@@ -75,10 +75,9 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | **@e965/xlsx** (SheetJS Community Edition) | 0.20.3 | ✅ | Legge i file Excel (`.xls` 97–2003 di GESTITYRE, `.xlsx`, `.ods`) **nel browser** (`apps/web/src/lib/excel.ts`), caricata con `import()` dinamico in un pezzo separato del bundle. Versione esatta. È la ripubblicazione su npm di SheetJS CE 0.20.3 (Apache-2.0): il pacchetto `xlsx` di npm è fermo alla 0.18.5 con vulnerabilità note e l'originale si scarica solo da `cdn.sheetjs.com`, non raggiungibile dal sandbox degli agenti. Anche devDependency di `@tyrecare/e2e` per creare i file di prova. |
 | **marked** | 18.1.2 | ✅ | Converte in HTML i testi legali di `DOCS/legale/` (`apps/web/src/lib/legale.ts`); sta solo nel chunk della pagina `legale`. Versione esatta. |
 | **web-push** | 3.6 | ✅ | Invio delle notifiche push con chiavi VAPID, dentro la Edge Function `invia-notifica` (import `npm:` in Deno), non in Fastify (PLAN P21). |
-| **Supabase Edge Functions** (Deno) | — | ✅ | `supabase/functions/invia-notifica`: Web Push a ogni nuova notifica. Deploy: `npx supabase functions deploy invia-notifica`. `stripe-webhook` (T185): webhook di Stripe, segreti `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_STARTER`, `STRIPE_PRICE_PRO`, deploy con `--no-verify-jwt`. |
-| `supabase/functions/_shared/` | — | ✅ | Aiuti comuni alle Edge Functions (T189, `stripe.ts` con `fetch`), senza Deno; testati da Vitest nel project `funzioni`. Nessuna dipendenza nuova. |
+| **Supabase Edge Functions** (Deno) | — | ✅ | `supabase/functions/invia-notifica`: Web Push a ogni nuova notifica. Deploy: `npx supabase functions deploy invia-notifica`. |
 | **pg_net** + **Vault** | — | ✅ | Il trigger `notifiche_push` chiama la Edge Function in modo asincrono; indirizzo e segreto nel Vault. |
-| **pg_cron** (Supabase Cron) | — | ✅ | Job orari: `promemoria-appuntamenti` (dalle 18, promemoria del giorno prima) e `promemoria-pneumatici` (dalle 10, cambio stagionale); `scadenza-prove` (0:25 UTC, prove scadute), `pulizia-eventi-stripe` (0:35 UTC, eventi Stripe oltre 30 giorni) e `richieste-strada` (ogni 10 minuti, richieste di aiuto su strada). Elenco dei job: tabella `cron.job`; esecuzioni: `cron.job_run_details`. |
+| **pg_cron** (Supabase Cron) | — | ✅ | Job orari: `promemoria-appuntamenti` (dalle 18, promemoria del giorno prima) e `promemoria-pneumatici` (dalle 10, cambio stagionale); `scadenza-abbonamenti` (0:25 UTC, prove e abbonamenti scaduti con i loro avvisi) e `richieste-strada` (ogni 10 minuti, richieste di aiuto su strada). Elenco dei job: tabella `cron.job`; esecuzioni: `cron.job_run_details`. |
 
 ## Database e servizi
 
@@ -111,7 +110,7 @@ Gestita con **npm workspaces**: un solo `npm install` nella root installa tutto.
 | Tecnologia | Stato | Uso previsto |
 |------------|-------|--------------|
 | **PowerSync** | ⚪ | Sincronizzazione offline avanzata (scrittura offline in officina). |
-| **Stripe** | ⚪ | Abbonamenti delle officine. |
+| ~~Stripe~~ | ❌ | Tolto il 2026-11-13 (PLAN P24): nessun pagamento nell'app, abbonamenti registrati a mano dall'amministratore. |
 
 ## Strumenti di design
 

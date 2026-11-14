@@ -52,7 +52,7 @@ Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
 
 ## Solo per la Fase 7 — Commerciale
 
-- [ ] **Stripe in prova (D8).** Apri un account Stripe in modalità test (nessun pagamento vero) e accendi
-  i pagamenti dell'abbonamento (T071) senza aiuto degli agenti. Da fare solo dopo che il pilota è riuscito
-  ([`piano-pilota.md`](piano-pilota.md) §6). Guida passo passo (15 minuti):
-  [`stripe-prova.md`](stripe-prova.md).
+- [ ] **Abbonamenti a mano.** Nell'app non ci sono pagamenti (decisione del 2026-11-13): ricevuto il
+  bonifico di un'officina, apri **Profilo → Pannello di amministrazione → Officine**, entra nella scheda
+  dell'officina e registra l'installazione pagata e il rinnovo (un mese o un anno). Prima conferma
+  l'indirizzo email di contatto (`CONTATTO_EMAIL` in `packages/shared/src/contatti.ts`).

@@ -235,32 +235,21 @@ TyreCare inoltra soltanto la richiesta: l'intervento e il prezzo li concordi tu 
 La pagina "Abbonamento" la vede solo il titolare: si apre da **Profilo → "Dati dell'officina"**, con il
 pulsante "Abbonamento" (gli operatori trovano scritto "Solo il titolare vede l'abbonamento.").
 
-**Il tuo piano.** In alto, sotto "Il tuo piano", ci sono il nome del piano e lo stato:
-- Un'officina nuova parte con 30 giorni di prova gratuita, contando il giorno di oggi. Finché dura la prova
-  la pagina scrive "Prova gratuita: mancano N giorni (fino al …)"; all'ultimo giorno "manca 1 giorno".
-  Finita la prova scrive "La prova è finita".
-- Gli altri stati sono "Abbonamento attivo", "Abbonamento scaduto" e "Abbonamento annullato".
-- Se l'officina è nel pilota la pagina scrive "Gratuito per tutta la durata del pilota": non c'è niente da
-  pagare e non compare né la scelta del piano né "Attiva l'abbonamento".
+**Il tuo abbonamento.** In alto trovi lo stato in una frase e, sotto, i dati:
+- Un'officina nuova ha 30 giorni di prova gratuita, contando il giorno in cui viene attivata. Finché dura
+  la prova la pagina scrive "Prova gratuita: mancano N giorni"; all'ultimo giorno "manca 1 giorno".
+- Con l'abbonamento pagato scrive "Abbonamento attivo fino al …"; negli ultimi 30 giorni ricorda di
+  rinnovare. Gli altri stati sono "Abbonamento scaduto il …" e "Abbonamento sospeso".
+- Nell'elenco: stato, piano (mensile o annuale, con il prezzo), prossima scadenza e se l'installazione è
+  stata pagata.
 
-**Scegliere il piano.** Sotto "Piani disponibili" trovi le carte dei due piani con le loro funzioni:
-"Starter" (29 €/mese) e "Pro" (49 €/mese). Sotto, nel riquadro "Scegli il piano", spunta quello che vuoi;
-di partenza è selezionato "Starter", oppure "Pro" se hai già quello.
+**Prezzi e cosa è incluso.** Sotto ci sono i due piani (mensile e annuale, IVA esclusa), il costo
+dell'installazione una tantum e l'elenco di quello che l'abbonamento comprende: è uguale per i due piani.
 
-**Attivare l'abbonamento.** Premi "Attiva l'abbonamento": si apre la pagina di pagamento di Stripe, dove
-inserisci la carta. Il pulsante c'è durante la prova, se l'abbonamento è scaduto e se è annullato.
-Se il pagamento non si apre, il motivo compare in rosso sopra il pulsante e puoi riprovare.
-
-**Dopo il pagamento.** Tornando su TyreCare vedi in verde "Pagamento ricevuto: l'abbonamento si aggiorna
-entro pochi minuti." Dopo qualche minuto lo stato diventa "Abbonamento attivo" e la pagina scrive "Il tuo
-abbonamento è a posto: non devi fare nulla." Se chiudi la pagina di Stripe senza pagare, torni qui con
-"Pagamento annullato: non ti è stato addebitato nulla."
-
-**Cambiare carta o annullare.** Dopo il primo pagamento compare il pulsante "Gestisci il pagamento": apre il
-portale di Stripe, dove cambi la carta e puoi annullare l'abbonamento. Se l'ultimo pagamento non è riuscito
-la pagina ti dice di aggiornare la carta da lì.
-
-Finché TyreCare non attiva i pagamenti online la pagina lo dice: scrivici con «Invia un commento».
+**Rinnovare o cambiare piano.** Nell'app non si paga nulla: il pagamento avviene con bonifico, su fattura.
+Premi "Scrivi a TyreCare": si apre un'email già indirizzata, con il nome della tua officina. Appena
+riceviamo il pagamento aggiorniamo la scadenza, e ti arriva una notifica "Abbonamento rinnovato".
+Sette giorni prima della scadenza l'app ti manda un avviso.
 
 ## 15. Invia un commento
 

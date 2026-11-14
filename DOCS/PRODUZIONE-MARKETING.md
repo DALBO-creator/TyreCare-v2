@@ -42,7 +42,7 @@
 
 | Voce | €/anno |
 |------|-------:|
-| Commissioni Stripe (~1,5% + 0,25 € a pagamento mensile) | ≈ 10 |
+| Commissioni di incasso (bonifico: nessuna) | 0 |
 | Quota infrastruttura aggiuntiva (storage foto, traffico) | ≈ 10 |
 | Assistenza e manutenzione (~0,5 h/mese valorizzate 25 €/h) | 150 |
 | **Totale** | **≈ 170** |
@@ -53,9 +53,13 @@
 
 | Piano | Prezzo | Contenuto |
 |-------|-------:|-----------|
-| **Starter** | 29 €/mese (348 €/anno) | Import dati, garage officina, storico e report, stato pneumatici, reminder |
-| **Pro** | 49 €/mese (588 €/anno) | Starter + prenotazioni, catalogo servizi, notifiche illimitate, statistiche |
-| **Attivazione** (una tantum) | 149 € | Installazione, configurazione, primo import, formazione |
+| **Mensile** | 100 €/mese (1200 €/anno) | Tutte le funzioni |
+| **Annuale** | 1000 €/anno (2 mesi gratis) | Tutte le funzioni |
+| **Installazione** (una tantum) | 149 € | Installazione, configurazione, primo import, formazione |
+
+> **Aggiornamento 2026-11-13 (PLAN P24):** un solo piano con tutte le funzioni, mensile o annuale, IVA
+> esclusa; pagamento con bonifico su fattura, nessun pagamento nell'app. I vecchi piani Starter (29 €) e
+> Pro (49 €) non esistono più: le stime dei paragrafi seguenti, fatte con quei prezzi, sono da rifare.
 
 Sconto suggerito: 2 mesi gratis con pagamento annuale. Manutenzione e aggiornamenti sono **inclusi**
 nell'abbonamento.
