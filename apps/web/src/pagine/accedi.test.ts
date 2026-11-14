@@ -49,12 +49,12 @@ describe('pagina Accedi', () => {
   it('con dati validi chiama l’accesso con email e password', async () => {
     signInWithPassword.mockResolvedValue({ error: null });
     campoDi('email').value = ' mario@esempio.it ';
-    campoDi('password').value = 'password123';
+    campoDi('password').value = 'Password123';
     invia();
     await vi.waitFor(() => expect(signInWithPassword).toHaveBeenCalledTimes(1));
     expect(signInWithPassword).toHaveBeenCalledWith({
       email: 'mario@esempio.it',
-      password: 'password123',
+      password: 'Password123',
     });
     expect(riquadro().hidden).toBe(true);
   });

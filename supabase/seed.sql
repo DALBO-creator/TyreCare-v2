@@ -1,6 +1,6 @@
 -- Dati di prova per lo sviluppo locale (eseguito da `supabase db reset`). NON usare in produzione.
 --
--- Account (password per tutti: password123):
+-- Account (password per tutti: Password123):
 --   admin@tyrecare.test      ADMIN
 --   titolare@tyrecare.test   OFFICINA, TITOLARE di "Gomme Rossi"
 --   operatore@tyrecare.test  OFFICINA, OPERATORE di "Gomme Rossi"
@@ -19,7 +19,7 @@ select
   'authenticated',
   'authenticated',
   u.email,
-  extensions.crypt('password123', extensions.gen_salt('bf')),
+  extensions.crypt('Password123', extensions.gen_salt('bf')),
   now(),
   '{"provider": "email", "providers": ["email"]}'::jsonb,
   jsonb_build_object('nome', u.nome, 'cognome', u.cognome),

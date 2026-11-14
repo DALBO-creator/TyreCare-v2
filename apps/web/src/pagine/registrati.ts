@@ -1,5 +1,5 @@
 import { MailCheck } from 'lucide';
-import { PASSWORD_MIN, RegistrazioneSchema } from '@tyrecare/shared';
+import { AIUTO_PASSWORD, RegistrazioneSchema } from '@tyrecare/shared';
 import { registrati } from '../lib/auth';
 import { esc } from '../lib/html';
 import { icona } from '../ui/icone';
@@ -31,7 +31,7 @@ export function mostraRegistrati(app: HTMLElement): void {
           etichetta: 'Password',
           tipo: 'password',
           autocomplete: 'new-password',
-          aiuto: `Almeno ${PASSWORD_MIN} caratteri.`,
+          aiuto: AIUTO_PASSWORD,
         })}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" name="accetto" id="campo-accetto"

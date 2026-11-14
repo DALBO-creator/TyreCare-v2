@@ -5,7 +5,7 @@ import { expect, type Browser, type Page } from '@playwright/test';
 // Funzioni comuni ai test: accesso, dati unici, operazioni dell'officina ed email lette da Mailpit.
 
 /** Password degli utenti di `supabase/seed.sql` (e di quelli creati dai test). */
-export const PASSWORD = 'password123';
+export const PASSWORD = 'Password123';
 
 /** Officina del titolare del seed (`titolare@tyrecare.test`). */
 export const OFFICINA = 'Gomme Rossi S.n.c.';

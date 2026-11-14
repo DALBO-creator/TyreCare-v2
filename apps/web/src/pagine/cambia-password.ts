@@ -1,4 +1,4 @@
-import { CambioPasswordSchema, PASSWORD_MIN } from '@tyrecare/shared';
+import { CambioPasswordSchema, AIUTO_PASSWORD } from '@tyrecare/shared';
 import { cambiaPassword } from '../lib/auth';
 import { paginaApp } from '../ui/layout';
 import { RIQUADRO_ERRORE, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
@@ -23,7 +23,7 @@ export function mostraCambiaPassword(app: HTMLElement): void {
           etichetta: 'Nuova password',
           tipo: 'password',
           autocomplete: 'new-password',
-          aiuto: `Almeno ${PASSWORD_MIN} caratteri.`,
+          aiuto: AIUTO_PASSWORD,
         })}
         ${pulsanteInvio('Cambia password', 'Salvataggio…')}
         <a class="btn btn-outline-light btn-lg w-100" href="/profilo">Annulla</a>

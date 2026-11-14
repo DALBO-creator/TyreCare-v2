@@ -1,5 +1,5 @@
 import { CircleCheck } from 'lucide';
-import { NuovaPasswordSchema, PASSWORD_MIN } from '@tyrecare/shared';
+import { NuovaPasswordSchema, AIUTO_PASSWORD } from '@tyrecare/shared';
 import { impostaNuovaPassword, sessioneCorrente } from '../lib/auth';
 import { icona } from '../ui/icone';
 import { paginaAuth } from '../ui/layout';
@@ -35,7 +35,7 @@ export function mostraNuovaPassword(app: HTMLElement): void {
           etichetta: 'Nuova password',
           tipo: 'password',
           autocomplete: 'new-password',
-          aiuto: `Almeno ${PASSWORD_MIN} caratteri.`,
+          aiuto: AIUTO_PASSWORD,
         })}
         ${pulsanteInvio('Salva la password', 'Salvataggio…')}
       </form>`,
