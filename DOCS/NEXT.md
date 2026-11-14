@@ -11,10 +11,10 @@
 Leggi SOLO questa sezione all'avvio; il resto di NEXT.md serve solo se il lavoro lo richiede.
 
 Worktree in `/home/user/wt/` (se il container è stato ricreato non ci sono: ripartire dai rami remoti `lancio/*`, da fare push prima):
-- `admin` (ramo `lancio/admin`): rimozione Stripe, abbonamento gestito a mano, cruscotto/commenti admin. 42 file NON committati, migrazione `20261114100000_abbonamento_manuale.sql` inclusa. Da verificare: test, pgTAP, build.
+- `admin` (ramo `lancio/admin`, commit WIP `0da0dbb`): rimozione Stripe, abbonamento gestito a mano, cruscotto/commenti admin. Lavoro di metà sessione salvato: completarlo e poi verificare (test, pgTAP, build).
 - `legale` (ramo `lancio/legale`): privacy, cookie, termini, prezzi del sito, link al sito. 1 commit. Lavoro in corso.
-- `sicurezza` (ramo `lancio/sicurezza`, sito in `sito-sicurezza`): RLS, 2FA admin (aal2), CSP, intestazioni. 1 commit. Lavoro in corso.
-- `desktop` (ramo `lancio/desktop`): layout desktop/tablet, nessun commit. Da riavviare.
+- `sicurezza` (ramo `lancio/sicurezza`, commit WIP `3269f22`, sito in `sito-sicurezza`): RLS, 2FA admin (aal2), CSP, intestazioni. Lavoro di metà sessione salvato: completarlo.
+- `desktop` (ramo `lancio/desktop`): nessun lavoro salvato, il ramo è ancora uguale a main. Da avviare da zero.
 
 Prima di unire: verificare ogni ramo (`npm run check` e `npm run db:test`), poi merge su main, poi riattivare `ai-org` (`progetti.tyrecare.attivo=true` in `control.json`, impostata a false stanotte).
 
