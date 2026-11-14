@@ -6,6 +6,23 @@
 
 ## Prossima sessione
 
+## Passaggio di consegne (2026-11-14, sessione notturna di lancio)
+
+Leggi SOLO questa sezione all'avvio; il resto di NEXT.md serve solo se il lavoro lo richiede.
+
+Worktree in `/home/user/wt/` (se il container è stato ricreato non ci sono: ripartire dai rami remoti `lancio/*`, da fare push prima):
+- `admin` (ramo `lancio/admin`): rimozione Stripe, abbonamento gestito a mano, cruscotto/commenti admin. 42 file NON committati, migrazione `20261114100000_abbonamento_manuale.sql` inclusa. Da verificare: test, pgTAP, build.
+- `legale` (ramo `lancio/legale`): privacy, cookie, termini, prezzi del sito, link al sito. 1 commit. Lavoro in corso.
+- `sicurezza` (ramo `lancio/sicurezza`, sito in `sito-sicurezza`): RLS, 2FA admin (aal2), CSP, intestazioni. 1 commit. Lavoro in corso.
+- `desktop` (ramo `lancio/desktop`): layout desktop/tablet, nessun commit. Da riavviare.
+
+Prima di unire: verificare ogni ramo (`npm run check` e `npm run db:test`), poi merge su main, poi riattivare `ai-org` (`progetti.tyrecare.attivo=true` in `control.json`, impostata a false stanotte).
+
+Decisioni prese da Davide: segnaposto per i dati del fornitore (un solo file, da compilare); card prezzi "Su misura" al posto della seconda card; nessun pagamento in app (Stripe eliminato).
+
+Da fare a mano da Davide sul cloud: pubblicare le migrazioni, 2FA per il proprio account admin, impostazioni Supabase Auth/Vercel descritte in `DOCS/SICUREZZA.md`, compilare i segnaposto in `DOCS/legale/README.md`.
+
+
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
 > **Prima, da Davide (2026-11-08):** pubblicare le migrazioni sul cloud seguendo
 > `DOCS/pilota/pubblicazione.md` (D10; il cloud è fermo a metà ottobre: è la causa probabile degli errori su

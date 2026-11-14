@@ -1,3 +1,10 @@
+## 2026-11-14 — Sessione notturna di lancio (Claude Opus/Fable, con cambi di modello)
+
+- Messo in pausa `ai-org` per tyrecare (`control.json`, commit su main).
+- Avviati quattro agenti in worktree separati: admin, legale, sicurezza, desktop. Stato a fine sessione in `NEXT.md` (sezione "Passaggio di consegne").
+- Nessun merge ancora: i rami `lancio/*` vanno verificati e uniti nella prossima sessione.
+- Limite del piano raggiunto più volte: gli agenti sono stati ripresi con SendMessage.
+
 # STORICO — Sessioni passate
 
 > Resoconto di ogni sessione, **dalla più recente alla più vecchia**: la nuova sessione si aggiunge **in
