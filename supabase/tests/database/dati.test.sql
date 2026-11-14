@@ -16,7 +16,7 @@ begin
     set local role authenticated;
     perform set_config(
       'request.jwt.claims',
-      json_build_object('sub', p_utente, 'role', 'authenticated')::text,
+      json_build_object('sub', p_utente, 'role', 'authenticated', 'aal', 'aal2')::text,
       true
     );
   end if;
@@ -25,7 +25,7 @@ $$;
 
 -- ---------------------------------------------------------------- anonimo e admin
 select pg_temp.come(null);
-select is_empty('select * from public.veicoli', 'anonimo: nessun veicolo visibile');
+select throws_ok('select * from public.veicoli', '42501', null, 'anonimo: nessun veicolo visibile');
 
 -- ADMIN (Ada): i dati dei clienti delle officine non sono suoi (GDPR)
 select pg_temp.come('a0000000-0000-4000-8000-000000000001');

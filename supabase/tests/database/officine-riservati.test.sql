@@ -12,7 +12,7 @@ begin
   set local role authenticated;
   perform set_config(
     'request.jwt.claims',
-    json_build_object('sub', p_utente, 'role', 'authenticated')::text,
+    json_build_object('sub', p_utente, 'role', 'authenticated', 'aal', 'aal2')::text,
     true
   );
 end;

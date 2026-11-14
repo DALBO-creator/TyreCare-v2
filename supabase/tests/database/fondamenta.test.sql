@@ -15,7 +15,7 @@ begin
     set local role authenticated;
     perform set_config(
       'request.jwt.claims',
-      json_build_object('sub', p_utente, 'role', 'authenticated')::text,
+      json_build_object('sub', p_utente, 'role', 'authenticated', 'aal', 'aal2')::text,
       true
     );
   end if;
@@ -29,7 +29,7 @@ select is(
   (select count(*) from public.officine)::int, 1,
   'anonimo: vede solo le officine ATTIVE'
 );
-select is_empty('select * from public.profiles', 'anonimo: nessun profilo visibile');
+select throws_ok('select * from public.profiles', '42501', null, 'anonimo: nessun profilo visibile');
 
 -- ---------------------------------------------------------------- cliente
 reset role;
