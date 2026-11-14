@@ -348,6 +348,12 @@ const ROTTE: Rotta[] = [
     mostra: pigra(() => import('./pagine/legale'), 'mostraTermini'),
   },
   {
+    percorso: '/cookie',
+    accesso: 'pubblica',
+    titolo: 'Cookie policy',
+    mostra: pigra(() => import('./pagine/legale'), 'mostraCookie'),
+  },
+  {
     percorso: '/per-le-officine',
     accesso: 'pubblica',
     titolo: 'TyreCare per le officine',

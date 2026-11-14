@@ -1,9 +1,10 @@
 import { MailCheck } from 'lucide';
-import { PASSWORD_MIN, RegistrazioneSchema } from '@tyrecare/shared';
+import { ETA_MINIMA, PASSWORD_MIN, RegistrazioneSchema } from '@tyrecare/shared';
 import { registrati } from '../lib/auth';
 import { esc } from '../lib/html';
 import { icona } from '../ui/icone';
 import { paginaAuth } from '../ui/layout';
+import { piedeLegale } from '../ui/piede-legale';
 import { RIQUADRO_ERRORE, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
 import { avvisoConferma, parametro } from './comune';
 
@@ -37,15 +38,16 @@ export function mostraRegistrati(app: HTMLElement): void {
           <input class="form-check-input" type="checkbox" name="accetto" id="campo-accetto"
             aria-describedby="campo-accetto-errore" />
           <label class="form-check-label" for="campo-accetto">
-            Ho letto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a>
-            e accetto i <a href="/termini" target="_blank" rel="noopener">termini di servizio</a>
+            Ho letto l'<a href="/privacy" target="_blank" rel="noopener">informativa privacy</a>,
+            accetto i <a href="/termini" target="_blank" rel="noopener">termini di servizio</a>
+            e dichiaro di avere almeno ${ETA_MINIMA} anni
           </label>
           <div id="campo-accetto-errore" class="tc-campo__errore" hidden></div>
         </div>
         ${pulsanteInvio('Crea account', 'Creazione in corso…')}
       </form>`,
     // Il passaggio tra accesso e registrazione conserva `?dopo=` ed `?email=` (es. dall'invito)
-    piede: `Hai già un account? <a href="/accedi${esc(location.search)}">Accedi</a>`,
+    piede: `Hai già un account? <a href="/accedi${esc(location.search)}">Accedi</a><br>${piedeLegale()}`,
   });
 
   collegaModulo(app.querySelector('form')!, RegistrazioneSchema, async (dati) => {

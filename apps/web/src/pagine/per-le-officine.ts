@@ -1,7 +1,8 @@
-import { PIANI, type Piano } from '@tyrecare/shared';
+import { PIANI, SITO_URL, type Piano } from '@tyrecare/shared';
 import {
   BellRing,
   CalendarCheck,
+  ExternalLink,
   FileSpreadsheet,
   LifeBuoy,
   Smartphone,
@@ -10,6 +11,7 @@ import {
 import { esc } from '../lib/html';
 import { icona } from '../ui/icone';
 import { paginaAuth } from '../ui/layout';
+import { piedeLegale } from '../ui/piede-legale';
 
 const DOPO = '?dopo=/officina/registra';
 
@@ -84,11 +86,16 @@ export function mostraPerLeOfficine(app: HTMLElement): void {
         <h2 class="tc-officine__sezione">Prezzi</h2>
         <div class="tc-officine__piani">${cartaPrezzo('STARTER')}${cartaPrezzo('PRO')}</div>
         <p class="tc-officine__prova">30 giorni di prova gratuita: non serve la carta per iniziare.</p>
+        <p class="tc-officine__sito">
+          <a href="${SITO_URL}" target="_blank" rel="noopener noreferrer">
+            Scopri prezzi e funzioni sul sito ${icona(ExternalLink)}
+          </a>
+        </p>
         <h2 class="tc-officine__sezione">Come si inizia</h2>
         <ol class="tc-officine__passi">${passi}</ol>
         <a class="btn btn-primary btn-lg w-100" href="/registrati${DOPO}">Registra la tua officina</a>
         <p class="tc-officine__accedi">Hai già un account? <a href="/accedi${DOPO}">Accedi</a></p>
       </div>`,
-    piede: `<a href="/privacy">Privacy</a> · <a href="/termini">Termini di servizio</a>`,
+    piede: piedeLegale(),
   });
 }

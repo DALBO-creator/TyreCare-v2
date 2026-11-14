@@ -1,7 +1,9 @@
+import cookie from '../../../../DOCS/legale/cookie-policy.md?raw';
 import informativa from '../../../../DOCS/legale/informativa-privacy.md?raw';
 import termini from '../../../../DOCS/legale/termini-di-servizio.md?raw';
-import { AVVISO_BOZZA, legaleInHtml, TESTI_LEGALI_DEFINITIVI } from '../lib/legale';
+import { AVVISO_DATI, legaleInHtml, TESTI_LEGALI_DEFINITIVI } from '../lib/legale';
 import { MARCHIO } from '../ui/layout';
+import { piedeLegale } from '../ui/piede-legale';
 
 /** Vero se `referrer` è una pagina della stessa origine (schema, host e porta) di `origine`. */
 export function referrerStessoSito(referrer: string, origine: string): boolean {
@@ -28,7 +30,7 @@ export function tornaIndietroNelSito(
 function mostraLegale(app: HTMLElement, markdown: string): void {
   const avviso = TESTI_LEGALI_DEFINITIVI
     ? ''
-    : `<div class="tc-avviso tc-avviso--giallo" role="status"><p class="mb-0">${AVVISO_BOZZA}</p></div>`;
+    : `<div class="tc-avviso tc-avviso--giallo" role="status"><p class="mb-0">${AVVISO_DATI}</p></div>`;
   app.innerHTML = `
     <main class="tc-auth tc-legale">
       <a class="tc-auth__marchio" href="/" aria-label="TyreCare, home">${MARCHIO}</a>
@@ -36,6 +38,7 @@ function mostraLegale(app: HTMLElement, markdown: string): void {
         <p><a class="tc-legale__indietro" href="/">Torna indietro</a></p>
         ${avviso}
         ${legaleInHtml(markdown)}
+        <p class="tc-legale__piede">${piedeLegale()}</p>
       </article>
     </main>`;
   app.querySelector<HTMLAnchorElement>('.tc-legale__indietro')?.addEventListener('click', (e) => {
@@ -54,4 +57,8 @@ export function mostraPrivacy(app: HTMLElement): void {
 
 export function mostraTermini(app: HTMLElement): void {
   mostraLegale(app, termini);
+}
+
+export function mostraCookie(app: HTMLElement): void {
+  mostraLegale(app, cookie);
 }
