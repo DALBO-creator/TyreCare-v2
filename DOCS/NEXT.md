@@ -12,8 +12,12 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261115-17 (T206 indice del limite orario su strada; T254 400 di `invia-notifica`;
-> T266 pagina «Annulla questo import», chiude R40; T261 axe su 12 pagine in più), nel treno.
+> Ultima sessione: ciclo agenti 20261116-00 (T286 `import_id` protetto; T269 errori dell'app senza fughe;
+> T260 guide del pilota; T264 guida sulla sicurezza degli account), nel treno.
+> Da controllare nella CI del treno: pgTAP nuovi `import-id-protetto.test.sql` e `errori-app-autore.test.sql`
+> (non eseguiti in locale).
+> Per Davide (in lista di lancio): impostare le regole delle password nel pannello Supabase seguendo
+> `DOCS/pilota/sicurezza-account.md`.
 > Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito.
 > Prossimi compiti pronti: la pianificazione della domenica.
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
@@ -34,8 +38,7 @@
   sicurezza (T036), la CSP è solo Report-Only; fatta la bozza della procedura per le violazioni T037;
   esportazione: clienti e veicoli da `/clienti/importa` (T030), i dati personali dal profilo (T040), i
   controlli da `/clienti/importa` (T041))
-- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, preferenze,
-  trigger di protezione su `import_id`
+- [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, preferenze
 - [ ] P23: quale **dominio di TyreCare** usare per le email e quando configurarne i DNS su Resend
   (SPF/DKIM), una volta sola
 
