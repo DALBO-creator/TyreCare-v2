@@ -85,9 +85,11 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
   quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
   rivedere; restano da completare i contatti e il termine del DPA §12.1.
 - [ ] **Autenticazione a due fattori** per titolari delle officine e amministratori: disattivata
-  (`[auth.mfa.totp]` con `enroll_enabled = false` in `supabase/config.toml`).
+  (`[auth.mfa.totp]` con `enroll_enabled = false` in `supabase/config.toml`); rimandata dopo il pilota
+  (R39), vedi [sicurezza degli account](../pilota/sicurezza-account.md).
 - [ ] **Regole sulle password più robuste:** oggi solo lunghezza minima 8 (`password_requirements = ""`) e
-  `secure_password_change = false` (cambio password senza riautenticazione recente).
+  `secure_password_change = false` (cambio password senza riautenticazione recente); da impostare nel
+  pannello di produzione, vedi [sicurezza degli account](../pilota/sicurezza-account.md).
 - [~] **Intestazioni di sicurezza del sito:** in parte fatto (T036): intestazioni attive (nosniff,
   X-Frame-Options, Referrer-Policy, Permissions-Policy, HSTS senza `includeSubDomains`); la CSP è in sola
   osservazione (`Content-Security-Policy-Report-Only`) e va resa obbligatoria dopo aver controllato la
