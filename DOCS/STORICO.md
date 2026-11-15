@@ -4,6 +4,26 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-15 — ciclo 20261115-17 — T206 T254 T266 T261
+
+**Fatto**
+
+- T206: nuovo indice `richieste_strada (cliente_id, created_at)` (migrazione
+  `20261108000900_strada_indice_cliente.sql`): il limite di 3 richieste all'ora di `crea_richiesta_strada`
+  resta veloce; `has_index` in pgTAP `strada-limiti` (plan 23, lo verifica la CI).
+- T254: `invia-notifica` risponde 400 `notifica_id mancante` (invece di un errore non gestito) se il corpo
+  non è JSON, è `null`, non è un oggetto o `notifica_id` non è una stringa; il 401 resta prima; 8 vitest
+  nuovi.
+- T266: l'elenco «Import precedenti» ha «Annulla questo import» sull'ultimo import clienti e veicoli non
+  annullato di meno di 7 giorni (solo titolare): dialogo con cosa si toglie e cosa resta, avviso con i
+  quattro numeri, riga «annullato il …»; `annullaImport` in `lib/importa.ts`; 11 unit test, 1 test sul CSV
+  dell'e2e in `packages/shared`, e2e nuovo (lo verifica la CI). Chiude R40 (T265 + T266).
+- T261: `accessibilita.spec.ts` controlla anche 5 pagine cliente (/appuntamenti, /notifiche, /profilo,
+  /commento, /prenota), /privacy tra le pubbliche e 6 pagine titolare (/profilo, /servizi, /officina/orari,
+  /officina/dati, /cliente, /clienti/importa-controlli); titoli h1 letti dal codice, nessuna regola axe
+  esclusa (e2e da verificare con la CI).
+- Corsie C1 (T206, T254) e C2 (T266, T261); pgTAP ed e2e li verifica la CI.
+
 ### Sessione agenti — 2026-11-14 — ciclo 20261114-00 — T265 T259
 
 **Fatto**

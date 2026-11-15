@@ -1739,6 +1739,21 @@ blocca le righe con `for update`. Cancella i veicoli senza pneumatici, controlli
 richieste su strada con la stessa targa nella stessa officina (queste due senza FK), poi i clienti senza
 veicoli, account o inviti.
 
+## Annulla l'ultimo import (T266)
+
+**File coinvolti:** `apps/web/src/lib/importa.ts` (`annullaImport`, `importAnnullabile`), la pagina
+`/clienti/importa` (elenco «Import precedenti»), unit test, test sul CSV dell'e2e in `packages/shared`, e2e.
+**Come funziona:** `annullaImport(id)` chiama `annulla_import` (T265) e valida con zod i quattro interi ≥ 0.
+`IMPORT_NON_ULTIMO`, `IMPORT_SCADUTO`, `IMPORT_GIA_ANNULLATO` e `42501` diventano `ErroreModulo` (la chiave è
+in `codice`). Il pulsante «Annulla questo import» lo mostra `registro()` solo se `importAnnullabile` trova
+l'ultimo `CLIENTI_VEICOLI` per `created_at`, non annullato, di meno di 7 giorni (solo titolare): decide
+davvero il database. Il dialogo dice cosa si toglie e cosa resta; l'avviso finale riporta i quattro numeri.
+
+### Codice complesso
+Dopo la conferma: `impostaConferma` + `mostraImporta(app)` ridisegnano la pagina e il focus va sul titolo
+della sezione con `setTimeout`, perché il dialogo è ancora modale. Le righe già usate restano e contano in
+`*_tenuti`; i dati solo aggiornati dall'import non tornano come prima (R40).
+
 ## Import dei controlli (database, T043)
 
 **File coinvolti:** `supabase/migrations/` (nuova migrazione `importa_controlli`: funzione, 4 colonne di
@@ -2312,6 +2327,19 @@ I test passano dipendenze finte, come `stripe-portale/portale.ts`, quindi ora la
 Variabile **facoltativa** `VAPID_CONTATTO` (es. `mailto:indirizzo`): contatto per i servizi push; vuota o
 assente vale `mailto:albodavide1@gmail.com` (R37).
 
+## invia-notifica: corpo della richiesta non valido (T254)
+
+**File coinvolti:** `supabase/functions/invia-notifica/invio.ts` (`gestisciNotifica`),
+`supabase/functions/invia-notifica/invio.test.ts` (`richiestaGrezza`, 8 test nuovi).
+**Come funziona:** `gestisciNotifica` controlla prima il segreto (401), poi legge il corpo con `text()` +
+`JSON.parse` in un `try` (come `stripe-webhook`). `notifica_id` si prende solo da un oggetto (non `null`, non
+un array) e solo se è una stringa non vuota. Tutti i casi non validi (corpo non JSON, `null`, non oggetto,
+`notifica_id` assente o non stringa) danno lo stesso 400 `notifica_id mancante`, senza leggere il database.
+
+### Codice complesso
+Prima un corpo non JSON o `null` lanciava un errore non gestito. `richiestaGrezza` nei test costruisce una
+richiesta con corpo testuale arbitrario, per provare anche il JSON rotto.
+
 ## Router: pagina non disponibile (T095)
 
 **File coinvolti:** `apps/web/src/lib/router.ts`, `apps/web/src/lib/router.test.ts`.
@@ -2800,6 +2828,19 @@ risponde `RICHIESTA_NON_DISPONIBILE` sulla propria richiesta (stesso errore di u
 Il controllo dei 3 all'ora viene dopo le chiusure automatiche, "una in corso" e `NESSUNA_OFFICINA`, subito
 prima dell'insert; due chiamate parallele le ferma l'indice unico "una in corso". Per cambiare il limite:
 migrazione nuova, messaggio in `apps/web/src/lib/strada.ts` (T183) e guida del cliente.
+
+## Aiuto su strada: indice per il limite orario (T206)
+
+**File coinvolti:** `supabase/migrations/20261108000900_strada_indice_cliente.sql`,
+`supabase/tests/database/strada-limiti.test.sql` (plan 23, con `has_index`).
+**Come funziona:** `crea_richiesta_strada` conta le richieste del cliente dell'ultima ora
+(`TROPPE_RICHIESTE` da 3). Prima c'era solo l'indice su `(cliente_id)` e il conteggio leggeva tutto lo
+storico del cliente; l'indice `richieste_strada_cliente_id_created_at_idx` su `(cliente_id, created_at)` fa
+leggere solo l'ultima ora.
+
+### Codice complesso
+L'indice vecchio resta: le migrazioni aggiungono e basta. Gli indici non compaiono in `database.types.ts`,
+quindi non c'è nulla da aggiornare a mano.
 
 ## Aiuto su strada, lato officina (T144)
 
