@@ -1754,6 +1754,22 @@ Dopo la conferma: `impostaConferma` + `mostraImporta(app)` ridisegnano la pagina
 della sezione con `setTimeout`, perché il dialogo è ancora modale. Le righe già usate restano e contano in
 `*_tenuti`; i dati solo aggiornati dall'import non tornano come prima (R40).
 
+## import_id protetto (T286)
+
+**File coinvolti:** `supabase/migrations/20261108001000_proteggi_import_id.sql`,
+`supabase/tests/database/import-id-protetto.test.sql` (31 test, non eseguito in locale).
+**Come funziona:** `import_id` di `clienti_officina` e `veicoli` lo scrive solo l'import: il trigger
+`proteggi_import_id` blocca con 42501 insert e update diretti degli utenti non ADMIN. «Annulla questo
+import» toglie così solo righe create davvero da quell'import.
+
+### Codice complesso
+Il trigger (`before insert or update`, security definer) ammette un `import_id` nuovo non nullo solo se è
+uguale all'impostazione di transazione `tyrecare.import_id`. L'apre solo `importa_clienti_veicoli`, con
+l'id del proprio `import_log`, prima del blocco della simulazione, e la richiude a `''` prima del return:
+una scrittura diretta più avanti nella stessa transazione resta vietata. Tornare a null è sempre ammesso
+(serve a `on delete set null` quando si cancella la riga di `import_log`); ADMIN e chi non ha un utente
+(service role, migrazioni, seed) restano liberi, come in `proteggi_termini`.
+
 ## Import dei controlli (database, T043)
 
 **File coinvolti:** `supabase/migrations/` (nuova migrazione `importa_controlli`: funzione, 4 colonne di
@@ -3360,8 +3376,8 @@ messaggio reale lo rivelano.
 **Come funziona:** le officine IN_ATTESA hanno «Rifiuta la richiesta» (stile `tc-pulsante-elimina` con
 `mt-0`) accanto ad «Attiva». `chiediConferma` → `rifiutaAffiliazione(id)` →
 `rpc('rifiuta_affiliazione', { p_officina_id })` (dal T234 con il motivo facoltativo).
-La funzione SQL avvisa i membri
-(«Richiesta non accettata») e cancella l'officina: la partita IVA torna libera.
+La funzione SQL avvisa i membri («Richiesta non accettata») e cancella l'officina: la partita IVA torna
+libera.
 
 ### Codice complesso
 `apps/web/src/lib/admin.ts` — `ERRORI_RIFIUTO` traduce `OFFICINA_NON_TROVATA`, `OFFICINA_NON_IN_ATTESA`,
@@ -3376,8 +3392,9 @@ una volta sola): con il dialogo modale aperto la pagina è inerte e il focus non
 (`rifiutaAffiliazione`), `apps/web/src/pagine/admin-officine.ts`, `e2e/tests/admin-rifiuta.spec.ts`.
 **Come funziona:** `chiediConferma` accetta `campo?: { etichetta, max }`. Se c'è, sopra i pulsanti compaiono
 `<label>`, `<textarea id="tc-dialogo-campo">` con `maxlength` e un contatore «n / max». `azione(testo?)`
-riceve il valore grezzo: trim e scelta di non mandare un vuoto spettano al chiamante (`rifiutaAffiliazione`
-manda `p_motivo` solo se non vuoto dopo `trim`). Il motivo (max 300) arriva nell'avviso a chi aveva chiesto.
+riceve il valore grezzo: trim e scelta di non mandare un vuoto spettano al chiamante
+(`rifiutaAffiliazione` manda `p_motivo` solo se non vuoto dopo `trim`). Il motivo (max 300) arriva
+nell'avviso a chi aveva chiesto.
 
 ### Codice complesso
 `conferma.ts` — senza `campo` l'HTML è identico a prima (ternario che vale ''). Durante l'azione la textarea
@@ -3762,6 +3779,21 @@ Non si invia: senza sessione, offline, `ErroreModulo`, errori di rete, stesso pe
 rete solo se il messaggio dice `failed to fetch|networkerror|load failed`: `erroreDiRete` di `lib/rete.ts`
 li scarterebbe tutti, anche i bug veri. Il listener `error` può ricevere «Script error.» di script di altri
 domini: i doppioni la limitano a una riga per pagina.
+
+## Errori dell'app: limite per autore senza fughe (T269)
+
+**File coinvolti:** `supabase/migrations/20261108001100_errori_app_autore.sql`,
+`supabase/tests/database/errori-app-autore.test.sql` (8 test, non eseguito in locale).
+**Come funziona:** `limita_errori_app` non conta più gli errori quando l'`autore_id` è di un altro: decide
+la RLS (42501) e non TROPPI_ERRORI, che rivelava quanti errori aveva l'altro. anon non ha più INSERT su
+`errori_app`.
+
+### Codice complesso
+Il trigger BEFORE ROW `limita_errori_app` gira prima del WITH CHECK della RLS ed è security definer,
+quindi vede gli errori di tutti. Se l'`autore_id` non è quello di chi scrive (e chi scrive ha un utente),
+restituisce la riga senza contare; la policy "inserimento proprio" la rifiuta poi con 42501. Senza utente
+(editor SQL, service role) il limite di 30 in 24 ore resta. Per anon il rifiuto arriva dal controllo dei
+privilegi, prima del trigger.
 
 ## Test DOM delle pagine di accesso
 

@@ -4,6 +4,27 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-16 — ciclo 20261116-00 — T286 T269 T260 T264
+
+**Fatto**
+
+- T286: `import_id` di clienti e veicoli ora lo scrive solo l'import: il trigger `proteggi_import_id` blocca
+  con 42501 insert e update diretti degli utenti non ADMIN; `importa_clienti_veicoli` apre il permesso con
+  `set_config('tyrecare.import_id', …)` per il proprio id e lo richiude prima del return (migrazione
+  `20261108001000_proteggi_import_id.sql`; pgTAP `import-id-protetto`, 31 test, li verifica la CI).
+- T269: `limita_errori_app` non conta più gli errori quando l'`autore_id` è di un altro: decide la RLS
+  (42501) e non TROPPI_ERRORI, che rivelava quanti errori aveva l'altro; tolto INSERT su `errori_app` ad
+  anon (migrazione `20261108001100_errori_app_autore.sql`; pgTAP `errori-app-autore`, 8 test, li verifica
+  la CI).
+- T260: guide del pilota aggiornate con le funzioni di T208, T234, T235, T242, T259 e T266 (avviso richieste
+  su strada vicine, motivo del rifiuto, gomme completate dall'import, avviso di sospensione, «Scollega
+  l'account», «Annulla questo import»); la guida cliente spiega cosa succede se l'officina scollega
+  l'account.
+- T264: nuova guida `DOCS/pilota/sicurezza-account.md` sulle regole delle password da impostare nel pannello
+  di produzione e sul perché la 2FA resta per dopo (R39); allineate le due voci del README legale e la voce
+  nella lista di lancio.
+- Corsie C1 (T286, T269) e C4 (T260, T264); i pgTAP nuovi non sono stati eseguiti in locale.
+
 ### Sessione agenti — 2026-11-15 — ciclo 20261115-17 — T206 T254 T266 T261
 
 **Fatto**
