@@ -12,8 +12,8 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo 20261114-00 (T265 annullo dell'ultimo import, database; T259 «Scollega l'account»),
-> nel treno. Per R40 resta la pagina dell'annullo (T266).
+> Ultima sessione: ciclo 20261115-17 (T206 indice del limite orario su strada; T254 400 di `invia-notifica`;
+> T266 pagina «Annulla questo import», chiude R40; T261 axe su 12 pagine in più), nel treno.
 > Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito.
 > Prossimi compiti pronti: la pianificazione della domenica.
 > Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del

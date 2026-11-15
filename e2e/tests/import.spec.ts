@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 import * as XLSX from '@e965/xlsx';
-import { accedi } from './aiuti';
+import { accedi, unico } from './aiuti';
 
 // Import di clienti e veicoli dal CSV standard (P8): anteprima con errori, import, reimport senza
 // doppioni. Codici e targhe unici a ogni esecuzione: non serve `db:reset`.
@@ -267,4 +267,56 @@ test("dalla pagina dell'import si arriva a quella dei controlli", async ({ page 
   await page.getByRole('link', { name: 'Importa i controlli' }).click();
   await expect(page).toHaveURL(/\/clienti\/importa-controlli$/);
   await expect(page.getByRole('heading', { name: 'Importa i controlli', level: 1 })).toBeVisible();
+});
+
+test('il titolare annulla l’ultimo import e i clienti nuovi spariscono', async ({ page }) => {
+  // «Solo l'ultimo import» vale per tutta l'officina: si annulla subito dopo il proprio import
+  // Corto: la targa (`AU` + id + cifra) deve stare in 10 caratteri
+  const id = unico().slice(-6);
+  const nome = `Annullo${id}`;
+  const csv = Buffer.from(
+    [
+      'Codice;Nome;Cognome;Targa;Marca;Modello;Anno',
+      `K${id}1;${nome};Uno;AU${id}1;Fiat;Panda;2019`,
+      `K${id}2;${nome};Due;AU${id}2;Fiat;500;2021`,
+    ].join('\r\n'),
+    'latin1',
+  );
+  const file = { name: `annullo-${id}.csv`, mimeType: 'text/csv', buffer: csv };
+
+  await accedi(page, 'titolare@tyrecare.test');
+  await page.goto('/clienti/importa');
+  await expect(page.getByRole('heading', { name: 'Importa clienti e veicoli' })).toBeVisible();
+  await page.getByLabel(/File CSV/).setInputFiles(file);
+  await page.getByRole('button', { name: 'Importa 2 righe' }).click();
+  await expect(
+    page.getByText('Import completato: 2 clienti nuovi, 2 veicoli nuovi.'),
+  ).toBeVisible();
+
+  // I due clienti ci sono
+  await page.goto('/clienti');
+  await page.getByLabel('Cerca per nome, telefono, email o targa').fill(nome);
+  await expect(page.getByRole('link', { name: new RegExp(`Uno ${nome}`) })).toBeVisible();
+  await expect(page.getByRole('link', { name: new RegExp(`Due ${nome}`) })).toBeVisible();
+
+  // Annullo: il dialogo spiega cosa resta, poi l'avviso dà i quattro numeri
+  await page.goto('/clienti/importa');
+  await expect(page.getByRole('region', { name: 'Import precedenti' })).toContainText(file.name);
+  await page.getByRole('button', { name: 'Annulla questo import' }).click();
+  const dialogo = page.getByRole('dialog', { name: "Annullare l'import?" });
+  await expect(dialogo).toContainText('mai usati');
+  await dialogo.getByRole('button', { name: 'Annulla questo import' }).click();
+  await expect(
+    page.getByText('Import annullato: 2 clienti tolti e 2 veicoli tolti.'),
+  ).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Import precedenti' })).toContainText(
+    /annullato il/,
+  );
+  await expect(page.getByRole('button', { name: 'Annulla questo import' })).toHaveCount(0);
+
+  // I due clienti non ci sono più: l'assenza si verifica con l'elenco già disegnato
+  await page.goto('/clienti');
+  await page.getByLabel('Cerca per nome, telefono, email o targa').fill(nome);
+  await expect(page.getByText(`Nessun cliente per «${nome}»`)).toBeVisible();
+  await expect(page.getByRole('link', { name: new RegExp(nome) })).toHaveCount(0);
 });

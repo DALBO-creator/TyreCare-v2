@@ -34,6 +34,8 @@ const PAGINE = [
   { percorso: '/registrati', titolo: 'Crea il tuo account' },
   { percorso: '/password-dimenticata', titolo: 'Password dimenticata' },
   { percorso: '/per-le-officine', titolo: 'TyreCare per le officine' },
+  // Pubblica (accesso 'pubblica' in main.ts): l'h1 viene dal Markdown dell'informativa
+  { percorso: '/privacy', titolo: /^Informativa sul trattamento dei dati personali/ },
   { percorso: '/pagina-che-non-esiste', titolo: 'Pagina non trovata' },
 ];
 
@@ -80,6 +82,16 @@ const PAGINE_CLIENTE = [
   { percorso: '/officine', titolo: 'Officine' },
   // Modulo di richiesta prima dell'invio (nessuna posizione richiesta)
   { percorso: '/strada', titolo: 'Aiuto su strada' },
+  { percorso: '/appuntamenti', titolo: 'Appuntamenti' },
+  { percorso: '/notifiche', titolo: 'Notifiche' },
+  // Il titolo è il nome del profilo del seed (Giulia Verdi)
+  { percorso: '/profilo', titolo: 'Giulia Verdi' },
+  { percorso: '/commento', titolo: 'Invia un commento' },
+  // Pagina di prenotazione di "Gomme Rossi": il titolo è fisso, il nome dell'officina è nell'etichetta
+  {
+    percorso: '/prenota?officina=b0000000-0000-4000-8000-000000000001',
+    titolo: 'Chiedi un appuntamento',
+  },
 ];
 
 test.describe('cliente', () => {
@@ -112,6 +124,14 @@ const PAGINE_TITOLARE = [
   { percorso: '/clienti/importa', titolo: 'Importa clienti e veicoli' },
   { percorso: '/officina/strada', titolo: 'Richieste su strada' },
   { percorso: '/officina/abbonamento', titolo: 'Abbonamento' },
+  // Il titolo è il nome del profilo del seed (Mario Rossi)
+  { percorso: '/profilo', titolo: 'Mario Rossi' },
+  { percorso: '/servizi', titolo: 'Servizi' },
+  { percorso: '/officina/orari', titolo: 'Orari e chiusure' },
+  { percorso: '/officina/dati', titolo: "Dati dell'officina" },
+  // Giulia Verdi (seed): il titolo è il nominativo "cognome nome"
+  { percorso: '/cliente?id=c0000000-0000-4000-8000-000000000001', titolo: 'Verdi Giulia' },
+  { percorso: '/clienti/importa-controlli', titolo: 'Importa i controlli' },
 ];
 
 test.describe('titolare (Gomme Rossi)', () => {

@@ -78,8 +78,20 @@ export async function gestisciNotifica(
   if (richiesta.headers.get('x-segreto') !== segreto) {
     return new Response('Non autorizzato', { status: 401 });
   }
-  const { notifica_id } = (await richiesta.json()) as { notifica_id?: string };
-  if (!notifica_id) return new Response('notifica_id mancante', { status: 400 });
+  // Corpo non JSON, `null`, non oggetto o `notifica_id` non stringa: stesso 400 di un id mancante
+  let corpo: unknown;
+  try {
+    corpo = JSON.parse(await richiesta.text());
+  } catch {
+    corpo = null;
+  }
+  const notifica_id =
+    typeof corpo === 'object' && corpo !== null && !Array.isArray(corpo)
+      ? (corpo as { notifica_id?: unknown }).notifica_id
+      : undefined;
+  if (typeof notifica_id !== 'string' || !notifica_id) {
+    return new Response('notifica_id mancante', { status: 400 });
+  }
 
   let notifica: Notifica | null;
   try {

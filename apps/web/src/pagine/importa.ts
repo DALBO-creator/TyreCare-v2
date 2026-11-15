@@ -1,4 +1,4 @@
-import { Download, FileUp } from 'lucide';
+import { Download, FileUp, Undo2 } from 'lucide';
 import {
   applicaMappatura,
   controllaTabella,
@@ -13,6 +13,7 @@ import {
 import { codiceErrore } from '../lib/errori';
 import { esc } from '../lib/html';
 import {
+  annullaImport,
   caricaImportPassati,
   caricaMappature,
   eliminaMappatura,
@@ -23,6 +24,7 @@ import {
   scaricaControlli,
   scaricaModello,
   type ConteggiImport,
+  type EsitoAnnullo,
   type ImportPassato,
   type MappaturaSalvata,
 } from '../lib/importa';
@@ -41,6 +43,7 @@ import {
 } from '../ui/mappatura';
 import {
   avvisoConferma,
+  impostaConferma,
   gestisciErroreCaricamento,
   intestazioneSottopagina,
   vaiConConferma,
@@ -165,6 +168,7 @@ export async function mostraImporta(app: HTMLElement): Promise<void> {
       }
     });
   }
+  collegaAnnulla(app);
   const input = app.querySelector<HTMLInputElement>('#tc-file')!;
   const anteprima = app.querySelector<HTMLElement>('[data-anteprima]')!;
   // Scegliendo un altro file mentre si carica l'anteprima, quella vecchia non va più mostrata
@@ -520,11 +524,28 @@ const FORMATO_QUANDO = new Intl.DateTimeFormat('it-IT', {
   minute: '2-digit',
 });
 
+/** Un import si può annullare per 7 giorni (come `annulla_import`). */
+const GIORNI_ANNULLO = 7;
+
+/** Il pulsante spetta solo all'ultimo import di clienti e veicoli, non annullato e recente. */
+function importAnnullabile(passati: ImportPassato[]): ImportPassato | undefined {
+  const ultimo = passati
+    .filter((p) => p.tipo === 'CLIENTI_VEICOLI')
+    .reduce<ImportPassato | undefined>(
+      (a, p) => (!a || new Date(p.created_at) > new Date(a.created_at) ? p : a),
+      undefined,
+    );
+  if (!ultimo || ultimo.annullato_il) return undefined;
+  const eta = Date.now() - new Date(ultimo.created_at).getTime();
+  return eta < GIORNI_ANNULLO * 24 * 3600 * 1000 ? ultimo : undefined;
+}
+
 function registro(passati: ImportPassato[]): string {
   if (passati.length === 0) return '';
+  const annullabile = importAnnullabile(passati);
   return `
     <section aria-labelledby="tc-import-passati">
-      <h2 id="tc-import-passati" class="tc-etichetta">Import precedenti</h2>
+      <h2 id="tc-import-passati" class="tc-etichetta" tabindex="-1">Import precedenti</h2>
       <ul class="tc-lista">
         ${passati
           .map(
@@ -537,11 +558,57 @@ function registro(passati: ImportPassato[]): string {
                   p.righe_scartate
                     ? ` · ${plurale(p.righe_scartate, 'riga saltata', 'righe saltate')}`
                     : ''
+                }${
+                  p.annullato_il
+                    ? ` · annullato il ${esc(FORMATO_QUANDO.format(new Date(p.annullato_il)))}`
+                    : ''
                 }</small>
-            </span>
+            </span>${
+              p === annullabile
+                ? `
+            <button type="button" class="btn btn-outline-light btn-sm" data-annulla-import="${esc(p.id)}">
+              Annulla questo import
+            </button>`
+                : ''
+            }
           </li>`,
           )
           .join('')}
       </ul>
     </section>`;
+}
+
+/** Testo dell'avviso dopo l'annullo, con i quattro numeri. */
+function testoAnnullo(e: EsitoAnnullo): string {
+  const tolti = `${plurale(e.clienti_tolti, 'cliente tolto', 'clienti tolti')} e ${plurale(e.veicoli_tolti, 'veicolo tolto', 'veicoli tolti')}`;
+  const tenuti =
+    e.clienti_tenuti + e.veicoli_tenuti === 0
+      ? ''
+      : `; ${plurale(e.clienti_tenuti, 'cliente tenuto', 'clienti tenuti')} e ${plurale(e.veicoli_tenuti, 'veicolo tenuto', 'veicoli tenuti')} perché già usati`;
+  return `Import annullato: ${tolti}${tenuti}.`;
+}
+
+/** «Annulla questo import» (solo titolare: l'elenco lo vede solo lui; il database lo impone). */
+function collegaAnnulla(app: HTMLElement): void {
+  const pulsante = app.querySelector<HTMLButtonElement>('[data-annulla-import]');
+  if (!pulsante) return;
+  const id = pulsante.dataset.annullaImport!;
+  pulsante.addEventListener('click', () =>
+    chiediConferma({
+      titolo: "Annullare l'import?",
+      testo:
+        "Si tolgono i clienti e i veicoli creati da questo import e mai usati: quelli con controlli, gomme, appuntamenti, un account o un invito restano. I clienti e i veicoli che l'import ha solo aggiornato non tornano come prima.",
+      pulsante: 'Annulla questo import',
+      iconaPulsante: Undo2,
+      inCorso: 'Annullamento…',
+      origine: pulsante,
+      azione: async () => {
+        const esito = await annullaImport(id);
+        impostaConferma(testoAnnullo(esito));
+        await mostraImporta(app);
+        // Dialogo ancora modale: il focus si dà dopo la chiusura e il ridisegno
+        setTimeout(() => app.querySelector<HTMLElement>('#tc-import-passati')?.focus());
+      },
+    }),
+  );
 }
