@@ -4,7 +4,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(22);
+select plan(23);
 
 create function pg_temp.come(p_utente uuid) returns void language plpgsql as $$
 begin
@@ -161,6 +161,14 @@ select lives_ok(
 select is(
   (select count(*) from public.richieste_strada where cliente_id = :admin and stato = 'APERTA'), 1::bigint,
   'la nuova richiesta dell''admin è APERTA'
+);
+
+-- T206: indice per il conteggio delle richieste dell'ultima ora
+reset role;
+select has_index(
+  'public', 'richieste_strada', 'richieste_strada_cliente_id_created_at_idx',
+  array['cliente_id', 'created_at'],
+  'richieste_strada ha l''indice (cliente_id, created_at) per il limite orario'
 );
 
 select * from finish();
