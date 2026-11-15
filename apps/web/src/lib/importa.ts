@@ -12,7 +12,9 @@ import {
   type Tabella,
   type Tables,
 } from '@tyrecare/shared';
+import { z } from 'zod';
 import { leggiTutte } from './a-pagine';
+import { codiceErrore, ErroreModulo } from './errori';
 import { leggiExcel } from './excel';
 import { conRiprova } from './rete';
 import { scaricaCsv } from './scarica';
@@ -116,6 +118,50 @@ export async function caricaImportPassati(officinaId: string): Promise<ImportPas
     .limit(10);
   if (error) throw error;
   return data;
+}
+
+const RispostaAnnullaSchema = z.object({
+  veicoli_tolti: z.number().int().min(0),
+  clienti_tolti: z.number().int().min(0),
+  veicoli_tenuti: z.number().int().min(0),
+  clienti_tenuti: z.number().int().min(0),
+});
+
+/** Cosa ha fatto l'annullo: righe tolte e righe tenute perché già usate. */
+export type EsitoAnnullo = z.infer<typeof RispostaAnnullaSchema>;
+
+const ERRORI_ANNULLA: Record<string, string> = {
+  IMPORT_NON_ULTIMO:
+    "Si può annullare solo l'ultimo import di clienti e veicoli, e ce n'è uno più recente: ricarica la pagina.",
+  IMPORT_SCADUTO: 'Sono passati più di 7 giorni: questo import non si può più annullare.',
+  IMPORT_GIA_ANNULLATO: 'Questo import è già stato annullato: ricarica la pagina.',
+};
+
+/**
+ * Annulla l'ultimo import di clienti e veicoli (solo TITOLARE, entro 7 giorni): toglie i clienti e i
+ * veicoli creati da quell'import e mai usati. Nessuna riprova: una seconda chiamata darebbe
+ * IMPORT_GIA_ANNULLATO.
+ */
+export async function annullaImport(id: string): Promise<EsitoAnnullo> {
+  const { data, error } = await getSupabase().rpc('annulla_import', { p_import_id: id });
+  if (error) {
+    if (codiceErrore(error) === '42501') {
+      throw new ErroreModulo(
+        "Solo il titolare dell'officina può annullare un import.",
+        undefined,
+        error.message,
+      );
+    }
+    const testo = ERRORI_ANNULLA[error.message];
+    throw testo ? new ErroreModulo(testo, undefined, error.message) : error;
+  }
+  const esito = RispostaAnnullaSchema.safeParse(data);
+  if (!esito.success) {
+    throw new ErroreModulo(
+      "Risposta inattesa dal server: ricarica la pagina per vedere com'è andata.",
+    );
+  }
+  return esito.data;
 }
 
 /** Associazione di colonne salvata dal titolare (tabella `import_mappature`). */
