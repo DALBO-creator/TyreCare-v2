@@ -84,6 +84,14 @@ const richiesta = (corpo: unknown, segreto: string | null = SEGRETO) =>
     body: JSON.stringify(corpo),
   });
 
+// Corpo grezzo, senza `JSON.stringify`: per provare i corpi non validi
+const richiestaGrezza = (corpo: string, segreto: string = SEGRETO) =>
+  new Request('https://funzione.prova/invia-notifica', {
+    method: 'POST',
+    headers: { 'x-segreto': segreto },
+    body: corpo,
+  });
+
 describe('gestisciNotifica', () => {
   it('segreto errato → 401 senza leggere il database', async () => {
     const db = dbFinto();
@@ -100,6 +108,40 @@ describe('gestisciNotifica', () => {
     const r = await gestisciNotifica(richiesta({}), dip);
     expect(r.status).toBe(400);
     expect(await r.text()).toBe('notifica_id mancante');
+    expect(db.notifica).not.toHaveBeenCalled();
+  });
+
+  it('corpo non JSON → 400 senza leggere il database', async () => {
+    const db = dbFinto();
+    const { dip } = dipendenze({ PUSH_SEGRETO: SEGRETO }, db);
+    const r = await gestisciNotifica(richiestaGrezza('non è json {'), dip);
+    expect(r.status).toBe(400);
+    expect(await r.text()).toBe('notifica_id mancante');
+    expect(db.notifica).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    ['null', null],
+    ['un numero', 5],
+    ['una stringa', 'x'],
+    ['un array', [NOTIFICA_ID]],
+    ['notifica_id numerico', { notifica_id: 123 }],
+    ['notifica_id vuoto', { notifica_id: '' }],
+  ])('corpo con %s → 400 senza leggere il database', async (_nome, corpo) => {
+    const db = dbFinto();
+    const { dip } = dipendenze({ PUSH_SEGRETO: SEGRETO }, db);
+    const r = await gestisciNotifica(richiesta(corpo), dip);
+    expect(r.status).toBe(400);
+    expect(await r.text()).toBe('notifica_id mancante');
+    expect(db.notifica).not.toHaveBeenCalled();
+  });
+
+  it('segreto errato con corpo non JSON → 401, non 400', async () => {
+    const db = dbFinto();
+    const { dip } = dipendenze({ PUSH_SEGRETO: SEGRETO }, db);
+    const r = await gestisciNotifica(richiestaGrezza('non è json {', 'sbagliato'), dip);
+    expect(r.status).toBe(401);
+    expect(await r.text()).toBe('Non autorizzato');
     expect(db.notifica).not.toHaveBeenCalled();
   });
 
