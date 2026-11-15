@@ -1757,7 +1757,7 @@ della sezione con `setTimeout`, perché il dialogo è ancora modale. Le righe gi
 ## import_id protetto (T286)
 
 **File coinvolti:** `supabase/migrations/20261108001000_proteggi_import_id.sql`,
-`supabase/tests/import-id-protetto.test.sql` (31 test, non eseguito in locale).
+`supabase/tests/database/import-id-protetto.test.sql` (31 test, non eseguito in locale).
 **Come funziona:** `import_id` di `clienti_officina` e `veicoli` lo scrive solo l'import: il trigger
 `proteggi_import_id` blocca con 42501 insert e update diretti degli utenti non ADMIN. «Annulla questo
 import» toglie così solo righe create davvero da quell'import.
@@ -3783,7 +3783,7 @@ domini: i doppioni la limitano a una riga per pagina.
 ## Errori dell'app: limite per autore senza fughe (T269)
 
 **File coinvolti:** `supabase/migrations/20261108001100_errori_app_autore.sql`,
-`supabase/tests/errori-app-autore.test.sql` (8 test, non eseguito in locale).
+`supabase/tests/database/errori-app-autore.test.sql` (8 test, non eseguito in locale).
 **Come funziona:** `limita_errori_app` non conta più gli errori quando l'`autore_id` è di un altro: decide
 la RLS (42501) e non TROPPI_ERRORI, che rivelava quanti errori aveva l'altro. anon non ha più INSERT su
 `errori_app`.
