@@ -271,7 +271,8 @@ test("dalla pagina dell'import si arriva a quella dei controlli", async ({ page 
 
 test('il titolare annulla l’ultimo import e i clienti nuovi spariscono', async ({ page }) => {
   // «Solo l'ultimo import» vale per tutta l'officina: si annulla subito dopo il proprio import
-  const id = unico();
+  // Corto: la targa (`AU` + id + cifra) deve stare in 10 caratteri
+  const id = unico().slice(-6);
   const nome = `Annullo${id}`;
   const csv = Buffer.from(
     [

@@ -453,3 +453,24 @@ describe('csvClientiVeicoli', () => {
     expect(righe[1]![8]).toBe('Pa;nda');
   });
 });
+
+describe("CSV dell'e2e «annulla l'ultimo import»", () => {
+  // Stessa forma del CSV di e2e/tests/import.spec.ts, con un id di 6 caratteri (come `unico().slice(-6)`)
+  it('2 righe valide, nessun errore (targhe entro 10 caratteri)', () => {
+    const id = 'AB12Z9';
+    const nome = `Annullo${id}`;
+    const t = tabellaDaCsv(
+      [
+        'Codice;Nome;Cognome;Targa;Marca;Modello;Anno',
+        `K${id}1;${nome};Uno;AU${id}1;Fiat;Panda;2019`,
+        `K${id}2;${nome};Due;AU${id}2;Fiat;500;2021`,
+      ].join('\r\n'),
+    )!;
+    const r = controllaTabella(t, mappaturaAutomatica(t.intestazioni));
+    expect(r).toMatchObject({ ok: true, lette: 2 });
+    if (r.ok) {
+      expect(r.errori).toEqual([]);
+      expect(r.righe).toHaveLength(2);
+    }
+  });
+});
