@@ -36,7 +36,7 @@ valori differiscono, l'utente vede l'errore di Supabase al posto di quello chiar
 L'app controlla in anticipo solo la lunghezza (da 8 a 72 caratteri). I requisiti «lettere e numeri» li
 controlla solo Supabase. Nel codice (`apps/web/src/lib/auth.ts`) il codice di errore `weak_password` è già
 tradotto in «Password troppo debole: scegline una più lunga o meno comune.», che però non dice che servono
-lettere e numeri. Non ho cambiato il codice: è un compito per gli agenti (messaggio che nomini i requisiti,
+lettere e numeri. Il codice non è stato cambiato: è un compito per gli agenti (messaggio che nomini i requisiti,
 o controllo anticipato nel modulo). Prima del compito, prova a mano come sotto e guarda cosa compare.
 
 ## Come verificare

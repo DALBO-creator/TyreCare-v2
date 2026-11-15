@@ -40,7 +40,8 @@ Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
   treno unito, così l'app pubblicata da Vercel non è più avanti del database. Da rifare dopo ogni treno che
   cambia `supabase/`. Guida: [`pubblicazione.md`](pubblicazione.md).
 - [ ] **Regole delle password impostate.** Nel pannello del progetto di produzione: lunghezza minima 8,
-  requisiti lettere e numeri, protezione dalle password trapelate. Da fare prima di invitare il titolare.
+  requisiti lettere e numeri, protezione dalle password trapelate (se disponibile nel piano),
+  riautenticazione per il cambio password. Da fare prima di invitare il titolare.
   Guida: [`sicurezza-account.md`](sicurezza-account.md).
 - [ ] **Officina creata.** Account del titolare e officina in produzione. Documento:
   [`crea-officina.md`](crea-officina.md).
