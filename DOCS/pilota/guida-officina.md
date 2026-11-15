@@ -33,6 +33,10 @@ La carta sparisce da sola quando i cinque passi sono fatti. Se non la vuoi veder
 vale solo su quel telefono (o computer), perché la scelta resta nel browser. Su un altro telefono la carta
 ricompare finché i passi non sono fatti.
 
+Se offri l'aiuto su strada (sezione 13) e c'è una richiesta aperta entro il tuo raggio, nella **Home**
+compare l'avviso giallo "1 richiesta di aiuto su strada vicina" (o "N richieste di aiuto su strada
+vicine"). Toccalo per aprire "Richieste su strada". Se il servizio è spento l'avviso non compare.
+
 ## 2. Dati dell'officina e posizione
 
 **Profilo → "Dati dell'officina"** (solo titolare). Ragione sociale e partita IVA le cambia
@@ -91,6 +95,17 @@ errori, e carica di nuovo quel file (o il file completo).
 Reimportare lo stesso file è sicuro: i dati già presenti sono aggiornati, non duplicati, e le celle vuote
 non cancellano nulla. Se non c'è niente di nuovo vedi "Nessuna modifica".
 
+**Annullare un import.** Se hai importato con le colonne associate male, in "Import precedenti" premi
+"Annulla questo import" accanto all'ultimo import e conferma ("Annullare l'import?"). Poi correggi
+l'associazione e importa di nuovo. L'avviso finale dice quanti clienti e veicoli sono stati tolti e,
+se ce ne sono, quanti tenuti "perché già usati". Cosa devi sapere:
+- Il pulsante c'è solo per l'ultimo import di clienti e veicoli, entro 7 giorni, e solo per il titolare.
+  Un import annullato resta nell'elenco con "annullato il …". Gli import dei controlli non si annullano.
+- Si tolgono solo i clienti e i veicoli che quell'import ha **creato**. Quelli che ha solo **aggiornato**
+  non tornano com'erano prima.
+- Restano i veicoli già usati: con pneumatici, controlli, misure, appuntamenti o richieste di aiuto su
+  strada con la stessa targa. Restano i clienti con un veicolo, con un invito o con l'account collegato.
+
 ## 6. Import dei controlli
 
 Serve lo storico delle misure del vecchio gestionale. Prima importa clienti e veicoli. Poi, nella stessa
@@ -102,6 +117,10 @@ pagina, premi "Importa i controlli" (da **Clienti → "Importa dal gestionale"**
    controllo.
 2. Scegli il file. L'anteprima conta i "controlli nuovi", quelli "già presenti", i pneumatici nuovi e le
    misure.
+   Se il file completa gomme già registrate (hanno preso DOT, marca o misura dal file), l'anteprima scrive
+   "N gomme già registrate saranno completate con i dati del file" e a fine import "N gomme già registrate
+   sono state completate con i dati del file" (con N = 1: "1 gomma già registrata"). Senza gomme da
+   completare la riga non compare.
 3. **Documenti già presenti:** un controllo con un "Codice documento" già importato non viene duplicato.
 4. **Targhe non trovate:** l'avviso giallo "Questi veicoli non ci sono ancora" elenca le targhe del file
    senza veicolo. Importa prima clienti e veicoli, poi ricarica il file dei controlli.
@@ -130,6 +149,11 @@ Scheda **Clienti**: l'elenco con la ricerca "Cerca per nome, telefono, email o t
   "Copia il link": vale 14 giorni e si vede solo in quel momento. Con un invito in corso trovi
   "Nuovo invito" e "Annulla invito". Quando il cliente crea l'account con quell'email, vede i suoi
   veicoli nel garage.
+- **Scollegare l'account** (solo titolare): se l'invito è stato accettato dalla persona sbagliata, nella
+  scheda del cliente, sezione "App TyreCare", premi "Scollega l'account" e conferma ("Scollegare
+  l'account?"). Il cliente non vede più i veicoli di questa officina nell'app. Scheda, veicoli,
+  appuntamenti e notifiche restano; la sezione torna a "Invita nell'app" e puoi invitarlo di nuovo.
+  Il cliente non riceve nessun avviso.
 - **Filtro "Senza app":** sopra l'elenco, "Tutti" e "Senza app (N)" mostrano chi non usa ancora l'app:
   sono i clienti da invitare.
 - **Unisci due clienti:** nella scheda del cliente che vuoi tenere, "Unisci con un altro cliente" (solo
@@ -192,6 +216,14 @@ anche con l'app chiusa, nella sezione "Avvisi sul telefono" premi "Avvisami su q
 accetta il permesso. Per spegnerle: "Disattiva gli avvisi". Su iPhone funzionano solo con l'app aperta
 dall'icona sulla Home. Se sono bloccate, riattivale dalle impostazioni del browser.
 
+Due avvisi riguardano l'officina in sé:
+- **"Richiesta non accettata":** arriva a chi aveva chiesto di registrare l'officina se TyreCare non la
+  accetta. Se TyreCare ha scritto un motivo, l'avviso finisce con "Motivo: …". Toccandolo si apre la
+  pagina per registrare l'officina.
+- **"La tua officina è sospesa":** lo ricevono i titolari quando TyreCare sospende l'officina, che da quel
+  momento non è più visibile ai clienti. Toccalo per aprire "Invia un commento" e chiedere perché.
+  Gli operatori non lo ricevono.
+
 ## 13. Aiuto su strada
 
 Un automobilista fermo con una gomma a terra può chiedere aiuto dall'app: la richiesta arriva alle officine
@@ -206,7 +238,8 @@ vicine che offrono il servizio, e la prima che accetta la prende.
 
 **Ricevere la richiesta.** Titolare e operatori ricevono la notifica "Richiesta di aiuto su strada" (nel testo
 la distanza dall'officina). Toccandola si apre la pagina "Richieste su strada"; la raggiungi anche dal
-pulsante "Richieste su strada" nella **Home**, che compare solo con il servizio attivo. La pagina si
+pulsante "Richieste su strada" nella **Home**, che compare solo con il servizio attivo; lì, con richieste
+aperte nel tuo raggio, vedi anche l'avviso giallo "N richieste di aiuto su strada vicine". La pagina si
 aggiorna da sola ogni 15 secondi. Chi lavora in più officine vicine riceve una sola notifica. Chi ha fatto
 la richiesta non la vede, neanche se è membro di un'officina.
 

@@ -14,6 +14,9 @@ Bozza del 2026-10-31, da stampare o mandare ai clienti. Pochi passi, nell'ordine
    - **Da controllare** (giallo): fai dare un'occhiata alle gomme dalla tua officina.
    - **Da sostituire** (rosso): le gomme vanno cambiate.
    Lo stato nasce dall'ultimo controllo fatto dalla tua officina.
+   Se la tua officina scollega il tuo account (per esempio perché l'invito era finito alla persona
+   sbagliata), non vedi più nel garage i veicoli di quell'officina. L'officina può invitarti di nuovo:
+   apri il nuovo link con la tua email. Non ricevi nessun avviso.
 4. **Guarda una gomma.** Tocca un veicolo, poi la gomma. Trovi i "Dati dello pneumatico" (misura, quando è
    stata montata, DOT ed "Età") e l'"Andamento del battistrada", con il consumo stimato (circa quanti mm
    al mese si consuma). Sotto, l'elenco delle "Misure" dei controlli. Se la gomma è molto vecchia,
