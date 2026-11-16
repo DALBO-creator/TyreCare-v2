@@ -23,7 +23,8 @@ describe('vercel.json: intestazioni di sicurezza', () => {
     expect(h['Referrer-Policy']).toBe('strict-origin-when-cross-origin');
     expect(h['Permissions-Policy']).toBeDefined();
     expect(h['Strict-Transport-Security']).toBeDefined();
-    expect(h['Content-Security-Policy-Report-Only']).toBeDefined();
+    expect(h['Content-Security-Policy']).toBeDefined();
+    expect(h['Cross-Origin-Opener-Policy']).toBe('same-origin');
   });
 
   it('lascia la posizione a "Vicino a me" e blocca camera, microfono e pagamenti', () => {
@@ -40,10 +41,13 @@ describe('vercel.json: intestazioni di sicurezza', () => {
     expect(h).not.toMatch(/includeSubDomains|preload/i);
   });
 
-  it('la CSP è solo in osservazione e ammette Supabase e nient altro di esterno', () => {
+  it('la CSP è applicata e ammette Supabase e nient altro di esterno', () => {
     const h = tutte();
-    expect(h['Content-Security-Policy']).toBeUndefined();
-    const csp = h['Content-Security-Policy-Report-Only'];
+    expect(h['Content-Security-Policy-Report-Only']).toBeUndefined();
+    const csp = h['Content-Security-Policy'];
+    expect(csp).toContain("script-src 'self'");
+    expect(csp).toContain("object-src 'none'");
+    expect(csp).not.toMatch(/unsafe-eval/);
     expect(csp).toContain("default-src 'self'");
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain('https://*.supabase.co');

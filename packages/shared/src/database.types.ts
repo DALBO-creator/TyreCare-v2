@@ -67,6 +67,44 @@ export type Database = {
           },
         ];
       };
+      admin_registro: {
+        Row: {
+          admin_id: string | null;
+          azione: string;
+          created_at: string;
+          dettagli: Json;
+          id: number;
+          oggetto_id: string;
+          tabella: string;
+        };
+        Insert: {
+          admin_id?: string | null;
+          azione: string;
+          created_at?: string;
+          dettagli?: Json;
+          id?: never;
+          oggetto_id?: string;
+          tabella?: string;
+        };
+        Update: {
+          admin_id?: string | null;
+          azione?: string;
+          created_at?: string;
+          dettagli?: Json;
+          id?: never;
+          oggetto_id?: string;
+          tabella?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: 'admin_registro_admin_id_fkey';
+            columns: ['admin_id'];
+            isOneToOne: false;
+            referencedRelation: 'profiles';
+            referencedColumns: ['id'];
+          },
+        ];
+      };
       chiusure_officina: {
         Row: {
           al: string;
@@ -1205,6 +1243,38 @@ export type Database = {
         Returns: undefined;
       };
       accetta_termini: { Args: { p_versione: string }; Returns: undefined };
+      admin_blocca_utente: {
+        Args: { p_blocca: boolean; p_utente: string };
+        Returns: undefined;
+      };
+      admin_cambia_ruolo: {
+        Args: { p_ruolo: Database['public']['Enums']['ruolo']; p_utente: string };
+        Returns: undefined;
+      };
+      admin_cerca_utenti: {
+        Args: { p_testo?: string };
+        Returns: {
+          bloccato: boolean;
+          cognome: string;
+          con_2fa: boolean;
+          created_at: string;
+          email: string;
+          email_confermata: boolean;
+          id: string;
+          nome: string;
+          officine: string;
+          ruolo: Database['public']['Enums']['ruolo'];
+          telefono: string;
+          ultimo_accesso: string;
+        }[];
+      };
+      admin_conferma_email: { Args: { p_utente: string }; Returns: undefined };
+      admin_correggi_profilo: {
+        Args: { p_cognome: string; p_nome: string; p_telefono: string; p_utente: string };
+        Returns: undefined;
+      };
+      admin_disconnetti_utente: { Args: { p_utente: string }; Returns: undefined };
+      admin_riepilogo: { Args: Record<PropertyKey, never>; Returns: Json };
       aggiorna_abbonamento_stripe: {
         Args: {
           p_customer: string;

@@ -6,6 +6,15 @@
 
 ## Prossima sessione
 
+> **Branch `claude/pannello-admin` (2026-11-12): pannello amministratore + 2FA obbligatoria per l'admin.**
+> Prima del merge, da Davide: (1) nella dashboard Supabase → *Authentication → Multi-Factor* controllare
+> che **TOTP** sia attivo (sul cloud lo è di norma); (2) `npx supabase db push`; (3) aprire `/admin` e
+> registrare l'app di autenticazione (QR); (4) sull'anteprima Vercel aprire la console del browser e
+> controllare che la CSP (ora applicata) non blocchi nulla: accesso, notifiche push, Stripe, «Vicino a me».
+> Senza la 2FA l'account admin vede l'app come un utente normale.
+> **Vercel:** aggiungere `VITE_SUPABASE_ANON_KEY` anche all'ambiente *Preview* (oggi solo *Production*:
+> anteprime nere) e ripubblicare l'anteprima. Migrazione del pannello già pubblicata (`db push` del 2026-11-12).
+
 > **Obiettivo: il prossimo compito pronto della coda di ai-org.**
 > **Prima, da Davide (2026-11-08):** pubblicare le migrazioni sul cloud seguendo
 > `DOCS/pilota/pubblicazione.md` (D10; il cloud è fermo a metà ottobre: è la causa probabile degli errori su
