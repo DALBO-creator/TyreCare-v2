@@ -4,6 +4,28 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-16 — ciclo 20261116-18 — T255 T288 T293 T294
+
+**Fatto**
+
+- T255: nuova funzione SQL `andamento_officine(p_da, p_a)`, solo admin con 2FA: per ogni officina i numeri
+  del pilota (piano-pilota §3): clienti, collegati e con push di adesso; inviti, controlli app e importati,
+  richieste di appuntamento e su strada nel periodo, in giorni italiani. Migrazione 20261116000200, pgTAP
+  `andamento-officine.test.sql`, tipi aggiornati.
+- T288: il pgTAP `annulla-import` controlla subito dopo l'import le FK rimandate di clienti e veicoli verso
+  `import_log` (`set constraints all immediate` + is(), plan 25).
+- T293: nel montaggio di pneumatici si può scrivere un DOT diverso per ogni ruota (casella «DOT diverso per
+  ogni ruota», campi `dot_<POSIZIONE>` nello schema, nessuna migrazione, `modifica-pneumatici` invariato).
+- T294: `importAnnullabile` e `testoAnnullo` esportate (`adesso` facoltativo) e provate da 12 unit test in
+  `pagine/importa.test.ts` (regola dei 7 giorni, solo l'ultimo import di clienti e veicoli non annullato,
+  testi dopo l'annullo).
+
+**Verifica**
+
+- Prova d'insieme: 74 file / 729 test verdi, build ok, file iniziale invariato. I pgTAP di T255 e T288 non
+  sono stati eseguiti qui: li prova la CI.
+- Gate del supervisore: 4/4 approvati al primo giro.
+
 ### Sessione agenti — 2026-11-16 — ciclo 20261116-15 — T298 T299 T268 T310
 
 **Fatto**
