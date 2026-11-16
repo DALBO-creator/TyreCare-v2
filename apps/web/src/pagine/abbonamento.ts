@@ -86,6 +86,15 @@ export function mostraPortale(a: AbbonamentoOfficina | null): boolean {
   );
 }
 
+/**
+ * Frase unica per il pilota con una subscription ancora viva (stessa condizione del pulsante
+ * "Gestisci il pagamento"): sostituisce "è a posto" e la nota sul vecchio abbonamento. Altrimenti null.
+ */
+export function testoPilotaConSubscription(a: AbbonamentoOfficina | null): string | null {
+  if (a?.piano !== 'PILOTA' || !mostraPortale(a)) return null;
+  return 'Sei nel pilota: TyreCare per te è gratuito. Hai ancora un abbonamento a pagamento attivo: annullalo da «Gestisci il pagamento» per non pagarlo.';
+}
+
 function cartaPiano(piano: Exclude<Piano, 'PILOTA'>): string {
   const p = PIANI[piano];
   return `
@@ -137,13 +146,10 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
       <div class="tc-avviso tc-avviso--rosso mb-3" data-errore-pagamento role="alert" tabindex="-1" hidden></div>
       <button type="button" class="btn btn-primary btn-lg w-100" data-attiva>Attiva l'abbonamento</button>`;
   } else if (abbonamento) {
-    azione = '<p class="mb-0">Il tuo abbonamento è a posto: non devi fare nulla.</p>';
+    const frasePilota = testoPilotaConSubscription(abbonamento);
+    azione = `<p class="mb-0">${esc(frasePilota ?? 'Il tuo abbonamento è a posto: non devi fare nulla.')}</p>`;
   }
   if (mostraPortale(abbonamento)) {
-    if (abbonamento?.piano === 'PILOTA') {
-      azione +=
-        '<p class="small text-body-secondary mb-0 mt-3">Il pilota è gratuito: usa «Gestisci il pagamento» per gestire o annullare il vecchio abbonamento.</p>';
-    }
     azione += `
       <div class="tc-avviso tc-avviso--rosso mb-3 mt-3" data-errore-portale role="alert" tabindex="-1" hidden></div>
       <button type="button" class="btn btn-outline-primary w-100 mt-3" data-portale>Gestisci il pagamento</button>`;
