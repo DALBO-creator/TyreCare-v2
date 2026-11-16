@@ -528,7 +528,10 @@ const FORMATO_QUANDO = new Intl.DateTimeFormat('it-IT', {
 const GIORNI_ANNULLO = 7;
 
 /** Il pulsante spetta solo all'ultimo import di clienti e veicoli, non annullato e recente. */
-function importAnnullabile(passati: ImportPassato[]): ImportPassato | undefined {
+export function importAnnullabile(
+  passati: ImportPassato[],
+  adesso = Date.now(),
+): ImportPassato | undefined {
   const ultimo = passati
     .filter((p) => p.tipo === 'CLIENTI_VEICOLI')
     .reduce<ImportPassato | undefined>(
@@ -536,7 +539,7 @@ function importAnnullabile(passati: ImportPassato[]): ImportPassato | undefined 
       undefined,
     );
   if (!ultimo || ultimo.annullato_il) return undefined;
-  const eta = Date.now() - new Date(ultimo.created_at).getTime();
+  const eta = adesso - new Date(ultimo.created_at).getTime();
   return eta < GIORNI_ANNULLO * 24 * 3600 * 1000 ? ultimo : undefined;
 }
 
@@ -579,7 +582,7 @@ function registro(passati: ImportPassato[]): string {
 }
 
 /** Testo dell'avviso dopo l'annullo, con i quattro numeri. */
-function testoAnnullo(e: EsitoAnnullo): string {
+export function testoAnnullo(e: EsitoAnnullo): string {
   const tolti = `${plurale(e.clienti_tolti, 'cliente tolto', 'clienti tolti')} e ${plurale(e.veicoli_tolti, 'veicolo tolto', 'veicoli tolti')}`;
   const tenuti =
     e.clienti_tenuti + e.veicoli_tenuti === 0
