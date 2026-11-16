@@ -3375,9 +3375,8 @@ messaggio reale lo rivelano.
 (`rifiutaAffiliazione`, `ERRORI_RIFIUTO`), `e2e/tests/admin-rifiuta.spec.ts`.
 **Come funziona:** le officine IN_ATTESA hanno «Rifiuta la richiesta» (stile `tc-pulsante-elimina` con
 `mt-0`) accanto ad «Attiva». `chiediConferma` → `rifiutaAffiliazione(id)` →
-`rpc('rifiuta_affiliazione', { p_officina_id })` (dal T234 con il motivo facoltativo).
-La funzione SQL avvisa i membri («Richiesta non accettata») e cancella l'officina: la partita IVA torna
-libera.
+`rpc('rifiuta_affiliazione', { p_officina_id })` (dal T234 con il motivo facoltativo). La funzione SQL
+avvisa i membri («Richiesta non accettata») e cancella l'officina: la partita IVA torna libera.
 
 ### Codice complesso
 `apps/web/src/lib/admin.ts` — `ERRORI_RIFIUTO` traduce `OFFICINA_NON_TROVATA`, `OFFICINA_NON_IN_ATTESA`,
@@ -3397,9 +3396,9 @@ riceve il valore grezzo: trim e scelta di non mandare un vuoto spettano al chiam
 nell'avviso a chi aveva chiesto.
 
 ### Codice complesso
-`conferma.ts` — senza `campo` l'HTML è identico a prima (ternario che vale ''). Durante l'azione la textarea
-è disabilitata con i pulsanti e riabilitata se l'azione fallisce; il focus iniziale resta su «Annulla». Il
-limite di 300 è anche nella funzione SQL (`MOTIVO_TROPPO_LUNGO`).
+`conferma.ts` — senza `campo` l'HTML è identico a prima (ternario che vale ''). Durante l'azione la
+textarea è disabilitata con i pulsanti e riabilitata se l'azione fallisce; il focus iniziale resta su
+«Annulla». Il limite di 300 è anche nella funzione SQL (`MOTIVO_TROPPO_LUNGO`).
 
 ## Email di riserva: preferenza dell'utente (T199)
 
@@ -3866,6 +3865,52 @@ Il finto Supabase usa `vi.fn` creati con `vi.hoisted`, perché `vi.mock` è soll
 L'invio è `form.requestSubmit()` e l'attesa `vi.waitFor`; ogni «nessuna chiamata» si verifica solo dopo che
 l'errore è comparso, altrimenti passerebbe a vuoto. Credenziali errate:
 `new AuthError(msg, 400, 'invalid_credentials')`.
+
+## Test DOM della pagina dell'invito (T298)
+
+**File coinvolti:** `apps/web/src/pagine/invito.test.ts` (12 test, happy-dom); `invito.ts` è invariato.
+**Come funziona:** si fingono `lib/inviti`, `lib/auth` e `lib/supabase`; il router è quello vero, tranne
+`mostraPagina`. Ogni stato ha il suo messaggio (`it.each`): ospite, email diversa, scaduto, annullato,
+usato, inesistente, errore di rete. Gli href attesi sono esatti, con un codice di 32 caratteri esadecimali
+in `?codice=`.
+
+### Codice complesso
+Accettazione: `accettaInvito` è chiamato una volta sola, col codice. Uscita: `esci` e poi `mostraPagina`.
+
+## Test di `lib/push.ts` (T299)
+
+**File coinvolti:** `apps/web/src/lib/push.test.ts` (11 test, ambiente node).
+**Come funziona:** provano `chiaveInByte` e i 5 stati di `statoPush`, con una coppia di test per stato che
+cambia una sola condizione. `./supabase` è finto.
+
+### Codice complesso
+`browser(opzioni)` costruisce navigator, window, matchMedia e Notification finti (base: Android, push
+supportate, SW registrato, nessuna iscrizione); ogni test cambia un'opzione. `chiaveInByte` usa i byte
+251, 255, 191, che in base64 danno `+` e `/`. `statoPush` segue l'ordine reale: installa, supporto,
+denied, registrazione, iscrizione.
+
+## Test del dialogo di conferma (T268)
+
+**File coinvolti:** i test DOM di `apps/web/src/ui/conferma.ts` (`chiediConferma`, 15 test, happy-dom).
+**Come funziona:** coprono focus, Annulla/Esc/sfondo, conferma, errori (T032) e campo di testo (T234).
+happy-dom supporta `<dialog>.showModal()` e `close()`: non serve nessuna finta.
+
+### Codice complesso
+Esc si prova con `premiEsc()` (evento `cancel`, chiude se non bloccato). Il dialogo si rimuove su `close`
+(`toBeNull()`). Lo stato «in attesa» usa una promessa risolta a mano. Un errore che non è `ErroreModulo`
+mostra il testo fisso di `messaggioErrore`.
+
+## Test di `ui/modulo.ts` (T310)
+
+**File coinvolti:** i test DOM di `apps/web/src/ui/modulo.ts` (12 test, happy-dom).
+**Come funziona:** un form di prova usa `campo`, `areaTesto`, `RIQUADRO_ERRORE` e `pulsanteInvio`, collegato
+a uno schema zod con transform. Si prova: campi, errori per campo, riquadro d'errore, pulsante in corso e
+doppio invio.
+
+### Codice complesso
+L'invio è `requestSubmit()`. Una promessa risolta a mano prova disabled, «in corso» e `aria-busy`; il
+doppio invio fa una sola chiamata. Il focus si legge da `document.activeElement` (primo campo errato,
+campo dell'`ErroreModulo` o riquadro). Un errore generico mostra il testo fisso di `messaggioErrore`.
 
 ## Scollegare un cliente (database)
 

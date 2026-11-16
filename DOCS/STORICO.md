@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-16 — ciclo 20261116-15 — T298 T299 T268 T310
+
+**Fatto**
+
+- T298 e T299: unit test nuovi, senza toccare il codice dell'app: 12 test DOM (happy-dom) degli stati della
+  pagina dell'invito (`pagine/invito.test.ts`) e 11 test di `lib/push.ts` (`chiaveInByte` e i 5 stati di
+  `statoPush`, `lib/push.test.ts`).
+- T268 e T310: unit test DOM nuovi: 15 del dialogo di conferma `chiediConferma` (focus, Annulla/Esc/sfondo,
+  conferma, errori, campo di testo) e 12 di `ui/modulo.ts` (campi, errori, pulsante in corso, doppio invio).
+- Solo test: 50 test nuovi, 711 in totale; il codice dell'app è invariato. Corsie C3 (T298, T299) e C5
+  (T268, T310).
+
+**Verifica**
+
+- Format, lint, typecheck, 711 test e build verdi; gate del supervisore approvato al primo giro.
+
 ### Sessione 2026-11-16 — integrazione dei rami di lancio (branch `claude/integrazione-lancio`)
 
 **Fatto**

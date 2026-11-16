@@ -18,6 +18,9 @@
 > funzioni nuove non sono più eseguibili da `anon` per default e che il seed usa `Password123`.
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
+>
+> Ultima sessione: ciclo agenti 20261116-15 (T298 T299 T268 T310), solo unit test nuovi (711 in totale);
+> codice dell'app invariato.
 
 **0 — Da chiedere al titolare**
 
