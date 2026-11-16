@@ -8,6 +8,14 @@ import {
   type Posizione,
   type Tables,
 } from '@tyrecare/shared';
+import { sessioneCorrente } from '../lib/auth';
+import {
+  cancellaBozza,
+  chiaveBozza,
+  leggiBozza,
+  salvaBozza,
+  type BozzaControllo,
+} from '../lib/bozza-controllo';
 import { esc } from '../lib/html';
 import { registraControllo, type Pneumatico } from '../lib/officina';
 import { vaiA, visualizzazioneCorrente } from '../lib/router';
@@ -58,6 +66,7 @@ export async function mostraNuovoControllo(app: HTMLElement): Promise<void> {
   app.innerHTML = paginaApp(`
     ${intestazioneSottopagina('Nuovo controllo', formattaTarga(veicolo.targa))}
     <div class="tc-contenuto">
+      <div data-bozza-avviso></div>
       <form class="tc-auth__modulo" novalidate>
         ${RIQUADRO_ERRORE}
         ${campiControllo(montati, { eseguito_il: oggiISO(), km: null, note: '' }, kmPrecedenti)}
@@ -68,8 +77,20 @@ export async function mostraNuovoControllo(app: HTMLElement): Promise<void> {
 
   const form = app.querySelector('form')!;
   collegaStatoInDiretta(form, montati);
+  const utenteId = sessioneCorrente()?.user.id;
+  const chiave = utenteId ? chiaveBozza(utenteId, veicolo.id) : null;
+  if (chiave) {
+    collegaBozza(
+      app,
+      form,
+      chiave,
+      montati.map((p) => p.posizione),
+    );
+  }
   collegaModulo(form, creaControlloSchema(montati.map((p) => p.posizione)), async (controllo) => {
     await registraControllo(veicolo.id, controllo);
+    // Solo a salvataggio riuscito: se lancia, la bozza resta
+    if (chiave) cancellaBozza(chiave);
     vaiConConferma(`/veicolo?id=${veicolo.id}`, 'Controllo salvato.');
   });
 }
@@ -205,4 +226,87 @@ export function collegaStatoInDiretta(form: HTMLFormElement, montati: Pneumatico
         ? badgeStato(statoBattistrada(mm, stagione))
         : '';
   });
+}
+
+const ATTESA_SALVATAGGIO_MS = 500;
+
+function campiDelModulo(
+  form: HTMLFormElement,
+): (HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement)[] {
+  return [...form.elements].filter(
+    (el): el is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement =>
+      (el instanceof HTMLInputElement ||
+        el instanceof HTMLTextAreaElement ||
+        el instanceof HTMLSelectElement) &&
+      el.name !== '' &&
+      el.type !== 'submit' &&
+      el.type !== 'button',
+  );
+}
+
+/**
+ * Bozza sul dispositivo (R44): a ogni `input` salva i campi (al massimo una scrittura ogni 500 ms,
+ * con un timer finale che non perde l'ultimo carattere); all'apertura riempie i campi da una bozza
+ * valida e mostra l'avviso con «Scarta la bozza», che rimette i valori iniziali (`form.reset()`:
+ * stanno negli attributi `value`) e cancella la bozza.
+ */
+function collegaBozza(
+  app: HTMLElement,
+  form: HTMLFormElement,
+  chiave: string,
+  posizioni: readonly string[],
+): void {
+  const leggiValori = (): Record<string, string> =>
+    Object.fromEntries(campiDelModulo(form).map((el) => [el.name, el.value]));
+  // L'evento `input` ricalcola lo stato delle ruote (collegaStatoInDiretta)
+  const ricalcolaStato = () => {
+    for (const el of campiDelModulo(form)) {
+      if (el.name.startsWith('mm_')) el.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  };
+
+  const applica = (bozza: BozzaControllo) => {
+    for (const el of campiDelModulo(form)) {
+      if (el.name in bozza.valori) el.value = bozza.valori[el.name]!;
+    }
+    ricalcolaStato();
+  };
+
+  // Salvataggio con attesa: scrive subito se è passato abbastanza tempo, altrimenti con un timer
+  let ultimo = 0;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const scrivi = () => {
+    timer = undefined;
+    ultimo = Date.now();
+    salvaBozza(chiave, posizioni, leggiValori());
+  };
+  const programma = () => {
+    if (timer !== undefined) return;
+    const resta = ATTESA_SALVATAGGIO_MS - (Date.now() - ultimo);
+    if (resta <= 0) scrivi();
+    else timer = setTimeout(scrivi, resta);
+  };
+
+  const bozza = leggiBozza(chiave, posizioni);
+  if (bozza) {
+    applica(bozza);
+    const posto = app.querySelector<HTMLElement>('[data-bozza-avviso]')!;
+    posto.innerHTML = `
+      <div class="tc-avviso tc-avviso--info mb-3" role="status">
+        <p class="mb-2">Abbiamo ripreso le misure che non avevi salvato.</p>
+        <button type="button" class="btn btn-outline-light" data-scarta-bozza>Scarta la bozza</button>
+      </div>`;
+    posto.querySelector('[data-scarta-bozza]')!.addEventListener('click', () => {
+      if (timer !== undefined) clearTimeout(timer);
+      timer = undefined;
+      form.reset();
+      ricalcolaStato();
+      cancellaBozza(chiave);
+      posto.innerHTML = '';
+      app.querySelector<HTMLElement>('h1')?.focus();
+    });
+  }
+
+  // Dopo aver applicato la bozza: da qui in poi ogni modifica dell'utente la aggiorna
+  form.addEventListener('input', programma);
 }
