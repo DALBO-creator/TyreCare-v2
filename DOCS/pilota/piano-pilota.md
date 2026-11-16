@@ -16,12 +16,20 @@ fa risparmiare tempo e porta clienti. Se funziona, si apre alle altre officine (
 
 Si annotano ogni settimana, in una tabella tua (non nel repository), questi quattro numeri:
 
-| Cosa | Dove si legge |
-|------|---------------|
-| Clienti invitati e clienti collegati (hanno accettato l'invito) | Scheda del cliente → "App TyreCare" |
-| Controlli inseriti | Schede dei veicoli, "Nuovo controllo" (o tabella `controlli` in Supabase) |
-| Richieste di appuntamento arrivate | **Appuntamenti** → "Da confermare" e storico |
-| Commenti arrivati dall'app | **Profilo** → "Commenti degli utenti" (`/admin/commenti`, solo admin) |
+| Cosa | Dove si legge | Alternativa |
+|------|---------------|-------------|
+| Clienti invitati | *Profilo → Andamento del pilota*: «Inviti creati» | Scheda cliente → "App TyreCare" |
+| Clienti collegati | *Profilo → Andamento del pilota*: «Clienti collegati» | Scheda cliente → "App TyreCare" |
+| Controlli inseriti | *Profilo → Andamento del pilota*: «Controlli inseriti» | Scheda veicolo; tabella `controlli` |
+| Richieste di appuntamento | *Profilo → Andamento del pilota*: «Richieste di appuntamento» | **Appuntamenti** |
+| Commenti dall'app | non in pagina | **Profilo** → "Commenti degli utenti" |
+
+**Andamento del pilota** sta nella sezione "Amministrazione" del Profilo ed è solo per l'amministratore con la
+verifica in due passaggi. Scegli il «Periodo» («Questa settimana», «Settimana scorsa» o «Ultimi 30 giorni»,
+estremi inclusi): «Clienti in elenco», «Clienti collegati» e «Clienti con le notifiche attive» sono sempre i
+totali di oggi, gli altri numeri sono del periodo. «Controlli inseriti» conta solo i controlli fatti
+dall'app; quelli arrivati con l'import sono a parte («Controlli importati»). Il pulsante «Copia i numeri»
+copia una riga di testo per officina (tutte le officine), da incollare nella tua tabella.
 
 La voce "Commenti degli utenti" sta nella sezione "Amministrazione" del Profilo: la vedi solo entrando con
 l'account amministratore, non con quello del titolare.
@@ -42,7 +50,8 @@ Lascia al titolare [`guida-officina.md`](guida-officina.md) per tutto il resto.
 ## 5. Cadenza dei controlli
 
 - **Una telefonata a settimana** di 10 minuti con il titolare: cosa ha usato, cosa non ha capito, cosa manca.
-  Annota i quattro numeri della tabella.
+  Prima apri **Profilo** → **Andamento del pilota**, scegli il periodo «Settimana scorsa» e annota i quattro
+  numeri della tabella (usa «Copia i numeri»); i commenti li leggi nella loro pagina.
 - **Lettura dei commenti** dell'app (**Profilo** → "Commenti degli utenti") almeno due volte a settimana;
   rispondi al titolare in telefonata, non per email in massa.
 - Le richieste di cambio che ne escono le porti in coda (idee), non le prometti a voce.

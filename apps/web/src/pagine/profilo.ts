@@ -1,5 +1,6 @@
 import {
   Bug,
+  ChartColumn,
   Building2,
   ChevronRight,
   ClipboardList,
@@ -146,6 +147,7 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
                 ${link(Building2, `Officine da attivare${inAttesa === null ? '' : ` (${inAttesa})`}`, '/admin/officine')}
                 ${link(MessageSquare, 'Commenti degli utenti', '/admin/commenti')}
                 ${link(Bug, "Errori dell'app", '/admin/errori')}
+                ${link(ChartColumn, 'Andamento del pilota', '/admin/andamento')}
               </nav>
             </section>`
           : ''
