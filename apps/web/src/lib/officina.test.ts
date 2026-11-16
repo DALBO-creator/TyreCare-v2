@@ -5,7 +5,14 @@ const rpc = vi.hoisted(() => vi.fn());
 vi.mock('./supabase', () => ({ getSupabase: () => ({ rpc }) }));
 
 import { ErroreModulo } from './errori';
-import { eTitolare, giaSalvato, officinaAttiva, scegliOfficina, scollegaCliente } from './officina';
+import {
+  eTitolare,
+  giaSalvato,
+  montaPneumatici,
+  officinaAttiva,
+  scegliOfficina,
+  scollegaCliente,
+} from './officina';
 
 const officina = (id: string, ruolo: OfficinaUtente['ruolo']): OfficinaUtente => ({
   ruolo,
@@ -162,5 +169,54 @@ describe('scollegaCliente', () => {
     const errore = { message: 'boh', code: 'XX000' };
     rpc.mockResolvedValue({ error: errore });
     await expect(scollegaCliente('c1')).rejects.toBe(errore);
+  });
+});
+
+describe('montaPneumatici', () => {
+  beforeEach(() => rpc.mockReset());
+  const comuni = {
+    stagione: 'INVERNALE',
+    misura: '205/55 R16 91V',
+    marca: 'Michelin',
+    modello: 'Alpin',
+    montato_il: '2026-11-10',
+  } as const;
+
+  it('DOT per ruota: ogni posizione prende il suo, le altre quello unico', async () => {
+    rpc.mockResolvedValue({ error: null });
+    await montaPneumatici('v1', {
+      ...comuni,
+      posizioni: ['ANT_SX', 'ANT_DX', 'POST_SX'],
+      dot: '1024',
+      dot_ANT_SX: '3823',
+      dot_ANT_DX: null,
+    });
+    expect(rpc).toHaveBeenCalledWith('monta_pneumatici', {
+      p_veicolo_id: 'v1',
+      p_montato_il: '2026-11-10',
+      p_pneumatici: [
+        {
+          stagione: 'INVERNALE',
+          misura: '205/55 R16 91V',
+          marca: 'Michelin',
+          modello: 'Alpin',
+          dot: '3823',
+          posizione: 'ANT_SX',
+          id: expect.any(String),
+        },
+        expect.objectContaining({ posizione: 'ANT_DX', dot: '1024' }),
+        expect.objectContaining({ posizione: 'POST_SX', dot: '1024' }),
+      ],
+    });
+  });
+
+  it('senza DOT per ruota né unico: null, e nessuna chiave dot_*', async () => {
+    rpc.mockResolvedValue({ error: null });
+    await montaPneumatici('v1', { ...comuni, posizioni: ['SCORTA'], dot: null });
+    const [pneumatico] = rpc.mock.calls[0]![1].p_pneumatici;
+    expect(pneumatico.dot).toBeNull();
+    expect(Object.keys(pneumatico).sort()).toEqual(
+      ['dot', 'id', 'marca', 'misura', 'modello', 'posizione', 'stagione'].sort(),
+    );
   });
 });

@@ -1,10 +1,12 @@
 import {
+  campoDot,
   nominativo,
   statoBattistrada,
   statoPeggiore,
   type Cliente,
   type MontaPneumatici,
   type NuovoControllo,
+  type Posizione,
   type Stagione,
   type StatoSalute,
   type Tables,
@@ -328,10 +330,15 @@ export async function caricaSchedaVeicolo(id: string): Promise<SchedaVeicolo | n
 // ---------------------------------------------------------------------------------------------------
 
 export async function montaPneumatici(veicoloId: string, dati: MontaPneumatici): Promise<void> {
-  const { posizioni, montato_il, ...pneumatico } = dati;
-  // Id scelti qui: se la chiamata viene ripetuta, la funzione riconosce gli pneumatici già montati
+  const { posizioni, montato_il, dot, marca, modello, misura, stagione } = dati;
+  // Id scelti qui: se la chiamata viene ripetuta, la funzione riconosce gli pneumatici già montati.
+  // Oggetto costruito a mano: i campi `dot_<posizione>` non devono arrivare alla funzione
   const pneumatici = posizioni.map((posizione) => ({
-    ...pneumatico,
+    stagione,
+    misura,
+    marca,
+    modello,
+    dot: dati[campoDot(posizione)] ?? dot ?? null,
     posizione,
     id: crypto.randomUUID(),
   }));
@@ -378,7 +385,8 @@ export async function registraControllo(veicoloId: string, dati: NuovoControllo)
  */
 export async function modificaPneumatici(
   ids: string[],
-  dati: Omit<MontaPneumatici, 'posizioni'>,
+  // Senza i DOT per ruota: esistono solo nel montaggio, la correzione scrive un solo DOT
+  dati: Omit<MontaPneumatici, 'posizioni' | `dot_${Posizione}`>,
 ): Promise<void> {
   const { data, error } = await conRiprova(() =>
     getSupabase().from('pneumatici').update(dati).in('id', ids).select('id'),

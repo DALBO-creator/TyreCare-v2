@@ -1,4 +1,11 @@
-import { MontaPneumaticiSchema, StagioneSchema, formattaTarga, oggiISO } from '@tyrecare/shared';
+import {
+  MontaPneumaticiSchema,
+  StagioneSchema,
+  campoDot,
+  formattaTarga,
+  oggiISO,
+  type Posizione,
+} from '@tyrecare/shared';
 import { Info } from 'lucide';
 import { montaPneumatici, type Pneumatico } from '../lib/officina';
 import { visualizzazioneCorrente } from '../lib/router';
@@ -61,13 +68,78 @@ export async function mostraMontaPneumatici(app: HTMLElement): Promise<void> {
       </form>
     </div>`);
 
-  collegaModulo(app.querySelector('form')!, MontaPneumaticiSchema, async (dati) => {
+  const form = app.querySelector('form')!;
+  collegaDotPerRuota(form);
+
+  collegaModulo(form, MontaPneumaticiSchema, async (dati) => {
     await montaPneumatici(veicolo.id, dati);
     vaiConConferma(
       `/veicolo?id=${veicolo.id}`,
       dati.posizioni.length === 1 ? 'Pneumatico montato.' : 'Pneumatici montati.',
     );
   });
+}
+
+const TESTO_AIUTO_DOT = 'Ultime 4 cifre: settimana e anno (es. 3823).';
+
+/**
+ * Solo nel montaggio: sotto il DOT unico, la casella «DOT diverso per ogni ruota». Spuntata, il campo
+ * unico si disattiva (non viene inviato) e compare un campo per ogni posizione scelta; i campi seguono
+ * le caselle delle posizioni senza perdere quanto già scritto per le ruote che restano. Tolta la
+ * spunta, i campi per ruota spariscono dal modulo e il campo unico si riattiva.
+ */
+function collegaDotPerRuota(form: HTMLFormElement): void {
+  const dotUnico = form.querySelector<HTMLInputElement>('input[name="dot"]');
+  const coppia = dotUnico?.closest('.tc-auth__coppia');
+  if (!dotUnico || !coppia) return;
+
+  const blocco = document.createElement('div');
+  blocco.className = 'tc-campo';
+  // La casella non ha `name`: non fa parte dei dati dello schema
+  blocco.innerHTML = `
+    <label class="tc-caselle__voce">
+      <input class="form-check-input" type="checkbox" data-dot-per-ruota />
+      <span>DOT diverso per ogni ruota</span>
+    </label>
+    <div data-dot-ruote></div>`;
+  coppia.after(blocco);
+  const casella = blocco.querySelector<HTMLInputElement>('[data-dot-per-ruota]')!;
+  const contenitore = blocco.querySelector<HTMLElement>('[data-dot-ruote]')!;
+
+  const aggiorna = () => {
+    dotUnico.disabled = casella.checked;
+    const scelte = new Set(
+      [...form.querySelectorAll<HTMLInputElement>('input[name="posizioni"]:checked')].map(
+        (c) => c.value,
+      ),
+    );
+    const campi = casella.checked
+      ? ORDINE_POSIZIONI.filter((p) => scelte.has(p)).map((p) => voceRuota(contenitore, p))
+      : [];
+    // Gli elementi già presenti vengono solo spostati: valori ed errori restano
+    contenitore.replaceChildren(...campi);
+  };
+  casella.addEventListener('change', aggiorna);
+  form.addEventListener('change', (e) => {
+    if ((e.target as HTMLInputElement).name === 'posizioni') aggiorna();
+  });
+}
+
+/** Il campo DOT di una ruota: quello già nella pagina, oppure uno nuovo. */
+function voceRuota(contenitore: HTMLElement, p: Posizione): HTMLElement {
+  const esistente = contenitore.querySelector<HTMLElement>(`[data-ruota="${p}"]`);
+  if (esistente) return esistente;
+  const div = document.createElement('div');
+  div.dataset.ruota = p;
+  div.innerHTML = campo({
+    nome: campoDot(p),
+    etichetta: `DOT ${POSIZIONI[p].nome}`,
+    tipo: 'text',
+    autocomplete: 'off',
+    aiuto: TESTO_AIUTO_DOT,
+    attributi: 'inputmode="numeric" maxlength="4"',
+  });
+  return div;
 }
 
 type ValoriPneumatico = Pick<
@@ -116,7 +188,7 @@ export function campiPneumatico(p: Partial<ValoriPneumatico>): string {
         etichetta: 'DOT (facoltativo)',
         tipo: 'text',
         autocomplete: 'off',
-        aiuto: 'Ultime 4 cifre: settimana e anno (es. 3823).',
+        aiuto: TESTO_AIUTO_DOT,
         valore: p.dot ?? '',
         attributi: 'inputmode="numeric" maxlength="4"',
       })}
