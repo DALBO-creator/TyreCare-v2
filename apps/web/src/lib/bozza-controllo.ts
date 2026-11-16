@@ -73,3 +73,41 @@ export function leggiBozza(
     return null;
   }
 }
+
+export interface SalvataggioRitardato {
+  /** Chiede un salvataggio: subito se è passato abbastanza tempo, altrimenti con un timer finale. */
+  programma(): void;
+  /** Annulla il timer in sospeso, ma le richieste successive funzionano ancora. */
+  annulla(): void;
+  /** Ferma il timer in sospeso e blocca ogni scrittura successiva. */
+  ferma(): void;
+}
+
+/** Throttle: `scrivi` al massimo una volta ogni `ms`, senza perdere l'ultima richiesta. */
+export function creaSalvataggioRitardato(scrivi: () => void, ms: number): SalvataggioRitardato {
+  let ultimo = 0;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let fermo = false;
+  const esegui = () => {
+    timer = undefined;
+    if (fermo) return;
+    ultimo = Date.now();
+    scrivi();
+  };
+  return {
+    programma() {
+      if (fermo || timer !== undefined) return;
+      const resta = ms - (Date.now() - ultimo);
+      if (resta <= 0) esegui();
+      else timer = setTimeout(esegui, resta);
+    },
+    annulla() {
+      if (timer !== undefined) clearTimeout(timer);
+      timer = undefined;
+    },
+    ferma() {
+      fermo = true;
+      this.annulla();
+    },
+  };
+}

@@ -12,6 +12,7 @@ import { sessioneCorrente } from '../lib/auth';
 import {
   cancellaBozza,
   chiaveBozza,
+  creaSalvataggioRitardato,
   leggiBozza,
   salvaBozza,
   type BozzaControllo,
@@ -79,18 +80,18 @@ export async function mostraNuovoControllo(app: HTMLElement): Promise<void> {
   collegaStatoInDiretta(form, montati);
   const utenteId = sessioneCorrente()?.user.id;
   const chiave = utenteId ? chiaveBozza(utenteId, veicolo.id) : null;
-  if (chiave) {
-    collegaBozza(
-      app,
-      form,
-      chiave,
-      montati.map((p) => p.posizione),
-    );
-  }
+  const chiudiBozza = chiave
+    ? collegaBozza(
+        app,
+        form,
+        chiave,
+        montati.map((p) => p.posizione),
+      )
+    : null;
   collegaModulo(form, creaControlloSchema(montati.map((p) => p.posizione)), async (controllo) => {
     await registraControllo(veicolo.id, controllo);
     // Solo a salvataggio riuscito: se lancia, la bozza resta
-    if (chiave) cancellaBozza(chiave);
+    chiudiBozza?.();
     vaiConConferma(`/veicolo?id=${veicolo.id}`, 'Controllo salvato.');
   });
 }
@@ -255,36 +256,30 @@ function collegaBozza(
   form: HTMLFormElement,
   chiave: string,
   posizioni: readonly string[],
-): void {
+): () => void {
   const leggiValori = (): Record<string, string> =>
     Object.fromEntries(campiDelModulo(form).map((el) => [el.name, el.value]));
-  // L'evento `input` ricalcola lo stato delle ruote (collegaStatoInDiretta)
+  const salvataggio = creaSalvataggioRitardato(
+    () => salvaBozza(chiave, posizioni, leggiValori()),
+    ATTESA_SALVATAGGIO_MS,
+  );
+  // Gli `input` lanciati dal ricalcolo dello stato non sono modifiche dell'utente: non si salvano
+  let inRicalcolo = false;
   const ricalcolaStato = () => {
-    for (const el of campiDelModulo(form)) {
-      if (el.name.startsWith('mm_')) el.dispatchEvent(new Event('input', { bubbles: true }));
+    inRicalcolo = true;
+    try {
+      for (const el of campiDelModulo(form)) {
+        if (el.name.startsWith('mm_')) el.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    } finally {
+      inRicalcolo = false;
     }
   };
-
   const applica = (bozza: BozzaControllo) => {
     for (const el of campiDelModulo(form)) {
       if (el.name in bozza.valori) el.value = bozza.valori[el.name]!;
     }
     ricalcolaStato();
-  };
-
-  // Salvataggio con attesa: scrive subito se è passato abbastanza tempo, altrimenti con un timer
-  let ultimo = 0;
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const scrivi = () => {
-    timer = undefined;
-    ultimo = Date.now();
-    salvaBozza(chiave, posizioni, leggiValori());
-  };
-  const programma = () => {
-    if (timer !== undefined) return;
-    const resta = ATTESA_SALVATAGGIO_MS - (Date.now() - ultimo);
-    if (resta <= 0) scrivi();
-    else timer = setTimeout(scrivi, resta);
   };
 
   const bozza = leggiBozza(chiave, posizioni);
@@ -297,8 +292,7 @@ function collegaBozza(
         <button type="button" class="btn btn-outline-light" data-scarta-bozza>Scarta la bozza</button>
       </div>`;
     posto.querySelector('[data-scarta-bozza]')!.addEventListener('click', () => {
-      if (timer !== undefined) clearTimeout(timer);
-      timer = undefined;
+      salvataggio.annulla();
       form.reset();
       ricalcolaStato();
       cancellaBozza(chiave);
@@ -308,5 +302,12 @@ function collegaBozza(
   }
 
   // Dopo aver applicato la bozza: da qui in poi ogni modifica dell'utente la aggiorna
-  form.addEventListener('input', programma);
+  form.addEventListener('input', () => {
+    if (!inRicalcolo) salvataggio.programma();
+  });
+
+  return () => {
+    salvataggio.ferma();
+    cancellaBozza(chiave);
+  };
 }

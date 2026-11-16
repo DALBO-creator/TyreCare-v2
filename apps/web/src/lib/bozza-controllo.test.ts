@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   cancellaBozza,
+  creaSalvataggioRitardato,
   chiaveBozza,
   leggiBozza,
   salvaBozza,
@@ -81,5 +82,54 @@ describe('bozza del nuovo controllo', () => {
     expect(() => salvaBozza('k', POS, {}, T0)).not.toThrow();
     expect(() => cancellaBozza('k')).not.toThrow();
     expect(leggiBozza('k', POS, T0)).toBeNull();
+  });
+});
+
+describe('creaSalvataggioRitardato', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(T0);
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it('la prima richiesta scrive subito, la seconda entro 500 ms aspetta il timer finale', () => {
+    const scrivi = vi.fn();
+    const s = creaSalvataggioRitardato(scrivi, 500);
+    s.programma();
+    expect(scrivi).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(100);
+    s.programma();
+    s.programma();
+    expect(scrivi).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(399);
+    expect(scrivi).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(1);
+    expect(scrivi).toHaveBeenCalledTimes(2);
+  });
+
+  it('dopo ferma() il timer in sospeso non scrive e le richieste sono ignorate', () => {
+    const scrivi = vi.fn();
+    const s = creaSalvataggioRitardato(scrivi, 500);
+    s.programma();
+    vi.advanceTimersByTime(100);
+    s.programma();
+    s.ferma();
+    vi.advanceTimersByTime(1000);
+    s.programma();
+    vi.advanceTimersByTime(1000);
+    expect(scrivi).toHaveBeenCalledTimes(1);
+  });
+
+  it('annulla() toglie il timer ma le richieste dopo scrivono ancora', () => {
+    const scrivi = vi.fn();
+    const s = creaSalvataggioRitardato(scrivi, 500);
+    s.programma();
+    vi.advanceTimersByTime(100);
+    s.programma();
+    s.annulla();
+    vi.advanceTimersByTime(1000);
+    expect(scrivi).toHaveBeenCalledTimes(1);
+    s.programma();
+    expect(scrivi).toHaveBeenCalledTimes(2);
   });
 });
