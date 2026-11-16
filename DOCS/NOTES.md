@@ -3591,6 +3591,39 @@ Ogni officina compare anche a zero, ordinate per ragione sociale.
 Prima `richiedi_admin()` (admin con `aal2`, altrimenti 42501), poi il periodo: date nulle o invertite danno
 `PERIODO_NON_VALIDO`. Le definizioni dei numeri sono anche nel `comment on function`.
 
+## Andamento del pilota (admin)
+
+**File coinvolti:** `apps/web/src/pagine/admin-andamento.ts`, `apps/web/src/lib/admin-andamento.ts`,
+`apps/web/src/main.ts`, `apps/web/src/pagine/profilo.ts`.
+**Come funziona:** la rotta `/admin/andamento` (T256) è solo ADMIN (`accessoAdmin`, 2FA) e carica a
+richiesta (`pigra`). Il controllo vero (admin con `aal2`) sta nella rpc `andamento_officine` (T255). Per
+ogni officina la pagina mostra i numeri di «Questa settimana», «Settimana scorsa» e «Ultimi 30 giorni».
+«Oggi» viene da `oggiInItalia()` e gli estremi sono inclusi. Clienti, collegati e con notifiche sono i
+totali di adesso; gli altri numeri sono del periodo. «Copia i numeri» mette negli appunti una riga per
+officina, da incollare nella tabella della telefonata settimanale. Link nel Profilo sotto «Errori dell'app».
+
+### Codice complesso
+- `lib/admin-andamento.ts` ha funzioni pure e testate: `settimana(oggiIso)` dà lunedì e domenica con
+  aritmetica UTC (`getUTCDay`, `aggiungiGiorni`), così non dipende dal fuso; `periodoScelto` calcola i tre
+  periodi; `ordinaOfficine` mette le ATTIVE per prime, poi per nome; `rigaCopiabile`/`testoCopiabile`
+  producono il testo da incollare.
+- Il cambio di periodo ricarica i numeri con un contatore di richiesta: una risposta vecchia non
+  sovrascrive quella attuale.
+- «Copia i numeri» usa `navigator.clipboard.writeText`; se manca o rifiuta mostra un avviso `role="alert"`.
+
+## Test della pagina Notifiche e della home del cliente (T300, T301)
+
+**File coinvolti:** `apps/web/src/pagine/notifiche.test.ts`, `apps/web/src/pagine/home.test.ts`.
+**Come funziona:** 7 test DOM per pagina (stato vuoto, elenco, link, stati e gomme vecchie, delega alla home
+officina). Nell'app le notifiche si segnano lette all'apertura: non c'è «Segna tutte come lette».
+
+### Codice complesso
+- `notifiche.test.ts` scorre `Constants.public.Enums.tipo_notifica` e disegna una notifica per tipo: un tipo
+  nuovo senza icona in `ICONE` fa fallire il test. Si controlla `svg > *` perché `icona(undefined)` dà un
+  svg vuoto.
+- `home.test.ts` fissa solo `Date` con `useFakeTimers({ toFake: ['Date'] })` e calcola gli stati attesi con
+  `statoBattistrada` reale e le classi da `STATI`.
+
 ## Scarica i tuoi dati: richieste su strada (T251)
 
 **File coinvolti:** `apps/web/src/lib/miei-dati.ts`, `apps/web/src/lib/miei-dati.test.ts`.

@@ -4,6 +4,27 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-16 — ciclo 20261116-21 — T256 T257 T300 T301
+
+**Fatto**
+
+- T256: pagina admin `/admin/andamento` «Andamento del pilota»: per officina i numeri della rpc
+  `andamento_officine` (T255) per «Questa settimana», «Settimana scorsa» e «Ultimi 30 giorni», con «Copia i
+  numeri» (una riga per officina). Link nel Profilo sotto «Errori dell'app».
+- T257: nel piano del pilota (§3 e §5) i numeri della telefonata settimanale si leggono da *Profilo →
+  Andamento del pilota*; tabella con colonne "Dove si legge" e "Alternativa", riga sul pulsante «Copia i
+  numeri».
+- T300: `pagine/notifiche.test.ts` (7 test DOM): icona per ogni tipo di `tipo_notifica`, stato vuoto, non
+  lette con link, `segnaLette` all'apertura, sezione Email. Nell'app non esiste un pulsante «Segna tutte come
+  lette»: le notifiche si segnano lette all'apertura.
+- T301: `pagine/home.test.ts` (7 test DOM): stato vuoto, carte con href/targa/stato, gomme vecchie, link
+  strada e registra officina, delega alla home officina.
+
+**Verifica**
+
+- Corsie C3 e C4 coordinate dal direttore. Prova d'insieme verde: 755 test, JS iniziale 68,1 kB.
+- Gate del supervisore: 4/4 approvati al primo giro.
+
 ### Sessione agenti — 2026-11-16 — ciclo 20261116-18 — T255 T288 T293 T294
 
 **Fatto**

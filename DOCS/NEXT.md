@@ -19,8 +19,8 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
 >
-> Ultima sessione: ciclo agenti 20261116-18 (T255 T288 T293 T294): andamento del pilota per officina
-> (`andamento_officine`, R41), DOT diverso per ogni ruota nel montaggio, test dell'annullo import (729 test).
+> Ultima sessione: ciclo agenti 20261116-21 (T256 T257 T300 T301): pagina admin `/admin/andamento`
+> «Andamento del pilota», piano del pilota aggiornato, test di Notifiche e home del cliente (755 test).
 
 **0 — Da chiedere al titolare**
 
