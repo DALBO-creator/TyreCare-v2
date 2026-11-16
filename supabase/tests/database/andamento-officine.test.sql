@@ -27,7 +27,7 @@ $$;
 -- Gomme Rossi), un invito, due controlli dall'app e uno importato, una richiesta su strada chiusa.
 -- Il secondo controllo dall'app: 10 marzo 23:30 UTC = 11 marzo 00:30 in Italia.
 insert into public.iscrizioni_push (profile_id, endpoint, p256dh, auth)
-values (:cliente, 'https://push.esempio.it/t255', 'k', 'a');
+values (:cliente, 'https://fcm.googleapis.com/fcm/send/t255', 'k', 'a');
 
 insert into public.inviti_cliente (officina_id, cliente_officina_id, email, codice_hash, scade_il, created_at)
 values (:rossi, 'c0000000-0000-4000-8000-000000000002', 'franco@esempio.it', '\x7255'::bytea,
