@@ -1299,6 +1299,22 @@ export type Database = {
         Args: { p_officina_id: string; p_periodo: string };
         Returns: string;
       };
+      andamento_officine: {
+        Args: { p_a: string; p_da: string };
+        Returns: {
+          clienti: number;
+          clienti_collegati: number;
+          clienti_con_push: number;
+          controlli_app: number;
+          controlli_importati: number;
+          inviti_creati: number;
+          officina_id: string;
+          ragione_sociale: string;
+          richieste_appuntamento: number;
+          richieste_strada_accettate: number;
+          stato_affiliazione: string;
+        }[];
+      };
       annulla_import: { Args: { p_import_id: string }; Returns: Json };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
