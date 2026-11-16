@@ -12,10 +12,11 @@
 > commenti e *Appuntamenti*), poi caricare
 > la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
 > restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo agenti 20261116-00 (T286 `import_id` protetto; T269 errori dell'app senza fughe;
-> T260 guide del pilota; T264 guida sulla sicurezza degli account), nel treno.
-> Da controllare nella CI del treno: pgTAP nuovi `import-id-protetto.test.sql` e `errori-app-autore.test.sql`
-> (non eseguiti in locale).
+> Ultima sessione: ciclo agenti 20261116-03 (T277 scollegare un cliente annulla i suoi inviti aperti; T290
+> avviso di sospensione solo da ATTIVA; T292 bozza del «Nuovo controllo»; T272 frase unica per il pilota
+> con subscription), nel treno.
+> Da controllare nella CI del treno: pgTAP nuovi `scollega-cliente-inviti.test.sql` e
+> `sospendi-officina-attiva.test.sql` (non eseguiti in locale).
 > Per Davide (in lista di lancio): impostare le regole delle password nel pannello Supabase seguendo
 > `DOCS/pilota/sicurezza-account.md`.
 > Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito.

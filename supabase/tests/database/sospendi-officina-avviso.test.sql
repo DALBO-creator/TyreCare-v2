@@ -131,7 +131,8 @@ select lives_ok(
   format('select public.sospendi_officina(%L)', :express),
   'senza utente si sospende Pneus Express'
 );
-select is(pg_temp.nuovi(:titolare2), 1, 'il titolare di Pneus Express riceve un solo avviso');
+-- T290 (R43): da IN_ATTESA l'officina non era visibile ai clienti, quindi nessun avviso.
+select is(pg_temp.nuovi(:titolare2), 0, 'da IN_ATTESA il titolare di Pneus Express non riceve avvisi');
 
 select * from finish();
 rollback;

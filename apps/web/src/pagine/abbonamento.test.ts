@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from 'vitest';
-import { avvisoPagamento, mostraPagamento, mostraPortale, testoStato } from './abbonamento';
+import {
+  avvisoPagamento,
+  mostraPagamento,
+  mostraPortale,
+  testoPilotaConSubscription,
+  testoStato,
+} from './abbonamento';
 import type { AbbonamentoOfficina } from '../lib/abbonamento';
 
 // Ambiente node, senza DOM: le icone (SVG creati con `document`) qui non servono
@@ -99,5 +105,35 @@ describe('mostraPortale', () => {
   it('id vuoto o di soli spazi → no', () => {
     expect(mostraPortale(abb({ stripe_customer_id: '' }))).toBe(false);
     expect(mostraPortale(abb({ stripe_customer_id: '  ' }))).toBe(false);
+  });
+});
+
+describe('testoPilotaConSubscription', () => {
+  it('pilota con subscription viva: una frase sola', () => {
+    expect(
+      testoPilotaConSubscription(
+        abb({
+          piano: 'PILOTA',
+          stato: 'ATTIVO',
+          stripe_customer_id: 'cus_1',
+          stripe_subscription_id: 'sub_1',
+        }),
+      ),
+    ).toBe(
+      'Sei nel pilota: TyreCare per te è gratuito. Hai ancora un abbonamento a pagamento attivo: annullalo da «Gestisci il pagamento» per non pagarlo.',
+    );
+  });
+  it('pilota senza subscription e altri piani: nessuna frase speciale', () => {
+    expect(
+      testoPilotaConSubscription(
+        abb({ piano: 'PILOTA', stato: 'ATTIVO', stripe_customer_id: 'cus_1' }),
+      ),
+    ).toBeNull();
+    expect(
+      testoPilotaConSubscription(
+        abb({ stato: 'ATTIVO', stripe_customer_id: 'cus_1', stripe_subscription_id: 'sub_1' }),
+      ),
+    ).toBeNull();
+    expect(testoPilotaConSubscription(null)).toBeNull();
   });
 });
