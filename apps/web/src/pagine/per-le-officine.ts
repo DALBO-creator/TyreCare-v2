@@ -1,7 +1,18 @@
-import { PIANI, type Piano } from '@tyrecare/shared';
+import {
+  FUNZIONI_INCLUSE,
+  GIORNI_PROVA,
+  PIANI,
+  PREZZO_INSTALLAZIONE,
+  PianoSchema,
+  SITO_URL,
+  formattaEuro,
+  prezzoPiano,
+  type Piano,
+} from '@tyrecare/shared';
 import {
   BellRing,
   CalendarCheck,
+  ExternalLink,
   FileSpreadsheet,
   LifeBuoy,
   Smartphone,
@@ -10,6 +21,7 @@ import {
 import { esc } from '../lib/html';
 import { icona } from '../ui/icone';
 import { paginaAuth } from '../ui/layout';
+import { piedeLegale } from '../ui/piede-legale';
 
 const DOPO = '?dopo=/officina/registra';
 
@@ -47,17 +59,14 @@ const PASSI = [
   'Firmiamo il DPA e attiviamo l’officina.',
 ];
 
-/** Carta di un piano a pagamento: nome, prezzo al mese e funzioni, letti da `PIANI` (mai scritti a mano). */
-function cartaPrezzo(piano: Exclude<Piano, 'PILOTA'>): string {
+/** Carta di un piano: nome, prezzo e nota, letti da `PIANI` (mai scritti a mano). */
+function cartaPrezzo(piano: Piano): string {
   const p = PIANI[piano];
-  const prezzo = p.prezzoMensile === null ? '' : `${p.prezzoMensile} €/mese`;
   return `
     <section class="tc-officine__piano" aria-labelledby="tc-prezzo-${piano}">
       <h3 id="tc-prezzo-${piano}" class="tc-officine__piano-nome">${esc(p.nome)}</h3>
-      <p class="tc-officine__piano-prezzo">${prezzo}</p>
-      <ul class="tc-officine__piano-funzioni">
-        ${p.funzioni.map((f) => `<li>${esc(f)}</li>`).join('')}
-      </ul>
+      <p class="tc-officine__piano-prezzo">${esc(prezzoPiano(piano))}</p>
+      ${p.nota ? `<p class="mb-0">${esc(p.nota)}</p>` : ''}
     </section>`;
 }
 
@@ -82,13 +91,26 @@ export function mostraPerLeOfficine(app: HTMLElement): void {
       <div class="tc-officine">
         <ul class="tc-officine__vantaggi">${vantaggi}</ul>
         <h2 class="tc-officine__sezione">Prezzi</h2>
-        <div class="tc-officine__piani">${cartaPrezzo('STARTER')}${cartaPrezzo('PRO')}</div>
-        <p class="tc-officine__prova">30 giorni di prova gratuita: non serve la carta per iniziare.</p>
+        <div class="tc-officine__piani">${PianoSchema.options.map(cartaPrezzo).join('')}</div>
+        <p class="tc-officine__prova">${GIORNI_PROVA} giorni di prova gratuita, senza impegno.</p>
+        <p class="mb-0">
+          Installazione e avvio: ${formattaEuro(PREZZO_INSTALLAZIONE)} una tantum. Prezzi IVA esclusa,
+          pagamento con bonifico su fattura.
+        </p>
+        <h2 class="tc-officine__sezione">Tutto incluso</h2>
+        <ul class="tc-officine__piano-funzioni">
+          ${FUNZIONI_INCLUSE.map((f) => `<li>${esc(f)}</li>`).join('')}
+        </ul>
+        <p class="tc-officine__sito">
+          <a href="${SITO_URL}" target="_blank" rel="noopener noreferrer">
+            Scopri le funzioni sul sito ${icona(ExternalLink)}
+          </a>
+        </p>
         <h2 class="tc-officine__sezione">Come si inizia</h2>
         <ol class="tc-officine__passi">${passi}</ol>
         <a class="btn btn-primary btn-lg w-100" href="/registrati${DOPO}">Registra la tua officina</a>
         <p class="tc-officine__accedi">Hai già un account? <a href="/accedi${DOPO}">Accedi</a></p>
       </div>`,
-    piede: `<a href="/privacy">Privacy</a> · <a href="/termini">Termini di servizio</a>`,
+    piede: piedeLegale(),
   });
 }

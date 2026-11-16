@@ -2,6 +2,7 @@ import { AccessoSchema } from '@tyrecare/shared';
 import { accedi } from '../lib/auth';
 import { esc } from '../lib/html';
 import { paginaAuth } from '../ui/layout';
+import { piedeLegale } from '../ui/piede-legale';
 import { RIQUADRO_ERRORE, campo, collegaModulo, pulsanteInvio } from '../ui/modulo';
 import { avvisoConferma, parametro } from './comune';
 
@@ -30,7 +31,7 @@ export function mostraAccedi(app: HTMLElement): void {
         ${pulsanteInvio('Accedi', 'Accesso in corso…')}
       </form>`,
     // Il passaggio tra accesso e registrazione conserva `?dopo=` ed `?email=` (es. dall'invito)
-    piede: `Non hai un account? <a href="/registrati${esc(location.search)}">Registrati</a><br><a href="/per-le-officine">Sei un'officina? Scopri TyreCare per le officine</a>`,
+    piede: `Non hai un account? <a href="/registrati${esc(location.search)}">Registrati</a><br><a href="/per-le-officine">Sei un'officina? Scopri TyreCare per le officine</a><br>${piedeLegale()}`,
   });
 
   // Dopo l'accesso il cambio di pagina lo fa main.ts, quando Supabase segnala SIGNED_IN

@@ -1,6 +1,6 @@
 -- Dati di prova per lo sviluppo locale (eseguito da `supabase db reset`). NON usare in produzione.
 --
--- Account (password per tutti: password123):
+-- Account (password per tutti: Password123):
 --   admin@tyrecare.test      ADMIN
 --   titolare@tyrecare.test   OFFICINA, TITOLARE di "Gomme Rossi"
 --   operatore@tyrecare.test  OFFICINA, OPERATORE di "Gomme Rossi"
@@ -19,7 +19,7 @@ select
   'authenticated',
   'authenticated',
   u.email,
-  extensions.crypt('password123', extensions.gen_salt('bf')),
+  extensions.crypt('Password123', extensions.gen_salt('bf')),
   now(),
   '{"provider": "email", "providers": ["email"]}'::jsonb,
   jsonb_build_object('nome', u.nome, 'cognome', u.cognome),
@@ -51,6 +51,15 @@ where email like '%@tyrecare.test';
 
 -- I profili li ha creati il trigger come CLIENTE: assegno i ruoli.
 update public.profiles set ruolo = 'ADMIN' where id = 'a0000000-0000-4000-8000-000000000001';
+
+-- Verifica in due passaggi dell'admin di prova (solo locale: il seed non va sul cloud). L'area admin la
+-- richiede (is_admin vuole aal2). Chiave TOTP da inserire nell'app di autenticazione per provare a mano:
+-- JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP. Gli e2e calcolano il codice da qui (e2e/tests/aiuti.ts).
+insert into auth.mfa_factors (id, user_id, friendly_name, factor_type, status, created_at, updated_at, secret)
+values (
+  'f0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000001',
+  'TyreCare admin (sviluppo)', 'totp', 'verified', now(), now(), 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP'
+);
 update public.profiles set ruolo = 'OFFICINA', telefono = '+39 333 1234567'
   where id in (
     'a0000000-0000-4000-8000-000000000002',

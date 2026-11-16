@@ -14,7 +14,7 @@
 | [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md) | Colori, tipografia, componenti e regole di accessibilità | Quando cambia l'aspetto |
 | [`NOTES.md`](NOTES.md) | Spiegazione del codice più complesso e del funzionamento delle funzionalità | Ad ogni funzionalità implementata |
 | [`STRUCT.md`](STRUCT.md) | Linguaggi, framework e librerie con spiegazione d'uso | Ad ogni nuova dipendenza |
-| [`PRODUZIONE-MARKETING.md`](PRODUZIONE-MARKETING.md) | Costi, modello di ricavo, BEP, go-to-market | Quando cambiano costi/prezzi |
+| [`PRODUZIONE-MARKETING.md`](PRODUZIONE-MARKETING.md) | Costi, modello di ricavo, BEP, go-to-market, valutazione in caso di cessione | Quando cambiano costi/prezzi |
 | [`IMPLEMENTAZIONI.md`](IMPLEMENTAZIONI.md) | Idee e implementazioni future | Man mano che emergono |
 | [`legale/`](legale/README.md) | Bozze di informativa privacy, termini di servizio, DPA per le officine e registro dei trattamenti; domande per il consulente | Dopo la revisione del consulente |
 | [`pilota/guida-avvio.md`](pilota/guida-avvio.md) | Guida di una pagina per l'officina pilota (LA SANTI GOMME): dall'accesso alle notifiche | Pilota (Fase 6) |
@@ -25,7 +25,7 @@
 | [`legale/registro-accessi.md`](legale/registro-accessi.md) | Bozza: chi del personale accede ai dati delle officine, quando, cosa annotare | Dopo la revisione del consulente |
 | [`pilota/copie-di-sicurezza.md`](pilota/copie-di-sicurezza.md) | Bozza: copia a mano con la CLI, conservazione, prova di ripristino in locale | Pilota (Fase 6) |
 | [`pilota/piano-pilota.md`](pilota/piano-pilota.md) | Bozza: piano del pilota con LA SANTI GOMME (8 settimane), cosa misurare, criteri per passare alla Fase 7 | Pilota (Fase 6) |
-| [`pilota/lista-lancio.md`](pilota/lista-lancio.md) | Bozza: lista di controllo del lancio in ordine (D3, D5, D7, D9, DPA, copie, officina, import, Stripe) | Pilota (Fase 6) |
+| [`pilota/lista-lancio.md`](pilota/lista-lancio.md) | Bozza: lista di controllo del lancio in ordine (D3, D5, D7, D9, DPA, copie, officina, import, abbonamenti) | Pilota (Fase 6) |
 | [`LICENSE.md`](LICENSE.md) | Licenza proprietaria | Raramente |
 | [`first-prompt.md`](first-prompt.md) | Prompt originale del progetto | Mai (archivio) |
 
@@ -115,7 +115,7 @@ TyreCare è una **PWA** gestita da **gommisti/officine**.
 ### Opzionali
 
 - PowerSync per sincronizzazione offline avanzata
-- Stripe per i pagamenti
+- ~~Stripe per i pagamenti~~ (tolto il 2026-11-13: nessun pagamento nell'app, vedi P25)
 
 ---
 
@@ -148,7 +148,7 @@ Proposta di regola:
 | Import export del gestionale | **Fastify** | Parsing, mappatura, validazione Zod, upsert in blocco |
 | Prenotazioni (creazione/conferma) | **Fastify** | Regole di business: disponibilità, sovrapposizioni |
 | Invio notifiche push | **Fastify** / funzione schedulata | Chiavi VAPID solo lato server |
-| Pagamenti (Stripe), webhook | **Fastify** | Segreti e firme lato server |
+| ~~Pagamenti (Stripe), webhook~~ | — | Tolti il 2026-11-13 (P25): nessun pagamento nell'app |
 
 **Aggiornamento 2026-10-08:** le scritture dell'officina che toccano più tabelle insieme (nuovo controllo
 con le misure, montaggio di pneumatici con smontaggio dei precedenti) sono **funzioni SQL** chiamate con
@@ -431,6 +431,15 @@ dominio (SPF/DKIM su Resend) li configura **una volta** il titolare; poi si aggi
 Supabase. Non serve più chiedere a ogni officina chi gestisce il suo dominio. Sostituisce l'"SMTP definitivo con
 il dominio di LA SANTI GOMME".
 
+### P24 — Area amministratore protetta dalla 2FA ✅
+
+**Decisione (2026-11-12, richiesta del titolare):** l'area `/admin` è del solo titolare di TyreCare. L'account
+ADMIN funziona da amministratore **solo dopo la verifica in due passaggi** (TOTP, `aal2` controllato da
+`is_admin()` nel database); il ruolo ADMIN si assegna solo dall'editor SQL; ogni azione dell'admin finisce
+in un registro che nessuno può modificare dall'app. Strumenti: riepilogo della piattaforma, ricerca e
+correzione degli account (dati, ruolo, conferma email, nuova password, sessioni, blocco), officine,
+commenti, registro. Dettagli in `NOTES.md` → "Pannello amministratore e 2FA".
+
 ## B4. Aspetti legali e privacy
 
 ### P17 — GDPR ✅
@@ -463,6 +472,31 @@ officina fuori dall'app e non è verificabile. Proposta: **abbonamento** come ri
 con una **piccola fee fissa per prenotazione completata tramite TyreCare** (misurabile). Calcoli e scenari nel
 documento dedicato.
 
+### P25 — Nessun pagamento nell'app: abbonamento gestito a mano ✅ (2026-11-13, nel codice dal 2026-11-16)
+
+Decisione del titolare prima del lancio. I clienti delle officine pagano **sul posto**; TyreCare incassa
+**fuori dall'app** (bonifico su fattura) due sole cose:
+
+- **installazione**: 149 € una tantum;
+- **abbonamento dell'officina**: 100 €/mese oppure 1000 €/anno (2 mesi gratis), IVA esclusa, dopo 30
+  giorni di prova.
+
+Conseguenze: **Stripe è stato tolto del tutto** (Edge Functions, tabelle, colonne, pagina di pagamento); i
+piani Starter/Pro/Pilota non esistono più. L'abbonamento (`abbonamenti`: piano MENSILE/ANNUALE, stato
+PROVA/ATTIVO/SCADUTO/SOSPESO, scadenza, installazione pagata, importo concordato, note interne) lo aggiorna
+l'amministratore dal pannello `/admin` quando riceve il bonifico; l'officina lo vede in sola lettura e scrive
+a `CONTATTO_EMAIL` per rinnovare. Alla scadenza partono gli avvisi ma non c'è nessun blocco automatico: se
+sospendere lo decide l'amministratore. Pagina dell'admin: `/admin/abbonamento?id=…` (da «Officine»).
+Dettagli in `NOTES.md` → "Abbonamento gestito a mano, senza Stripe".
+
+### P26 — Verifica in due passaggi per tutti e password più robuste ✅ (2026-11-16)
+
+Supera R39 (2FA rimandata dopo il pilota). Ogni account può attivare la 2FA dal Profilo; chi l'ha attiva
+con la sola password non legge né scrive nulla (policy restrittiva su ogni tabella e `db_pre_request`);
+per l'amministratore resta obbligatoria (P24). Password di almeno 10 caratteri con maiuscola, minuscola e
+numero, uguali nell'app, in `config.toml` e (a mano) nel pannello di produzione. Permessi minimi per `anon`
+e funzioni dei trigger chiuse. Riepilogo e cose da fare sul cloud in `DOCS/SICUREZZA.md`.
+
 ---
 
 ## 6. Roadmap proposta
@@ -476,7 +510,7 @@ documento dedicato.
 | 4 — Prenotazioni | Lista officine, catalogo servizi, richiesta prenotazione, gestione lato officina | 🟨 iniziata il 2026-10-12 (sessione 14): catalogo dei servizi (titolare), elenco e scheda delle officine attive, richiesta con giorno e fascia, conferma con l'ora / proposta di un altro orario / rifiuto, annullamento del cliente, completato / non presentato; poi calendario dell'officina, editor degli orari con chiusure straordinarie; "Prenota" dal garage con il veicolo già scelto e cliente/veicolo creati dalla richiesta (sessione 15). Il 2026-10-23 dati e posizione dell'officina, «Vicino a me» (distanza), capienza per fascia (T018–T021). Restano: slot automatici |
 | 5 — Notifiche | Web Push, reminder schedulati, fallback email | 🟨 iniziata il 2026-10-14 (sessione 16): **notifiche nell'app** per i cambi di stato delle prenotazioni (tabella scritta da un trigger, badge in tempo reale, pagina `/notifiche`). Lo stesso giorno **Web Push** (Edge Function `invia-notifica`, pg_net). Il 2026-10-14 (sessione 17) **promemoria del giorno prima** e **promemoria degli pneumatici** (esito del controllo, cambio stagionale; pg_cron). Il 2026-10-28 (T066) **email di riserva** nella Edge Function, spenta (`EMAIL_NOTIFICHE`): resta accenderla con il dominio di TyreCare (P23) |
 | 6 — Pilota | 2–3 gommisti reali, feedback, Lighthouse, privacy/legale | 🟨 preparazione: kit del pilota (commenti dall'app, guida di avvio, 2026-10-22), bozze legali da rivedere; funzione per creare l'officina del pilota (T027) e guida per Davide (T028), cancellazione dell'account nel database (T038), intestazioni di sicurezza del sito (T036), bozze del registro accessi e delle copie di sicurezza (T048), pagina `/admin/officine` per attivare e sospendere le officine (T061) e per cambiare il piano (T106), pagina `/admin/commenti` per leggere i commenti degli utenti (T103) |
-| 7 — Commerciale | Stripe abbonamenti, onboarding officine, intervento su strada | 🟨 iniziata il 2026-10-28 (T067): tabella `abbonamenti` (piano, stato, prova di 30 giorni) creata per ogni officina; scadenza automatica della prova (T138, R19) database dell'intervento su strada (T139, R18), accettazione e chiusura (T140), rotte (T141) e pagina del cliente (T143, 2026-11-01) fatti; database Stripe (T180) e webhook (T185) fatti (2026-11-02), checkout (T189) e avvisi e rifiuto dell'affiliazione (T191) fatti (2026-11-05); pagina con pulsante di pagamento (T192) e portale clienti (T195, 2026-11-06); guida Stripe in prova (T204) e guide pilota della strada (T159) fatte (2026-11-08) |
+| 7 — Commerciale | Abbonamenti (a mano, senza pagamenti nell'app), onboarding officine, intervento su strada | 🟨 iniziata il 2026-10-28 (T067): tabella `abbonamenti` (piano, stato, prova di 30 giorni) creata per ogni officina; scadenza automatica della prova (T138, R19) database dell'intervento su strada (T139, R18), accettazione e chiusura (T140), rotte (T141) e pagina del cliente (T143, 2026-11-01) fatti; database Stripe (T180) e webhook (T185) fatti (2026-11-02), checkout (T189) e avvisi e rifiuto dell'affiliazione (T191) fatti (2026-11-05); pagina con pulsante di pagamento (T192) e portale clienti (T195, 2026-11-06); guida Stripe in prova (T204) e guide pilota della strada (T159) fatte (2026-11-08). **2026-11-13: Stripe tolto del tutto (P25)**: abbonamento gestito a mano dall'amministratore, pannello `/admin` |
 
 ## 7. Domande aperte
 

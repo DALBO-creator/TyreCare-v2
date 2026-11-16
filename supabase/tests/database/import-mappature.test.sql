@@ -16,7 +16,7 @@ begin
     set local role authenticated;
     perform set_config(
       'request.jwt.claims',
-      json_build_object('sub', p_utente, 'role', 'authenticated')::text,
+      json_build_object('sub', p_utente, 'role', 'authenticated', 'aal', 'aal2')::text,
       true
     );
   end if;
@@ -144,7 +144,7 @@ delete from public.import_mappature;
 select pg_temp.come(:cliente);
 select is_empty('select 1 from public.import_mappature', 'il cliente non vede le associazioni');
 select pg_temp.come(null);
-select is_empty('select 1 from public.import_mappature', 'l''anonimo non vede le associazioni');
+select throws_ok('select 1 from public.import_mappature', '42501', null, 'l''anonimo non vede le associazioni');
 
 -- ---------------------------------------------------------------- dopo i tentativi degli altri
 select pg_temp.come(:titolare);

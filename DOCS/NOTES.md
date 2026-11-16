@@ -3926,3 +3926,124 @@ e versioni sono distinti senza vuoti, `utenti` conta gli `autore_id` distinti, l
 10. La pagina usa `<details>` e `<pre>` (`overflow-wrap: anywhere`); dell'utente mostra solo i primi 8
 caratteri dell'id. L'e2e provoca l'errore con un `throw` in `setTimeout` (lo prende il listener `error` di
 `main.ts`) e l'admin ricarica con `toPass` finché arriva.
+## Pannello amministratore e 2FA (2026-11-12)
+
+**File coinvolti:** migrazione `supabase/migrations/20261112000100_pannello_admin.sql`, test
+`supabase/tests/database/pannello-admin.test.sql`; `apps/web/src/lib/admin-pannello.ts`, pagine
+`admin.ts`, `admin-utenti.ts`, `admin-registro.ts`, `admin-comune.ts`, stili `_admin.scss`; e2e
+`admin-pannello.spec.ts`.
+
+**Come funziona:** l'area `/admin/*` è per il solo ruolo ADMIN **con la verifica in due passaggi**.
+`accessoAdmin()` (in `admin-comune.ts`) è l'ingresso comune: se il profilo non è ADMIN mostra «Pagina
+riservata»; se la sessione non è `aal2` chiede il codice dell'app di autenticazione (TOTP di Supabase Auth)
+o, la prima volta, la fa registrare con il QR (e la chiave scritta, per inserirla a mano). Dopo il codice
+giusto ridisegna la stessa rotta. Il controllo vero è nel database: `is_admin()` richiede il claim `aal` =
+`aal2`, quindi una password rubata non basta né per la RLS né per le funzioni `admin_*`.
+
+- `/admin`: numeri da `admin_riepilogo()` (un solo json) e «Da guardare» (officine in attesa, prove in
+  scadenza entro 7 giorni, email non confermate, commenti recenti) con il collegamento alla pagina giusta.
+- `/admin/utenti`: `admin_cerca_utenti(testo)` cerca in email, nome, cognome, telefono o ID (i primi 50; `%`
+  e `_` valgono come testo). Azioni: correggi nome/cognome/telefono e ruolo CLIENTE↔OFFICINA, conferma
+  email (quando l'email di conferma non arriva), email per una nuova password (`resetPasswordForEmail`),
+  chiudi le sessioni, blocca/sblocca (`auth.users.banned_until` a 100 anni e via le sessioni). Non si
+  blocca un ADMIN né sé stessi.
+- `/admin/registro`: le ultime 200 voci di `admin_registro`.
+
+**Sicurezza:**
+- il ruolo ADMIN si cambia solo dall'editor SQL di Supabase (trigger `proteggi_ruolo_admin`): un account
+  admin compromesso non può creare altri admin;
+- `admin_registro` non ha policy di scrittura e `insert/update/delete` sono revocati: lo scrivono solo il
+  trigger `registra_scrittura_admin` (ogni insert/update/delete di un admin su profiles, officine,
+  officina_utenti, abbonamenti; per gli update i soli campi cambiati come `[vecchio, nuovo]`) e le
+  funzioni sugli account (`registra_admin`, non chiamabile dal client);
+- blocco e chiusura delle sessioni cancellano `auth.sessions` e `auth.refresh_tokens`: il token d'accesso
+  già emesso scade da solo entro un'ora.
+
+**Telefono perso (niente più codici):** dall'editor SQL del cloud
+`delete from auth.mfa_factors where user_id = (select id from auth.users where email = '<email admin>');`
+e alla prossima apertura di `/admin` si registra una nuova app.
+
+**Sviluppo locale:** nel seed l'admin di prova (`admin@tyrecare.test`) ha già la 2FA con la chiave
+`JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP` (da inserire nell'app per provare a mano). Gli e2e entrano con
+`entra(browser, ADMIN)`, che completa la 2FA calcolando il codice con `codiceTotp()` (RFC 6238 con
+`node:crypto`). I test pgTAP simulano le sessioni con `'aal', 'aal2'` nei claim; `pannello-admin.test.sql`
+prova anche l'admin con `aal1`.
+
+### Codice complesso
+- **Ricerca con LIKE sicura:** il testo dell'admin passa da `replace` di `\`, `%`, `_` prima di diventare
+  `%…%`, così i jolly scritti valgono come caratteri.
+- **Diff del registro:** `registra_scrittura_admin` confronta `to_jsonb(old)` e `to_jsonb(new)` chiave per
+  chiave (salta `updated_at`); un update senza cambi non scrive nulla.
+
+## Intestazioni di sicurezza: CSP applicata (2026-11-12)
+
+In `apps/web/vercel.json` la CSP passa da `Content-Security-Policy-Report-Only` a `Content-Security-Policy`
+(stesse regole più `object-src 'none'` e `upgrade-insecure-requests`) e si aggiunge
+`Cross-Origin-Opener-Policy: same-origin`. La build non ha script inline (solo il modulo in `/assets/`), i
+font sono locali e le uniche connessioni esterne sono Supabase (`https://` e `wss://*.supabase.co`); il QR
+della 2FA è un `data:` (ammesso da `img-src`). Se dopo la pubblicazione qualcosa si rompe, la console del
+browser dice quale direttiva lo blocca. Test in `apps/web/src/vercel.test.ts`.
+
+## Abbonamento gestito a mano, senza Stripe (lancio, 2026-11-14/16)
+
+> Le voci precedenti su Stripe (T180–T272: webhook, checkout, portale, pilota con subscription) sono
+> **storiche**: dal 2026-11-16 Stripe non c'è più nel codice né nel database (PLAN P25).
+
+**File coinvolti:** migrazioni `20261114100000_abbonamento_manuale.sql` e
+`20261116000100_admin_leggi_abbonamento.sql`; `packages/shared/src/abbonamenti.ts` (piani MENSILE/ANNUALE,
+`PREZZO_INSTALLAZIONE`, `FUNZIONI_INCLUSE`, `prezzoPiano`, `ricavoMensile`); `apps/web/src/lib/abbonamento.ts`
+e `pagine/abbonamento.ts` (titolare, sola lettura); `lib/admin-abbonamento.ts` e `pagine/admin-abbonamento.ts`
+(admin); pgTAP `abbonamenti`, `abbonamenti-scadenza`, `admin-leggi-abbonamento`; e2e `abbonamento`,
+`admin-abbonamento`.
+
+**Come funziona:** ogni officina ha una riga `abbonamenti` (creata dal trigger). Piano MENSILE (100 €/mese) o
+ANNUALE (1000 €/anno), stato PROVA/ATTIVO/SCADUTO/SOSPESO, `prova_fino_al`, `iniziato_il`, `scade_il`
+(ultimo giorno pagato, incluso), installazione pagata (149 €), importo concordato, note interne. Il titolare
+legge la sua riga senza `note_admin` (permessi di colonna) e scrive a TyreCare per rinnovare. L'admin apre
+`/admin/officine` → «Gestisci l'abbonamento» (`/admin/abbonamento?id=…`): «Rinnova di un mese/anno»
+(`admin_rinnova_abbonamento`, avvisa i titolari), «Installazione pagata» (`admin_registra_installazione`) e il
+modulo completo (`admin_imposta_abbonamento`). Il job notturno `scadenza-abbonamenti` mette SCADUTO prove e
+abbonamenti finiti e avvisa (anche 7 giorni prima); SCADUTO non blocca nulla: sospendere lo decide l'admin.
+
+### Codice complesso
+- **Allineamento con l'officina:** il trigger `officine_sincronizza_abbonamento` mette SOSPESO quando
+  l'officina è SOSPESA, ricalcola lo stato dalle date quando torna ATTIVA (`stato_abbonamento_da_date`) e
+  alla prima attivazione fa ripartire i 30 giorni di prova da quel giorno. Per questo il modulo admin non
+  offre SOSPESO e, con l'officina sospesa, la funzione SQL lascia lo stato SOSPESO qualunque cosa arrivi.
+- **Rinnovo:** il periodo parte dal giorno dopo `scade_il` se non è passata, altrimenti da oggi; `scade_il`
+  è inclusivo (dal 14/11 un mese arriva al 13/12).
+- **Note interne:** `authenticated` (anche l'admin) non ha `select` su `note_admin`; la pagina admin legge
+  tutto da `admin_leggi_abbonamento` (security definer + `is_admin()`).
+- **Modulo:** `ModuloAbbonamentoSchema` trasforma i campi vuoti in `null`; `impostaAbbonamento` non manda i
+  parametri nulli, così la funzione SQL tiene la fine della prova com'è (`coalesce`). Importo con virgola
+  (`90,50`). Gli errori SQL (`SCADENZA_MANCANTE`, `DATE_NON_VALIDE`, …) diventano `ErroreModulo` sotto il
+  campo (`traduciErroreAbbonamento`).
+
+## Verifica in due passaggi per tutti gli account (lancio, 2026-11-16)
+
+**File coinvolti:** migrazione `20261114200100_due_fattori.sql`; `apps/web/src/lib/mfa.ts`,
+`pagine/sicurezza.ts`, `lib/router.ts` (`serveCodice`, `secondoPassaggio`), `main.ts`; pgTAP
+`sicurezza.test.sql`; e2e `aiuti.ts` (`verificaAdmin`) e `admin-pannello.spec.ts`. Riepilogo per Davide in
+`DOCS/SICUREZZA.md`.
+
+**Come funziona:** dal Profilo → «Verifica in due passaggi» (`/profilo/sicurezza`) chiunque attiva la 2FA
+(QR o chiave, poi il codice) o la disattiva (serve un codice). Chi l'ha attiva, dopo la password ha una
+sessione `aal1`: il router mostra al posto di ogni pagina con login la richiesta del codice
+(`mostraCodiceAccesso`); dopo il codice Supabase emette `MFA_CHALLENGE_VERIFIED` e `main.ts` ridisegna la
+pagina dell'URL. Le pagine pubbliche e quelle da ospite non chiedono il codice.
+
+### Codice complesso
+- **Nel database:** una policy *restrictive* `2fa: sessione al secondo livello` su ogni tabella con RLS
+  (`mfa_soddisfatta()`: `aal2` oppure nessun fattore verificato) e `pgrst.db_pre_request =
+  controlla_richiesta` per le funzioni `security definer`. Con `aal1` e 2FA attiva l'app non legge niente:
+  per questo il controllo nel router viene prima di qualsiasi caricamento.
+- **`serveCodice` è sincrono:** legge `aal` dal token in memoria e `user.factors` della sessione, senza
+  richieste (`lib/mfa.ts`); così il router decide prima di disegnare.
+- **Admin:** con la 2FA già attiva passa dalla richiesta del router; `accessoAdmin` (`admin-comune.ts`)
+  resta per l'admin senza 2FA, che deve registrarla prima di aprire `/admin`.
+- **Password:** `PASSWORD_MIN = 10` e maiuscola, minuscola, numero (`nuovaPassword` in `shared/auth.ts`,
+  `AIUTO_PASSWORD` sotto i campi); `config.toml` ha gli stessi valori; in produzione vanno impostati nel
+  pannello. La password del seed e degli e2e è `Password123`.
+- **Permessi minimi** (`20261114200000_sicurezza_permessi.sql`): vedi `DOCS/SICUREZZA.md`. Le funzioni
+  nuove non sono più eseguibili da `anon` per default: una funzione pubblica nuova ha bisogno di un
+  `grant execute … to anon` esplicito.

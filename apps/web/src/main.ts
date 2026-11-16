@@ -3,6 +3,7 @@ import './styles/main.scss';
 import { registerSW } from 'virtual:pwa-register';
 import { inizializzaAuth, sessioneCorrente } from './lib/auth';
 import { segnalaErrore } from './lib/errori-app';
+import { serveCodice } from './lib/mfa';
 import { fermaNotifiche } from './lib/notifiche';
 import { pigra } from './lib/pigra';
 import {
@@ -46,6 +47,12 @@ const ROTTE: Rotta[] = [
     accesso: 'utente',
     titolo: 'Invia un commento',
     mostra: pigra(() => import('./pagine/commento'), 'mostraCommento'),
+  },
+  {
+    percorso: '/profilo/sicurezza',
+    accesso: 'utente',
+    titolo: 'Verifica in due passaggi',
+    mostra: pigra(() => import('./pagine/sicurezza'), 'mostraSicurezza'),
   },
   {
     percorso: '/profilo/password',
@@ -179,11 +186,36 @@ const ROTTE: Rotta[] = [
     titolo: 'Abbonamento',
     mostra: pigra(() => import('./pagine/abbonamento'), 'mostraAbbonamento'),
   },
+  // Area amministratore: ruolo ADMIN e verifica in due passaggi (lo controlla anche il database)
+  {
+    percorso: '/admin',
+    accesso: 'utente',
+    titolo: 'Pannello amministratore',
+    mostra: pigra(() => import('./pagine/admin'), 'mostraAdmin'),
+  },
+  {
+    percorso: '/admin/utenti',
+    accesso: 'utente',
+    titolo: 'Account',
+    mostra: pigra(() => import('./pagine/admin-utenti'), 'mostraAdminUtenti'),
+  },
+  {
+    percorso: '/admin/registro',
+    accesso: 'utente',
+    titolo: 'Registro delle azioni',
+    mostra: pigra(() => import('./pagine/admin-registro'), 'mostraAdminRegistro'),
+  },
   {
     percorso: '/admin/officine',
     accesso: 'utente',
     titolo: 'Officine',
     mostra: pigra(() => import('./pagine/admin-officine'), 'mostraAdminOfficine'),
+  },
+  {
+    percorso: '/admin/abbonamento',
+    accesso: 'utente',
+    titolo: 'Abbonamento',
+    mostra: pigra(() => import('./pagine/admin-abbonamento'), 'mostraAdminAbbonamento'),
   },
   {
     percorso: '/admin/commenti',
@@ -348,6 +380,12 @@ const ROTTE: Rotta[] = [
     mostra: pigra(() => import('./pagine/legale'), 'mostraTermini'),
   },
   {
+    percorso: '/cookie',
+    accesso: 'pubblica',
+    titolo: 'Cookie policy',
+    mostra: pigra(() => import('./pagine/legale'), 'mostraCookie'),
+  },
+  {
     percorso: '/per-le-officine',
     accesso: 'pubblica',
     titolo: 'TyreCare per le officine',
@@ -375,6 +413,14 @@ const NON_TROVATA: Rotta = {
   mostra: mostraNonTrovata,
 };
 
+// Al posto delle pagine con login, finché chi ha la 2FA attiva non scrive il codice (vedi router)
+const SECONDO_PASSAGGIO: Rotta = {
+  percorso: '',
+  accesso: 'utente',
+  titolo: 'Verifica in due passaggi',
+  mostra: pigra(() => import('./pagine/sicurezza'), 'mostraCodiceAccesso'),
+};
+
 const app = document.querySelector<HTMLElement>('#app');
 if (app) {
   await inizializzaAuth((evento) => {
@@ -386,7 +432,8 @@ if (app) {
       vaiA(PAGINA_ACCESSO, { sostituisci: true });
     } else if (evento === 'PASSWORD_RECOVERY' && rotta.percorso !== '/nuova-password') {
       vaiA('/nuova-password', { sostituisci: true });
-    } else if (evento === 'PASSWORD_RECOVERY') {
+    } else if (evento === 'PASSWORD_RECOVERY' || evento === 'MFA_CHALLENGE_VERIFIED') {
+      // Dopo il codice della 2FA si ridisegna la pagina dell'URL, ora con la sessione aal2
       void mostraPagina();
     }
   });
@@ -394,6 +441,8 @@ if (app) {
     rotte: ROTTE,
     nonTrovata: NON_TROVATA,
     autenticato: () => sessioneCorrente() !== null,
+    serveCodice: () => serveCodice(),
+    secondoPassaggio: SECONDO_PASSAGGIO,
   });
 }
 

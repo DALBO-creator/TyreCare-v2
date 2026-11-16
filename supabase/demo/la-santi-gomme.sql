@@ -10,7 +10,7 @@
 --   2. SVUOTA i dati di prova: clienti, veicoli, gomme, controlli, appuntamenti, servizi, chiusure, import,
 --      richieste su strada e notifiche dei due account (i commenti mandati dall'app restano);
 --   3. trasforma "Officina di prova TyreCare" in "La Santi Gomme" (indirizzo, orari, contatti) e la mette
---      nel piano PILOTA (gratuito);
+--      con l'abbonamento annuale attivo e gratuito per il primo anno (officina pilota);
 --   4. crea il catalogo dei servizi, 12 veicoli in stati diversi con lo storico dei controlli, gli
 --      appuntamenti (passati, di oggi in poi), una richiesta di aiuto su strada, gli import dal
 --      gestionale e le notifiche già lette/da leggere;
@@ -149,9 +149,13 @@ update public.officine set
   stato_affiliazione = 'ATTIVA'
 where id = (select officina from demo_id);
 
-insert into public.abbonamenti (officina_id, piano, stato)
-select officina, 'PILOTA', 'ATTIVO' from demo_id
-on conflict (officina_id) do update set piano = 'PILOTA', stato = 'ATTIVO';
+insert into public.abbonamenti (officina_id, piano, stato, iniziato_il, scade_il, importo_concordato, note_admin)
+select officina, 'ANNUALE', 'ATTIVO', current_date, current_date + 364, 0, 'Officina pilota: primo anno gratuito.'
+from demo_id
+on conflict (officina_id) do update
+set piano = excluded.piano, stato = excluded.stato, iniziato_il = excluded.iniziato_il,
+    scade_il = excluded.scade_il, importo_concordato = excluded.importo_concordato,
+    note_admin = excluded.note_admin;
 
 -- Giorno di apertura: oggi + p giorni, spostato in avanti (p >= 0) o indietro (p < 0) finché la fascia
 -- è aperta. Le ore sono in ora italiana.

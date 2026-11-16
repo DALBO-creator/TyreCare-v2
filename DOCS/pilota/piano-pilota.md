@@ -56,7 +56,7 @@ Si passa alla Fase 7 se, entro la fine della durata:
 - il titolare dice che la userebbe ancora e la consiglierebbe a un collega (chiedilo a voce, alla fine);
 - nessuna violazione dei dati e nessun problema aperto che blocchi il lavoro dell'officina.
 
-Poi: seguire le voci "solo Fase 7" della lista di lancio (Stripe in prova) e invitare 2–3 officine nuove
+Poi: seguire le voci "solo Fase 7" della lista di lancio (abbonamenti registrati a mano) e invitare 2–3 officine nuove
 con gli stessi passi, partendo da [`crea-officina.md`](crea-officina.md).
 
 ## 7. Se qualcosa va storto

@@ -21,6 +21,12 @@ interface OpzioniRouter {
   nonTrovata: Rotta;
   /** Vero se c'è un utente autenticato. */
   autenticato: () => boolean;
+  /**
+   * Vero se l'utente ha la verifica in due passaggi attiva ma in questa sessione non ha ancora scritto
+   * il codice: le pagine `utente` mostrano allora `secondoPassaggio` (il database le rifiuterebbe).
+   */
+  serveCodice?: () => boolean;
+  secondoPassaggio?: Rotta;
 }
 
 let opzioni: OpzioniRouter | undefined;
@@ -107,13 +113,17 @@ export async function mostraPagina(): Promise<void> {
   if (rotta.accesso === 'ospite' && autenticato) {
     return vaiA(destinazioneDopoAccesso(), { sostituisci: true });
   }
+  const daMostrare =
+    rotta.accesso === 'utente' && opzioni.secondoPassaggio && opzioni.serveCodice?.()
+      ? opzioni.secondoPassaggio
+      : rotta;
 
   generazione++;
   const n = generazione;
-  document.title = rotta.titolo ? `${rotta.titolo} · TyreCare` : 'TyreCare';
+  document.title = daMostrare.titolo ? `${daMostrare.titolo} · TyreCare` : 'TyreCare';
   window.scrollTo(0, 0);
   try {
-    await rotta.mostra(contenitore);
+    await daMostrare.mostra(contenitore);
   } catch (err) {
     console.error(err);
     // Solo se nel frattempo non è partita un'altra navigazione

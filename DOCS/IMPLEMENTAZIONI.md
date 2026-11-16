@@ -64,12 +64,17 @@
 | Idea | Priorità | Note |
 |------|----------|------|
 | **PowerSync** per scrittura offline | 🟢 | Vedi PLAN P6. |
-| **Stripe Billing** per abbonamenti | 🔴 | Necessario in fase commerciale. |
+| ~~Stripe Billing per abbonamenti~~ | ❌ | Scartato il 2026-11-13 (PLAN P25): pagamenti fuori dall'app, abbonamento gestito a mano. |
 | **Email/SMS/WhatsApp** come canali reminder | 🔴 | Fallback per iOS senza PWA installata (PLAN P5). |
 | ~~**Playwright** test end-to-end~~ | ✅ | Fatto nella sessione 14 (inviti e prenotazioni, job CI `e2e`). |
 | **Lighthouse CI** in GitHub Actions | 🟠 | |
 | **Sentry** monitoraggio errori | 🟠 | |
-| **Dashboard ADMIN** con metriche (officine attive, prenotazioni, churn) | 🟠 | |
+| ~~**Dashboard ADMIN** con metriche~~ | ✅ | Fatto il 2026-11-12 (`/admin`, branch `claude/pannello-admin`); restano andamenti nel tempo e churn. |
+| **Admin: modifica dei dati di un'officina** (indirizzo, orari, titolare) dal pannello | 🟠 | Oggi l'admin attiva/sospende e cambia il piano; il resto lo fa il titolare o l'editor SQL. |
+| **Admin: blocco immediato** anche del token già emesso | 🟢 | Oggi blocco e «Chiudi le sessioni» valgono al massimo dopo 1 ora: servirebbe un controllo di `banned_until` nelle policy o un `jwt_expiry` più breve. |
+| **2FA per i titolari delle officine** (facoltativa, poi obbligatoria) | 🟠 | Il flusso di `admin-comune.ts` si può riusare nel Profilo. |
+| **Codici di recupero o seconda app per la 2FA dell'admin** | 🟢 | Oggi il recupero è dall'editor SQL. |
+| **Password più robuste e protezione dalle password trapelate** | 🟠 | `password_requirements`, *Leaked password protection* e `secure_password_change` in Supabase (dashboard e `config.toml`). |
 | **Ambiente DOM (happy-dom/jsdom) per i test unitari delle pagine ospite** | 🟢 | Oggi `accedi`, `registrati` e `password-dimenticata` (T092) e la pagina `/r` (T064) si provano solo con l'e2e; un ambiente DOM nei test unitari li renderebbe veloci. Aggiunge una dipendenza (voce in `STRUCT.md`). |
 | **Ricerca veicoli lato server** (paginazione, indice trigram) | 🟢 | Oggi l'elenco si carica tutto e si filtra nel browser: va bene fino a qualche migliaio di veicoli. |
 | **Controllo offline in piazzale** (bozza salvata nel browser, invio alla riconnessione) | 🟠 | Alternativa leggera a PowerSync per il modulo "Nuovo controllo". |

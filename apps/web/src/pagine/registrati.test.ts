@@ -14,7 +14,7 @@ const campoDi = (nome: string) => document.querySelector<HTMLInputElement>(`[nam
 const invia = () => document.querySelector('form')!.requestSubmit();
 const errore = (nome: string) => document.getElementById(`campo-${nome}-errore`)!;
 
-function compila(password = 'password123', accetto = true) {
+function compila(password = 'Password123', accetto = true) {
   campoDi('nome').value = 'Mario';
   campoDi('cognome').value = 'Rossi';
   campoDi('email').value = 'mario@esempio.it';
@@ -30,8 +30,16 @@ beforeEach(() => {
 });
 
 describe('pagina Registrati', () => {
+  it('la casella dichiara l’età minima e porta a privacy e termini; il piede alla cookie policy', () => {
+    const etichetta = document.querySelector('label[for="campo-accetto"]')!;
+    expect(etichetta.textContent).toContain('almeno 14 anni');
+    expect(etichetta.querySelector('a[href="/privacy"]')).not.toBeNull();
+    expect(etichetta.querySelector('a[href="/termini"]')).not.toBeNull();
+    expect(document.querySelector('.tc-piede-legale a[href="/cookie"]')).not.toBeNull();
+  });
+
   it('con i termini non spuntati mostra l’errore e non registra', async () => {
-    compila('password123', false);
+    compila('Password123', false);
     invia();
     await vi.waitFor(() => expect(campoDi('accetto').getAttribute('aria-invalid')).toBe('true'));
     expect(errore('accetto').textContent).toBe("Per creare l'account devi accettare i termini");
@@ -56,7 +64,7 @@ describe('pagina Registrati', () => {
     expect(signUp).toHaveBeenCalledWith(
       expect.objectContaining({
         email: 'mario@esempio.it',
-        password: 'password123',
+        password: 'Password123',
         options: expect.objectContaining({
           data: { nome: 'Mario', cognome: 'Rossi', termini_versione: VERSIONE_TERMINI },
         }),

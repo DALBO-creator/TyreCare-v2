@@ -1,3 +1,4 @@
+import { createHmac } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { expect, type Browser, type Page } from '@playwright/test';
@@ -5,7 +6,7 @@ import { expect, type Browser, type Page } from '@playwright/test';
 // Funzioni comuni ai test: accesso, dati unici, operazioni dell'officina ed email lette da Mailpit.
 
 /** Password degli utenti di `supabase/seed.sql` (e di quelli creati dai test). */
-export const PASSWORD = 'password123';
+export const PASSWORD = 'Password123';
 
 /** Officina del titolare del seed (`titolare@tyrecare.test`). */
 export const OFFICINA = 'Gomme Rossi S.n.c.';
@@ -219,10 +220,45 @@ export function prossimoFeriale(salta = 0): string {
 /** Servizio del seed di Gomme Rossi usato nelle richieste dei test. */
 export const SERVIZIO = 'Cambio gomme stagionale';
 
-/** Un browser separato, già entrato con l'account indicato. */
+/** Email e chiave TOTP dell'admin del seed (`supabase/seed.sql`, fattore della 2FA). */
+export const ADMIN = 'admin@tyrecare.test';
+const SEGRETO_ADMIN = 'JBSWY3DPEHPK3PXPJBSWY3DPEHPK3PXP';
+
+/** Codice TOTP (RFC 6238: SHA-1, 6 cifre, 30 s) di una chiave base32. */
+export function codiceTotp(segreto: string, adesso = Date.now()): string {
+  const alfabeto = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
+  let bit = '';
+  for (const c of segreto.replace(/=+$/, ''))
+    bit += alfabeto.indexOf(c).toString(2).padStart(5, '0');
+  const chiave = Buffer.from(bit.match(/.{8}/g)!.map((b) => parseInt(b, 2)));
+  const contatore = Buffer.alloc(8);
+  contatore.writeBigUInt64BE(BigInt(Math.floor(adesso / 30_000)));
+  const h = createHmac('sha1', chiave).update(contatore).digest();
+  const o = h[h.length - 1]! & 0xf;
+  return String((h.readUInt32BE(o) & 0x7fffffff) % 1_000_000).padStart(6, '0');
+}
+
+/**
+ * Completa la verifica in due passaggi dell'admin. L'admin del seed ha la 2FA attiva: dopo la password
+ * ogni pagina con login mostra prima la richiesta del codice (router, `mostraCodiceAccesso`).
+ */
+export async function verificaAdmin(page: Page): Promise<void> {
+  await page.goto('/admin');
+  const campo = page.getByLabel('Codice di 6 cifre', { exact: true });
+  const pannello = page.getByRole('heading', { name: 'Pannello' });
+  await expect(campo.or(pannello)).toBeVisible();
+  if (await campo.isVisible()) {
+    await campo.fill(codiceTotp(SEGRETO_ADMIN));
+    await page.getByRole('button', { name: 'Continua' }).click();
+    await expect(pannello).toBeVisible();
+  }
+}
+
+/** Un browser separato, già entrato con l'account indicato (l'admin anche con la 2FA). */
 export async function entra(browser: Browser, email: string): Promise<Page> {
   const page = await (await browser.newContext()).newPage();
   await accedi(page, email);
+  if (email === ADMIN) await verificaAdmin(page);
   return page;
 }
 

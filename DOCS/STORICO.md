@@ -4,6 +4,42 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione 2026-11-16 — integrazione dei rami di lancio (branch `claude/integrazione-lancio`)
+
+**Fatto**
+
+- Controllati i rami non uniti: le PR degli agenti ai-org erano già tutte su main (fino alla #98). Restavano
+  `claude/pannello-admin` (2026-11-12) e i rami della sessione notturna del 2026-11-14 (`lancio/legale`,
+  `lancio/sicurezza`, `lancio/admin`, scritti in parte da Fable 5.2 e salvati a metà). `lancio/desktop` era
+  vuoto (il layout da computer era già su main); `chore/db-stop` già assorbito da main.
+- **Pannello admin** unito su main aggiornato; i pgTAP aggiunti dopo il 2026-11-12 simulano ora `aal2`.
+- **Legale:** testi definitivi, cookie policy `/cookie`, `DATI_FORNITORE`/`SITO_URL`, età minima 14 anni.
+  Nei conflitti con `lancio/admin` tenuti i testi definitivi; l'informativa elenca i campi del nuovo
+  abbonamento.
+- **Sicurezza, completata:** permessi minimi (`anon`, funzioni dei trigger, membri dell'officina, endpoint
+  push) e 2FA per tutti (`due_fattori`). Aggiunti ciò che mancava: richiesta del codice nel router per chi
+  ha la 2FA con sessione `aal1`, rotta `/profilo/sicurezza` con link nel Profilo, messaggi d'errore TOTP,
+  `config.toml` allineato alle nuove password (10 caratteri, maiuscola, minuscola, numero), e2e dell'admin
+  sulla nuova schermata, test unitari delle password, `DOCS/SICUREZZA.md` (citato dalla migrazione ma mai
+  scritto).
+- **Admin / abbonamento manuale, completato:** Stripe tolto (funzioni, tabelle, test), abbonamento
+  MENSILE/ANNUALE gestito a mano. Mancava la schermata per l'admin: nuova pagina `/admin/abbonamento?id=…`
+  (rinnovo di un mese/anno, installazione pagata, modulo completo con note interne) e migrazione
+  `20261116000100_admin_leggi_abbonamento.sql` (le note interne non erano leggibili nemmeno dall'admin);
+  unit test, pgTAP `admin-leggi-abbonamento`, e2e `admin-abbonamento`.
+- Documenti: `NOTES.md` (abbonamento manuale, 2FA per tutti), `PLAN.md` (P24 doppio → P25 abbonamento
+  manuale, nuova P26 2FA e password), README legale, `pilota/sicurezza-account.md`,
+  `pilota/pubblicazione.md` (`--include-all`), `PRODUZIONE-MARKETING.md` (valutazione in caso di cessione
+  dal vecchio ramo `claude/valutazione-app`, con nota sui prezzi nuovi).
+- Verifiche: `npm run check` verde, pgTAP tutti verdi su database pulito, e2e (vedi sotto).
+- Merge su main e `db push --include-all` sul cloud (vedi NEXT).
+
+**Non fatto / limiti**
+
+- Le impostazioni del pannello Supabase (password, MFA) e la pulizia di Stripe sul cloud restano a Davide
+  (`DOCS/SICUREZZA.md`).
+- La coda di ai-org può contenere compiti su Stripe ormai superati: da ripulire.
+
 ### Sessione agenti — 2026-11-16 — ciclo 20261116-03 — T277 T290 T292 T272
 
 **Fatto**
@@ -255,6 +291,49 @@
 - T113: la logica di `invia-notifica` passa in `invio.ts` (`gestisciNotifica(richiesta, dipendenze)`),
   `index.ts` resta solo cablaggio; 12 test vitest; contatto VAPID da `VAPID_CONTATTO` (facoltativa);
   nessun cambio di comportamento.
+### Sessione 2026-11-12 — pannello amministratore e sicurezza (branch `claude/pannello-admin`)
+
+**Fatto**
+
+- Richiesta di Davide: un'area amministratore accessibile solo a lui, con strumenti di amministrazione e
+  correzione rapida, e l'app più robusta lato sicurezza. Da ora si lavora in branch.
+- Migrazione `20261112000100_pannello_admin.sql`:
+  - `is_admin()` vale solo con la **verifica in due passaggi** (claim `aal` = `aal2`): con la sola
+    password l'account ADMIN è un utente normale per RLS e funzioni;
+  - il ruolo **ADMIN si dà e si toglie solo dal database** (trigger `proteggi_ruolo_admin`);
+  - **registro delle azioni** `admin_registro` (solo lettura per l'admin, scritto da trigger su profiles,
+    officine, officina_utenti, abbonamenti e dalle funzioni nuove);
+  - funzioni `admin_riepilogo`, `admin_cerca_utenti`, `admin_correggi_profilo`, `admin_cambia_ruolo`,
+    `admin_conferma_email`, `admin_blocca_utente`, `admin_disconnetti_utente`.
+- Pagine nuove: `/admin` (numeri, «Da guardare», strumenti), `/admin/utenti` (ricerca e azioni rapide:
+  correggi dati e ruolo, conferma email, email per nuova password, chiudi sessioni, blocca/sblocca),
+  `/admin/registro`. Ingresso comune `pagine/admin-comune.ts` con la schermata della 2FA (registrazione
+  dell'app con QR la prima volta, poi codice); la usano anche `/admin/officine` e `/admin/commenti`.
+  Link «Pannello amministratore» nel Profilo.
+- Sicurezza del sito: CSP **applicata** (non più Report-Only) con `object-src 'none'` e
+  `upgrade-insecure-requests`, più `Cross-Origin-Opener-Policy: same-origin` (`vercel.json`).
+- TOTP acceso in `supabase/config.toml`; nel seed l'admin di prova ha una 2FA con chiave nota (solo
+  locale); gli e2e calcolano il codice (`codiceTotp` in `e2e/tests/aiuti.ts`).
+- Test: pgTAP `pannello-admin.test.sql` (24) e `aal2` nelle sessioni simulate di tutti gli altri file
+  (44 file, 951 test verdi); unitari `admin-pannello.test.ts` (651 in tutto verdi); e2e
+  `admin-pannello.spec.ts` (2) più i 7 e2e admin esistenti verdi.
+
+**Non fatto / limiti**
+
+- Il blocco e «Chiudi le sessioni» tolgono i refresh token: il token già emesso resta valido fino alla
+  scadenza (al massimo 1 ora, `jwt_expiry`).
+- Nessun codice di recupero della 2FA: se si perde il telefono si toglie il fattore dall'editor SQL (vedi
+  `NOTES.md`).
+- Il typecheck di `e2e` fallisce per `@axe-core/playwright` mancante in locale (non toccato).
+
+**Scoperto dopo il push (stesso giorno)**
+
+- **I deploy di produzione su Vercel fallivano da almeno 4 giorni**: `scripts/dimensioni.mjs` (soglia 70 kB)
+  misurato su una build senza `VITE_SUPABASE_*`, dove supabase-js sparisce dal bundle; con le variabili vere il
+  codice iniziale è ~118 kB. Soglia portata a 137 kB (118,4 + 15%), motivo nel commento dello script. Il sito
+  pubblicato era fermo a una versione vecchia.
+- **Le anteprime Vercel erano nere**: `VITE_SUPABASE_ANON_KEY` è impostata solo per *Production* (la URL anche
+  per *Preview*); senza chiave `getSupabase()` lancia all'avvio. Da aggiungere da Davide nella dashboard.
 
 ### Sessione 2026-11-08 — demo per il titolare di LA SANTI GOMME
 

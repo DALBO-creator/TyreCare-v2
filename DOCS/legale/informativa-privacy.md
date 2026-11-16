@@ -1,39 +1,44 @@
-**BOZZA — da rivedere con un consulente prima dell'uso**
-
 # Informativa sul trattamento dei dati personali — TyreCare
 
-Ultimo aggiornamento: [DA COMPLETARE: data di pubblicazione]
+Ultimo aggiornamento: 14 novembre 2026 (versione 2026-11-14)
 
 Questa informativa spiega quali dati personali tratta TyreCare, perché, per quanto tempo e quali diritti
-hai, ai sensi del Regolamento (UE) 2016/679 ("GDPR") e del D.Lgs. 196/2003. TyreCare è un'applicazione web
-(installabile sul telefono come app) che permette ai gommisti e alle officine affiliate di gestire i
-veicoli e gli pneumatici dei loro clienti, e ai clienti di consultare lo stato dei propri pneumatici e di
-chiedere un appuntamento.
+hai, ai sensi degli articoli 13 e 14 del Regolamento (UE) 2016/679 («GDPR») e del D.Lgs. 196/2003
+(«Codice privacy»). TyreCare è un'applicazione web, installabile sul telefono come app, che permette ai
+gommisti e alle officine affiliate di gestire i veicoli e gli pneumatici dei loro clienti, e ai clienti di
+consultare lo stato dei propri pneumatici e di chiedere un appuntamento.
+
+Cosa viene salvato sul tuo dispositivo è spiegato nella [cookie policy](cookie-policy.md).
 
 ## 1. Chi tratta i tuoi dati
 
-In TyreCare i dati possono avere due "proprietari" diversi, a seconda di chi li inserisce.
+In TyreCare i dati possono avere due titolari diversi, a seconda di chi li inserisce.
 
-**a) Dati del tuo account — titolare: TyreCare.** Per i dati con cui ti registri e usi l'app (email,
-password, nome, telefono, notifiche, iscrizioni alle notifiche push, richieste di appuntamento che invii)
-il titolare del trattamento è:
+**a) Dati del tuo account e del funzionamento della piattaforma — titolare: TyreCare.** Per i dati con
+cui ti registri e usi l'app (email, password, nome, telefono, notifiche, iscrizioni alle notifiche push,
+richieste di appuntamento e di aiuto su strada che invii, commenti, errori dell'app) e per i dati delle
+officine come clienti di TyreCare, il titolare del trattamento è:
 
-- [DA COMPLETARE: nome e cognome o ragione sociale di chi offre TyreCare]
-- [DA COMPLETARE: indirizzo / sede legale]
-- [DA COMPLETARE: partita IVA o codice fiscale]
-- Email per le richieste privacy: [DA COMPLETARE: email per le richieste privacy]
-- [DA COMPLETARE: eventuale responsabile della protezione dei dati (DPO) e suoi contatti, se nominato]
+- **{{fornitore.nome}}**
+- sede: {{fornitore.indirizzo}}
+- partita IVA: {{fornitore.partitaIva}} — {{fornitore.registroImprese}}
+- email per le richieste sui dati personali: {{fornitore.emailPrivacy}}
+- PEC: {{fornitore.pec}}
 
-[DA COMPLETARE: confermare con il consulente la titolarità delle richieste di appuntamento, vedi
-README, domanda 6]
+di seguito «TyreCare» o «noi». Non è stato nominato un responsabile della protezione dei dati (DPO),
+perché TyreCare non rientra nei casi in cui la legge lo richiede (art. 37 GDPR).
 
 **b) Dati caricati dall'officina — titolare: l'officina.** I dati che un'officina inserisce o importa dal
 proprio gestionale (la sua anagrafica clienti, i veicoli, gli pneumatici montati, i controlli e le misure)
 sono dell'officina, che ne è **titolare del trattamento**. TyreCare li tratta per conto dell'officina come
 **responsabile del trattamento** (art. 28 GDPR), sulla base di un accordo scritto con ogni officina, e
 solo per far funzionare il servizio. Per questi dati il tuo riferimento è l'officina: i suoi contatti sono
-nella scheda dell'officina nell'app. Se scrivi a TyreCare per questi dati, inoltreremo la tua richiesta
-all'officina interessata.
+nella scheda dell'officina nell'app, e l'informativa su quei dati te la dà l'officina. Se scrivi a
+TyreCare, giriamo la tua richiesta all'officina interessata e la aiutiamo a rispondere.
+
+**c) Appuntamenti e aiuto su strada.** Quando chiedi un appuntamento o aiuto su strada, TyreCare tratta
+la richiesta come titolare per trasmetterla all'officina e mostrartene lo stato. L'officina che la riceve
+la usa, come titolare autonomo, per organizzare ed eseguire il lavoro.
 
 ## 2. Quali dati trattiamo
 
@@ -45,38 +50,33 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
 - nome, cognome, telefono (facoltativo);
 - ruolo nell'app (cliente, officina, amministratore di TyreCare) e, per chi lavora in officina, il ruolo
   nell'officina (titolare o operatore);
-- date di creazione e di modifica.
+- versione dei termini accettata e data dell'accettazione; date di creazione e di modifica.
 
 **Dati delle officine affiliate**
 
-- ragione sociale, partita IVA, indirizzo, CAP, città, provincia, posizione sulla mappa (latitudine e
-  longitudine), telefono, email, orari di apertura, chiusure straordinarie, catalogo dei servizi con
-  durata e prezzo indicativo, stato dell'affiliazione.
+- ragione sociale, partita IVA, indirizzo, CAP, città, provincia, posizione sulla mappa, telefono, email,
+  orari di apertura, chiusure straordinarie, catalogo dei servizi con durata e prezzo indicativo, stato
+  dell'affiliazione;
+- abbonamento: piano (mensile o annuale), stato (prova, attivo, scaduto, sospeso), fine della prova,
+  date di inizio e di scadenza, pagamento dell'installazione, importo concordato e note interne di chi
+  amministra TyreCare; i dati necessari per la fatturazione.
 
-**Abbonamento delle officine** (titolari)
+**L'app non gestisce pagamenti.** I clienti pagano i lavori direttamente in officina. Le officine pagano
+l'installazione e l'abbonamento a TyreCare fuori dall'app, con fattura. TyreCare non raccoglie e non
+conserva dati di carte di pagamento.
 
-- i **dati della carta** (numero, scadenza, codice) li inserisci nella pagina di pagamento di Stripe e li
-  tratta Stripe: TyreCare non li vede e non li conserva;
-- TyreCare conserva solo il piano scelto (Starter, Pro oppure Officina pilota), lo stato
-  dell'abbonamento (prova, attivo, scaduto, annullato), la fine della prova, l'identificativo del
-  cliente su Stripe e l'identificativo dell'abbonamento su Stripe (tabella `abbonamenti`);
-- per creare il cliente su Stripe, TyreCare gli manda l'email del titolare, la ragione sociale
-  dell'officina e l'identificativo dell'officina nell'app (un codice che l'app assegna a ogni officina);
-- questi dati sono scambiati con Stripe dal [DA COMPLETARE: data di attivazione dei pagamenti online];
-  prima di quella data il pagamento online non c'è e non partono dati verso Stripe.
-
-**Clienti e veicoli dell'officina** (inseriti o importati dall'officina)
+**Clienti e veicoli dell'officina** (inseriti o importati dall'officina, vedi 1.b)
 
 - per ogni cliente: nome, cognome o ragione sociale, telefono, email, codice nel gestionale
   dell'officina, note dell'officina, indicazione del consenso a comunicazioni promozionali registrata
-  dall'officina, collegamento all'account TyreCare del cliente (se presente), origine del dato (inserito
-  nell'app o importato);
+  dall'officina (TyreCare la conserva soltanto: non invia comunicazioni promozionali), collegamento
+  all'account TyreCare del cliente (se presente), origine del dato (inserito nell'app o importato);
 - per ogni veicolo: targa, numero di telaio (facoltativo), marca, modello, anno.
 
 **Pneumatici e controlli** (inseriti dall'officina)
 
-- pneumatici montati: posizione sul veicolo, stagione (estivi, invernali, quattro stagioni), misura,
-  marca, modello, DOT (settimana e anno di produzione), date di montaggio e smontaggio;
+- pneumatici montati: posizione sul veicolo, stagione, misura, marca, modello, DOT (settimana e anno di
+  produzione), date di montaggio e smontaggio;
 - controlli: data, chilometri, note, codice del documento, chi in officina lo ha registrato;
 - misure di ogni pneumatico: battistrada in millimetri, pressione, tipo di usura, danni rilevati.
 
@@ -93,11 +93,13 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
 
 **Aiuto su strada** (richieste di aiuto con la posizione)
 
-- posizione precisa del telefono (latitudine e longitudine), presa dal telefono **solo nel momento in cui
-  invii la richiesta** e solo con il permesso che dai al browser; non viene seguita né registrata in altri
-  momenti;
+- posizione precisa del telefono, presa **solo nel momento in cui invii la richiesta** e solo con il
+  permesso che dai al browser; non viene seguita né registrata in altri momenti;
 - telefono, descrizione del problema (fino a 500 caratteri), targa (facoltativa), data, stato della
-  richiesta (in attesa, accettata, chiusa, annullata, scaduta), officina che l'ha accettata.
+  richiesta, officina che l'ha accettata.
+
+Quando cerchi le officine vicine, la tua posizione viene usata solo sul tuo dispositivo per ordinare
+l'elenco: non viene salvata.
 
 **Notifiche**
 
@@ -110,98 +112,94 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
 - indirizzo dell'iscrizione generato dal tuo browser e le relative chiavi tecniche, necessari per
   recapitare le notifiche sul tuo dispositivo.
 
-**Email di riserva delle notifiche**
+**Email di servizio**
 
-- se l'app non riesce a mandare la notifica push a nessun tuo dispositivo (per esempio perché non hai
-  attivato le notifiche push), TyreCare manda la stessa notifica (titolo, testo
-  e collegamento) per email, all'indirizzo del tuo account, tramite Resend;
-- puoi spegnerle in ogni momento con l'interruttore «Email» della pagina «Notifiche» dell'app;
-- queste email sono spente in tutta l'app e partono dal [DA COMPLETARE: data di attivazione delle email
-  di riserva], quando sarà pronto il dominio di TyreCare per l'invio.
+- le email necessarie all'account (conferma dell'indirizzo, recupero della password) e, quando la
+  funzione è attiva, le **email di riserva delle notifiche**: se l'app non riesce a mandare la notifica
+  push a nessun tuo dispositivo, la stessa notifica (titolo, testo e collegamento) arriva per email
+  all'indirizzo del tuo account. Puoi spegnere le email di riserva in ogni momento con l'interruttore
+  «Email» della pagina «Notifiche».
+
+**Commenti** (se ne invii uno da «Invia un commento su TyreCare»)
+
+- il testo del commento, la pagina da cui lo hai inviato, il tuo account e la data.
 
 **Import dal gestionale** (solo officine)
 
 - registro di ogni importazione: nome del file, numero di righe importate e scartate, clienti e veicoli
   nuovi o aggiornati, chi l'ha eseguita e quando. Il file caricato viene letto nel browser e **non viene
   conservato**: restano solo i dati importati e questo registro;
-- associazioni di colonne salvate dall'officina per i suoi file (nomi delle colonne, chi le ha create).
+- associazioni di colonne salvate dall'officina per i suoi file.
 
 **Errori dell'app** (solo se hai un account)
 
-- quando l'app incontra un errore non gestito o una pagina che non si carica (non gli errori di rete né
-  quelli dei moduli, come una password sbagliata), il tuo browser ne manda un resoconto a TyreCare:
-  l'indirizzo della pagina in cui eri, senza la parte dopo `?` o `#` (dove stanno i codici dei link di
-  invito e dei report), il messaggio dell'errore (fino a 500 caratteri), il dettaglio tecnico (fino a 2000
-  caratteri), la versione dell'app, il browser che usi (fino a 300 caratteri), il tuo account e la data;
-- l'app ne manda al massimo 5 per ogni caricamento e il database ne accetta al massimo 30 al giorno per
-  utente; non si usa nessun servizio esterno di raccolta degli errori;
-- li legge solo l'amministratore di TyreCare, dalla pagina di amministrazione degli errori.
+- quando l'app incontra un errore imprevisto o una pagina che non si carica, il tuo browser ne manda un
+  resoconto a TyreCare: l'indirizzo della pagina in cui eri, senza la parte dopo `?` o `#` (dove stanno i
+  codici dei link di invito e dei report), il messaggio dell'errore, il dettaglio tecnico, la versione
+  dell'app, il browser che usi, il tuo account e la data;
+- li legge solo l'amministratore di TyreCare; non si usa nessun servizio esterno di raccolta degli errori.
 
 **Dati tecnici**
 
-- i fornitori che ospitano l'app e il database (vedi §5) registrano dati tecnici delle connessioni, come
-  l'indirizzo IP e il tipo di browser, per far funzionare il servizio e per sicurezza.
-  [DA COMPLETARE: verificare con il consulente e nelle impostazioni dei fornitori cosa registrano e per
-  quanto]
+- i fornitori che ospitano l'app e il database (vedi sezione 5) registrano i dati tecnici delle
+  connessioni, come l'indirizzo IP, il tipo di browser e l'orario delle richieste, per far funzionare il
+  servizio e per sicurezza.
 
-TyreCare **non** chiede dati particolari (ad esempio sulla salute) e usa la posizione del tuo
-dispositivo **solo** se invii una richiesta di aiuto su strada (vedi sopra).
+TyreCare **non** chiede dati particolari (ad esempio sulla salute), **non** usa strumenti di statistica o
+di profilazione e **non** prende decisioni automatizzate che producono effetti giuridici su di te
+(art. 22 GDPR). I colori e le stime sullo stato degli pneumatici sono calcoli indicativi sulle misure
+inserite dall'officina.
 
 ## 3. Perché trattiamo i dati e su quale base giuridica
 
 | Finalità | Dati | Base giuridica |
 |----------|------|----------------|
-| Creare e gestire il tuo account, farti accedere | Account e profilo | Esecuzione del contratto (art. 6.1.b): i termini di servizio |
-| Mostrare al cliente i suoi veicoli, pneumatici, controlli e report | Veicoli, pneumatici, controlli | Esecuzione del contratto con il cliente; per l'officina, le istruzioni dell'officina titolare |
-| Gestire le richieste di appuntamento tra cliente e officina | Prenotazioni | Esecuzione del contratto (art. 6.1.b) |
-| Inoltrare la tua richiesta di aiuto su strada alle officine vicine e metterti in contatto con quella che accetta | Aiuto su strada | Richiesta dell'interessato, esecuzione di misure precontrattuali (art. 6.1.b); la posizione è presa solo con il permesso del browser |
-| Avvisarti nell'app e con le push dei cambi di stato delle prenotazioni | Notifiche, iscrizioni push | Esecuzione del contratto (art. 6.1.b); le push solo se le attivi nel browser |
-| Promemoria del giorno prima, esito del controllo, cambio stagionale degli pneumatici | Notifiche, iscrizioni push, veicoli e pneumatici | [DA COMPLETARE: esecuzione del contratto, legittimo interesse o consenso — vedi README, domanda 1] |
-| Gestione dell'officina: clienti, veicoli, controlli, import dal gestionale | Dati caricati dall'officina | Trattamento per conto dell'officina (art. 28); la base giuridica è quella scelta dall'officina titolare |
-| Correggere i malfunzionamenti dell'app | Errori dell'app, account | [DA COMPLETARE: base giuridica, proposta legittimo interesse (art. 6.1.f) — vedi README, domanda 17] |
-| Sicurezza del servizio, prevenzione di abusi, difesa in giudizio | Dati tecnici, account | Legittimo interesse (art. 6.1.f) |
-| Gestire l'abbonamento dell'officina e il suo pagamento con carta tramite Stripe | Dati delle officine, abbonamento | Esecuzione del contratto (art. 6.1.b) |
-| Obblighi di legge (es. fiscali, per gli abbonamenti delle officine) | Dati delle officine | Obbligo legale (art. 6.1.c) |
+| Creare e gestire il tuo account, farti accedere, mandarti le email necessarie all'account | Account e profilo | Esecuzione del contratto (art. 6.1.b GDPR): i termini di servizio |
+| Mostrare al cliente i suoi veicoli, pneumatici, controlli e report | Veicoli, pneumatici, controlli | Esecuzione del contratto con il cliente (art. 6.1.b); per i dati caricati dall'officina, le istruzioni dell'officina titolare |
+| Gestire le richieste di appuntamento tra cliente e officina | Prenotazioni | Esecuzione del contratto e di misure precontrattuali chieste da te (art. 6.1.b) |
+| Inoltrare la tua richiesta di aiuto su strada alle officine vicine e metterti in contatto con quella che accetta | Aiuto su strada | Esecuzione di misure chieste da te (art. 6.1.b); la posizione è presa solo con il permesso del browser |
+| Avvisarti nell'app dei cambi di stato delle prenotazioni e ricordarti l'appuntamento del giorno dopo | Notifiche | Esecuzione del contratto (art. 6.1.b) |
+| Avvisarti dell'esito di un controllo e del cambio stagionale degli pneumatici (avvisi di servizio sulla manutenzione dei tuoi veicoli, senza offerte commerciali) | Notifiche, veicoli e pneumatici | Esecuzione del contratto (art. 6.1.b): sono la funzione principale dell'app; in ogni caso legittimo interesse (art. 6.1.f) alla sicurezza di chi guida, a cui puoi opporti |
+| Recapitare le notifiche sul tuo dispositivo (push) | Iscrizioni push | Il tuo consenso (art. 6.1.a), che dai attivando le notifiche e revochi disattivandole |
+| Mandarti per email le notifiche che non arrivano come push | Email dell'account, notifiche | Legittimo interesse (art. 6.1.f) a farti arrivare gli avvisi di servizio; puoi opporti con l'interruttore «Email» |
+| Leggere i commenti e migliorare l'app | Commenti | Legittimo interesse (art. 6.1.f) |
+| Correggere i malfunzionamenti dell'app | Errori dell'app | Legittimo interesse (art. 6.1.f) a un servizio funzionante e sicuro |
+| Sicurezza del servizio, prevenzione di abusi, difesa di un diritto | Dati tecnici, account | Legittimo interesse (art. 6.1.f) |
+| Gestione dell'officina: clienti, veicoli, controlli, import dal gestionale | Dati caricati dall'officina | Trattamento per conto dell'officina (art. 28): la base giuridica è quella dell'officina titolare |
+| Gestire l'affiliazione e l'abbonamento dell'officina | Dati delle officine | Esecuzione del contratto (art. 6.1.b) |
+| Fatture e obblighi contabili e fiscali | Dati delle officine | Obbligo di legge (art. 6.1.c) |
+| Tenere la prova dell'accettazione dei termini | Versione e data di accettazione | Legittimo interesse (art. 6.1.f) e responsabilizzazione (art. 5.2) |
 
-TyreCare **non** invia comunicazioni promozionali e **non** profila gli utenti. Se in futuro lo farà, ti
-chiederà prima un consenso separato e facoltativo.
+TyreCare **non invia comunicazioni promozionali** e **non profila** gli utenti. Se in futuro vorremo
+mandarti comunicazioni promozionali, ti chiederemo prima un consenso separato e facoltativo.
 
-Fornire email e password è necessario per creare l'account; senza non è possibile usare l'app. Il
-telefono è facoltativo nel profilo, ma è richiesto per inviare una richiesta di appuntamento, perché
-l'officina possa contattarti.
+Fornire email e password è necessario per creare l'account: senza non è possibile usare l'app. Il
+telefono è facoltativo nel profilo, ma è richiesto per inviare una richiesta di appuntamento o di aiuto su
+strada, perché l'officina possa contattarti.
 
 ## 4. Per quanto tempo conserviamo i dati
 
-L'app cancella da sola **le notifiche, le richieste di aiuto su strada e gli errori dell'app** (vedi
-sotto): gli altri dati restano finché non vengono eliminati dall'officina, dall'interessato o alla chiusura
-dell'account. I tempi previsti sono:
+| Dati | Per quanto tempo |
+|------|------------------|
+| Account e profilo | Finché l'account esiste. Se lo elimini dal Profilo la cancellazione è immediata; se lo chiedi per email, entro 30 giorni dalla richiesta |
+| Notifiche nell'app | Quelle lette vengono cancellate dopo 180 giorni; tutte dopo 365 giorni |
+| Prenotazioni | 24 mesi dopo il giorno dell'appuntamento, in qualsiasi stato; con loro spariscono le notifiche collegate |
+| Richieste di aiuto su strada | Una richiesta non accettata scade dopo 2 ore; una accettata si chiude dopo 24 ore. Le richieste chiuse, annullate o scadute (con posizione, telefono, descrizione e targa) vengono cancellate dopo 90 giorni |
+| Errori dell'app | 30 giorni |
+| Commenti | Finché l'account esiste, o prima se ci chiedi di cancellarli |
+| Iscrizioni push | Finché non disattivi le notifiche push dall'app o dal browser |
+| Dati caricati dall'officina (clienti, veicoli, pneumatici, controlli, inviti, registro import) | Per il tempo deciso dall'officina titolare. Quando l'officina smette di usare TyreCare ha 30 giorni per scaricarne una copia; poi vengono cancellati entro 60 giorni dalla fine del contratto |
+| Dati delle officine per contratto e fatture | Per la durata del contratto e poi 10 anni (art. 2220 del codice civile) |
+| Copie di sicurezza del database | I dati cancellati escono anche dalle copie di sicurezza entro 30 giorni |
+| Dati tecnici delle connessioni | Per il tempo stabilito dai fornitori, di norma non oltre 90 giorni |
 
-- **account e profilo**: finché l'account è attivo; dopo la richiesta di cancellazione
-  [DA COMPLETARE: entro quanti giorni];
-- **notifiche nell'app**: un job notturno cancella quelle lette da più di 180 giorni e tutte quelle più
-  vecchie di un anno (365 giorni) [DA COMPLETARE: confermare i tempi con il consulente];
-- **richieste di aiuto su strada**: una richiesta non accettata scade dopo 2 ore e una accettata si chiude
-  da sola dopo 24 ore se l'officina non la chiude; le richieste chiuse, annullate o scadute (con posizione,
-  telefono, descrizione e targa) vengono cancellate dopo **90 giorni**; se elimini il tuo account, le tue
-  richieste di aiuto su strada vengono cancellate subito con l'account;
-- **errori dell'app**: un job notturno li cancella dopo **30 giorni**; se elimini il tuo account, i tuoi
-  errori vengono cancellati subito con l'account;
-- **prenotazioni**: un job notturno le cancella automaticamente 24 mesi dopo il giorno dell'appuntamento,
-  in qualsiasi stato; con loro spariscono le notifiche collegate;
-- **iscrizioni push**: finché non disattivi le notifiche push nell'app o dal browser (in quel caso
-  l'iscrizione viene eliminata);
-- **dati caricati dall'officina** (clienti, veicoli, pneumatici, controlli, inviti, registro import): per
-  il tempo deciso dall'officina titolare e, quando l'officina smette di usare TyreCare,
-  [DA COMPLETARE: restituzione e cancellazione entro … — vedi README, domanda 2];
-- **dati delle officine per gli abbonamenti** (anche piano, stato e identificativi Stripe): per il tempo
-  previsto dalla legge (es. 10 anni per i documenti fiscali) [DA COMPLETARE: confermare];
-- **dati tecnici dei fornitori**: per i tempi indicati dai fornitori [DA COMPLETARE].
+Le cancellazioni a scadenza le fa l'app da sola, ogni notte.
 
-Se elimini il tuo account vengono eliminati anche il tuo profilo, le tue prenotazioni (anche quelle
-passate), le tue notifiche, le tue iscrizioni push, i tuoi commenti, le tue richieste di aiuto su strada e i
-tuoi errori dell'app. Le schede cliente, i veicoli, i controlli, gli inviti e i registri di importazione
-caricati da un'officina restano all'officina (titolare), che li gestisce secondo le sue regole: il
-collegamento con il tuo account viene tolto.
+Se elimini il tuo account vengono eliminati subito anche il tuo profilo, le tue prenotazioni (anche quelle
+passate), le tue notifiche, le tue iscrizioni push, i tuoi commenti, le tue richieste di aiuto su strada e
+i tuoi errori dell'app. Le schede cliente, i veicoli, i controlli, gli inviti e i registri di importazione
+caricati da un'officina restano all'officina (titolare), che li gestisce secondo le sue regole: viene
+tolto solo il collegamento con il tuo account.
 
 ## 5. A chi comunichiamo i dati
 
@@ -211,106 +209,96 @@ I dati non vengono venduti né ceduti a terzi per scopi propri. Possono vederli:
   prenotazioni **di quell'officina**, mai quelli di altre officine;
 - per l'**aiuto su strada**: prima che un'officina accetti, le officine vicine che offrono il servizio
   vedono solo la distanza, la descrizione e la targa; la posizione esatta e il telefono li vede solo
-  l'officina che accetta [DA COMPLETARE: ruolo dell'officina che accetta — da confermare con il
-  consulente, come nel registro A6];
+  l'officina che accetta;
 - **tu**, se sei cliente: vedi i veicoli collegati al tuo account e le tue prenotazioni, non i dati di
   altri clienti;
 - il **personale autorizzato di TyreCare**: l'account amministratore dell'app non vede i dati dei clienti
-  delle officine; vi accede solo chi gestisce il sistema, quando serve per assistenza, sicurezza o
-  manutenzione [DA COMPLETARE: definire con il consulente, vedi README, domanda 9].
+  delle officine; vi accede solo chi gestisce il sistema, vincolato alla riservatezza, quando serve per
+  assistenza, sicurezza o manutenzione.
 
-TyreCare si serve di questi **fornitori**, nominati responsabili del trattamento (per Stripe il ruolo è
-ancora da definire, vedi la tabella):
+TyreCare si serve di questi **fornitori**, nominati responsabili del trattamento con un accordo scritto
+(art. 28 GDPR):
 
-| Fornitore | Cosa fa | Dove |
-|-----------|---------|------|
-| Supabase Inc. | Database, autenticazione, invio delle notifiche push (funzioni sul server) | Server nell'Unione europea (regione eu-west-1, Irlanda) |
-| Vercel Inc. | Ospita l'applicazione web (i file dell'app) | [DA COMPLETARE: regione; società con sede negli USA] |
-| Resend (Plus Five Five, Inc.) | Invio delle email automatiche (es. conferma dell'indirizzo email, recupero della password) e delle email di riserva delle notifiche (quando attive) | [DA COMPLETARE: regione; società con sede negli USA] |
-| Stripe | Pagamento degli abbonamenti delle officine con carta (dalla data di attivazione del pagamento online) | [DA COMPLETARE: ruolo di Stripe e sede, da confermare con il consulente — README, domanda 16] |
-| Servizi push del browser (Google per Chrome e Android, Apple per Safari e iPhone, Mozilla per Firefox, o altri a seconda del browser) | Recapitano le notifiche push sul tuo dispositivo; il servizio lo sceglie il tuo browser | Possono trovarsi fuori dall'UE |
+| Fornitore | Cosa fa | Dove sono i dati | Garanzie per i trasferimenti fuori dall'UE |
+|-----------|---------|------------------|--------------------------------------------|
+| Supabase, Inc. (USA) | Database, autenticazione, funzioni sul server che inviano le notifiche | Server nell'Unione europea (regione eu-west-1, Irlanda) | I dati restano nell'UE; per gli accessi di assistenza dagli USA valgono le clausole contrattuali tipo della Commissione europea, incluse nell'accordo con il fornitore |
+| Vercel, Inc. (USA) | Ospita i file dell'applicazione web; non conserva i dati del database, che passano direttamente dal tuo browser a Supabase | Rete mondiale di server: i file dell'app ti arrivano dal server più vicino; riceve i dati tecnici della connessione | Certificazione al Data Privacy Framework UE-USA (decisione di adeguatezza della Commissione del 10 luglio 2023) e clausole contrattuali tipo |
+| Resend (Plus Five Five, Inc., USA) | Invia le email automatiche: conferma dell'indirizzo, recupero della password, email di riserva delle notifiche | Stati Uniti e Unione europea | Certificazione al Data Privacy Framework UE-USA e clausole contrattuali tipo |
 
-[DA COMPLETARE: verificare con il consulente la denominazione esatta dei fornitori e le garanzie per i
-trasferimenti fuori dall'UE (clausole contrattuali tipo, Data Privacy Framework) — vedi README, domande 4
-e 5]
+Se attivi le notifiche push, il recapito passa dal **servizio push del tuo browser** (Google per Chrome e
+Android, Apple per Safari e iPhone, Mozilla per Firefox), che può trovarsi fuori dall'Unione europea. Il
+servizio lo sceglie il tuo browser, non TyreCare; riceve solo l'indirizzo tecnico dell'iscrizione e il
+messaggio **cifrato**, che non può leggere. Questi fornitori agiscono come titolari autonomi secondo le
+proprie informative.
 
 Gli inviti che un'officina manda ai suoi clienti partono dal programma di posta dell'officina, non da
-TyreCare.
+TyreCare. I pulsanti che aprono la mappa o WhatsApp portano a servizi esterni solo se li tocchi.
 
-I dati possono inoltre essere comunicati alle autorità quando la legge lo richiede.
+I dati possono inoltre essere comunicati alle autorità quando la legge lo richiede, e al commercialista
+di TyreCare per i soli dati di fatturazione delle officine.
 
 ## 6. I tuoi diritti e come esercitarli
 
-Hai diritto di:
+Hai diritto di (artt. 15–22 GDPR):
 
 - **accedere** ai tuoi dati e averne copia;
 - **correggerli** (nome, cognome e telefono li puoi modificare anche dal tuo profilo nell'app);
-- **cancellarli** (diritto all'oblio), nei limiti di legge;
+- **cancellarli**, nei limiti di legge;
 - **limitarne** il trattamento;
 - **riceverli** in un formato strutturato e leggibile da computer (portabilità);
-- **opporti** ai trattamenti basati sul legittimo interesse;
+- **opporti** in qualsiasi momento ai trattamenti basati sul legittimo interesse;
 - **revocare il consenso**, quando il trattamento si basa sul consenso, senza conseguenze sui trattamenti
-  già fatti (ad esempio: puoi disattivare le notifiche push dall'app o dalle impostazioni del browser).
+  già fatti (ad esempio: disattivi le notifiche push dall'app o dalle impostazioni del browser).
 
-**Come fare:** dal tuo **Profilo** nell'app.
+**Come fare dall'app:** nel tuo **Profilo**.
 
-- **«Scarica i tuoi dati»**: un file (JSON) con il tuo profilo, la tua email, le tue schede nelle officine,
-  il garage, le prenotazioni, le richieste di aiuto su strada, le notifiche, i commenti, le officine in cui
-  lavori e il numero di dispositivi con le notifiche push attive. **Non** contiene gli inviti dell'officina
-  che hai usato né i link dei report che hai creato: sono registri dell'officina, non dati che hai fornito
-  tu [DA COMPLETARE: confermare con il consulente]. Non contiene nemmeno i dati tecnici delle iscrizioni
-  push né gli errori dell'app (sono resoconti tecnici letti solo dall'amministratore, non dati che hai
-  fornito tu) [DA COMPLETARE: confermare con il consulente — README, domanda 17].
+- **«Scarica i tuoi dati»**: un file (JSON) con il tuo profilo, la tua email, le tue schede nelle
+  officine, il garage, le prenotazioni, le richieste di aiuto su strada, le notifiche, i commenti, le
+  officine in cui lavori e il numero di dispositivi con le notifiche push attive. Non contiene gli inviti
+  dell'officina e i link dei report (sono registri dell'officina), né i dati tecnici delle iscrizioni push
+  e gli errori dell'app (sono resoconti tecnici): puoi chiederceli per email.
+- **«Modifica i tuoi dati»** e **«Cambia password»**.
 - **«Elimina il tuo account»**: cancella l'account, con quanto indicato nella sezione 4. Non si può
-  eliminare se sei un amministratore, se sei titolare di un'officina, se hai prenotazioni in corso
-  (richieste, proposte o confermate) o se hai una richiesta di aiuto su strada in corso (aperta, o
-  accettata da meno di 24 ore): prima vanno concluse o annullate.
+  eliminare se sei un amministratore, se sei titolare di un'officina, se hai prenotazioni in corso o una
+  richiesta di aiuto su strada in corso: prima vanno concluse o annullate. I titolari di un'officina
+  scrivono a TyreCare per chiudere l'officina.
 
-Per ciò che non puoi fare dall'app, o se non riesci ad accedere, scrivi a
-[DA COMPLETARE: email per le richieste privacy] indicando l'email del tuo account. Rispondiamo entro un
-mese (art. 12 GDPR). Potremmo chiederti di confermare la richiesta dall'email del tuo account per
-verificare che sia tu.
+**Per email:** per ciò che non puoi fare dall'app, o se non riesci ad accedere, scrivi a
+{{fornitore.emailPrivacy}} indicando l'email del tuo account. Rispondiamo entro un mese (art. 12 GDPR);
+nei casi complessi il termine può essere prorogato di altri due mesi, e te lo diciamo. Potremmo chiederti
+di confermare la richiesta dall'email del tuo account per verificare che sia tu. L'esercizio dei diritti
+è gratuito.
 
 Per i dati caricati da un'officina (sezione 1.b) rivolgiti all'officina; se scrivi a noi, giriamo la
 richiesta all'officina e la aiutiamo a rispondere.
 
-Hai anche il diritto di presentare reclamo al **Garante per la protezione dei dati personali**
-(www.garanteprivacy.it).
+Hai anche il diritto di presentare **reclamo al Garante per la protezione dei dati personali**
+([www.garanteprivacy.it](https://www.garanteprivacy.it)) o di rivolgerti al giudice.
 
 ## 7. Cookie e archiviazione locale
 
-TyreCare **non usa cookie** e **non usa strumenti di analisi, di pubblicità o di profilazione**, né propri
-né di terzi. Non carica script o caratteri da siti esterni.
-
-Per funzionare l'app salva alcune informazioni **solo sul tuo dispositivo**, nella memoria del browser:
-
-| Cosa | Dove | Perché | Quanto dura |
-|------|------|--------|-------------|
-| Sessione di accesso (codici che ti tengono collegato) | `localStorage` del browser | Per non doverti chiedere la password a ogni apertura | Finché non esci dall'account o cancelli i dati del sito |
-| Officina scelta (solo per chi lavora in più officine) | `localStorage` del browser | Per riaprire l'app sull'ultima officina usata | Finché non cancelli i dati del sito |
-| File dell'app (pagine, stili, icone, caratteri) | Cache del **service worker** (la parte che rende TyreCare installabile come app) | Per aprire l'app più in fretta e anche con poca rete | Finché l'app è installata o non cancelli i dati del sito; si aggiorna con le nuove versioni |
-| Iscrizione alle notifiche push | Browser e servizio push del browser | Per ricevere le notifiche push, solo se le attivi | Finché non le disattivi |
-
-Sono strumenti **tecnici, necessari** per il servizio che hai chiesto: per questo non serve il tuo
-consenso (art. 122 Codice privacy) [DA COMPLETARE: confermare con il consulente, vedi README, domanda 11].
-Il service worker conserva solo i file dell'app, non i tuoi dati: quelli si leggono dal server ogni volta.
-
-Puoi cancellare questi dati in qualsiasi momento dalle impostazioni del browser ("Cancella dati dei
-siti"); dopo dovrai accedere di nuovo.
+TyreCare **non usa cookie di profilazione né strumenti di statistica o di pubblicità**, e non carica
+programmi o caratteri da altri siti. Salva sul tuo dispositivo solo ciò che serve a far funzionare l'app
+(sessione di accesso, officina scelta, file dell'app): sono strumenti tecnici, per i quali la legge non
+chiede il consenso (art. 122 del Codice privacy). L'elenco completo è nella
+[cookie policy](cookie-policy.md).
 
 ## 8. Sicurezza
 
-I dati sono protetti con connessioni cifrate (HTTPS) e con regole di accesso nel database che permettono a
-ogni utente di vedere solo ciò che gli spetta (ad esempio, un'officina non vede i clienti di un'altra).
-Nessun sistema è sicuro al 100%: in caso di violazione dei dati seguiremo gli obblighi di notifica previsti
-dal GDPR.
+I dati sono protetti con connessioni cifrate (HTTPS), con password conservate solo in forma cifrata e con
+regole di accesso nel database che permettono a ogni utente di vedere solo ciò che gli spetta (ad esempio,
+un'officina non vede i clienti di un'altra). Nessun sistema è sicuro al 100%: in caso di violazione dei
+dati seguiremo gli obblighi di notifica al Garante e, quando serve, agli interessati (artt. 33 e 34
+GDPR).
 
 ## 9. Minori
 
-[DA COMPLETARE: età minima per creare un account — vedi README, domanda 3]. L'app non chiede la data di
-nascita.
+Per creare un account devi avere **almeno 14 anni** (art. 2-quinquies del Codice privacy), e lo dichiari
+alla registrazione. L'app non chiede la data di nascita. Se veniamo a sapere che un account è stato
+creato da chi ha meno di 14 anni, lo eliminiamo. Un genitore che pensa che il figlio minore di 14 anni
+abbia creato un account può scriverci a {{fornitore.emailPrivacy}}.
 
 ## 10. Modifiche a questa informativa
 
-Se l'informativa cambia in modo importante ti avviseremo nell'app o via email. La data dell'ultimo
-aggiornamento è in cima alla pagina.
+Se l'informativa cambia in modo importante te lo diciamo nell'app: al primo accesso ti chiediamo di
+leggere la versione nuova. La data dell'ultimo aggiornamento è in cima alla pagina.

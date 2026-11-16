@@ -1,49 +1,87 @@
 import { describe, expect, it, vi } from 'vitest';
-import { codiceDaErrore, messaggioPagamento } from './abbonamento';
+import { descrizionePiano, riassuntoAbbonamento, testoRichiesta } from './abbonamento';
 
 vi.mock('./supabase', () => ({ getSupabase: () => ({}) }));
 
-const GENERICO = 'Non riusciamo ad aprire il pagamento. Riprova tra poco.';
+const formatta = (iso: string) => `<${iso}>`;
+const base = { prova_fino_al: '2026-12-13', scade_il: null };
 
-describe('messaggioPagamento', () => {
-  it.each([
-    [
-      'PAGAMENTI_NON_ATTIVI',
-      'Il pagamento online non è ancora attivo: per ora scrivici con «Invia un commento».',
-    ],
-    ['SOLO_TITOLARE', "Solo il titolare può attivare l'abbonamento."],
-    ['OFFICINA_NON_ATTIVA', "Potrai attivare l'abbonamento quando la tua officina sarà attiva."],
-    ['PILOTA', "La tua officina è nel pilota: l'abbonamento è gratuito."],
-    ['GIA_ATTIVO', "L'abbonamento è già attivo."],
-    [
-      'ABBONAMENTO_DA_SISTEMARE',
-      "L'ultimo pagamento non è riuscito: aggiorna la carta con «Gestisci il pagamento».",
-    ],
-    ['NESSUN_PAGAMENTO', 'Non risulta ancora nessun pagamento.'],
-    [
-      'STRIPE',
-      'Il servizio di pagamento non è disponibile in questo momento: riprova più tardi o scrivici con «Invia un commento».',
-    ],
-  ])('%s', (codice, testo) => {
-    expect(messaggioPagamento(codice)).toBe(testo);
+describe('riassuntoAbbonamento', () => {
+  it('prova con molti giorni: tutto a posto', () => {
+    const r = riassuntoAbbonamento({ ...base, stato: 'PROVA' }, '2026-11-14', formatta);
+    expect(r.titolo).toBe('Prova gratuita: mancano 30 giorni');
+    expect(r.dettaglio).toContain('<2026-12-13>');
+    expect(r.tono).toBe('ok');
   });
-  it('codice sconosciuto, assente o di sistema → messaggio generico', () => {
-    expect(messaggioPagamento('BOH')).toBe(GENERICO);
-    expect(messaggioPagamento(null)).toBe(GENERICO);
-    expect(messaggioPagamento('toString')).toBe(GENERICO);
+
+  it('prova all’ultimo giorno: 1 giorno, attenzione', () => {
+    const r = riassuntoAbbonamento({ ...base, stato: 'PROVA' }, '2026-12-13', formatta);
+    expect(r.titolo).toBe('Prova gratuita: manca 1 giorno');
+    expect(r.tono).toBe('attenzione');
+  });
+
+  it('prova finita ma non ancora segnata scaduta dal job notturno', () => {
+    const r = riassuntoAbbonamento({ ...base, stato: 'PROVA' }, '2026-12-14', formatta);
+    expect(r.titolo).toBe('La prova gratuita è finita');
+    expect(r.tono).toBe('azione');
+  });
+
+  it('attivo e lontano dalla scadenza', () => {
+    const r = riassuntoAbbonamento(
+      { ...base, stato: 'ATTIVO', scade_il: '2027-11-13' },
+      '2026-11-14',
+      formatta,
+    );
+    expect(r).toEqual({
+      titolo: 'Abbonamento attivo fino al <2027-11-13>',
+      dettaglio: 'Non devi fare nulla.',
+      tono: 'ok',
+    });
+  });
+
+  it('attivo ma in scadenza entro 30 giorni', () => {
+    const r = riassuntoAbbonamento(
+      { ...base, stato: 'ATTIVO', scade_il: '2026-11-20' },
+      '2026-11-14',
+      formatta,
+    );
+    expect(r.dettaglio).toBe('Alla scadenza mancano 7 giorni: scrivici per rinnovare.');
+    expect(r.tono).toBe('attenzione');
+  });
+
+  it('scaduto dopo un abbonamento pagato o dopo la sola prova', () => {
+    expect(
+      riassuntoAbbonamento(
+        { ...base, stato: 'SCADUTO', scade_il: '2026-11-01' },
+        '2026-11-14',
+        formatta,
+      ).titolo,
+    ).toBe('Abbonamento scaduto il <2026-11-01>');
+    expect(riassuntoAbbonamento({ ...base, stato: 'SCADUTO' }, '2026-12-20', formatta).titolo).toBe(
+      'La prova gratuita è finita',
+    );
+  });
+
+  it('sospeso', () => {
+    const r = riassuntoAbbonamento({ ...base, stato: 'SOSPESO' }, '2026-11-14', formatta);
+    expect(r.titolo).toBe('Abbonamento sospeso');
+    expect(r.tono).toBe('azione');
   });
 });
 
-describe('codiceDaErrore', () => {
-  const conCorpo = (corpo: string) => ({ context: new Response(corpo, { status: 409 }) });
-  it('legge il codice dal corpo JSON di error.context', async () => {
-    expect(await codiceDaErrore(conCorpo('{"errore":"GIA_ATTIVO"}'))).toBe('GIA_ATTIVO');
+describe('descrizionePiano', () => {
+  it('listino e importo concordato', () => {
+    expect(descrizionePiano({ piano: 'MENSILE', importo_concordato: null })).toBe(
+      'Mensile · 100 €/mese',
+    );
+    expect(descrizionePiano({ piano: 'ANNUALE', importo_concordato: 900 })).toBe(
+      'Annuale · 900 €/anno',
+    );
   });
-  it('corpo non JSON, senza codice o senza context → null', async () => {
-    expect(await codiceDaErrore(conCorpo('<html>'))).toBeNull();
-    expect(await codiceDaErrore(conCorpo('{"altro":1}'))).toBeNull();
-    expect(await codiceDaErrore(conCorpo('{"errore":5}'))).toBeNull();
-    expect(await codiceDaErrore(new Error('rete'))).toBeNull();
-    expect(await codiceDaErrore(null)).toBeNull();
+});
+
+describe('testoRichiesta', () => {
+  it('nomina l’officina', () => {
+    expect(testoRichiesta('Gomme Rossi')).toContain('Gomme Rossi');
   });
 });

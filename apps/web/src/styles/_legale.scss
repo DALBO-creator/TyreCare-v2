@@ -1,0 +1,25 @@
+// Link alle pagine legali e al sito in fondo alle pagine pubbliche (`ui/piede-legale.ts`).
+.tc-piede-legale {
+  display: inline-block;
+  margin-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+.tc-legale__piede {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(255 255 255 / 12%);
+}
+
+// «Scopri prezzi e funzioni sul sito» nella pagina «Per le officine»
+.tc-officine__sito {
+  margin: 0.75rem 0 0;
+  text-align: center;
+
+  svg {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.125em;
+  }
+}

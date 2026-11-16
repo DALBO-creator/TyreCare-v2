@@ -133,21 +133,19 @@ README, "Da fare prima del lancio"]
 
 ## A7. Abbonamenti delle officine
 
-Il pagamento online con Stripe vale dal [DA COMPLETARE: data di attivazione dei pagamenti online]
-(decisione di prodotto del 2026-11-01): prima di quella data non parte nessun dato verso Stripe; la scheda
-descrive il trattamento dall'attivazione.
+Nell'app non c'è nessun pagamento (decisione del titolare del 2026-11-13): installazione e abbonamento
+si pagano con bonifico su fattura e l'amministratore di TyreCare registra a mano l'abbonamento.
 
 | Voce | Contenuto |
 |------|-----------|
-| Finalità | Gestire la prova, il piano e il pagamento mensile con carta dell'abbonamento dell'officina; adempiere agli obblighi fiscali |
+| Finalità | Gestire la prova, il piano e le scadenze dell'abbonamento dell'officina; registrare i pagamenti ricevuti fuori dall'app; adempiere agli obblighi fiscali |
 | Base giuridica | Esecuzione del contratto (art. 6.1.b); obblighi fiscali (art. 6.1.c) |
 | Interessati | Titolari delle officine (ditte individuali) e referenti; i dati delle società non sono dati personali |
-| Dati | Piano (Starter, Pro oppure Officina pilota), stato (prova, attivo, scaduto, annullato), fine della prova, identificativo del cliente Stripe e dell'abbonamento Stripe (tabella `abbonamenti`). A Stripe TyreCare manda email del titolare, ragione sociale e identificativo dell'officina nell'app; i dati della carta li inserisce il titolare nella pagina di Stripe e TyreCare non li vede né li conserva |
-| Destinatari | Il titolare dell'officina (legge la propria riga); amministratore di TyreCare; Supabase; Stripe |
-| Ruolo di Stripe | [DA COMPLETARE: ruolo di Stripe, da confermare con il consulente] |
-| Trasferimenti extra UE | Stripe: [DA COMPLETARE: sede e garanzie — README, domanda 16]; per Supabase come A1 |
+| Dati | Piano (mensile o annuale), stato (prova, attivo, scaduto, sospeso), fine della prova, inizio e scadenza, installazione pagata e data, importo concordato, note interne dell'amministratore (tabella `abbonamenti`). Nessun dato di pagamento passa dall'app |
+| Destinatari | Il titolare dell'officina (legge la propria riga, senza le note interne); amministratore di TyreCare; Supabase |
+| Trasferimenti extra UE | Come A1 |
 | Conservazione | Per la durata dell'abbonamento; dati fiscali per il tempo di legge [DA COMPLETARE: es. 10 anni, come nell'informativa §4] |
-| Misure | M1–M5; la riga dell'abbonamento la leggono il titolare e l'amministratore (gli operatori no) e la scrivono solo l'amministratore e le funzioni sul server (il webhook di Stripe verifica la firma) |
+| Misure | M1–M5; la riga dell'abbonamento la leggono il titolare (senza le note interne) e l'amministratore (gli operatori no) e la scrivono solo le funzioni riservate all'amministratore |
 
 ## A8. Errori dell'app
 

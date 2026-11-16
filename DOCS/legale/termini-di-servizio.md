@@ -1,27 +1,26 @@
-**BOZZA — da rivedere con un consulente prima dell'uso**
-
 # Termini di servizio — TyreCare
 
-Ultimo aggiornamento: [DA COMPLETARE: data di pubblicazione]
+Ultimo aggiornamento: 14 novembre 2026 (versione 2026-11-14)
 
-Questi termini regolano l'uso di TyreCare. Usando l'app li accetti. Leggili insieme
-all'[informativa privacy](informativa-privacy.md).
+Questi termini regolano l'uso di TyreCare. Creando un account li accetti. Leggili insieme
+all'[informativa privacy](informativa-privacy.md) e alla [cookie policy](cookie-policy.md).
 
 ## 1. Chi offre il servizio
 
 TyreCare è offerto da:
 
-- [DA COMPLETARE: nome e cognome o ragione sociale di chi offre TyreCare]
-- [DA COMPLETARE: indirizzo / sede legale]
-- [DA COMPLETARE: partita IVA o codice fiscale]
-- Contatti: [DA COMPLETARE: email di contatto]
+- **{{fornitore.nome}}**
+- sede: {{fornitore.indirizzo}}
+- partita IVA: {{fornitore.partitaIva}} — {{fornitore.registroImprese}}
+- email: {{fornitore.emailContatti}} — PEC: {{fornitore.pec}}
+- sito di presentazione: [{{sito.url}}]({{sito.url}})
 
-di seguito "TyreCare" o "noi".
+di seguito «TyreCare» o «noi».
 
 ## 2. Cos'è TyreCare
 
 TyreCare è un'applicazione web, installabile sul telefono come app, che collega i gommisti e le officine
-affiliate ("officine") ai loro clienti. Permette:
+affiliate («officine») ai loro clienti. Permette:
 
 - alle **officine** di gestire clienti, veicoli, pneumatici e controlli (anche importandoli dal proprio
   gestionale), il catalogo dei servizi, gli orari e le richieste di appuntamento;
@@ -32,10 +31,11 @@ TyreCare non esegue lavori sui veicoli: i lavori li fanno le officine, che ne so
 
 ## 3. Chi può usare il servizio
 
-- I **clienti** sono persone fisiche che usano l'app per i propri veicoli. Per creare un account devi avere
-  almeno [DA COMPLETARE: età minima — vedi README, domanda 3] anni.
+- I **clienti** sono persone fisiche che usano l'app per i propri veicoli. Per creare un account devi
+  avere **almeno 14 anni**; se hai meno di 18 anni, usa l'app con l'accordo di un genitore o di chi ne fa
+  le veci.
 - Le **officine** sono imprese che svolgono attività di gommista o di officina e che TyreCare ha accettato
-  come affiliate. Una nuova officina resta "in attesa" finché TyreCare non attiva l'affiliazione, e
+  come affiliate. Una nuova officina resta «in attesa» finché TyreCare non attiva l'affiliazione, e
   TyreCare può sospenderla (vedi §11).
 - Per usare TyreCare servono un dispositivo con un browser aggiornato e una connessione a Internet.
 
@@ -63,9 +63,10 @@ Chi lavora in un'officina vede solo i dati di quell'officina.
 L'officina:
 
 - inserisce o importa in TyreCare solo dati che ha diritto di trattare, e ne resta **titolare del
-  trattamento**; TyreCare li tratta per suo conto come responsabile, secondo l'accordo previsto dall'art.
-  28 GDPR [DA COMPLETARE: riferimento all'accordo di nomina (DPA)];
-- informa i propri clienti del trattamento dei loro dati, come richiesto dalla legge;
+  trattamento**; TyreCare li tratta per suo conto come responsabile, secondo l'accordo sul trattamento dei
+  dati (art. 28 GDPR) che l'officina firma prima dell'attivazione;
+- informa i propri clienti del trattamento dei loro dati, anche tramite TyreCare, come richiesto dalla
+  legge;
 - tiene aggiornati e corretti i dati che inserisce (clienti, veicoli, pneumatici, misure);
 - risponde alle richieste di appuntamento in tempi ragionevoli;
 - non usa TyreCare per inviare comunicazioni promozionali senza il consenso dei clienti.
@@ -78,8 +79,9 @@ L'officina:
   L'appuntamento vale solo quando risulta **confermato** nell'app.
 - Il cliente può annullare la richiesta; l'officina può segnare l'appuntamento come completato o come non
   presentato.
-- I prezzi nel catalogo dei servizi sono **indicativi** ("da …" o su preventivo): il prezzo finale lo
-  stabilisce l'officina. Il pagamento avviene in officina, fuori da TyreCare.
+- I prezzi nel catalogo dei servizi sono **indicativi** («da …» o su preventivo): il prezzo finale lo
+  stabilisce l'officina. **Il pagamento avviene in officina, fuori da TyreCare: nell'app non si paga
+  nulla.**
 - TyreCare mette a disposizione lo strumento ma non è parte del rapporto tra cliente e officina e non
   risponde di appuntamenti non rispettati, ritardi o lavori eseguiti.
 
@@ -95,9 +97,9 @@ Se hai un problema con le gomme lontano da casa, puoi chiedere **aiuto su strada
 - **Chi interviene.** La prima officina che accetta prende la richiesta. L'**intervento è dell'officina**:
   il prezzo e le modalità li concordi con lei, il pagamento avviene fuori da TyreCare. TyreCare non è parte
   del rapporto tra te e l'officina.
-- **Nessuna garanzia.** Non possiamo garantire che un'officina risponda, né in quanto tempo: non c'è un
-  filtro sugli orari, risponde chi è disponibile, anche di notte e nei festivi. Se nessuna officina offre il
-  servizio nel raggio la richiesta non parte e lo leggi subito.
+- **Nessuna garanzia.** Non possiamo garantire che un'officina risponda, né in quanto tempo: risponde chi è
+  disponibile, anche di notte e nei festivi. Se nessuna officina offre il servizio nel raggio la richiesta
+  non parte e lo leggi subito.
 - **Tempi.** Una richiesta che nessuno accetta **scade dopo 2 ore**; una accettata si chiude da sola dopo
   24 ore se l'officina non la chiude prima. Puoi avere una sola richiesta aperta alla volta e puoi
   annullarla.
@@ -123,47 +125,42 @@ un'officina.
 
 TyreCare invia notifiche nell'app e, se le attivi nel browser, notifiche push: cambi di stato delle
 prenotazioni, promemoria del giorno prima dell'appuntamento, esito dei controlli, cambio stagionale degli
-pneumatici. Sono un aiuto, non una garanzia: possono arrivare in ritardo o non arrivare (ad esempio se il
-telefono è spento, le notifiche sono disattivate o su iPhone l'app non è installata nella schermata Home).
-Le notifiche push si possono disattivare in qualsiasi momento.
+pneumatici. Sono avvisi di servizio, non pubblicità. Sono un aiuto, non una garanzia: possono arrivare in
+ritardo o non arrivare (ad esempio se il telefono è spento, le notifiche sono disattivate o su iPhone
+l'app non è installata nella schermata Home). Le notifiche push si possono disattivare in qualsiasi
+momento.
 
-Se l'app non riesce a mandare la notifica push a nessun tuo dispositivo (per esempio perché non hai
-attivato le notifiche push), TyreCare può mandare la stessa notifica anche per email,
-all'indirizzo del tuo account. Queste email di riserva valgono dal [DA COMPLETARE: data di attivazione
-delle email di riserva] e si spengono con l'interruttore «Email» della pagina «Notifiche».
+Se l'app non riesce a mandare la notifica push a nessun tuo dispositivo, TyreCare può mandare la stessa
+notifica per email, all'indirizzo del tuo account. Queste email si spengono con l'interruttore «Email»
+della pagina «Notifiche».
 
-## 10. Abbonamento delle officine
+## 10. Costi: gratis per i clienti, abbonamento per le officine
 
-Questa sezione riguarda le officine. Le funzioni di abbonamento e pagamento descritte qui sotto si
-accendono per gradi. Il pagamento online con Stripe vale **dal [DA COMPLETARE: data di attivazione dei
-pagamenti online]**. Prima di quella data non c'è nessun pagamento online: l'officina ha la prova
-gratuita o il piano «Officina pilota» o, a prova finita, lo stato «scaduto», senza blocchi; nessuna carta
-viene richiesta (vedi sotto). Le condizioni sul pagamento, sul rinnovo e sull'annullamento valgono dalla data di
-attivazione.
+**Per i clienti TyreCare è gratuito.** Non ci sono acquisti nell'app e non chiediamo dati di pagamento.
 
-- **Prova gratuita di 30 giorni.** Ogni officina nuova ha 30 giorni di prova, contando anche il giorno
-  della registrazione. La pagina «Abbonamento» mostra l'ultimo giorno della prova (incluso) e quanti
-  giorni restano. Per iniziare la prova non serve la carta.
-- **Piani e prezzi.** I piani (Starter e Pro) e i prezzi sono nella pagina «Abbonamento» dell'app e nella
-  pagina pubblica «Per le officine»; qui non sono ripetuti. Le officine del pilota hanno il piano
-  «Officina pilota», senza pagamento durante il pilota.
-- **Pagamento.** Dalla data di attivazione l'abbonamento si paga ogni mese con carta,
-  tramite Stripe: la pagina di pagamento è di Stripe. I dati della carta li tratta Stripe e TyreCare non
-  li vede (vedi l'[informativa privacy](informativa-privacy.md)).
-- **Rinnovo.** L'abbonamento si rinnova ogni mese in automatico, finché non viene annullato.
-- **Annullamento e carta.** Dalla data di attivazione, dalla pagina «Abbonamento», con «Gestisci il
-  pagamento» (il portale di Stripe), il titolare può cambiare carta e annullare l'abbonamento.
-  [DA COMPLETARE: da quando vale l'annullamento (subito o a fine periodo pagato) e rimborsi]
-- **Alla scadenza.** Se la prova finisce senza un abbonamento, o un pagamento non riesce, lo stato
-  dell'officina diventa «scaduto». Per ora nessuna funzione viene bloccata: lo stato si vede nella
-  pagina «Abbonamento». Dalla data di attivazione, un abbonamento annullato si può riattivare da quella
-  pagina.
-  [DA COMPLETARE: se e quando, in futuro, le funzioni verranno limitate alle officine con abbonamento
-  scaduto, e con quale preavviso]
+**Per le officine** il servizio è a pagamento. Questa parte riguarda solo le officine, che usano TyreCare
+per la propria attività d'impresa.
 
-[DA COMPLETARE: recesso, fatturazione, IVA]
-
-Per i clienti l'uso di TyreCare è [DA COMPLETARE: gratuito? confermare].
+- **Prezzi.** Installazione **149 €** una tantum (configurazione, primo import dei dati e formazione);
+  abbonamento **100 € al mese** oppure **1.000 € all'anno**. I prezzi sono IVA esclusa. Per catene e
+  officine con più sedi il prezzo si concorda. Prezzi diversi, periodi di prova gratuiti e le condizioni
+  del programma pilota valgono se concordati per iscritto con TyreCare.
+- **Pagamento.** **Nell'app non si paga.** TyreCare emette fattura elettronica e l'officina paga con
+  bonifico, o con l'altro mezzo indicato in fattura, entro la scadenza indicata. L'abbonamento si paga in
+  anticipo, per il mese o per l'anno.
+- **Attivazione.** L'amministratore di TyreCare attiva l'officina e ne aggiorna lo stato
+  dell'abbonamento, visibile nell'app.
+- **Durata e rinnovo.** L'abbonamento mensile si rinnova di mese in mese; quello annuale di anno in anno.
+- **Disdetta.** L'officina può disdire in qualsiasi momento scrivendo a {{fornitore.emailContatti}} o
+  alla PEC: la disdetta vale dalla fine del periodo già pagato e non dà diritto al rimborso di quel
+  periodo né dell'installazione. TyreCare può disdire con 30 giorni di preavviso, restituendo la parte di
+  abbonamento già pagata e non goduta.
+- **Mancato pagamento.** Se una fattura resta non pagata oltre 15 giorni dalla scadenza, TyreCare può
+  sospendere l'officina dopo un avviso scritto; se il ritardo supera 60 giorni può chiudere il contratto.
+- **Modifica dei prezzi.** TyreCare comunica le modifiche dei prezzi per iscritto almeno 60 giorni prima;
+  valgono dal rinnovo successivo e l'officina può disdire prima che entrino in vigore.
+- **Alla fine del contratto** l'officina ha 30 giorni per scaricare i propri dati dall'app; poi vengono
+  cancellati come previsto dall'accordo sul trattamento dei dati.
 
 ## 11. Uso corretto, sospensione e chiusura
 
@@ -174,46 +171,61 @@ Non è consentito:
 - tentare di accedere a dati di altri utenti o di altre officine, o di compromettere il funzionamento del
   servizio.
 
-TyreCare può sospendere o chiudere un account o un'officina che viola questi termini, avvisando quando
-possibile. Puoi chiudere il tuo account in qualsiasi momento dal **Profilo**, con «Elimina il tuo
-account»; chi non riesce ad accedere scrive a [DA COMPLETARE: email di contatto]. Cosa succede ai dati
-è spiegato nell'informativa privacy.
+TyreCare può sospendere o chiudere un account o un'officina che viola questi termini, avvisando e
+spiegandone il motivo, salvo i casi urgenti di sicurezza. Puoi chiudere il tuo account in qualsiasi
+momento e senza costi dal **Profilo**, con «Elimina il tuo account»; chi non riesce ad accedere e i
+titolari delle officine scrivono a {{fornitore.emailContatti}}. Cosa succede ai dati è spiegato
+nell'informativa privacy.
 
 ## 12. Disponibilità del servizio
 
 Facciamo il possibile perché TyreCare funzioni sempre, ma il servizio può avere interruzioni per
-manutenzione, aggiornamenti o problemi dei fornitori. TyreCare è fornito "così com'è" e può cambiare nel
-tempo (funzioni aggiunte, modificate o tolte).
+manutenzione, aggiornamenti o problemi dei fornitori. TyreCare può cambiare nel tempo (funzioni aggiunte,
+modificate o tolte).
 
 ## 13. Responsabilità
 
-[DA COMPLETARE: limitazioni di responsabilità da definire con il consulente, nel rispetto del Codice del
-consumo per i clienti privati e degli artt. 1341–1342 c.c. — vedi README, domanda 12]
+TyreCare risponde senza limiti dei danni causati con dolo o colpa grave e in tutti i casi in cui la legge
+non permette di limitare la responsabilità. **Per i clienti consumatori restano fermi tutti i diritti
+previsti dal Codice del consumo** (D.Lgs. 206/2005): nessuna parte di questi termini li riduce.
 
-In ogni caso, nei limiti consentiti dalla legge, TyreCare non risponde:
+Fuori da questi casi, TyreCare non risponde:
 
-- dei lavori eseguiti dalle officine e dei loro prezzi;
+- dei lavori eseguiti dalle officine, dei loro prezzi e degli appuntamenti non rispettati;
 - delle decisioni prese basandosi solo sui dati indicativi degli pneumatici (§8);
 - dell'intervento su strada e della mancata risposta delle officine alle richieste di aiuto (§7);
-- dei dati inseriti in modo errato dalle officine o dagli utenti.
+- dei dati inseriti in modo errato dalle officine o dagli utenti;
+- delle notifiche non arrivate o arrivate in ritardo (§9).
+
+**Verso le officine**, fuori dai casi di dolo o colpa grave, la responsabilità di TyreCare per ogni anno
+di contratto è limitata a quanto l'officina ha pagato per l'abbonamento nei 12 mesi precedenti il fatto, e
+non comprende i danni indiretti e il mancato guadagno. Le officine approvano espressamente per iscritto,
+nel contratto di affiliazione, le clausole dei §10, §11, §13 e §16 (artt. 1341 e 1342 del codice civile).
 
 ## 14. Proprietà intellettuale
 
-L'app, il suo codice, il nome e il logo TyreCare appartengono a [DA COMPLETARE: titolare dei diritti].
-I dati inseriti dalle officine restano delle officine; i dati del tuo account restano tuoi.
+L'app, il suo codice, il nome e il logo TyreCare appartengono a {{fornitore.nome}}. I dati inseriti dalle
+officine restano delle officine; i dati del tuo account restano tuoi.
 
 ## 15. Modifiche ai termini
 
-Possiamo modificare questi termini. Le modifiche importanti verranno comunicate nell'app o via email
-[DA COMPLETARE: con quanto preavviso]. Quando i termini cambiano, al primo accesso l'app chiede di
-accettare la versione nuova a chi aveva già accettato la precedente. Se non le accetti puoi chiudere il
-tuo account.
+Possiamo modificare questi termini per motivi validi: nuove funzioni, cambi di legge, sicurezza. Le
+modifiche importanti le comunichiamo nell'app o via email **almeno 15 giorni prima** (30 giorni per le
+officine). Al primo accesso dopo un cambio, l'app chiede di accettare la versione nuova a chi aveva
+accettato la precedente. Se non la accetti puoi chiudere il tuo account senza costi; l'officina può
+disdire senza penali.
 
-## 16. Legge applicabile e foro competente
+## 16. Legge applicabile, reclami e foro competente
 
-Questi termini sono regolati dalla **legge italiana**. Per i clienti consumatori è competente il foro del
-luogo di residenza o domicilio del consumatore. Per le officine e gli altri utenti professionali è
-competente il foro di [DA COMPLETARE: città].
+Questi termini sono regolati dalla **legge italiana**.
 
-[DA COMPLETARE: informazioni sulla risoluzione alternativa delle controversie per i consumatori, se
-dovute]
+Per un reclamo scrivi a {{fornitore.emailContatti}}: rispondiamo entro 30 giorni.
+
+Per i **clienti consumatori** è competente il giudice del luogo di residenza o di domicilio del
+consumatore. Il consumatore può anche ricorrere alle procedure di risoluzione extragiudiziale delle
+controversie previste dal Codice del consumo (artt. 141 e seguenti), ad esempio la conciliazione presso la
+Camera di commercio. La piattaforma europea per le controversie online (ODR) è stata chiusa il 20 luglio
+2025 e non è più utilizzabile.
+
+Per le **officine** e gli altri utenti professionali è competente in via esclusiva il foro del luogo in
+cui ha sede TyreCare.

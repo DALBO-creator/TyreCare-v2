@@ -4,9 +4,14 @@ import {
   ChevronRight,
   ClipboardList,
   Clock,
+  Cookie,
   Download,
+  ExternalLink,
+  FileText,
+  Globe,
   MapPin,
   KeyRound,
+  LockKeyhole,
   LogOut,
   MessageSquare,
   Mail,
@@ -16,7 +21,9 @@ import {
   UserPen,
   Wrench,
 } from 'lucide';
+import { SITO_URL } from '@tyrecare/shared';
 import { contaOfficineInAttesa } from '../lib/admin';
+import { sessioneAal2 } from '../lib/admin-pannello';
 import { esci, messaggioErrore } from '../lib/auth';
 import { esc } from '../lib/html';
 import { nomeFileMieiDati, raccogliMieiDati } from '../lib/miei-dati';
@@ -52,6 +59,16 @@ function link(ic: Parameters<typeof icona>[0], etichetta: string, href: string):
     </a>`;
 }
 
+/** Link verso un altro sito: si apre in una scheda nuova, senza passare il referrer. */
+function linkEsterno(ic: Parameters<typeof icona>[0], etichetta: string, href: string): string {
+  return `
+    <a class="tc-lista__riga" href="${esc(href)}" target="_blank" rel="noopener noreferrer">
+      <span class="tc-lista__icona">${icona(ic)}</span>
+      <span class="tc-lista__testo">${esc(etichetta)}<span class="visually-hidden"> (si apre in una nuova scheda)</span></span>
+      ${icona(ExternalLink)}
+    </a>`;
+}
+
 /** Torna al profilo mostrando un messaggio di conferma (es. "Dati salvati"). */
 export function tornaAlProfilo(messaggio: string): void {
   vaiConConferma('/profilo', messaggio);
@@ -68,9 +85,12 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
     await gestisciErroreCaricamento(app, n, errore);
     return;
   }
-  // Solo l'amministratore: quante officine aspettano l'attivazione (se la query fallisce, link senza numero)
+  // Solo l'amministratore con la 2FA già fatta: quante officine aspettano l'attivazione (senza aal2 il
+  // database risponderebbe 0; se la query fallisce, link senza numero)
   const inAttesa =
-    dati.profilo.ruolo === 'ADMIN' ? await contaOfficineInAttesa().catch(() => null) : null;
+    dati.profilo.ruolo === 'ADMIN' && (await sessioneAal2())
+      ? await contaOfficineInAttesa().catch(() => null)
+      : null;
   if (!ancoraAttuale(n)) return;
 
   const { email, profilo, officine } = dati;
@@ -122,6 +142,7 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
           ? `<section aria-labelledby="tc-admin">
               <h2 id="tc-admin" class="tc-etichetta">Amministrazione</h2>
               <nav class="tc-lista" aria-labelledby="tc-admin">
+                ${link(ShieldCheck, 'Pannello amministratore', '/admin')}
                 ${link(Building2, `Officine da attivare${inAttesa === null ? '' : ` (${inAttesa})`}`, '/admin/officine')}
                 ${link(MessageSquare, 'Commenti degli utenti', '/admin/commenti')}
                 ${link(Bug, "Errori dell'app", '/admin/errori')}
@@ -135,6 +156,7 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
         <nav class="tc-lista" aria-labelledby="tc-account">
           ${link(UserPen, 'Modifica i tuoi dati', '/profilo/dati')}
           ${link(KeyRound, 'Cambia password', '/profilo/password')}
+          ${link(LockKeyhole, 'Verifica in due passaggi', '/profilo/sicurezza')}
           ${link(
             MessageSquare,
             'Invia un commento su TyreCare',
@@ -146,6 +168,16 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
         <button type="button" class="btn btn-outline-light btn-lg w-100 mt-3" data-scarica-dati>
           ${icona(Download)} Scarica i tuoi dati
         </button>
+      </section>
+
+      <section aria-labelledby="tc-informazioni">
+        <h2 id="tc-informazioni" class="tc-etichetta">Informazioni</h2>
+        <nav class="tc-lista" aria-labelledby="tc-informazioni">
+          ${linkEsterno(Globe, 'Il sito di TyreCare', SITO_URL)}
+          ${link(ShieldCheck, 'Informativa privacy', '/privacy')}
+          ${link(FileText, 'Termini di servizio', '/termini')}
+          ${link(Cookie, 'Cookie policy', '/cookie')}
+        </nav>
       </section>
 
       <section class="tc-azione">
