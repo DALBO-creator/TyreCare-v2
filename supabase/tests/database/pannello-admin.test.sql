@@ -30,9 +30,10 @@ select throws_ok($$select public.admin_riepilogo()$$, '42501', null, 'admin aal1
 select throws_ok(
   $$select * from public.admin_cerca_utenti('')$$, '42501', null, 'admin aal1: niente ricerca'
 );
+-- La 2FA dell'admin è attiva (seed.sql): con aal1 la policy restrittiva (due_fattori) non apre nulla
 select is(
-  (select count(*) from public.officine)::int, 1,
-  'admin aal1: vede solo l''officina di cui è titolare nel seed, non le altre'
+  (select count(*) from public.officine)::int, 0,
+  'admin aal1: non vede nessuna officina finché non scrive il codice'
 );
 
 -- ---------------------------------------------------------------- non admin

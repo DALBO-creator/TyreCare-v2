@@ -15,6 +15,7 @@ import {
   LifeBuoy,
   Mail,
   ThermometerSnowflake,
+  Wallet,
   type IconNode,
 } from 'lucide';
 import type { Enums } from '@tyrecare/shared';
@@ -55,6 +56,7 @@ const ICONE: Record<Enums<'tipo_notifica'>, IconNode> = {
   AFFILIAZIONE_ATTIVATA: BadgeCheck,
   AFFILIAZIONE_RIFIUTATA: CircleX,
   AFFILIAZIONE_SOSPESA: CirclePause,
+  ABBONAMENTO: Wallet,
 };
 
 function rigaNotifica(n: Notifica): string {

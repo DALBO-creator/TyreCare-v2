@@ -64,7 +64,7 @@
 | Idea | Priorità | Note |
 |------|----------|------|
 | **PowerSync** per scrittura offline | 🟢 | Vedi PLAN P6. |
-| **Stripe Billing** per abbonamenti | 🔴 | Necessario in fase commerciale. |
+| ~~Stripe Billing per abbonamenti~~ | ❌ | Scartato il 2026-11-13 (PLAN P25): pagamenti fuori dall'app, abbonamento gestito a mano. |
 | **Email/SMS/WhatsApp** come canali reminder | 🔴 | Fallback per iOS senza PWA installata (PLAN P5). |
 | ~~**Playwright** test end-to-end~~ | ✅ | Fatto nella sessione 14 (inviti e prenotazioni, job CI `e2e`). |
 | **Lighthouse CI** in GitHub Actions | 🟠 | |

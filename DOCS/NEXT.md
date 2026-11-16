@@ -6,33 +6,18 @@
 
 ## Prossima sessione
 
-> **Branch `claude/pannello-admin` (2026-11-12): pannello amministratore + 2FA obbligatoria per l'admin.**
-> Prima del merge, da Davide: (1) nella dashboard Supabase → *Authentication → Multi-Factor* controllare
-> che **TOTP** sia attivo (sul cloud lo è di norma); (2) `npx supabase db push`; (3) aprire `/admin` e
-> registrare l'app di autenticazione (QR); (4) sull'anteprima Vercel aprire la console del browser e
-> controllare che la CSP (ora applicata) non blocchi nulla: accesso, notifiche push, Stripe, «Vicino a me».
-> Senza la 2FA l'account admin vede l'app come un utente normale.
-> **Vercel:** aggiungere `VITE_SUPABASE_ANON_KEY` anche all'ambiente *Preview* (oggi solo *Production*:
-> anteprime nere) e ripubblicare l'anteprima. Migrazione del pannello già pubblicata (`db push` del 2026-11-12).
-
-> **Obiettivo: il prossimo compito pronto della coda di ai-org.**
-> **Prima, da Davide (2026-11-08):** pubblicare le migrazioni sul cloud seguendo
-> `DOCS/pilota/pubblicazione.md` (D10; il cloud è fermo a metà ottobre: è la causa probabile degli errori su
-> commenti e *Appuntamenti*), poi caricare
-> la demo per il titolare di LA SANTI GOMME: passi in `DOCS/pilota/demo-la-santi.md`. Se i due errori
-> restano dopo il push, la prossima sessione parte da lì (log *API* di Supabase).
-> Ultima sessione: ciclo agenti 20261116-03 (T277 scollegare un cliente annulla i suoi inviti aperti; T290
-> avviso di sospensione solo da ATTIVA; T292 bozza del «Nuovo controllo»; T272 frase unica per il pilota
-> con subscription), nel treno.
-> Da controllare nella CI del treno: pgTAP nuovi `scollega-cliente-inviti.test.sql` e
-> `sospendi-officina-attiva.test.sql` (non eseguiti in locale).
-> Per Davide (in lista di lancio): impostare le regole delle password nel pannello Supabase seguendo
-> `DOCS/pilota/sicurezza-account.md`.
-> Idee in coda: `/admin/commenti` con un commento di prova per axe, test del focus dopo un annullo riuscito.
-> Prossimi compiti pronti: la pianificazione della domenica.
-> Fatto dagli agenti dal 2026-10-20: import con mappatura (T008–T012), bozze legali (T013–T014), kit del
-> pilota (T015–T017), dati e posizione dell'officina, «Vicino a me», capienza per fascia (T018–T021);
-> dettagli in `STORICO.md`.
+> **2026-11-16: rami di lancio uniti su main** (pannello admin, legale, sicurezza, abbonamento manuale;
+> Stripe tolto). Migrazioni pubblicate sul cloud con `db push --include-all`. Restano da Davide, una volta
+> sola, le voci di [`SICUREZZA.md`](SICUREZZA.md) → "Da fare a mano sul cloud": controllo di
+> `db_pre_request`, *Multi-Factor* TOTP attivo, regole delle password (10, maiuscole/minuscole/numeri),
+> cancellare le Edge Functions e i segreti di Stripe, registrare la 2FA su `/admin`, `VITE_SUPABASE_ANON_KEY`
+> anche in *Preview* su Vercel e controllo della CSP sull'anteprima.
+> Poi: caricare la demo per LA SANTI GOMME (`DOCS/pilota/demo-la-santi.md`) e compilare i segnaposto di
+> `DATI_FORNITORE` (`packages/shared/src/fornitore.ts`) e di `DOCS/legale/README.md`.
+> **ai-org:** ripulire la coda dai compiti su Stripe (superati da PLAN P25) e dire agli agenti che le
+> funzioni nuove non sono più eseguibili da `anon` per default e che il seed usa `Password123`.
+> Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
+> pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
 
 **0 — Da chiedere al titolare**
 

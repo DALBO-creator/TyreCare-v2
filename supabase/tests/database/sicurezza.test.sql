@@ -109,9 +109,10 @@ select is(public.report_pubblico(''), null, 'report pubblico: codice vuoto, ness
 reset role;
 select pg_temp.come(:admin, 'aal1');
 select is(public.is_admin(), false, 'admin con aal1: is_admin falso');
+-- L'admin del seed ha la 2FA attiva (seed.sql): con la sola password la policy restrittiva non apre nulla
 select is(
-  (select count(*) from public.officine)::int, 1,
-  'admin con aal1: vede le officine come un utente qualsiasi'
+  (select count(*) from public.officine)::int, 0,
+  'admin con aal1 e 2FA attiva: non vede nessuna officina'
 );
 select is_empty('select * from public.errori_app', 'admin con aal1: non legge gli errori');
 select throws_ok(

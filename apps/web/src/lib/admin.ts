@@ -49,14 +49,6 @@ export function leggiAbbonamentoEmbed(
   };
 }
 
-/** Etichetta italiana dello stato dell'abbonamento. */
-export const ETICHETTE_STATO_ABBONAMENTO: Record<StatoAbbonamento, string> = {
-  PROVA: 'In prova',
-  ATTIVO: 'Abbonamento attivo',
-  SCADUTO: 'Scaduto',
-  ANNULLATO: 'Annullato',
-};
-
 /** Prima le officine in attesa, poi per data di creazione dalla più recente. Non modifica l'elenco. */
 export function ordinaOfficineAdmin<
   T extends Pick<OfficinaAdmin, 'stato_affiliazione' | 'created_at'>,
@@ -110,28 +102,6 @@ export async function contaOfficineInAttesa(): Promise<number> {
   return count ?? 0;
 }
 
-/**
- * Cambia il piano dell'abbonamento (solo l'admin, per RLS). Un update di 0 righe (riga assente o permesso
- * negato dalla RLS) è un errore: `.single()` lo segnala con PGRST116. Lo stato di pagamento non si tocca.
- */
-export async function cambiaPianoOfficina(officinaId: string, piano: Piano): Promise<void> {
-  const { error } = await getSupabase()
-    .from('abbonamenti')
-    .update({ piano })
-    .eq('officina_id', officinaId)
-    .select()
-    .single();
-  if (!error) return;
-  if (codiceErrore(error) === 'PGRST116') {
-    throw new ErroreModulo(
-      'Abbonamento non trovato: ricarica la pagina e riprova.',
-      undefined,
-      'PGRST116',
-    );
-  }
-  traduciErrore(error);
-}
-
 function traduciErrore(errore: { message?: string }): never {
   if (codiceErrore(errore) === '42501') {
     throw new ErroreModulo("Solo l'amministratore può farlo.", undefined, '42501');
@@ -156,8 +126,6 @@ export async function attivaOfficina(id: string): Promise<void> {
 export const ERRORI_RIFIUTO: Record<string, string> = {
   OFFICINA_NON_TROVATA: 'Officina non trovata: ricarica la pagina e riprova.',
   OFFICINA_NON_IN_ATTESA: 'Questa officina non è più in attesa: ricarica la pagina.',
-  ABBONAMENTO_STRIPE_PRESENTE:
-    'Questa officina ha un abbonamento su Stripe: annullalo prima dalla dashboard di Stripe.',
   MOTIVO_TROPPO_LUNGO: 'Il motivo è troppo lungo (al massimo 300 caratteri).',
 };
 

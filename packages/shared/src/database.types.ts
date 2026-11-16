@@ -26,35 +26,44 @@ export type Database = {
       abbonamenti: {
         Row: {
           created_at: string;
+          importo_concordato: number | null;
+          iniziato_il: string | null;
+          installazione_pagata: boolean;
+          installazione_pagata_il: string | null;
+          note_admin: string;
           officina_id: string;
           piano: string;
           prova_fino_al: string;
+          scade_il: string | null;
           stato: string;
-          stripe_customer_id: string | null;
-          stripe_evento_il: string | null;
-          stripe_subscription_id: string | null;
           updated_at: string;
         };
         Insert: {
           created_at?: string;
+          importo_concordato?: number | null;
+          iniziato_il?: string | null;
+          installazione_pagata?: boolean;
+          installazione_pagata_il?: string | null;
+          note_admin?: string;
           officina_id: string;
           piano?: string;
           prova_fino_al?: string;
+          scade_il?: string | null;
           stato?: string;
-          stripe_customer_id?: string | null;
-          stripe_evento_il?: string | null;
-          stripe_subscription_id?: string | null;
           updated_at?: string;
         };
         Update: {
           created_at?: string;
+          importo_concordato?: number | null;
+          iniziato_il?: string | null;
+          installazione_pagata?: boolean;
+          installazione_pagata_il?: string | null;
+          note_admin?: string;
           officina_id?: string;
           piano?: string;
           prova_fino_al?: string;
+          scade_il?: string | null;
           stato?: string;
-          stripe_customer_id?: string | null;
-          stripe_evento_il?: string | null;
-          stripe_subscription_id?: string | null;
           updated_at?: string;
         };
         Relationships: [
@@ -72,7 +81,7 @@ export type Database = {
           admin_id: string | null;
           azione: string;
           created_at: string;
-          dettagli: Json;
+          dettagli: NonNullable<Json>;
           id: number;
           oggetto_id: string;
           tabella: string;
@@ -81,7 +90,7 @@ export type Database = {
           admin_id?: string | null;
           azione: string;
           created_at?: string;
-          dettagli?: Json;
+          dettagli?: NonNullable<Json>;
           id?: never;
           oggetto_id?: string;
           tabella?: string;
@@ -90,7 +99,7 @@ export type Database = {
           admin_id?: string | null;
           azione?: string;
           created_at?: string;
-          dettagli?: Json;
+          dettagli?: NonNullable<Json>;
           id?: never;
           oggetto_id?: string;
           tabella?: string;
@@ -1144,27 +1153,6 @@ export type Database = {
           },
         ];
       };
-      stripe_eventi: {
-        Row: {
-          id: string;
-          motivo: string | null;
-          ricevuto_il: string;
-          tipo: string;
-        };
-        Insert: {
-          id: string;
-          motivo?: string | null;
-          ricevuto_il?: string;
-          tipo: string;
-        };
-        Update: {
-          id?: string;
-          motivo?: string | null;
-          ricevuto_il?: string;
-          tipo?: string;
-        };
-        Relationships: [];
-      };
       veicoli: {
         Row: {
           anno: number | null;
@@ -1243,10 +1231,7 @@ export type Database = {
         Returns: undefined;
       };
       accetta_termini: { Args: { p_versione: string }; Returns: undefined };
-      admin_blocca_utente: {
-        Args: { p_blocca: boolean; p_utente: string };
-        Returns: undefined;
-      };
+      admin_blocca_utente: { Args: { p_blocca: boolean; p_utente: string }; Returns: undefined };
       admin_cambia_ruolo: {
         Args: { p_ruolo: Database['public']['Enums']['ruolo']; p_utente: string };
         Returns: undefined;
@@ -1274,39 +1259,52 @@ export type Database = {
         Returns: undefined;
       };
       admin_disconnetti_utente: { Args: { p_utente: string }; Returns: undefined };
+      admin_imposta_abbonamento: {
+        Args: {
+          p_importo?: number;
+          p_iniziato_il?: string;
+          p_note?: string;
+          p_officina_id: string;
+          p_piano: string;
+          p_prova_fino_al?: string;
+          p_scade_il?: string;
+          p_stato: string;
+        };
+        Returns: undefined;
+      };
+      admin_leggi_abbonamento: {
+        Args: { p_officina_id: string };
+        Returns: {
+          importo_concordato: number;
+          iniziato_il: string;
+          installazione_pagata: boolean;
+          installazione_pagata_il: string;
+          note_admin: string;
+          officina_id: string;
+          piano: string;
+          prova_fino_al: string;
+          ragione_sociale: string;
+          scade_il: string;
+          stato: string;
+          stato_affiliazione: Database['public']['Enums']['stato_affiliazione'];
+          updated_at: string;
+        }[];
+      };
+      admin_registra_installazione: {
+        Args: { p_officina_id: string; p_pagata: boolean; p_pagata_il?: string };
+        Returns: undefined;
+      };
       admin_riepilogo: { Args: Record<PropertyKey, never>; Returns: Json };
-      aggiorna_abbonamento_stripe: {
-        Args: {
-          p_customer: string;
-          p_officina_id: string;
-          p_piano: string;
-          p_stato: string;
-          p_subscription: string;
-        };
-        Returns: undefined;
+      admin_rinnova_abbonamento: {
+        Args: { p_officina_id: string; p_periodo: string };
+        Returns: string;
       };
-      aggiorna_abbonamento_stripe_evento: {
-        Args: {
-          p_customer: string;
-          p_evento_il: string;
-          p_officina_id: string;
-          p_piano: string;
-          p_stato: string;
-          p_subscription: string;
-        };
-        Returns: undefined;
-      };
-      annota_evento_stripe: { Args: { p_id: string; p_motivo: string }; Returns: boolean };
       annulla_import: { Args: { p_import_id: string }; Returns: Json };
       annulla_invito_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       annulla_prenotazione: { Args: { p_id: string }; Returns: undefined };
       annulla_richiesta_strada: { Args: { p_id: string }; Returns: undefined };
       attiva_officina: { Args: { p_officina_id: string }; Returns: undefined };
       chiudi_richiesta_strada: { Args: { p_id: string }; Returns: undefined };
-      collega_cliente_stripe: {
-        Args: { p_customer: string; p_officina_id: string };
-        Returns: undefined;
-      };
       controlla_richiesta: { Args: Record<PropertyKey, never>; Returns: undefined };
       crea_invito_cliente: {
         Args: { p_cliente_id: string; p_email: string };
@@ -1332,6 +1330,7 @@ export type Database = {
         };
         Returns: string;
       };
+      data_italiana: { Args: { p_giorno: string }; Returns: string };
       distanza_km: {
         Args: { lat1: number; lat2: number; lon1: number; lon2: number };
         Returns: number;
@@ -1390,6 +1389,7 @@ export type Database = {
         Args: { p_auth: string; p_endpoint: string; p_p256dh: string };
         Returns: undefined;
       };
+      listino_abbonamento: { Args: { p_piano: string }; Returns: number };
       manutenzione_richieste_strada: { Args: { p_adesso?: string }; Returns: undefined };
       mappatura_import_valida: { Args: { p_colonne: Json }; Returns: boolean };
       mfa_soddisfatta: { Args: Record<PropertyKey, never>; Returns: boolean };
@@ -1418,9 +1418,12 @@ export type Database = {
       oggi_in_italia: { Args: Record<PropertyKey, never>; Returns: string };
       orari_validi: { Args: { p_orari: Json }; Returns: boolean };
       pulisci_errori_app: { Args: { p_adesso?: string }; Returns: number };
-      pulisci_eventi_stripe: { Args: { p_adesso?: string }; Returns: number };
       pulisci_notifiche: { Args: { p_adesso?: string }; Returns: number };
       pulisci_prenotazioni: { Args: { p_oggi?: string }; Returns: number };
+      registra_admin: {
+        Args: { p_azione: string; p_dettagli?: Json; p_oggetto_id: string; p_tabella: string };
+        Returns: undefined;
+      };
       registra_cliente_da_prenotazione: {
         Args: {
           p_cliente_id: string;
@@ -1442,9 +1445,9 @@ export type Database = {
         };
         Returns: string;
       };
-      registra_evento_stripe: { Args: { p_id: string; p_tipo: string }; Returns: boolean };
       report_pubblico: { Args: { p_codice: string }; Returns: Json };
       revoca_link_report: { Args: { p_controllo_id: string }; Returns: undefined };
+      richiedi_admin: { Args: Record<PropertyKey, never>; Returns: undefined };
       richiedi_affiliazione: {
         Args: {
           p_citta: string;
@@ -1488,9 +1491,13 @@ export type Database = {
         Returns: undefined;
       };
       rispondi_proposta: { Args: { p_accetta: boolean; p_id: string }; Returns: undefined };
-      scadi_prove_abbonamento: { Args: { p_oggi?: string }; Returns: number };
+      scadi_abbonamenti: { Args: { p_oggi?: string }; Returns: number };
       scollega_cliente: { Args: { p_cliente_id: string }; Returns: undefined };
       sospendi_officina: { Args: { p_officina_id: string }; Returns: undefined };
+      stato_abbonamento_da_date: {
+        Args: { p_oggi?: string; p_prova_fino_al: string; p_scade_il: string };
+        Returns: string;
+      };
       stato_battistrada: {
         Args: { p_mm: number; p_stagione: Database['public']['Enums']['stagione'] };
         Returns: string;
@@ -1543,7 +1550,8 @@ export type Database = {
         | 'AFFILIAZIONE_RICHIESTA'
         | 'AFFILIAZIONE_ATTIVATA'
         | 'AFFILIAZIONE_RIFIUTATA'
-        | 'AFFILIAZIONE_SOSPESA';
+        | 'AFFILIAZIONE_SOSPESA'
+        | 'ABBONAMENTO';
       usura: 'REGOLARE' | 'INTERNA' | 'ESTERNA' | 'CENTRALE' | 'BORDI';
     };
     CompositeTypes: {
@@ -1692,6 +1700,7 @@ export const Constants = {
         'AFFILIAZIONE_ATTIVATA',
         'AFFILIAZIONE_RIFIUTATA',
         'AFFILIAZIONE_SOSPESA',
+        'ABBONAMENTO',
       ],
       usura: ['REGOLARE', 'INTERNA', 'ESTERNA', 'CENTRALE', 'BORDI'],
     },

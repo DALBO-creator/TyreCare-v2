@@ -1,33 +1,25 @@
 import { expect, test } from '@playwright/test';
 import { accedi } from './aiuti';
 
-// Pagina "Abbonamento" (solo titolare): piano attuale, piani disponibili, pulsante di pagamento.
+// Pagina "Abbonamento" (solo titolare), in sola lettura: stato, prezzi e contatto. Nell'app non si paga.
 
-test('il titolare vede il suo piano e i piani disponibili', async ({ page }) => {
+test('il titolare vede lo stato, i prezzi e come rinnovare', async ({ page }) => {
   await accedi(page, 'titolare@tyrecare.test');
   await page.goto('/officina/dati');
   await page.getByRole('link', { name: 'Abbonamento' }).click();
 
-  // Il testo dipende dal piano attuale di Gomme Rossi (prova o pilota)
-  await expect(
-    page.getByText(/Prova gratuita|La prova è finita|Gratuito per tutta la durata del pilota/),
-  ).toBeVisible();
-  const piani = page.getByRole('region', { name: 'Piani disponibili' });
-  await expect(piani.getByText('29 €/mese', { exact: true })).toBeVisible();
-  await expect(piani.getByText('49 €/mese', { exact: true })).toBeVisible();
+  // Nel db di prova Gomme Rossi è in prova
+  await expect(page.getByText(/Prova gratuita: manc|La prova gratuita è finita/)).toBeVisible();
+  const prezzi = page.getByRole('region', { name: 'Prezzi' });
+  await expect(prezzi.getByText('100 €/mese', { exact: true })).toBeVisible();
+  await expect(prezzi.getByText('1000 €/anno', { exact: true })).toBeVisible();
+  await expect(prezzi.getByText(/Installazione e avvio: 149 € una tantum/)).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Cosa è incluso' })).toBeVisible();
 
-  // Nel db della CI Gomme Rossi è in prova: scelta del piano e pulsante attivo. Le Edge Functions non
-  // girano: il clic dà l'errore generico, in un riquadro con il focus.
-  await expect(page.getByRole('radio', { name: 'Starter — 29 €/mese' })).toBeChecked();
-  await expect(page.getByRole('radio', { name: 'Pro — 49 €/mese' })).not.toBeChecked();
-  await page.getByRole('radio', { name: 'Pro — 49 €/mese' }).check();
-  const attiva = page.getByRole('button', { name: "Attiva l'abbonamento" });
-  await expect(attiva).toBeEnabled();
-  await attiva.click();
-  const errore = page.getByRole('alert');
-  await expect(errore).toHaveText('Non riusciamo ad aprire il pagamento. Riprova tra poco.');
-  await expect(errore).toBeFocused();
-  await expect(attiva).toBeEnabled();
+  // Nessun pagamento nell'app: solo il link per scrivere a TyreCare
+  const contatta = page.getByRole('link', { name: 'Scrivi a TyreCare' });
+  await expect(contatta).toHaveAttribute('href', /^mailto:.+\?subject=Abbonamento/);
+  await expect(page.getByRole('button')).toHaveCount(0);
 });
 
 test("l'operatore non vede l'abbonamento", async ({ page }) => {

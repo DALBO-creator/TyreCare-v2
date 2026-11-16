@@ -12,10 +12,10 @@ Stato: **da impostare nel pannello** (non risulta fatto: controlla nel pannello 
 Apri il progetto di produzione e vai alle impostazioni di autenticazione del progetto (controlla il nome
 esatto nella pagina di Supabase: i nomi e i percorsi cambiano). Cerca le opzioni sulle password.
 
-1. **Lunghezza minima della password: 8.** Deve essere uguale a quella dell'app (`PASSWORD_MIN = 8` in
-   `packages/shared/src/auth.ts`). Il valore locale di `minimum_password_length` è già 8.
-2. **Requisiti dei caratteri: lettere e numeri** (oggi in locale `password_requirements` è vuoto, cioè
-   nessun requisito). Scegli l'opzione che richiede almeno una lettera e un numero.
+1. **Lunghezza minima della password: 10.** Deve essere uguale a quella dell'app (`PASSWORD_MIN = 10` in
+   `packages/shared/src/auth.ts`, dal 2026-11-16). Il valore locale di `minimum_password_length` è già 10.
+2. **Requisiti dei caratteri: lettere minuscole, maiuscole e numeri** (`lower_upper_letters_digits`, come
+   in locale). L'app controlla la stessa regola prima di inviare il modulo.
 3. **Protezione dalle password trapelate** (controllo contro elenchi di password note): attivala se la
    trovi. Potrebbe dipendere dal piano Supabase del progetto: da controllare; se non è disponibile,
    annotalo qui sotto e vai avanti.
@@ -27,13 +27,15 @@ esatto nella pagina di Supabase: i nomi e i percorsi cambiano). Cerca le opzioni
 
 ## Se cambia la lunghezza minima
 
-Se decidi una lunghezza diversa da 8, chiedi agli agenti un compito che allinei `PASSWORD_MIN` in
+Se decidi una lunghezza diversa da 10, chiedi agli agenti un compito che allinei `PASSWORD_MIN` in
 `packages/shared/src/auth.ts` e il messaggio dell'app, **prima o insieme** al cambio nel pannello. Se i due
 valori differiscono, l'utente vede l'errore di Supabase al posto di quello chiaro dell'app.
 
 ## Da verificare: i messaggi dell'app
 
-L'app controlla in anticipo solo la lunghezza (da 8 a 72 caratteri). I requisiti «lettere e numeri» li
+Dal 2026-11-16 l'app controlla in anticipo lunghezza (da 10 a 72 caratteri) e caratteri (maiuscola,
+minuscola, numero): il messaggio di Supabase compare solo se il pannello è più severo. Nota storica: prima i
+requisiti li
 controlla solo Supabase. Nel codice (`apps/web/src/lib/auth.ts`) il codice di errore `weak_password` è già
 tradotto in «Password troppo debole: scegline una più lunga o meno comune.», che però non dice che servono
 lettere e numeri. Il codice non è stato cambiato: è un compito per gli agenti (messaggio che nomini i
@@ -54,15 +56,7 @@ Con le impostazioni già salvate:
 Nota: gli account creati dal pannello ("Add user", vedi [`crea-officina.md`](crea-officina.md)) usano una
 password provvisoria che scegli tu: usa comunque una password che rispetti le stesse regole.
 
-## Autenticazione a due fattori: perché resta per dopo (R39)
+## Autenticazione a due fattori
 
-Nel pilota **non** c'è la 2FA. Servirebbero le pagine di iscrizione e di verifica del codice (TOTP) e
-l'accensione in `supabase/config.toml` (`[auth.mfa.totp]`, oggi `enroll_enabled = false` e
-`verify_enabled = false`): file in zona vietata agli agenti. Si è scelto di rimandarla dopo il pilota
-(decisione R39) e di compensare con le regole sulle password sopra.
-
-Quando servirà (dopo il pilota):
-
-1. Davide accende `[auth.mfa.totp]` e la stessa opzione nel pannello del progetto di produzione.
-2. Gli agenti ricevono un compito per le pagine di iscrizione e verifica (autenticazione: modello opus),
-   da imporre ai titolari e agli admin.
+**Fatta il 2026-11-16** (supera R39): ogni account può attivarla da Profilo → «Verifica in due passaggi»;
+per l'amministratore è obbligatoria. Impostazioni del cloud e dettagli in [`../SICUREZZA.md`](../SICUREZZA.md).

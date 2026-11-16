@@ -13,7 +13,7 @@ describe('RegistrazioneSchema', () => {
     nome: ' Giulia ',
     cognome: 'Verdi',
     email: ' giulia@esempio.it ',
-    password: 'abcdefgh',
+    password: 'Abcdefgh12',
     accetto: true,
   };
 
@@ -22,7 +22,7 @@ describe('RegistrazioneSchema', () => {
       nome: 'Giulia',
       cognome: 'Verdi',
       email: 'giulia@esempio.it',
-      password: 'abcdefgh',
+      password: 'Abcdefgh12',
       accetto: true,
     });
   });
@@ -88,7 +88,19 @@ describe('ModificaProfiloSchema', () => {
 describe('CambioPasswordSchema', () => {
   it('chiede la password attuale e una nuova abbastanza lunga', () => {
     const r = CambioPasswordSchema.safeParse({ attuale: '', password: 'corta' });
-    expect(r.error?.issues.map((i) => i.path[0])).toEqual(['attuale', 'password']);
+    expect([...new Set(r.error?.issues.map((i) => i.path[0]))]).toEqual(['attuale', 'password']);
+  });
+
+  it('chiede maiuscola, minuscola e numero', () => {
+    for (const password of ['abcdefghij1', 'ABCDEFGHIJ1', 'Abcdefghijk']) {
+      const r = CambioPasswordSchema.safeParse({ attuale: 'x', password });
+      expect(r.error?.issues[0]?.message).toBe(
+        'La password deve avere almeno una maiuscola, una minuscola e un numero',
+      );
+    }
+    expect(CambioPasswordSchema.safeParse({ attuale: 'x', password: 'Abcdefgh12' }).success).toBe(
+      true,
+    );
   });
 });
 

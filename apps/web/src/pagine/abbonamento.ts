@@ -1,109 +1,80 @@
-import { PIANI, giorniDiProva, oggiInItalia, type Piano } from '@tyrecare/shared';
 import {
-  apriPortale,
-  avviaPagamento,
+  CONTATTO_EMAIL,
+  FUNZIONI_INCLUSE,
+  GIORNI_PROVA,
+  PIANI,
+  PREZZO_INSTALLAZIONE,
+  PianoSchema,
+  formattaEuro,
+  linkContatto,
+  oggiInItalia,
+  prezzoPiano,
+  type Piano,
+} from '@tyrecare/shared';
+import { Check, Mail } from 'lucide';
+import {
+  COLORE_STATO_ABBONAMENTO,
+  ETICHETTE_STATO_ABBONAMENTO,
   caricaAbbonamento,
+  descrizionePiano,
+  riassuntoAbbonamento,
+  testoRichiesta,
   type AbbonamentoOfficina,
 } from '../lib/abbonamento';
-import { ErroreModulo } from '../lib/errori';
 import { esc } from '../lib/html';
 import { caricaContestoOfficina, eTitolare } from '../lib/officina';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
+import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
-import {
-  formattaData,
-  gestisciErroreCaricamento,
-  intestazioneSottopagina,
-  mostraErroreInBox,
-  nascondiBox,
-  parametro,
-} from './comune';
+import { formattaData, gestisciErroreCaricamento, intestazioneSottopagina } from './comune';
 
-// "Abbonamento" (solo il TITOLARE): piano attuale, giorni di prova, piani disponibili e pagamento con Stripe
-// (la pagina di pagamento è ospitata da Stripe: qui si sceglie il piano e si va lì).
+// "Abbonamento" (solo il TITOLARE), in sola lettura: piano, stato, prossima scadenza, cosa è incluso e
+// prezzi. Nell'app non si paga: per attivare, rinnovare o cambiare piano si scrive a TyreCare e
+// l'amministratore aggiorna l'abbonamento quando riceve il bonifico.
 
-/** Avviso al ritorno da Stripe (`?pagamento=ok|annullato`); `null` per qualsiasi altro valore. */
-export function avvisoPagamento(valore: string | null): string | null {
-  if (valore === 'ok') return "Pagamento ricevuto: l'abbonamento si aggiorna entro pochi minuti.";
-  if (valore === 'annullato') return 'Pagamento annullato: non ti è stato addebitato nulla.';
-  return null;
+const TONO_AVVISO = { ok: 'verde', attenzione: 'giallo', azione: 'rosso' } as const;
+
+function riga(etichetta: string, valore: string): string {
+  return `<div class="tc-abbonamento__riga"><dt>${esc(etichetta)}</dt><dd>${valore}</dd></div>`;
 }
 
-type PianoACarico = Exclude<Piano, 'PILOTA'>;
-const PIANI_A_CARICO: readonly PianoACarico[] = ['STARTER', 'PRO'];
-
-function sceltaPiano(attuale: Piano): string {
-  const preselezionato: PianoACarico = attuale === 'PRO' ? 'PRO' : 'STARTER';
-  const radio = PIANI_A_CARICO.map((piano) => {
-    const p = PIANI[piano];
-    return `<div class="form-check">
-        <input class="form-check-input" type="radio" name="piano" id="tc-scelta-${piano}" value="${piano}"${piano === preselezionato ? ' checked' : ''}>
-        <label class="form-check-label" for="tc-scelta-${piano}">${esc(p.nome)} — ${p.prezzoMensile} €/mese</label>
-      </div>`;
-  }).join('');
-  return `<fieldset class="mb-3">
-      <legend class="h6">Scegli il piano</legend>
-      ${radio}
-    </fieldset>`;
+function situazione(a: AbbonamentoOfficina): string {
+  const r = riassuntoAbbonamento(a, oggiInItalia(), formattaData);
+  const installazione = a.installazione_pagata
+    ? `Pagata${a.installazione_pagata_il ? ` il ${esc(formattaData(a.installazione_pagata_il))}` : ''}`
+    : `Da pagare (${formattaEuro(PREZZO_INSTALLAZIONE)} una tantum)`;
+  return `
+    <div class="tc-avviso tc-avviso--${TONO_AVVISO[r.tono]}" role="status" data-stato-abbonamento>
+      <div>
+        <p class="mb-0 fw-semibold">${esc(r.titolo)}</p>
+        ${r.dettaglio ? `<p class="mb-0">${esc(r.dettaglio)}</p>` : ''}
+      </div>
+    </div>
+    <dl class="tc-abbonamento tc-lista">
+      ${riga(
+        'Stato',
+        `<span class="tc-stato tc-stato--${COLORE_STATO_ABBONAMENTO[a.stato]}">${ETICHETTE_STATO_ABBONAMENTO[a.stato]}</span>`,
+      )}
+      ${riga('Piano', esc(descrizionePiano(a)))}
+      ${a.iniziato_il ? riga('Abbonato dal', esc(formattaData(a.iniziato_il))) : ''}
+      ${
+        a.scade_il
+          ? riga('Prossima scadenza', esc(formattaData(a.scade_il)))
+          : riga('Fine della prova', esc(formattaData(a.prova_fino_al)))
+      }
+      ${riga('Installazione', installazione)}
+    </dl>`;
 }
 
-export function testoStato(a: AbbonamentoOfficina): string {
-  if (a.piano === 'PILOTA') return 'Gratuito per tutta la durata del pilota';
-  switch (a.stato) {
-    case 'PROVA': {
-      const giorni = giorniDiProva(a.prova_fino_al, oggiInItalia());
-      if (giorni === 0) return 'La prova è finita';
-      const quanti = giorni === 1 ? 'manca 1 giorno' : `mancano ${giorni} giorni`;
-      return `Prova gratuita: ${quanti} (fino al ${formattaData(a.prova_fino_al)})`;
-    }
-    case 'ATTIVO':
-      return 'Abbonamento attivo';
-    case 'SCADUTO':
-      return 'Abbonamento scaduto';
-    case 'ANNULLATO':
-      return 'Abbonamento annullato';
-  }
-}
-
-/** Pulsante e nota del pagamento solo se c'è qualcosa da pagare: non per il pilota né per chi è già a posto. */
-export function mostraPagamento(a: AbbonamentoOfficina | null): boolean {
-  return (
-    a !== null &&
-    a.piano !== 'PILOTA' &&
-    (a.stato === 'PROVA' || a.stato === 'SCADUTO' || a.stato === 'ANNULLATO')
-  );
-}
-
-/**
- * Pulsante "Gestisci il pagamento": serve un cliente Stripe; nel pilota (gratuito) solo se c'è ancora
- * una subscription viva da gestire o annullare.
- */
-export function mostraPortale(a: AbbonamentoOfficina | null): boolean {
-  return (
-    a !== null &&
-    !!a.stripe_customer_id?.trim() &&
-    (a.piano !== 'PILOTA' || !!a.stripe_subscription_id?.trim())
-  );
-}
-
-/**
- * Frase unica per il pilota con una subscription ancora viva (stessa condizione del pulsante
- * "Gestisci il pagamento"): sostituisce "è a posto" e la nota sul vecchio abbonamento. Altrimenti null.
- */
-export function testoPilotaConSubscription(a: AbbonamentoOfficina | null): string | null {
-  if (a?.piano !== 'PILOTA' || !mostraPortale(a)) return null;
-  return 'Sei nel pilota: TyreCare per te è gratuito. Hai ancora un abbonamento a pagamento attivo: annullalo da «Gestisci il pagamento» per non pagarlo.';
-}
-
-function cartaPiano(piano: Exclude<Piano, 'PILOTA'>): string {
+function cartaPiano(piano: Piano, attuale: Piano | null): string {
   const p = PIANI[piano];
   return `
-    <section class="tc-lista p-3" aria-labelledby="tc-piano-${piano}">
-      <h3 id="tc-piano-${piano}" class="h5 mb-1">${esc(p.nome)}</h3>
-      <p class="fw-bold mb-2">${p.prezzoMensile} €/mese</p>
-      <ul class="mb-0 ps-3">
-        ${p.funzioni.map((f) => `<li>${esc(f)}</li>`).join('')}
-      </ul>
+    <section class="tc-officine__piano" aria-labelledby="tc-piano-${piano}">
+      <h3 id="tc-piano-${piano}" class="tc-officine__piano-nome">${esc(p.nome)}${
+        piano === attuale ? ' <span class="tc-stato tc-stato--nessuno">Il tuo piano</span>' : ''
+      }</h3>
+      <p class="tc-officine__piano-prezzo">${esc(prezzoPiano(piano))}</p>
+      ${p.nota ? `<p class="mb-0 text-body-secondary">${esc(p.nota)}</p>` : ''}
     </section>`;
 }
 
@@ -111,13 +82,14 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
   const n = visualizzazioneCorrente();
   app.innerHTML = paginaApp(caricamento());
   let titolare: boolean;
-  let officinaId: string;
+  let ragioneSociale: string;
   let abbonamento: AbbonamentoOfficina | null = null;
   try {
     const contesto = await caricaContestoOfficina();
-    officinaId = contesto.attiva.officina.id;
-    titolare = eTitolare(contesto.officine, officinaId);
-    if (titolare) abbonamento = await caricaAbbonamento(officinaId);
+    const { officina } = contesto.attiva;
+    ragioneSociale = officina.ragione_sociale;
+    titolare = eTitolare(contesto.officine, officina.id);
+    if (titolare) abbonamento = await caricaAbbonamento(officina.id);
   } catch (errore) {
     await gestisciErroreCaricamento(app, n, errore);
     return;
@@ -135,84 +107,53 @@ export async function mostraAbbonamento(app: HTMLElement): Promise<void> {
     return;
   }
 
-  const attuale = abbonamento
-    ? `<p class="mb-1"><strong>${esc(PIANI[abbonamento.piano].nome)}</strong></p>
-       <p class="mb-0">${esc(testoStato(abbonamento))}</p>`
-    : '<p class="mb-0">Abbonamento non trovato: scrivici con «Invia un commento».</p>';
-
-  let azione = '';
-  if (mostraPagamento(abbonamento)) {
-    azione = `${sceltaPiano(abbonamento?.piano ?? 'STARTER')}
-      <div class="tc-avviso tc-avviso--rosso mb-3" data-errore-pagamento role="alert" tabindex="-1" hidden></div>
-      <button type="button" class="btn btn-primary btn-lg w-100" data-attiva>Attiva l'abbonamento</button>`;
-  } else if (abbonamento) {
-    const frasePilota = testoPilotaConSubscription(abbonamento);
-    azione = `<p class="mb-0">${esc(frasePilota ?? 'Il tuo abbonamento è a posto: non devi fare nulla.')}</p>`;
-  }
-  if (mostraPortale(abbonamento)) {
-    azione += `
-      <div class="tc-avviso tc-avviso--rosso mb-3 mt-3" data-errore-portale role="alert" tabindex="-1" hidden></div>
-      <button type="button" class="btn btn-outline-primary w-100 mt-3" data-portale>Gestisci il pagamento</button>`;
-  }
-
-  const testoAvviso = avvisoPagamento(parametro('pagamento'));
-  const avviso = testoAvviso
-    ? `<div class="tc-avviso tc-avviso--verde" role="status"><p class="mb-0">${esc(testoAvviso)}</p></div>`
-    : '';
+  const contatto = linkContatto(
+    `Abbonamento TyreCare — ${ragioneSociale}`,
+    testoRichiesta(ragioneSociale),
+  );
 
   app.innerHTML = paginaApp(`
     ${intestazioneSottopagina('Abbonamento', 'Officina')}
     <div class="tc-contenuto">
-      ${avviso}
       <section aria-labelledby="tc-attuale">
-        <h2 id="tc-attuale" class="tc-etichetta">Il tuo piano</h2>
-        ${attuale}
+        <h2 id="tc-attuale" class="tc-etichetta">Il tuo abbonamento</h2>
+        ${
+          abbonamento
+            ? situazione(abbonamento)
+            : `<div class="tc-avviso tc-avviso--giallo" role="status">
+                <p class="mb-0">Non troviamo l'abbonamento della tua officina: scrivici e lo sistemiamo.</p>
+              </div>`
+        }
       </section>
-      <section aria-labelledby="tc-piani">
-        <h2 id="tc-piani" class="tc-etichetta">Piani disponibili</h2>
-        <div class="d-grid gap-3">
-          ${cartaPiano('STARTER')}
-          ${cartaPiano('PRO')}
+
+      <section aria-labelledby="tc-prezzi">
+        <h2 id="tc-prezzi" class="tc-etichetta">Prezzi</h2>
+        <div class="tc-officine__piani">
+          ${PianoSchema.options.map((p) => cartaPiano(p, abbonamento?.piano ?? null)).join('')}
         </div>
+        <p class="small text-body-secondary mt-2 mb-0">
+          Installazione e avvio: ${formattaEuro(PREZZO_INSTALLAZIONE)} una tantum. Prezzi IVA esclusa.
+          I primi ${GIORNI_PROVA} giorni sono di prova gratuita.
+        </p>
       </section>
-${azione}
+
+      <section aria-labelledby="tc-incluso">
+        <h2 id="tc-incluso" class="tc-etichetta">Cosa è incluso</h2>
+        <ul class="tc-abbonamento__incluso">
+          ${FUNZIONI_INCLUSE.map((f) => `<li>${icona(Check)}<span>${esc(f)}</span></li>`).join('')}
+        </ul>
+      </section>
+
+      <section class="tc-azione" aria-labelledby="tc-rinnova">
+        <h2 id="tc-rinnova" class="tc-etichetta">Rinnovare o cambiare piano</h2>
+        <p>
+          Il pagamento avviene con bonifico, su fattura: nell'app non si paga nulla. Scrivici e ti
+          mandiamo i dati; appena riceviamo il pagamento aggiorniamo qui la scadenza.
+        </p>
+        <a class="btn btn-primary btn-lg w-100" href="${esc(contatto)}" data-contatta>
+          ${icona(Mail)} Scrivi a TyreCare
+        </a>
+        <p class="small text-body-secondary text-center mt-2 mb-0">${esc(CONTATTO_EMAIL)}</p>
+      </section>
     </div>`);
-
-  collegaAzione(
-    app.querySelector<HTMLButtonElement>('[data-attiva]'),
-    app.querySelector<HTMLElement>('[data-errore-pagamento]'),
-    () => {
-      const scelto = app.querySelector<HTMLInputElement>('input[name="piano"]:checked')?.value;
-      return avviaPagamento(officinaId, scelto === 'PRO' ? 'PRO' : 'STARTER');
-    },
-  );
-  collegaAzione(
-    app.querySelector<HTMLButtonElement>('[data-portale]'),
-    app.querySelector<HTMLElement>('[data-errore-portale]'),
-    () => apriPortale(officinaId),
-  );
-}
-
-/** Click che porta a Stripe: pulsante disattivato durante la chiamata, errore nel suo box e pulsante riattivato. */
-function collegaAzione(
-  pulsante: HTMLButtonElement | null,
-  boxErrore: HTMLElement | null,
-  azione: () => Promise<void>,
-): void {
-  pulsante?.addEventListener('click', async () => {
-    pulsante.disabled = true;
-    nascondiBox(boxErrore);
-    try {
-      await azione();
-      // Si lascia il pulsante disattivato: il browser sta andando alla pagina di Stripe.
-    } catch (errore) {
-      mostraErroreInBox(
-        boxErrore,
-        errore instanceof ErroreModulo
-          ? errore.message
-          : 'Non riusciamo ad aprire il pagamento. Riprova tra poco.',
-      );
-      pulsante.disabled = false;
-    }
-  });
 }

@@ -57,8 +57,9 @@ L'elenco corrisponde ai dati effettivamente registrati dall'app.
 - ragione sociale, partita IVA, indirizzo, CAP, città, provincia, posizione sulla mappa, telefono, email,
   orari di apertura, chiusure straordinarie, catalogo dei servizi con durata e prezzo indicativo, stato
   dell'affiliazione;
-- stato dell'abbonamento (piano, prova, attivo, scaduto, annullato) e i dati necessari per la
-  fatturazione.
+- abbonamento: piano (mensile o annuale), stato (prova, attivo, scaduto, sospeso), fine della prova,
+  date di inizio e di scadenza, pagamento dell'installazione, importo concordato e note interne di chi
+  amministra TyreCare; i dati necessari per la fatturazione.
 
 **L'app non gestisce pagamenti.** I clienti pagano i lavori direttamente in officina. Le officine pagano
 l'installazione e l'abbonamento a TyreCare fuori dall'app, con fattura. TyreCare non raccoglie e non

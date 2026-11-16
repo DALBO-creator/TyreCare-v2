@@ -4,6 +4,42 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione 2026-11-16 — integrazione dei rami di lancio (branch `claude/integrazione-lancio`)
+
+**Fatto**
+
+- Controllati i rami non uniti: le PR degli agenti ai-org erano già tutte su main (fino alla #98). Restavano
+  `claude/pannello-admin` (2026-11-12) e i rami della sessione notturna del 2026-11-14 (`lancio/legale`,
+  `lancio/sicurezza`, `lancio/admin`, scritti in parte da Fable 5.2 e salvati a metà). `lancio/desktop` era
+  vuoto (il layout da computer era già su main); `chore/db-stop` già assorbito da main.
+- **Pannello admin** unito su main aggiornato; i pgTAP aggiunti dopo il 2026-11-12 simulano ora `aal2`.
+- **Legale:** testi definitivi, cookie policy `/cookie`, `DATI_FORNITORE`/`SITO_URL`, età minima 14 anni.
+  Nei conflitti con `lancio/admin` tenuti i testi definitivi; l'informativa elenca i campi del nuovo
+  abbonamento.
+- **Sicurezza, completata:** permessi minimi (`anon`, funzioni dei trigger, membri dell'officina, endpoint
+  push) e 2FA per tutti (`due_fattori`). Aggiunti ciò che mancava: richiesta del codice nel router per chi
+  ha la 2FA con sessione `aal1`, rotta `/profilo/sicurezza` con link nel Profilo, messaggi d'errore TOTP,
+  `config.toml` allineato alle nuove password (10 caratteri, maiuscola, minuscola, numero), e2e dell'admin
+  sulla nuova schermata, test unitari delle password, `DOCS/SICUREZZA.md` (citato dalla migrazione ma mai
+  scritto).
+- **Admin / abbonamento manuale, completato:** Stripe tolto (funzioni, tabelle, test), abbonamento
+  MENSILE/ANNUALE gestito a mano. Mancava la schermata per l'admin: nuova pagina `/admin/abbonamento?id=…`
+  (rinnovo di un mese/anno, installazione pagata, modulo completo con note interne) e migrazione
+  `20261116000100_admin_leggi_abbonamento.sql` (le note interne non erano leggibili nemmeno dall'admin);
+  unit test, pgTAP `admin-leggi-abbonamento`, e2e `admin-abbonamento`.
+- Documenti: `NOTES.md` (abbonamento manuale, 2FA per tutti), `PLAN.md` (P24 doppio → P25 abbonamento
+  manuale, nuova P26 2FA e password), README legale, `pilota/sicurezza-account.md`,
+  `pilota/pubblicazione.md` (`--include-all`), `PRODUZIONE-MARKETING.md` (valutazione in caso di cessione
+  dal vecchio ramo `claude/valutazione-app`, con nota sui prezzi nuovi).
+- Verifiche: `npm run check` verde, pgTAP tutti verdi su database pulito, e2e (vedi sotto).
+- Merge su main e `db push --include-all` sul cloud (vedi NEXT).
+
+**Non fatto / limiti**
+
+- Le impostazioni del pannello Supabase (password, MFA) e la pulizia di Stripe sul cloud restano a Davide
+  (`DOCS/SICUREZZA.md`).
+- La coda di ai-org può contenere compiti su Stripe ormai superati: da ripulire.
+
 ### Sessione agenti — 2026-11-16 — ciclo 20261116-03 — T277 T290 T292 T272
 
 **Fatto**

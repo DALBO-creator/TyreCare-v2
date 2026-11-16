@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { PIANI, giorniDiProva } from './abbonamenti';
+import {
+  PIANI,
+  PREZZO_INSTALLAZIONE,
+  formattaEuro,
+  giorniDiProva,
+  prezzoPiano,
+  ricavoMensile,
+} from './abbonamenti';
 
 describe('giorniDiProva', () => {
   it("l'ultimo giorno della prova vale 1", () => {
@@ -28,11 +35,33 @@ describe('giorniDiProva', () => {
   });
 });
 
-describe('PIANI', () => {
-  it('ha i prezzi di Starter e Pro e il pilota gratuito', () => {
-    expect(PIANI.STARTER.prezzoMensile).toBe(29);
-    expect(PIANI.PRO.prezzoMensile).toBe(49);
-    expect(PIANI.PILOTA.prezzoMensile).toBeNull();
-    expect(PIANI.PILOTA.nome).toBe('Officina pilota');
+describe('prezzi', () => {
+  it('listino: 100 €/mese, 1000 €/anno, installazione 149 €', () => {
+    expect(PIANI.MENSILE.prezzo).toBe(100);
+    expect(PIANI.ANNUALE.prezzo).toBe(1000);
+    expect(PREZZO_INSTALLAZIONE).toBe(149);
+  });
+
+  it('il piano annuale costa come 10 mesi (2 mesi gratis)', () => {
+    expect(PIANI.ANNUALE.prezzo).toBe(PIANI.MENSILE.prezzo * 10);
+  });
+
+  it('formattaEuro: interi senza decimali, gli altri con due', () => {
+    expect(formattaEuro(100)).toBe('100 €');
+    expect(formattaEuro(83.333)).toBe('83,33 €');
+    expect(formattaEuro(89.5)).toBe('89,50 €');
+  });
+
+  it('prezzoPiano: listino o importo concordato', () => {
+    expect(prezzoPiano('MENSILE')).toBe('100 €/mese');
+    expect(prezzoPiano('ANNUALE', 900)).toBe('900 €/anno');
+    expect(prezzoPiano('MENSILE', null)).toBe('100 €/mese');
+    expect(prezzoPiano('MENSILE', 0)).toBe('0 €/mese');
+  });
+
+  it('ricavoMensile: l’annuale si divide per 12', () => {
+    expect(ricavoMensile('MENSILE')).toBe(100);
+    expect(ricavoMensile('ANNUALE', 1200)).toBe(100);
+    expect(ricavoMensile('ANNUALE')).toBeCloseTo(83.33, 2);
   });
 });

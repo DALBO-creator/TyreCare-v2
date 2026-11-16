@@ -42,7 +42,7 @@
 
 | Voce | €/anno |
 |------|-------:|
-| Commissioni Stripe (~1,5% + 0,25 € a pagamento mensile) | ≈ 10 |
+| Commissioni di incasso (bonifico: nessuna) | 0 |
 | Quota infrastruttura aggiuntiva (storage foto, traffico) | ≈ 10 |
 | Assistenza e manutenzione (~0,5 h/mese valorizzate 25 €/h) | 150 |
 | **Totale** | **≈ 170** |
@@ -53,9 +53,13 @@
 
 | Piano | Prezzo | Contenuto |
 |-------|-------:|-----------|
-| **Starter** | 29 €/mese (348 €/anno) | Import dati, garage officina, storico e report, stato pneumatici, reminder |
-| **Pro** | 49 €/mese (588 €/anno) | Starter + prenotazioni, catalogo servizi, notifiche illimitate, statistiche |
-| **Attivazione** (una tantum) | 149 € | Installazione, configurazione, primo import, formazione |
+| **Mensile** | 100 €/mese (1200 €/anno) | Tutte le funzioni |
+| **Annuale** | 1000 €/anno (2 mesi gratis) | Tutte le funzioni |
+| **Installazione** (una tantum) | 149 € | Installazione, configurazione, primo import, formazione |
+
+> **Aggiornamento 2026-11-13 (PLAN P25):** un solo piano con tutte le funzioni, mensile o annuale, IVA
+> esclusa; pagamento con bonifico su fattura, nessun pagamento nell'app. I vecchi piani Starter (29 €) e
+> Pro (49 €) non esistono più: le stime dei paragrafi seguenti, fatte con quei prezzi, sono da rifare.
 
 Sconto suggerito: 2 mesi gratis con pagamento annuale. Manutenzione e aggiornamenti sono **inclusi**
 nell'abbonamento.
@@ -124,3 +128,93 @@ Quando TyreCare diventerà un gestionale completo potrà essere proposto **in so
 con un prezzo vicino al riferimento di mercato (es. 69–89 €/mese, cioè 828–1.068 €/anno) e margini più alti.
 Richiede però funzioni obbligatorie (es. fatturazione elettronica) e molto più sviluppo e assistenza: da
 pianificare dopo aver validato il prodotto con le prime officine.
+
+## 7. Valutazione dell'app in caso di cessione
+
+> **Stima indicativa** (ottobre 2026), non una perizia. La vendita **non è in programma**: la sezione serve a
+> capire quanto vale il progetto e quali scelte lo fanno crescere. Per una cessione reale servono un
+> commercialista e un contratto di cessione dei diritti scritto da un legale.
+>
+> **Nota 2026-11-16:** i ricavi qui sotto usano i prezzi di ottobre (468 €/anno medi per officina). Con i
+> prezzi di PLAN P25 (1.000–1.200 €/anno) ricavi e valori della tabella vanno circa raddoppiati.
+
+Regola di fondo: **il valore non dipende dal codice ma da quante officine pagano.** Un'app finita ma senza
+clienti vale poco; la stessa app con 50 officine abbonate vale circa dieci volte tanto.
+
+### 7.1 Metodo del costo di rifacimento
+
+Stato al 2026-10-12: circa 15.600 righe di TypeScript/SQL, monorepo, RLS, test unitari ed end-to-end, CI,
+documentazione completa; roadmap alla Fase 4 di 7.
+
+- Ore per arrivare all'app finita (Fasi 0–7): circa **600–900 h**.
+- A 35–50 €/h (sviluppatore italiano) → **20.000–45.000 €**.
+
+È il **tetto massimo**, non il prezzo di vendita: chi compra non paga quello che è costato costruirla, e con
+l'AI rifarla costa sempre meno. Il solo codice, senza clienti, si vende in genere a **5.000–25.000 €**.
+
+### 7.2 Metodo del multiplo dei ricavi (quello usato davvero)
+
+Le piccole app SaaS si vendono di solito a **2–4 volte i ricavi ricorrenti annui (ARR)**. Con il ricavo medio
+del § 4 (468 €/anno per officina):
+
+| Officine paganti | Ricavi annui | Valore indicativo |
+|-----------------:|-------------:|------------------:|
+| 0 (app finita, nessun cliente) | 0 € | 5–25k € |
+| 20 (circa il BEP) | 9.400 € | 20–40k € |
+| 50 | 23.400 € | 50–95k € |
+| 100 | 46.800 € | 100–190k € |
+| 300 | 140.000 € | 350–600k € |
+
+Il multiplo sale verso 4x e oltre con **poche disdette**, clienti in crescita e un'app che **funziona senza il
+fondatore**; scende verso 1–2x se tutto dipende da una sola persona.
+
+### 7.3 Acquirente strategico
+
+I compratori più interessanti non sono investitori generici:
+
+- **produttori di gestionali per gommisti** (es. il fornitore di GESTITYRE): TyreCare darebbe loro l'app per
+  i clienti finali che a loro manca;
+- **reti di distributori e franchising di pneumatici**, interessati a fidelizzare i clienti delle officine.
+
+Per loro contano i **clienti finali registrati** e i **dati sui pneumatici**, non le righe di codice: possono
+pagare sopra il multiplo dei ricavi. Alternativa alla vendita: **licenza white-label** con canone annuo, che a
+volte rende più della cessione.
+
+### 7.4 Cosa aumenta e cosa abbassa il valore
+
+**A favore:**
+
+- abbonamento ricorrente;
+- mercato specifico (gommisti) non ancora presidiato;
+- documentazione in `DOCS/` che rende facile la due diligence;
+- test, CI e uno stack moderno e diffuso;
+- licenza proprietaria già scritta ([`LICENSE.md`](LICENSE.md)).
+
+**Contro:**
+
+- **dipendenza dall'export dei gestionali**: se il produttore cambia il formato o fa un'app simile, il prodotto
+  è a rischio;
+- tutto dipende da una sola persona;
+- notifiche push su iPhone solo con l'app installata nella schermata Home (PLAN P5);
+- niente fatturazione elettronica, quindi non sostituisce un gestionale (§ 6);
+- funzionalità facili da copiare.
+
+**Da sistemare prima di qualsiasi trattativa:**
+
+- **marchio "TyreCare"**: verificare che sia libero e registrarlo (§ 2.1); un nome contestato pesa molto sul
+  prezzo;
+- **proprietà del codice**: parte del lavoro è fatta sul PC della scuola. Di solito non crea problemi, ma va
+  accertato che la scuola non abbia diritti su quanto sviluppato.
+
+### 7.5 Sintesi
+
+| Situazione | Valore realistico |
+|------------|------------------:|
+| Oggi (Fase 4, nessun ricavo) | 2–10k € |
+| App finita, nessun cliente | 5–25k € |
+| Pilota fatto + 10–20 officine paganti | 15–45k € |
+| 50 officine | ~50–100k € |
+| 100+ officine con poche disdette | 100–200k €+ |
+
+Il passaggio che fa crescere di più il valore è il **pilota con LA SANTI GOMME e le prime 20 officine
+paganti**: lì l'app smette di essere "codice" e diventa "un'attività che funziona".

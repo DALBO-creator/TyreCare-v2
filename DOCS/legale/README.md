@@ -20,9 +20,10 @@
 Le bozze di DPA e registro sono state aggiunte il 2026-10-22 (compito T014), quella della procedura per le
 violazioni il 2026-10-24 (compito T037), quella del registro degli accessi con le istruzioni sulle copie di
 sicurezza ([`../pilota/copie-di-sicurezza.md`](../pilota/copie-di-sicurezza.md)) con T048. Il contratto di
-abbonamento per le officine non è più "da fare": le condizioni di abbonamento e pagamento con Stripe sono in
-bozza nei termini (§10), nell'informativa e nel registro (A7) con T190, e il DPA rimanda ai termini §10.
-Restano da completare recesso, fatturazione e IVA.
+abbonamento per le officine non è più "da fare": le condizioni di abbonamento sono in bozza nei termini
+(§10), nell'informativa e nel registro (A7), e il DPA rimanda ai termini §10. Dal 2026-11-13 nell'app non
+c'è nessun pagamento: installazione e abbonamento si pagano con bonifico su fattura (decisione del
+titolare). Restano da completare recesso, fatturazione e IVA.
 
 ## Come sono state scritte
 
@@ -52,8 +53,9 @@ Nei documenti sono segnati con `[DA COMPLETARE: …]`. Si possono compilare nell
 - [DA COMPLETARE: eventuale PEC e responsabile della protezione dei dati (DPO), se nominato]
 - [DA COMPLETARE: dominio e indirizzo web di TyreCare (P23)]
 - Scelte da fare (meglio con il consulente): tempi di conservazione, età minima, regione dei server di
-  Vercel e di Resend, ruolo di Stripe, recesso, fatturazione e IVA dell'abbonamento, foro competente.
-  Piani, prezzi e prova sono decisi (R5, R19, R29) e stanno nell'app, non nei termini.
+  Vercel e di Resend, recesso, fatturazione e IVA dell'abbonamento, foro competente.
+  Prezzi e prova sono decisi (installazione 149 €, 100 €/mese o 1000 €/anno IVA esclusa, 30 giorni di
+  prova) e stanno nell'app, non nei termini.
 
 ## Da fare prima del lancio (misure di sicurezza che oggi mancano)
 
@@ -84,10 +86,12 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
   quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
   rivedere; restano da completare i contatti e il termine del DPA §12.1.
-- [~] **Autenticazione a due fattori** per titolari delle officine e amministratori: **fatta per
-  l'amministratore** (2026-11-12, obbligatoria: `is_admin()` richiede `aal2`; azioni dell'admin nel registro
-  `admin_registro`); per i titolari resta da fare.
-- [ ] **Regole sulle password più robuste:** oggi solo lunghezza minima 8 (`password_requirements = ""`) e
+- [x] **Autenticazione a due fattori** per titolari delle officine e amministratori: obbligatoria per
+  l'amministratore (2026-11-12, `is_admin()` richiede `aal2`; azioni nel registro `admin_registro`),
+  attivabile da tutti dal Profilo (2026-11-16, PLAN P26, `DOCS/SICUREZZA.md`).
+- [~] **Regole sulle password più robuste:** nell'app e in `config.toml` dal 2026-11-16 almeno 10 caratteri
+  con maiuscola, minuscola e numero (P26); restano da impostare nel pannello di produzione. Prima: solo
+  lunghezza minima 8 (`password_requirements = ""`) e
   `secure_password_change = false` (cambio password senza riautenticazione recente); da impostare nel
   pannello di produzione, vedi [sicurezza degli account](../pilota/sicurezza-account.md).
 - [~] **Intestazioni di sicurezza del sito:** in parte fatto (T036): intestazioni attive (nosniff,
@@ -157,14 +161,13 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
     consumo, artt. 1341–1342 c.c.)? E l'officina che accetta è **titolare autonomo** del trattamento di
     posizione e telefono (registro A6, ruolo ancora da confermare), o agisce per conto di TyreCare?
     Chi elimina l'account cancella con esso anche le proprie richieste di aiuto su strada (a cascata).
-16. **Abbonamenti e pagamenti con Stripe (termini §10, informativa, registro A7).** Le officine pagheranno
-    l'abbonamento mensile con carta su una pagina di Stripe; TyreCare conserva solo gli identificativi
-    del cliente e dell'abbonamento Stripe, il piano e lo stato, e manda a Stripe email del titolare,
-    ragione sociale e codice dell'officina. Che **ruolo** ha Stripe (titolare autonomo, responsabile o
-    altro)? Come si regola il **trasferimento extra UE** (Stripe ha società negli USA)? Servono
-    clausole nel contratto con le officine? Mancano anche recesso, fatturazione e IVA, e da quando vale
-    l'annullamento (subito o a fine periodo). Il pagamento online vale dalla data di attivazione ancora da
-    fissare: finché non c'è, le bozze non vanno date come funzione già in uso.
+16. **Abbonamenti delle officine (termini §10, informativa, registro A7).** Nell'app non c'è nessun
+    pagamento: le officine pagano installazione e abbonamento (mensile o annuale) con bonifico su
+    fattura, e l'amministratore di TyreCare registra a mano piano, scadenza e installazione pagata.
+    TyreCare conserva piano, stato, date, importo concordato e note interne; nessun dato di pagamento
+    passa dall'app e nessun fornitore di pagamenti riceve dati. Mancano recesso, fatturazione e IVA,
+    rinnovo (tacito o no) e cosa succede alla scadenza (oggi: nessun blocco automatico, la sospensione
+    la decide TyreCare).
 17. **Errori dell'app (informativa §2, §3, §4 e §6, registro A8, R33).** Gli errori non gestiti e quelli
     di caricamento delle pagine di chi ha un account (indirizzo della pagina senza la parte dopo `?` e
     `#`, messaggio, dettaglio tecnico, versione, browser, account) vanno in una tabella che legge solo

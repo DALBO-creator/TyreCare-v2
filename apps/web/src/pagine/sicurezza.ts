@@ -94,7 +94,9 @@ function moduloAttivazione(app: HTMLElement, attivazione: Attivazione): void {
   app.querySelector('[data-segreto]')!.textContent = attivazione.segreto;
   collegaModulo(app.querySelector('form')!, VerificaMfaSchema, async ({ codice }) => {
     await verificaCodice(codice, attivazione.id);
-    tornaAlProfilo('Verifica in due passaggi attivata: al prossimo accesso ti chiederemo il codice.');
+    tornaAlProfilo(
+      'Verifica in due passaggi attivata: al prossimo accesso ti chiederemo il codice.',
+    );
   });
 }
 

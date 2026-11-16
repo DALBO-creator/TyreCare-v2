@@ -53,6 +53,10 @@ npx supabase db push                 # le applica, in ordine, e chiede conferma
 Leggi l'elenco del `--dry-run`: deve contenere solo migrazioni nuove (quelle di `git diff`). Se elenca
 cose che non ti aspetti, fermati e passa l'elenco agli agenti.
 
+Se il comando si rifiuta perché alcune migrazioni locali sono **più vecchie** dell'ultima già sul cloud
+(succede: gli agenti numerano le loro `20261108…`, il pannello admin era `20261112…`), aggiungi
+`--include-all` sia al `--dry-run` sia al push: le applica comunque, in ordine di nome.
+
 ## 4. La funzione `invia-notifica`
 
 ```powershell
@@ -63,20 +67,7 @@ Va con `--no-verify-jwt` perché la chiama il database con un segreto suo (`x-se
 loggato: è lo stesso valore `verify_jwt = false` di `supabase/config.toml`. I segreti della funzione (email
 di riserva: `EMAIL_NOTIFICHE`, ecc.) restano com'erano: non vanno reimpostati a ogni pubblicazione.
 
-## 5. Le funzioni Stripe (solo dopo D8)
-
-Falle solo quando hai finito [`stripe-prova.md`](stripe-prova.md) (voce D8): prima non servono.
-
-```powershell
-npx supabase functions deploy stripe-checkout
-npx supabase functions deploy stripe-portale
-npx supabase functions deploy stripe-webhook --no-verify-jwt
-```
-
-Il webhook ha `--no-verify-jwt` perché Stripe non manda il JWT di Supabase (la sicurezza è la firma
-`whsec_…`); le altre due verificano l'utente loggato.
-
-## 6. Controllo finale
+## 5. Controllo finale
 
 - **Pagina admin "Officine"**: il riquadro del database mostra «Database aggiornato» (arriverà con T247).
 - **Finché T247 non c'è**, in alternativa uno di questi due:

@@ -184,8 +184,9 @@ test.describe('amministratore', () => {
   });
 
   // Elenco vuoto o con commenti, a seconda di cosa hanno scritto gli altri test: la pagina è la stessa
-  test('/admin/commenti: nessuna violazione di accessibilità grave', async ({ page }) => {
-    await accedi(page, 'admin@tyrecare.test');
+  test('/admin/commenti: nessuna violazione di accessibilità grave', async ({ browser }) => {
+    // L'admin del seed ha la 2FA: `entra` scrive anche il codice
+    const page = await entra(browser, 'admin@tyrecare.test');
     await page.goto('/admin/commenti');
     await expect(
       page.getByRole('heading', { level: 1, name: 'Commenti degli utenti' }),

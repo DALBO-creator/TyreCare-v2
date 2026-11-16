@@ -212,6 +212,12 @@ const ROTTE: Rotta[] = [
     mostra: pigra(() => import('./pagine/admin-officine'), 'mostraAdminOfficine'),
   },
   {
+    percorso: '/admin/abbonamento',
+    accesso: 'utente',
+    titolo: 'Abbonamento',
+    mostra: pigra(() => import('./pagine/admin-abbonamento'), 'mostraAdminAbbonamento'),
+  },
+  {
     percorso: '/admin/commenti',
     accesso: 'utente',
     titolo: 'Commenti degli utenti',

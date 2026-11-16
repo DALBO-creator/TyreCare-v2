@@ -1,16 +1,15 @@
-import { PIANI, PianoSchema, type Piano } from '@tyrecare/shared';
+import { PIANI } from '@tyrecare/shared';
 import { Building2, Check, Pause, X } from 'lucide';
 import {
   attivaOfficina,
-  cambiaPianoOfficina,
   caricaOfficineAdmin,
-  ETICHETTE_STATO_ABBONAMENTO,
   leggiVersioneDatabase,
   rifiutaAffiliazione,
   sospendiOfficina,
   statoDatabase,
   type OfficinaAdmin,
 } from '../lib/admin';
+import { ETICHETTE_STATO_ABBONAMENTO } from '../lib/abbonamento';
 import { esc } from '../lib/html';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { chiediConferma } from '../ui/conferma';
@@ -66,22 +65,8 @@ function riga(o: OfficinaAdmin): string {
         Piano: ${o.piano ? esc(PIANI[o.piano].nome) : 'non disponibile'}${
           o.statoAbbonamento ? ` · ${esc(ETICHETTE_STATO_ABBONAMENTO[o.statoAbbonamento])}` : ''
         }
+        · <a href="/admin/abbonamento?id=${o.id}" aria-label="Abbonamento di ${esc(o.ragione_sociale)}">Gestisci l’abbonamento</a>
       </div>
-      <form class="d-flex align-items-end gap-2" data-form-piano="${o.id}">
-        <div class="flex-grow-1">
-          <label class="form-label small mb-1" for="tc-piano-${o.id}">Piano</label>
-          <select class="form-select" id="tc-piano-${o.id}" name="piano">
-            ${PianoSchema.options
-              .map(
-                (p) =>
-                  `<option value="${p}"${p === o.piano ? ' selected' : ''}>${esc(PIANI[p].nome)}</option>`,
-              )
-              .join('')}
-          </select>
-        </div>
-        <button type="submit" class="btn btn-outline-light">Salva</button>
-      </form>
-      <div class="tc-avviso tc-avviso--rosso" data-errore-piano="${o.id}" role="alert" hidden></div>
       ${azione}
     </div>`;
 }
@@ -153,39 +138,6 @@ export async function mostraAdminOfficine(app: HTMLElement): Promise<void> {
               </div>`
         }
       </div>`);
-
-    app.querySelectorAll<HTMLFormElement>('[data-form-piano]').forEach((modulo) => {
-      const id = modulo.getAttribute('data-form-piano');
-      const o = officine.find((x) => x.id === id);
-      if (!o) return;
-      const select = modulo.querySelector<HTMLSelectElement>('select')!;
-      const pulsante = modulo.querySelector<HTMLButtonElement>('button[type="submit"]')!;
-      const errore = modulo.parentElement!.querySelector<HTMLElement>('[data-errore-piano]')!;
-      modulo.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        if (pulsante.disabled) return;
-        const parsed = PianoSchema.safeParse(select.value);
-        if (!parsed.success) return;
-        const piano: Piano = parsed.data;
-        pulsante.disabled = true;
-        select.disabled = true;
-        pulsante.textContent = 'Salvataggio…';
-        errore.hidden = true;
-        try {
-          await cambiaPianoOfficina(o.id, piano);
-        } catch (err) {
-          errore.textContent =
-            err instanceof Error ? err.message : 'Non siamo riusciti a salvare il piano. Riprova.';
-          errore.hidden = false;
-          pulsante.disabled = false;
-          select.disabled = false;
-          pulsante.textContent = 'Salva';
-          return;
-        }
-        o.piano = piano;
-        if (ancoraAttuale(n)) disegna();
-      });
-    });
 
     for (const [attributo, attiva] of [
       ['data-attiva', true],
