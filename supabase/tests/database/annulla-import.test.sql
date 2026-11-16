@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(24);
+select plan(25);
 
 create function pg_temp.come(p_utente uuid) returns void language plpgsql as $$
 begin
@@ -51,6 +51,14 @@ select is(
   '{"clienti_nuovi": 2, "clienti_aggiornati": 1, "veicoli_nuovi": 2, "veicoli_aggiornati": 0}'::jsonb,
   'import: risposta invariata'
 );
+-- Le FK rimandate (clienti/veicoli -> import_log) si controllano qui: con la riga mancante fallirebbe con 23503
+set constraints all immediate;
+select is(
+  (select count(*)::int from public.import_log where nome_file = 'annulla.csv'),
+  1,
+  'la riga di import_log puntata da clienti e veicoli esiste'
+);
+set constraints all deferred;
 select results_eq(
   $$select c.codice_gestionale from public.clienti_officina c
     join public.import_log l on l.id = c.import_id
