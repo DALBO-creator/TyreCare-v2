@@ -128,6 +128,43 @@ describe('MontaPneumaticiSchema', () => {
   });
 });
 
+describe('MontaPneumaticiSchema: DOT per ruota', () => {
+  const base = {
+    posizioni: ['ANT_SX', 'POST_DX'],
+    stagione: 'ESTIVO',
+    misura: '205/55 R16 91V',
+    marca: 'Michelin',
+    modello: '',
+    dot: '',
+    montato_il: oggiISO(),
+  };
+
+  it('accetta il DOT di ogni ruota scelta, vuoto diventa null', () => {
+    const r = MontaPneumaticiSchema.parse({ ...base, dot_ANT_SX: ' 3823 ', dot_POST_DX: '' });
+    expect(r).toMatchObject({ dot: null, dot_ANT_SX: '3823', dot_POST_DX: null });
+  });
+
+  it('DOT per ruota assente: il campo non compare', () => {
+    expect(MontaPneumaticiSchema.parse(base)).not.toHaveProperty('dot_ANT_SX');
+  });
+
+  it('DOT per ruota sbagliato: messaggio del DOT sul campo giusto', () => {
+    const r = MontaPneumaticiSchema.safeParse({ ...base, dot_POST_DX: '5423' });
+    expect(r.success).toBe(false);
+    expect(r.error?.issues).toHaveLength(1);
+    expect(r.error?.issues[0]).toMatchObject({
+      path: ['dot_POST_DX'],
+      message: 'Il DOT sono le ultime 4 cifre: settimana e anno (es. 3823)',
+    });
+  });
+
+  it('DOT di una ruota non scelta: ignorato, non fa fallire e non esce', () => {
+    const r = MontaPneumaticiSchema.parse({ ...base, dot_ANT_DX: 'xx', dot_ANT_SX: '1224' });
+    expect(r).not.toHaveProperty('dot_ANT_DX');
+    expect(r).toMatchObject({ dot_ANT_SX: '1224' });
+  });
+});
+
 describe('creaControlloSchema', () => {
   const schema = creaControlloSchema(['ANT_SX', 'POST_SX', 'SCORTA']);
   const base = {

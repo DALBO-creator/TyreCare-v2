@@ -19,8 +19,8 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
 >
-> Ultima sessione: ciclo agenti 20261116-15 (T298 T299 T268 T310), solo unit test nuovi (711 in totale);
-> codice dell'app invariato.
+> Ultima sessione: ciclo agenti 20261116-18 (T255 T288 T293 T294): andamento del pilota per officina
+> (`andamento_officine`, R41), DOT diverso per ogni ruota nel montaggio, test dell'annullo import (729 test).
 
 **0 — Da chiedere al titolare**
 

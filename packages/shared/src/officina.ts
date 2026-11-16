@@ -153,7 +153,24 @@ const posizioniScelte = z
   .min(1, { error: 'Scegli almeno una posizione' })
   .refine((p) => new Set(p).size === p.length, { error: 'Posizioni ripetute' });
 
-export const MontaPneumaticiSchema = z.object({
+// DOT facoltativo: vuoto = nessun DOT. Lo stesso pezzo vale per il campo unico e per quelli di ogni ruota
+const dotFacoltativo = z
+  .string()
+  .trim()
+  .refine((s) => s === '' || DOT.test(s), {
+    error: 'Il DOT sono le ultime 4 cifre: settimana e anno (es. 3823)',
+  })
+  .transform((s) => s || null);
+
+/** Nome del campo con il DOT di una singola ruota nel modulo del montaggio (es. `dot_ANT_SX`). */
+export const campoDot = (p: Posizione) => `dot_${p}` as const;
+
+// Un campo facoltativo `dot_<POSIZIONE>` per ogni posizione
+const dotPerRuota = Object.fromEntries(
+  PosizioneSchema.options.map((p) => [campoDot(p), dotFacoltativo.optional()]),
+) as Record<`dot_${Posizione}`, z.ZodOptional<typeof dotFacoltativo>>;
+
+const MontaPneumaticiOggetto = z.object({
   posizioni: posizioniScelte,
   stagione: z.enum(StagioneSchema.options, { error: 'Scegli la stagione' }),
   misura: z
@@ -168,15 +185,18 @@ export const MontaPneumaticiSchema = z.object({
     ),
   marca: testo(50, 'La marca'),
   modello: testo(100, 'Il modello'),
-  dot: z
-    .string()
-    .trim()
-    .refine((s) => s === '' || DOT.test(s), {
-      error: 'Il DOT sono le ultime 4 cifre: settimana e anno (es. 3823)',
-    })
-    .transform((s) => s || null),
+  dot: dotFacoltativo,
+  ...dotPerRuota,
   montato_il: dataPassata('la data di montaggio'),
 });
+// Il DOT di una ruota non scelta in `posizioni` si ignora: non viene controllato e non esce dallo schema
+export const MontaPneumaticiSchema = z.preprocess((v) => {
+  if (typeof v !== 'object' || v === null) return v;
+  const scelte = (v as { posizioni?: unknown }).posizioni;
+  const elenco = Array.isArray(scelte) ? scelte : [];
+  const tolti = PosizioneSchema.options.filter((p) => !elenco.includes(p)).map(campoDot);
+  return Object.fromEntries(Object.entries(v).filter(([k]) => !(tolti as string[]).includes(k)));
+}, MontaPneumaticiOggetto);
 export type MontaPneumatici = z.infer<typeof MontaPneumaticiSchema>;
 
 /** Smontaggio senza sostituzione (es. ruota di scorta tolta): gli pneumatici restano nello storico. */

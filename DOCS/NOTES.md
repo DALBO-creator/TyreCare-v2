@@ -3576,6 +3576,21 @@ con `on delete cascade`.
 - Il trigger forza `created_at` (il browser non sceglie la data) e prende un advisory lock per account: due
   inserimenti simultanei non superano il limite. Dal 31° in 24 ore lancia `TROPPI_ERRORI`.
 
+## Andamento del pilota per officina (R41)
+
+**File coinvolti:** `supabase/migrations/20261116000200_andamento_officine.sql`,
+`supabase/tests/database/andamento-officine.test.sql`, `packages/shared/src/database.types.ts`.
+**Come funziona:** `public.andamento_officine(p_da, p_a)` calcola i numeri del pilota (piano-pilota §3) al
+momento della chiamata: nessuna tabella storica e nessun dato personale. Totali di adesso: clienti = righe
+di `clienti_officina`, collegati = con `profile_id`, con push = collegati con almeno una riga in
+`iscrizioni_push`. Nel periodo (giorno italiano di `created_at`): inviti in ogni stato, controlli per
+`origine` APP/IMPORT, prenotazioni in ogni stato, `richieste_strada` con `officina_id` di chi ha accettato.
+Ogni officina compare anche a zero, ordinate per ragione sociale.
+
+### Codice complesso
+Prima `richiedi_admin()` (admin con `aal2`, altrimenti 42501), poi il periodo: date nulle o invertite danno
+`PERIODO_NON_VALIDO`. Le definizioni dei numeri sono anche nel `comment on function`.
+
 ## Scarica i tuoi dati: richieste su strada (T251)
 
 **File coinvolti:** `apps/web/src/lib/miei-dati.ts`, `apps/web/src/lib/miei-dati.test.ts`.
@@ -3838,6 +3853,23 @@ scrive al massimo ogni 500 ms con un timer finale, così non si perde l'ultimo c
 ogni scrittura successiva. `collegaBozza` rilancia `input` sui campi `mm_*` con il flag `inRicalcolo`
 (i ricalcoli non riscrivono la bozza). «Scarta»: `annulla()`, `form.reset()`, ricalcolo, `cancellaBozza`,
 focus sull'`h1`.
+
+## Montaggio: DOT per ruota (T293)
+
+**File coinvolti:** `packages/shared/src/officina.ts` (`MontaPneumaticiSchema`, `campoDot`),
+`apps/web/src/pagine/monta-pneumatici.ts`, `apps/web/src/lib/officina.ts` (`montaPneumatici`,
+`modificaPneumatici`). Nessuna migrazione.
+**Come funziona:** `MontaPneumaticiSchema` ha un campo facoltativo `dot_<POSIZIONE>` per ogni posizione
+(da `PosizioneSchema.options`), con la stessa costante `dotFacoltativo` del campo `dot`. Nella pagina la
+casella «DOT diverso per ogni ruota» mostra un campo per ruota; col segno di spunta il `dot` unico è
+`disabled`.
+
+### Codice complesso
+- Lo schema è un `z.preprocess` che scarta i `dot_*` delle posizioni non scelte prima di validare.
+- `collegaDotPerRuota` (solo montaggio) aggiunge la casella senza `name` e i campi per ruota, ricostruiti a
+  ogni `change` spostando i nodi esistenti, così i valori restano.
+- `montaPneumatici` costruisce a mano l'oggetto di ogni pneumatico (`dot_<pos> ?? dot ?? null`): la rpc non
+  riceve chiavi `dot_*`. `modificaPneumatici` esclude i `dot_*` dal tipo.
 
 ## Abbonamento: pilota con subscription viva (T272)
 
