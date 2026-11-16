@@ -3695,8 +3695,8 @@ legge in parallelo all'elenco delle officine, con catch locale.
 `apps/web/src/pagine/abbonamento.test.ts`.
 **Come funziona:** «Gestisci il pagamento» compare anche per l'officina PILOTA con una subscription Stripe
 ancora viva, così può annullare il vecchio abbonamento dall'app. `caricaAbbonamento` legge
-`stripe_subscription_id`; per PILOTA una frase spiega che il pulsante serve a gestire o annullare il vecchio
-pagamento.
+`stripe_subscription_id`; per PILOTA la frase unica di `testoPilotaConSubscription` (T272) dice di
+annullare l'abbonamento da «Gestisci il pagamento».
 
 ### Codice complesso
 `mostraPortale` è vero con `stripe_customer_id` non vuoto e (piano ≠ PILOTA oppure
@@ -3794,6 +3794,64 @@ quindi vede gli errori di tutti. Se l'`autore_id` non è quello di chi scrive (e
 restituisce la riga senza contare; la policy "inserimento proprio" la rifiuta poi con 42501. Senza utente
 (editor SQL, service role) il limite di 30 in 24 ore resta. Per anon il rifiuto arriva dal controllo dei
 privilegi, prima del trigger.
+
+## Scollegare un cliente annulla gli inviti aperti (T277)
+
+**File coinvolti:** `supabase/migrations/20261108001200_scollega_annulla_inviti.sql`,
+`supabase/tests/database/scollega-cliente-inviti.test.sql` (18 test, non eseguito in locale).
+**Come funziona:** `scollega_cliente` (R42), oltre a svuotare `profile_id`, mette `annullato_il = now()`
+sugli inviti del cliente non usati e non annullati. Chi riapre un vecchio link riceve `INVITO_ANNULLATO`.
+Firma, permessi ed errori sono quelli di T259; il cliente si può invitare di nuovo con un invito nuovo.
+
+### Codice complesso
+Il secondo `update` è nello stesso blocco del primo, dopo il `for update` sulla riga del cliente: uno
+scollegamento e un'accettazione in parallelo non si sovrappongono. I controlli (42501,
+`CLIENTE_NON_TROVATO`, `CLIENTE_NON_COLLEGATO`) arrivano prima, quindi un cliente non collegato non perde i
+suoi inviti. Gli inviti già usati e quelli di altri clienti non cambiano.
+
+## Sospensione di un'officina: avviso solo da ATTIVA (T290)
+
+**File coinvolti:** `supabase/migrations/20261108001300_sospendi_solo_attiva.sql`,
+`supabase/tests/database/sospendi-officina-attiva.test.sql` (18 test, non eseguito in locale),
+`sospendi-officina-avviso.test.sql` (l'attesa IN_ATTESA passa da 1 a 0).
+**Come funziona:** `sospendi_officina` manda l'avviso `AFFILIAZIONE_SOSPESA` ai titolari solo se l'officina
+era ATTIVA: un'officina IN_ATTESA non è mai stata visibile ai clienti, quindi «non è più visibile» sarebbe
+falso; da SOSPESA non parte nulla. Firma, permessi, errori, testo dell'avviso e ruolo dei titolari (R14)
+non cambiano.
+
+### Codice complesso
+Lo stato precedente si legge con `select … for update`, prima dell'`update`: due sospensioni concorrenti
+si mettono in fila sul lock e la seconda trova già SOSPESA, così l'avviso parte una volta sola.
+
+## Bozza del Nuovo controllo (R44, T292)
+
+**File coinvolti:** `apps/web/src/lib/bozza-controllo.ts` (+ test), `apps/web/src/pagine/nuovo-controllo.ts`
+(`collegaBozza`).
+**Come funziona:** mentre si scrivono le misure, la pagina salva in `localStorage` una bozza
+`{ salvata_il, posizioni, valori }` con chiave `tc-bozza-controllo:<utente>:<veicolo>`, valida 7 giorni.
+All'apertura, se c'è, riempie i campi e mostra «Abbiamo ripreso le misure…» con «Scarta la bozza». La
+bozza si cancella dopo `registraControllo` riuscito. Niente bozza in «Correggi il controllo».
+
+### Codice complesso
+`leggiBozza` dà `null` se manca, è illeggibile, ha più di 7 giorni (e allora la cancella) o riguarda ruote
+diverse da quelle montate; ogni accesso a `localStorage` è in `try/catch`. `creaSalvataggioRitardato`
+scrive al massimo ogni 500 ms con un timer finale, così non si perde l'ultimo carattere; `ferma()` blocca
+ogni scrittura successiva. `collegaBozza` rilancia `input` sui campi `mm_*` con il flag `inRicalcolo`
+(i ricalcoli non riscrivono la bozza). «Scarta»: `annulla()`, `form.reset()`, ricalcolo, `cancellaBozza`,
+focus sull'`h1`.
+
+## Abbonamento: pilota con subscription viva (T272)
+
+**File coinvolti:** `apps/web/src/pagine/abbonamento.ts` (`testoPilotaConSubscription`),
+`apps/web/src/pagine/abbonamento.test.ts`.
+**Come funziona:** per PILOTA con subscription Stripe viva la pagina mostra una sola frase: «Sei nel
+pilota: TyreCare per te è gratuito. Hai ancora un abbonamento a pagamento attivo: annullalo da «Gestisci
+il pagamento» per non pagarlo.» al posto di «è a posto» più la nota. Il pulsante resta; gli altri casi
+sono invariati. Vedi anche T238.
+
+### Codice complesso
+`testoPilotaConSubscription(a)` è pura: dà la frase solo con piano PILOTA e `mostraPortale(a)` (la stessa
+condizione del pulsante), altrimenti `null`; la pagina ripiega allora su «Il tuo abbonamento è a posto».
 
 ## Test DOM delle pagine di accesso
 

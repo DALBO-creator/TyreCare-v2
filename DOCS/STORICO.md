@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-16 — ciclo 20261116-03 — T277 T290 T292 T272
+
+**Fatto**
+
+- T277: `scollega_cliente` annulla anche gli inviti ancora aperti del cliente (R42): chi riapre un vecchio
+  link riceve `INVITO_ANNULLATO` (migrazione `20261108001200_scollega_annulla_inviti.sql`; pgTAP
+  `scollega-cliente-inviti`, 18 test, li verifica la CI).
+- T290: `sospendi_officina` avvisa i titolari solo se l'officina era ATTIVA (R43): da IN_ATTESA o già
+  SOSPESA niente avviso (migrazione `20261108001300_sospendi_solo_attiva.sql`; pgTAP
+  `sospendi-officina-attiva`, 18 test; l'attesa IN_ATTESA del test T242 passa da 1 a 0).
+- T292: il «Nuovo controllo» salva sul dispositivo una bozza delle misure (R44), valida 7 giorni e legata a
+  utente e veicolo: si riprende all'apertura con «Scarta la bozza» e si cancella dopo il salvataggio
+  riuscito (`lib/bozza-controllo.ts`, unit test).
+- T272: per PILOTA con subscription Stripe viva la pagina Abbonamento mostra una frase sola al posto di
+  «è a posto» più la nota (`testoPilotaConSubscription`, unit test).
+- Corsie C1 (T277, T290) e C2 (T292, T272); i pgTAP nuovi non sono stati eseguiti in locale.
+
 ### Sessione agenti — 2026-11-16 — ciclo 20261116-00 — T286 T269 T260 T264
 
 **Fatto**
