@@ -4,7 +4,11 @@ import {
   ChevronRight,
   ClipboardList,
   Clock,
+  Cookie,
   Download,
+  ExternalLink,
+  FileText,
+  Globe,
   MapPin,
   KeyRound,
   LogOut,
@@ -16,6 +20,7 @@ import {
   UserPen,
   Wrench,
 } from 'lucide';
+import { SITO_URL } from '@tyrecare/shared';
 import { contaOfficineInAttesa } from '../lib/admin';
 import { sessioneAal2 } from '../lib/admin-pannello';
 import { esci, messaggioErrore } from '../lib/auth';
@@ -50,6 +55,16 @@ function link(ic: Parameters<typeof icona>[0], etichetta: string, href: string):
       <span class="tc-lista__icona">${icona(ic)}</span>
       <span class="tc-lista__testo">${esc(etichetta)}</span>
       ${icona(ChevronRight)}
+    </a>`;
+}
+
+/** Link verso un altro sito: si apre in una scheda nuova, senza passare il referrer. */
+function linkEsterno(ic: Parameters<typeof icona>[0], etichetta: string, href: string): string {
+  return `
+    <a class="tc-lista__riga" href="${esc(href)}" target="_blank" rel="noopener noreferrer">
+      <span class="tc-lista__icona">${icona(ic)}</span>
+      <span class="tc-lista__testo">${esc(etichetta)}<span class="visually-hidden"> (si apre in una nuova scheda)</span></span>
+      ${icona(ExternalLink)}
     </a>`;
 }
 
@@ -151,6 +166,16 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
         <button type="button" class="btn btn-outline-light btn-lg w-100 mt-3" data-scarica-dati>
           ${icona(Download)} Scarica i tuoi dati
         </button>
+      </section>
+
+      <section aria-labelledby="tc-informazioni">
+        <h2 id="tc-informazioni" class="tc-etichetta">Informazioni</h2>
+        <nav class="tc-lista" aria-labelledby="tc-informazioni">
+          ${linkEsterno(Globe, 'Il sito di TyreCare', SITO_URL)}
+          ${link(ShieldCheck, 'Informativa privacy', '/privacy')}
+          ${link(FileText, 'Termini di servizio', '/termini')}
+          ${link(Cookie, 'Cookie policy', '/cookie')}
+        </nav>
       </section>
 
       <section class="tc-azione">

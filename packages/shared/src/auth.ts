@@ -30,8 +30,11 @@ export const AccessoSchema = z.object({
 });
 export type Accesso = z.infer<typeof AccessoSchema>;
 
+/** Età minima per creare un account: 14 anni (art. 2-quinquies del Codice privacy, D.Lgs. 196/2003). */
+export const ETA_MINIMA = 14;
+
 /** Versione dei termini che l'utente accetta alla registrazione (finisce nel suo profilo). */
-export const VERSIONE_TERMINI = '2026-10-bozza';
+export const VERSIONE_TERMINI = '2026-11-14';
 
 /** Vero se l'utente aveva accettato una versione dei termini diversa da quella attuale (nulla: mai chiesta). */
 export function devonoRiaccettare(versione: string | null): boolean {
