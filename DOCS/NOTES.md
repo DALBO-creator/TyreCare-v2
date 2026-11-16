@@ -3579,7 +3579,7 @@ con `on delete cascade`.
 ## Andamento del pilota per officina (R41)
 
 **File coinvolti:** `supabase/migrations/20261116000200_andamento_officine.sql`,
-`supabase/tests/andamento-officine.test.sql`, tipi del database.
+`supabase/tests/database/andamento-officine.test.sql`, `packages/shared/src/database.types.ts`.
 **Come funziona:** `public.andamento_officine(p_da, p_a)` calcola i numeri del pilota (piano-pilota §3) al
 momento della chiamata: nessuna tabella storica e nessun dato personale. Totali di adesso: clienti = righe
 di `clienti_officina`, collegati = con `profile_id`, con push = collegati con almeno una riga in
@@ -3856,8 +3856,9 @@ focus sull'`h1`.
 
 ## Montaggio: DOT per ruota (T293)
 
-**File coinvolti:** `packages/shared` (`MontaPneumaticiSchema`), pagina di montaggio, `montaPneumatici`,
-`modificaPneumatici`. Nessuna migrazione.
+**File coinvolti:** `packages/shared/src/officina.ts` (`MontaPneumaticiSchema`, `campoDot`),
+`apps/web/src/pagine/monta-pneumatici.ts`, `apps/web/src/lib/officina.ts` (`montaPneumatici`,
+`modificaPneumatici`). Nessuna migrazione.
 **Come funziona:** `MontaPneumaticiSchema` ha un campo facoltativo `dot_<POSIZIONE>` per ogni posizione
 (da `PosizioneSchema.options`), con la stessa costante `dotFacoltativo` del campo `dot`. Nella pagina la
 casella «DOT diverso per ogni ruota» mostra un campo per ruota; col segno di spunta il `dot` unico è
