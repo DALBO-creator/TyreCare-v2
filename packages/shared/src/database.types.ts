@@ -1307,6 +1307,7 @@ export type Database = {
         Args: { p_customer: string; p_officina_id: string };
         Returns: undefined;
       };
+      controlla_richiesta: { Args: Record<PropertyKey, never>; Returns: undefined };
       crea_invito_cliente: {
         Args: { p_cliente_id: string; p_email: string };
         Returns: {
@@ -1391,6 +1392,7 @@ export type Database = {
       };
       manutenzione_richieste_strada: { Args: { p_adesso?: string }; Returns: undefined };
       mappatura_import_valida: { Args: { p_colonne: Json }; Returns: boolean };
+      mfa_soddisfatta: { Args: Record<PropertyKey, never>; Returns: boolean };
       modifica_controllo: {
         Args: {
           p_eseguito_il: string;

@@ -1,12 +1,12 @@
 import { expect, test } from '@playwright/test';
-import { ADMIN, accedi, entra, nuovoAccountCliente } from './aiuti';
+import { ADMIN, PASSWORD, accedi, entra, nuovoAccountCliente } from './aiuti';
 
 test('senza il codice della 2FA l’area amministratore resta chiusa', async ({ page }) => {
   await accedi(page, ADMIN);
   await page.goto('/admin/utenti');
   await expect(page.getByRole('heading', { name: 'Verifica in due passaggi' })).toBeVisible();
-  await page.getByLabel('Codice di 6 cifre dell’app').fill('000000');
-  await page.getByRole('button', { name: 'Verifica' }).click();
+  await page.getByLabel('Codice di 6 cifre', { exact: true }).fill('000000');
+  await page.getByRole('button', { name: 'Continua' }).click();
   await expect(page.getByRole('alert')).toContainText('Codice non valido');
   await expect(page.getByRole('heading', { name: 'Account' })).toHaveCount(0);
 });
@@ -38,7 +38,7 @@ test('l’amministratore corregge un account, lo blocca e ritrova tutto nel regi
   const nuova = await (await browser.newContext()).newPage();
   await nuova.goto('/accedi');
   await nuova.getByLabel('Email', { exact: true }).fill(email);
-  await nuova.getByLabel('Password', { exact: true }).fill('password123');
+  await nuova.getByLabel('Password', { exact: true }).fill(PASSWORD);
   await nuova.getByRole('button', { name: 'Accedi' }).click();
   await expect(nuova).toHaveURL(/\/accedi/);
 

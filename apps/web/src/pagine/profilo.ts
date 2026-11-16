@@ -11,6 +11,7 @@ import {
   Globe,
   MapPin,
   KeyRound,
+  LockKeyhole,
   LogOut,
   MessageSquare,
   Mail,
@@ -155,6 +156,7 @@ export async function mostraProfilo(app: HTMLElement): Promise<void> {
         <nav class="tc-lista" aria-labelledby="tc-account">
           ${link(UserPen, 'Modifica i tuoi dati', '/profilo/dati')}
           ${link(KeyRound, 'Cambia password', '/profilo/password')}
+          ${link(LockKeyhole, 'Verifica in due passaggi', '/profilo/sicurezza')}
           ${link(
             MessageSquare,
             'Invia un commento su TyreCare',

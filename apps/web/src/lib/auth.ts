@@ -106,6 +106,8 @@ export async function esci(): Promise<void> {
 // Codici di errore di Supabase Auth → messaggi per l'utente
 const MESSAGGI: Record<string, string> = {
   invalid_credentials: 'Email o password non corrette.',
+  mfa_verification_failed: 'Codice non valido o scaduto: riprova con quello nuovo.',
+  mfa_challenge_expired: 'Codice non valido o scaduto: riprova con quello nuovo.',
   password_attuale_errata: 'La password attuale non è corretta.',
   email_not_confirmed:
     "Devi prima confermare l'email: apri il link che ti abbiamo inviato (controlla anche lo spam).",

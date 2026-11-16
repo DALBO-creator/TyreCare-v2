@@ -6,7 +6,7 @@ import { expect, type Browser, type Page } from '@playwright/test';
 // Funzioni comuni ai test: accesso, dati unici, operazioni dell'officina ed email lette da Mailpit.
 
 /** Password degli utenti di `supabase/seed.sql` (e di quelli creati dai test). */
-export const PASSWORD = 'password123';
+export const PASSWORD = 'Password123';
 
 /** Officina del titolare del seed (`titolare@tyrecare.test`). */
 export const OFFICINA = 'Gomme Rossi S.n.c.';
@@ -238,15 +238,18 @@ export function codiceTotp(segreto: string, adesso = Date.now()): string {
   return String((h.readUInt32BE(o) & 0x7fffffff) % 1_000_000).padStart(6, '0');
 }
 
-/** Completa la verifica in due passaggi dell'admin, se la pagina la chiede. */
+/**
+ * Completa la verifica in due passaggi dell'admin. L'admin del seed ha la 2FA attiva: dopo la password
+ * ogni pagina con login mostra prima la richiesta del codice (router, `mostraCodiceAccesso`).
+ */
 export async function verificaAdmin(page: Page): Promise<void> {
   await page.goto('/admin');
-  const campo = page.getByLabel('Codice di 6 cifre dell’app');
+  const campo = page.getByLabel('Codice di 6 cifre', { exact: true });
   const pannello = page.getByRole('heading', { name: 'Pannello' });
   await expect(campo.or(pannello)).toBeVisible();
   if (await campo.isVisible()) {
     await campo.fill(codiceTotp(SEGRETO_ADMIN));
-    await page.getByRole('button', { name: 'Verifica' }).click();
+    await page.getByRole('button', { name: 'Continua' }).click();
     await expect(pannello).toBeVisible();
   }
 }

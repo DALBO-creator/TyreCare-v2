@@ -29,7 +29,7 @@ select is(
   (select count(*) from public.officine)::int, 1,
   'anonimo: vede solo le officine ATTIVE'
 );
-select is_empty('select * from public.profiles', 'anonimo: nessun profilo visibile');
+select throws_ok('select * from public.profiles', '42501', null, 'anonimo: nessun profilo visibile');
 
 -- ---------------------------------------------------------------- cliente
 reset role;

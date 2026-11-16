@@ -248,7 +248,7 @@ select is(
 );
 
 select pg_temp.come(null);
-select is((select count(*)::int from public.notifiche), 0, 'anonimo: nessuna notifica');
+select throws_ok('select count(*) from public.notifiche', '42501', null, 'anonimo: nessuna notifica');
 
 select pg_temp.come('a0000000-0000-4000-8000-000000000002');
 select throws_ok(

@@ -144,7 +144,7 @@ delete from public.import_mappature;
 select pg_temp.come(:cliente);
 select is_empty('select 1 from public.import_mappature', 'il cliente non vede le associazioni');
 select pg_temp.come(null);
-select is_empty('select 1 from public.import_mappature', 'l''anonimo non vede le associazioni');
+select throws_ok('select 1 from public.import_mappature', '42501', null, 'l''anonimo non vede le associazioni');
 
 -- ---------------------------------------------------------------- dopo i tentativi degli altri
 select pg_temp.come(:titolare);

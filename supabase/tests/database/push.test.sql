@@ -25,17 +25,17 @@ $$;
 -- Giulia (cliente) iscrive il suo telefono
 select pg_temp.come('a0000000-0000-4000-8000-000000000004');
 select lives_ok(
-  $$select public.iscrivi_push('https://push.example/giulia', 'chiave', 'auth')$$,
+  $$select public.iscrivi_push('https://fcm.googleapis.com/fcm/send/giulia', 'chiave', 'auth')$$,
   'cliente: iscrive il suo dispositivo'
 );
 select lives_ok(
-  $$select public.iscrivi_push('https://push.example/giulia', 'chiave2', 'auth2')$$,
+  $$select public.iscrivi_push('https://fcm.googleapis.com/fcm/send/giulia', 'chiave2', 'auth2')$$,
   'cliente: iscriversi di nuovo sostituisce l''iscrizione'
 );
 select is((select count(*)::int from public.iscrizioni_push), 1, 'cliente: una sola iscrizione');
 select throws_ok(
   $$insert into public.iscrizioni_push (profile_id, endpoint, p256dh, auth)
-    values ('a0000000-0000-4000-8000-000000000002', 'https://push.example/x', 'k', 'a')$$,
+    values ('a0000000-0000-4000-8000-000000000002', 'https://fcm.googleapis.com/fcm/send/x', 'k', 'a')$$,
   '42501', null,
   'cliente: non iscrive dispositivi per altri'
 );
@@ -43,10 +43,10 @@ select throws_ok(
 -- Lo stesso browser con un altro account (Luca): l'iscrizione passa a lui
 select pg_temp.come('a0000000-0000-4000-8000-000000000003');
 select is((select count(*)::int from public.iscrizioni_push), 0, 'operatore: non vede quelle altrui');
-select public.iscrivi_push('https://push.example/giulia', 'chiave3', 'auth3');
+select public.iscrivi_push('https://fcm.googleapis.com/fcm/send/giulia', 'chiave3', 'auth3');
 reset role;
 select is(
-  (select profile_id from public.iscrizioni_push where endpoint = 'https://push.example/giulia'),
+  (select profile_id from public.iscrizioni_push where endpoint = 'https://fcm.googleapis.com/fcm/send/giulia'),
   'a0000000-0000-4000-8000-000000000003'::uuid,
   'stesso browser, altro account: l''iscrizione è del nuovo account'
 );
@@ -58,7 +58,7 @@ select is((select count(*)::int from public.iscrizioni_push), 0, 'operatore: eli
 
 select pg_temp.come(null);
 select throws_ok(
-  $$select public.iscrivi_push('https://push.example/anon', 'k', 'a')$$,
+  $$select public.iscrivi_push('https://fcm.googleapis.com/fcm/send/anon', 'k', 'a')$$,
   '42501', null,
   'anonimo: non si iscrive'
 );
