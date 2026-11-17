@@ -34,9 +34,10 @@ export const DATI_FORNITORE: DatiFornitore = {
 
 /**
  * Indirizzo del sito di presentazione di TyreCare (prezzi e funzioni per le officine).
+ * Per ora è l'indirizzo di prova su Vercel (repository TyreCare-v2-website).
  * DA CONFERMARE: il dominio definitivo non è ancora deciso; quando lo è, cambiarlo solo qui.
  */
-export const SITO_URL = 'https://tyrecare.it';
+export const SITO_URL = 'https://tyrecare-v2-website.vercel.app';
 
 /** Vero se un valore è ancora un segnaposto da compilare (testo tra parentesi quadre). */
 export const eSegnaposto = (valore: string): boolean => /^\[.*\]$/.test(valore.trim());
