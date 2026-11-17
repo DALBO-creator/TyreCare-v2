@@ -39,6 +39,8 @@
 - [ ] (facoltativo) Idee in `IMPLEMENTAZIONI.md`: gomme vecchie (DOT), stima del consumo, preferenze
 - [ ] P23: quale **dominio di TyreCare** usare per le email e quando configurarne i DNS su Resend
   (SPF/DKIM), una volta sola
+- [ ] Quando il dominio definitivo del sito vetrina è deciso, aggiornare `SITO_URL` in
+  `packages/shared/src/fornitore.ts` (oggi punta all'indirizzo di prova `https://tyrecare-v2-website.vercel.app`)
 
 **1 — Lavoro di Claude (da scegliere con il titolare)**
 

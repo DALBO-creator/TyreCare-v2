@@ -4,6 +4,15 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione — 2026-11-17 — link al sito vetrina
+
+**Fatto**
+
+- `SITO_URL` (`packages/shared/src/fornitore.ts`) ora punta al sito vetrina di prova su Vercel,
+  `https://tyrecare-v2-website.vercel.app`, invece di `https://tyrecare.it` (dominio non ancora attivo). Lo
+  usano il Profilo («Il sito di TyreCare»), il piede legale, `/per-le-officine` e i testi legali (`sito.url`).
+  Test di `fornitore` e `piede-legale` verdi.
+
 ### Sessione agenti — 2026-11-16 — ciclo 20261116-21 — T256 T257 T300 T301
 
 **Fatto**
