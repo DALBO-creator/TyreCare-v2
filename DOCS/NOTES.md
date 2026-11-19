@@ -3991,6 +3991,30 @@ L'invio è `requestSubmit()`. Una promessa risolta a mano prova disabled, «in c
 doppio invio fa una sola chiamata. Il focus si legge da `document.activeElement` (primo campo errato,
 campo dell'`ErroreModulo` o riquadro). Un errore generico mostra il testo fisso di `messaggioErrore`.
 
+## Test DOM di Nuovo controllo (T295)
+
+**File coinvolti:** `apps/web/src/pagine/nuovo-controllo.test.ts` (12 test, happy-dom).
+**Come funziona:** `campiControllo` e `collegaStatoInDiretta` si montano in un `<form>`; gli eventi `input`
+sui campi `mm_<posizione>` aggiornano il badge in `[data-stato]`: colore per stagione, virgola decimale e
+valori non validi. La pagina intera si prova con `veicolo`, `officina`, `auth`, `router`, `notifiche` e
+`vaiConConferma` finti (gli altri export reali, con `importOriginal`): bozza ripristinata, «Scarta la
+bozza», salvataggio riuscito e fallito.
+
+### Codice complesso
+Le soglie vengono da `statoBattistrada`: 3,5 mm è verde d'estate e giallo d'inverno. La bozza si prepara con
+`chiaveBozza` e `salvaBozza` veri prima di montare la pagina, così il salvataggio ritardato non interferisce.
+
+## Test dei testi di orari e servizi (T296)
+
+**File coinvolti:** `apps/web/src/pagine/orari.test.ts` (5 test), `servizi.test.ts` (7), ambiente node.
+**Come funziona:** provano con testi esatti `periodoChiusura` (orari) e `dettagliServizio` (servizi);
+`../ui/icone` e `../lib/supabase` sono finti.
+
+### Codice complesso
+`formattaGiorno` (`ui/prenotazione.ts`) formatta in UTC e senza anno: i risultati non dipendono da data o
+fuso. `dettagliServizio` salta la durata nulla o 0 e unisce le parti con « · ». Il test di
+`periodoChiusura` fissa il comportamento reale (mai l'anno), diverso dal suo commento (idea T336).
+
 ## Scollegare un cliente (database)
 
 **File coinvolti:** `supabase/migrations/20261108000600_*.sql` (funzione `public.scollega_cliente`), il suo
