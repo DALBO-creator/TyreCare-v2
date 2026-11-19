@@ -19,8 +19,8 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
 >
-> Ultima sessione: ciclo agenti 20261119-21 (T305 T306): bozze legali allineate alle migrazioni (errori
-> dell'app, 22 tabelle) e «Domande frequenti» nella pagina per le officine (765 test).
+> Ultima sessione: ciclo agenti 20261120-00 (T295 T296): test DOM di Nuovo controllo e test dei testi di
+> orari e servizi (789 test).
 
 **0 — Da chiedere al titolare**
 

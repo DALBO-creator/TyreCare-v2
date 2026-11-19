@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-20 — ciclo 20261120-00 — T295 T296
+
+**Fatto**
+
+- T295: aggiunto `pagine/nuovo-controllo.test.ts` (12 test happy-dom): colore del battistrada in diretta per
+  stagione, virgola e valori non validi; bozza: ripristino, «Scarta la bozza», salvataggio riuscito e fallito.
+- T296: test unitari di `periodoChiusura` (orari, 5) e `dettagliServizio` (servizi, 7) con testi esatti;
+  rilevato che `periodoChiusura` non mostra mai l'anno, contro il suo commento.
+
+**Verifica**
+
+- Prova d'insieme verde: 789 test, JS iniziale 68,1 kB, CSS 32,0 kB; e2e non eseguiti (li fa la CI).
+- Gate del supervisore: 2/2 approvati al primo giro. Rilievi `nota`: salvataggio ritardato della bozza non
+  provato (idea T335); commento di `periodoChiusura` errato (idea T336).
+
 ### Sessione agenti — 2026-11-19 — ciclo 20261119-21 — T305 T306
 
 **Fatto**
