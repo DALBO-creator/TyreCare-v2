@@ -2,7 +2,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Prenotazione } from './prenotazioni';
 import {
   annullaPrenotazione,
+  caricaClienteDellaPrenotazione,
   caricaMiePrenotazioni,
+  caricaPrenotazione,
+  caricaPrenotazioniOfficina,
+  caricaServizi,
   contaRichiesteDaConfermare,
   registraClienteDaPrenotazione,
   richiediPrenotazione,
@@ -12,37 +16,20 @@ import {
 } from './prenotazioni';
 import { ErroreModulo } from './errori';
 
-// Supabase finto: `rpc` registrata e un costruttore a catena che registra ogni chiamata.
-const rpc = vi.fn();
-const chiamate: [string, ...unknown[]][] = [];
-let risultatoQuery: { data?: unknown; count?: number | null; error: unknown };
-const from = vi.fn();
+import { azzeraFinto, chiamate, finto, from, rpc } from '../test/supabase-finto';
+
 const sessione = vi.fn();
 
-function catena() {
-  const c: Record<string, unknown> = {};
-  for (const m of ['select', 'eq', 'gte', 'in', 'order']) {
-    c[m] = (...args: unknown[]) => {
-      chiamate.push([m, ...args]);
-      return c;
-    };
-  }
-  c.then = (ok: (v: unknown) => unknown, ko?: (e: unknown) => unknown) =>
-    Promise.resolve(risultatoQuery).then(ok, ko);
-  return c;
-}
-
-vi.mock('./supabase', () => ({ getSupabase: () => ({ rpc, from }) }));
+vi.mock('./supabase', async () => {
+  const f = await import('../test/supabase-finto');
+  return { getSupabase: () => ({ rpc: f.rpc, from: f.from }) };
+});
 vi.mock('./auth', () => ({ sessioneCorrente: () => sessione() }));
 
 const ERRORE_DB = { message: 'X', code: '42501' };
 
 beforeEach(() => {
-  vi.clearAllMocks();
-  chiamate.length = 0;
-  risultatoQuery = { data: [], count: 0, error: null };
-  from.mockImplementation(() => catena());
-  rpc.mockResolvedValue({ data: null, error: null, status: 200 });
+  azzeraFinto();
   sessione.mockReturnValue(null);
 });
 
@@ -55,7 +42,7 @@ describe('caricaMiePrenotazioni', () => {
   it('con sessione filtra per cliente_id dell’utente e ordina dalla più recente', async () => {
     sessione.mockReturnValue({ user: { id: 'u-1' } });
     const righe = [{ id: 'p1' }, { id: 'p2' }];
-    risultatoQuery = { data: righe, error: null };
+    finto.risultato = { data: righe, error: null };
     expect(await caricaMiePrenotazioni()).toEqual(righe);
     expect(from).toHaveBeenCalledWith('prenotazioni');
     expect(chiamate).toContainEqual(['eq', 'cliente_id', 'u-1']);
@@ -68,7 +55,7 @@ describe('caricaMiePrenotazioni', () => {
 
   it('un errore di Supabase arriva al chiamante', async () => {
     sessione.mockReturnValue({ user: { id: 'u-1' } });
-    risultatoQuery = { data: null, error: ERRORE_DB };
+    finto.risultato = { data: null, error: ERRORE_DB };
     await expect(caricaMiePrenotazioni()).rejects.toBe(ERRORE_DB);
   });
 });
@@ -192,7 +179,7 @@ describe('annullaPrenotazione', () => {
 
 describe('contaRichiesteDaConfermare', () => {
   it('restituisce il count con i filtri esatti (officina, stato RICHIESTA, giorno ≥ dal)', async () => {
-    risultatoQuery = { count: 4, error: null };
+    finto.risultato = { count: 4, error: null };
     expect(await contaRichiesteDaConfermare('o-1', '2026-11-13')).toBe(4);
     expect(from).toHaveBeenCalledWith('prenotazioni');
     expect(chiamate).toEqual([
@@ -204,12 +191,12 @@ describe('contaRichiesteDaConfermare', () => {
   });
 
   it('count null → 0', async () => {
-    risultatoQuery = { count: null, error: null };
+    finto.risultato = { count: null, error: null };
     expect(await contaRichiesteDaConfermare('o-1', '2026-11-13')).toBe(0);
   });
 
   it('un errore di Supabase arriva al chiamante', async () => {
-    risultatoQuery = { count: null, error: ERRORE_DB };
+    finto.risultato = { count: null, error: ERRORE_DB };
     await expect(contaRichiesteDaConfermare('o-1', '2026-11-13')).rejects.toBe(ERRORE_DB);
   });
 });
@@ -243,5 +230,98 @@ describe('registraClienteDaPrenotazione', () => {
       name: 'ErroreModulo',
       codice: 'PRENOTAZIONE_CHIUSA',
     });
+  });
+});
+
+describe('caricaPrenotazioniOfficina', () => {
+  it('filtra per officina e dal giorno indicato, ordina per giorno, fascia e inserimento', async () => {
+    const righe = [{ id: 'p1' }, { id: 'p2' }];
+    finto.risultato = { data: righe, error: null };
+    expect(await caricaPrenotazioniOfficina('o-1', '2026-12-01')).toEqual(righe);
+    expect(from).toHaveBeenCalledWith('prenotazioni');
+    expect(chiamate.filter(([m]) => m === 'eq')).toEqual([['eq', 'officina_id', 'o-1']]);
+    expect(chiamate.filter(([m]) => m === 'gte')).toEqual([['gte', 'giorno', '2026-12-01']]);
+    expect(chiamate.filter(([m]) => m === 'order')).toEqual([
+      ['order', 'giorno'],
+      ['order', 'fascia'],
+      ['order', 'created_at'],
+    ]);
+  });
+
+  it('un errore di Supabase arriva al chiamante', async () => {
+    finto.risultato = { data: null, error: ERRORE_DB };
+    await expect(caricaPrenotazioniOfficina('o-1', '2026-12-01')).rejects.toBe(ERRORE_DB);
+  });
+});
+
+describe('caricaPrenotazione', () => {
+  it('cerca per id con maybeSingle e restituisce la riga', async () => {
+    const riga = { id: 'p-1' };
+    finto.risultato = { data: riga, error: null };
+    expect(await caricaPrenotazione('p-1')).toBe(riga);
+    expect(from).toHaveBeenCalledWith('prenotazioni');
+    expect(chiamate.filter(([m]) => m === 'eq')).toEqual([['eq', 'id', 'p-1']]);
+    expect(chiamate.filter(([m]) => m === 'maybeSingle')).toHaveLength(1);
+  });
+
+  it('riga assente: null', async () => {
+    finto.risultato = { data: null, error: null };
+    expect(await caricaPrenotazione('p-1')).toBeNull();
+  });
+
+  it('un errore di Supabase arriva al chiamante', async () => {
+    finto.risultato = { data: null, error: ERRORE_DB };
+    await expect(caricaPrenotazione('p-1')).rejects.toBe(ERRORE_DB);
+  });
+});
+
+describe('caricaClienteDellaPrenotazione', () => {
+  const p = { id: 'p-1', officina_id: 'o-1', cliente_id: 'u-9' } as Prenotazione;
+
+  it('filtra per officina e per account di chi ha prenotato, prende la scheda più vecchia', async () => {
+    const scheda = { id: 'c-1', nome: 'Anna', cognome: 'Rossi' };
+    finto.risultato = { data: scheda, error: null };
+    expect(await caricaClienteDellaPrenotazione(p)).toBe(scheda);
+    expect(from).toHaveBeenCalledWith('clienti_officina');
+    // Esattamente due filtri: né di più né di meno (nessuna scheda di altre officine o altri utenti).
+    expect(chiamate.filter(([m]) => m === 'eq')).toEqual([
+      ['eq', 'officina_id', 'o-1'],
+      ['eq', 'profile_id', 'u-9'],
+    ]);
+    expect(chiamate.filter(([m]) => m === 'order')).toEqual([['order', 'created_at']]);
+    expect(chiamate.filter(([m]) => m === 'limit')).toEqual([['limit', 1]]);
+    expect(chiamate.filter(([m]) => m === 'maybeSingle')).toHaveLength(1);
+  });
+
+  it('nessuna scheda collegata: null', async () => {
+    finto.risultato = { data: null, error: null };
+    expect(await caricaClienteDellaPrenotazione(p)).toBeNull();
+  });
+
+  it('un errore di Supabase arriva al chiamante', async () => {
+    finto.risultato = { data: null, error: ERRORE_DB };
+    await expect(caricaClienteDellaPrenotazione(p)).rejects.toBe(ERRORE_DB);
+  });
+});
+
+describe('caricaServizi', () => {
+  it('filtra per officina e ordina per nome secondo l’italiano', async () => {
+    // In ordine italiano: alfa, Équilibratura, Zeta (senza sort resterebbe Zeta, Équilibratura, alfa).
+    finto.risultato = {
+      data: [{ nome: 'Zeta' }, { nome: 'Équilibratura' }, { nome: 'alfa' }],
+      error: null,
+    };
+    expect(await caricaServizi('o-1')).toEqual([
+      { nome: 'alfa' },
+      { nome: 'Équilibratura' },
+      { nome: 'Zeta' },
+    ]);
+    expect(from).toHaveBeenCalledWith('servizi_officina');
+    expect(chiamate.filter(([m]) => m === 'eq')).toEqual([['eq', 'officina_id', 'o-1']]);
+  });
+
+  it('un errore di Supabase arriva al chiamante', async () => {
+    finto.risultato = { data: null, error: ERRORE_DB };
+    await expect(caricaServizi('o-1')).rejects.toBe(ERRORE_DB);
   });
 });
