@@ -60,7 +60,7 @@ Nei documenti sono segnati con `[DA COMPLETARE: …]`. Si possono compilare nell
 ## Da fare prima del lancio (misure di sicurezza che oggi mancano)
 
 Il DPA (§9) e il registro descrivono **solo** le misure verificate nel codice il 2026-10-22: RLS attiva su
-tutte le 21 tabelle in `public` (`enable row level security` nelle migrazioni, con test pgTAP anche per gli
+tutte le 22 tabelle in `public` (`enable row level security` nelle migrazioni, con test pgTAP anche per gli
 accessi negati), accessi per ruolo, HTTPS, database Supabase in eu-west-1, password cifrate, codici degli
 inviti come impronta SHA-256, chiave di servizio solo nella funzione sul server. Queste invece **mancano**
 o non si possono verificare dal repository, e non vanno scritte come già fatte finché non lo sono:
@@ -81,7 +81,8 @@ o non si possono verificare dal repository, e non vanno scritte come già fatte 
 - [x] **Cancellazione automatica** dei dati scaduti secondo i tempi di conservazione: fatto. Notifiche
   (T049, job notturno `pulizia-notifiche`: le lette dopo 180 giorni, tutte dopo 365; scelta R6), aiuto su
   strada (job `richieste-strada`, ogni 10 minuti: 90 giorni dopo la chiusura) e prenotazioni (T197, job
-  notturno `pulizia-prenotazioni`: 24 mesi dopo il giorno dell'appuntamento; scelta R25). I tempi
+  notturno `pulizia-prenotazioni`: 24 mesi dopo il giorno dell'appuntamento; scelta R25) ed errori
+  dell'app (job notturno `pulizia-errori-app`: 30 giorni; cancellati subito anche con l'account). I tempi
   restano da confermare con il consulente.
 - [ ] **Procedura scritta per le violazioni dei dati** (chi se ne accorge, chi avvisa le officine e entro
   quanto, registro delle violazioni — art. 33.5): bozza pronta (T037, `procedura-violazioni.md`), da
