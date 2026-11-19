@@ -3229,6 +3229,20 @@ dipende da Supabase e gonfierebbe la pagina pubblica pigra. Gli h3 hanno id `tc-
 è `auto-fit` con `minmax(min(100%, 14rem), 1fr)`, così sul telefono va a capo. L'e2e legge nome e prezzo da
 `PIANI`.
 
+## Domande frequenti nella pagina per le officine (T306)
+
+**File coinvolti:** `apps/web/src/pagine/per-le-officine.ts`, `apps/web/src/styles/_pagine.scss`, e2e della
+pagina.
+**Come funziona:** la pagina pubblica ha la sezione «Domande frequenti» con 6 domande, ognuna un `details`
+con `summary`. Le risposte stanno nell'array `DOMANDE`; nessun importo scritto a mano (il costo rimanda alla
+sezione Prezzi).
+
+### Codice complesso
+Ogni voce di `DOMANDE` è una funzione che restituisce HTML con i valori presi dalle costanti
+(`GIORNI_PROVA`, `CONTATTO_EMAIL`). Per cambiare una risposta ricontrollare la fonte: import in
+`importa.ts`/`lib/importa.ts`, abbonamento P25, disdetta in `termini-di-servizio.md` (ancora bozza). Stile
+in `_pagine.scss` (`.tc-officine__domanda`).
+
 ## Bozze legali: abbonamento e pagamenti con Stripe (T190)
 
 **File coinvolti:** `DOCS/legale/` (termini §10, informativa, registro dei trattamenti scheda A7, README

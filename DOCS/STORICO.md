@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-19 — ciclo 20261119-21 — T305 T306
+
+**Fatto**
+
+- T305: bozze legali allineate alle migrazioni: errori dell'app (30 giorni, job `pulizia-errori-app`,
+  cascade con l'account) nella «Cancellazione automatica» del README; «21 tabelle» diventa 22
+  (`stripe_eventi` eliminata il 2026-11-14) in README e registro M1.
+- T306: la pagina «Per le officine» ha la sezione «Domande frequenti» (6 domande con `details`/`summary`)
+  ricavata da codice, decisioni P22/P25 e termini in bozza, più un e2e.
+
+**Verifica**
+
+- Prova d'insieme verde: 765 test, JS iniziale 68,1 kB, CSS 32,0 kB; e2e non eseguiti (li fa la CI).
+- Gate del supervisore: 2/2 approvati al primo giro. Rilievi `nota`: data in `DOCS/legale/README.md` r.62
+  da aggiornare; la FAQ sulla disdetta tace mancato rimborso dell'installazione e preavviso di TyreCare
+  (rimanda ai Termini); `CONTATTO_EMAIL` è ancora un segnaposto.
+
 ### Sessione agenti — 2026-11-19 — ciclo 20261119-18 — T263 T279
 
 **Fatto**
