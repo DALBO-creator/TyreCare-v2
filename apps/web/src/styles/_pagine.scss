@@ -373,6 +373,28 @@
     gap: 0.5rem;
   }
 
+  &__domande {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  &__domanda {
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: var(--tc-superficie-alta);
+
+    summary {
+      cursor: pointer;
+      font-weight: 600;
+      color: $tc-bianco;
+      overflow-wrap: anywhere;
+    }
+  }
+
+  &__risposta {
+    margin: 0.5rem 0 0;
+  }
+
   &__accedi {
     margin: 0;
     text-align: center;

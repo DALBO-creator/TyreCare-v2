@@ -62,3 +62,13 @@ test('la pagina per le officine mostra i prezzi, la prova gratuita e l’aiuto s
   await expect(page.getByText(/Installazione e avvio: 149 € una tantum/)).toBeVisible();
   await expect(page.getByText('Aiuto su strada', { exact: true })).toBeVisible();
 });
+
+test('le domande frequenti si aprono e mostrano la risposta', async ({ page }) => {
+  await page.goto('/per-le-officine');
+  await expect(page.getByRole('heading', { level: 2, name: 'Domande frequenti' })).toBeVisible();
+  const risposta = page.getByText(/annullare entro 7 giorni/);
+  await expect(risposta).toBeHidden();
+  await page.getByText('Devo reinserire i miei clienti?', { exact: true }).click();
+  await expect(risposta).toBeVisible();
+  await expect(page.getByText('Posso smettere quando voglio?', { exact: true })).toBeVisible();
+});
