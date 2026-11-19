@@ -19,8 +19,8 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
 >
-> Ultima sessione: ciclo agenti 20261116-21 (T256 T257 T300 T301): pagina admin `/admin/andamento`
-> «Andamento del pilota», piano del pilota aggiornato, test di Notifiche e home del cliente (755 test).
+> Ultima sessione: ciclo agenti 20261119-18 (T263 T279): idee già fatte segnate in `IMPLEMENTAZIONI.md`
+> (Sentry sostituito da `errori_app`) e Supabase finto comune per i test di `lib/` (765 test).
 
 **0 — Da chiedere al titolare**
 

@@ -209,7 +209,7 @@ piazzale senza rete). Lo spostiamo in `IMPLEMENTAZIONI.md`.
 - **Playwright** per test end-to-end dei flussi critici: **in uso dal 2026-10-12** (workspace `e2e/`, job CI `e2e`),
   primo flusso gli inviti del cliente; da estendere alla prenotazione in Fase 4.
 - Lighthouse anche in CI (`@lhci/cli`) per non regredire su punteggi PWA/performance.
-- **Sentry** (piano gratuito) per errori in produzione.
+- ~~**Sentry**~~ sostituito da `errori_app` e `/admin/errori` (R33, T244, T248, T249).
 
 ## B2. Dati e import dal gestionale
 

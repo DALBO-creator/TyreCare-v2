@@ -4008,6 +4008,20 @@ Dopo il successo: `await mostraPagina()` e poi il focus su `#tc-app` con `setTim
 dialogo modale è ancora aperto e rende inerte la pagina: si chiude subito dopo, e solo allora il focus
 funziona.
 
+## Supabase finto per i test di `lib/` (T279)
+
+**File coinvolti:** `apps/web/src/test/supabase-finto.ts`, `apps/web/src/lib/prenotazioni.test.ts`.
+**Come funziona:** `supabase-finto.ts` simula `getSupabase()`: `from()` restituisce una catena che registra
+ogni metodo (`select eq gte in order limit maybeSingle`) in `chiamate`; la catena è thenable e si risolve
+con `finto.risultato`. Importato solo dai test, fuori dalla build.
+
+### Codice complesso
+Nel test: `vi.mock('./supabase', async () => { const f = await import('../test/supabase-finto'); return {
+getSupabase: () => ({ rpc: f.rpc, from: f.from }) }; })`, perché `vi.mock` è sollevato in cima e non può
+stare nel modulo comune; `beforeEach(azzeraFinto)`. I filtri si verificano con
+`chiamate.filter(([m]) => m === 'eq')` e `toEqual` (numero esatto). Metodo nuovo → aggiungere il nome a
+`METODI`.
+
 ## Test unitari di `lib/prenotazioni.ts`
 
 **File coinvolti:** `apps/web/src/lib/prenotazioni.test.ts` (25 test; nessun cambio al codice).
