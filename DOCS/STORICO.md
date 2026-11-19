@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-19 — ciclo 20261119-18 — T263 T279
+
+**Fatto**
+
+- T263: in `IMPLEMENTAZIONI.md` segnate come fatte 11 idee già realizzate (strada, unisci anagrafiche,
+  annulla import, CSV errori, età DOT, scollega cliente, invito da Nuovo cliente, clienti senza app,
+  prenotazione→cliente, ambiente DOM, avviso cloud); nota di Dashboard ADMIN col pilota; Sentry segnato come
+  sostituito da `errori_app` e `/admin/errori` anche in `PLAN.md` r.212.
+- T279: il Supabase finto a catena di `prenotazioni.test.ts` passa in `apps/web/src/test/supabase-finto.ts`
+  (con `limit` e `maybeSingle`); 11 test nuovi per `caricaPrenotazioniOfficina`, `caricaPrenotazione`,
+  `caricaClienteDellaPrenotazione` (2 `eq`, dritta T143) e `caricaServizi`; test da 754 a 765.
+
+**Verifica**
+
+- Prova d'insieme verde: 765 test, JS iniziale 68,1 kB.
+- Gate del supervisore: 2/2 approvati al primo giro.
+
 ### Sessione — 2026-11-17 — link al sito vetrina
 
 **Fatto**
