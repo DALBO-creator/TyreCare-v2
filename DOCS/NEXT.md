@@ -19,9 +19,10 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
 >
-> Ultima sessione: ciclo agenti 20261120-15 (T307 T309): testo per i clienti del pilota (cartello A5 e
-> WhatsApp, `DOCS/pilota/testo-per-i-clienti.md`) e guida officine con bozza del controllo e DOT per ruota
-> (795 test). Quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei due testi.
+> Ultima sessione: ciclo agenti 20261120-18 (T270 T271): test axe di `/admin/commenti` con un commento reale e
+> di `/admin/andamento`, e e2e del focus sull'h1 dopo l'annullo dell'aiuto su strada (e2e verificati dalla CI
+> del treno). Prima: ciclo 20261120-15 (T307 T309), testo per i clienti del pilota e guida officine; quando il
+> dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei due testi.
 
 **0 — Da chiedere al titolare**
 

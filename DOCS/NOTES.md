@@ -4044,6 +4044,25 @@ riuscito (resta se fallisce); «Scarta la bozza» riparte da zero. §9: la casel
 vale nel montaggio e in «Cambia pneumatici» (stessa pagina `monta-pneumatici.ts`), non in «Correggi
 pneumatici». Aggiornare la guida se cambiano l'avviso, i pulsanti o `TESTO_AIUTO_DOT`.
 
+## Accessibilità delle pagine admin con dati (T270)
+
+**File coinvolti:** i test axe delle pagine admin (`/admin/commenti`, `/admin/andamento`).
+**Come funziona:** `/admin/commenti` si analizza con un commento reale in elenco, scritto da un cliente nuovo;
+`/admin/andamento` ha il suo test axe. I dati si creano prima dell'analisi: il commento usa `unico()` e un
+account nuovo (limite `TROPPI_COMMENTI`); poi si attende l'elemento con quel testo e infine le animazioni
+(`controllaAccessibilita`).
+
+## E2E aiuto su strada: focus dopo l'annullo (T271)
+
+**File coinvolti:** `strada.spec.ts` (nuovo e2e sul focus dopo l'annullo, T228).
+**Come funziona:** richiesta e annullo sono finti con `page.route`: la GET di `richieste_strada` risponde
+`[riga]`, poi `[]` dopo che la rpc finta `annulla_richiesta_strada` risponde 200 a corpo vuoto (come PostgREST
+per una funzione void); `.maybeSingle()` legge come lista e decide la cardinalità lato client.
+
+### Codice complesso
+Il test attende il modulo e le assenze, poi verifica il focus sull'h1 «Aiuto su strada» (`tabindex="-1"`): il
+pulsante premuto sparisce col ridisegno, quindi il focus non può restare lì.
+
 ## Scollegare un cliente (database)
 
 **File coinvolti:** `supabase/migrations/20261108000600_*.sql` (funzione `public.scollega_cliente`), il suo
