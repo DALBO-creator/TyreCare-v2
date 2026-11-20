@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-21 — ciclo 20261121-00 — T311 T312
+
+**Fatto**
+
+- T311: nuovo e2e `montaggio-dot.spec.ts`: montaggio con «DOT diverso per ogni ruota» provato fino alla
+  scheda del veicolo (una riga per ruota col suo DOT) e DOT errato segnalato con `aria-invalid`.
+- T312: `ui/layout.test.ts`, 8 unit test DOM della barra di navigazione (voci e href per cliente e
+  officina, voce attiva, `anche` e sottopagine, «Salta al contenuto»); nessun cambio al codice.
+
+**Verifica**
+
+- 819 test verdi nella prova d'insieme; e2e `montaggio-dot.spec.ts` non eseguito in sandbox, lo prova la
+  CI del treno. Gate del supervisore: 2/2 approvati al primo giro.
+
 ### Sessione agenti — 2026-11-20 — ciclo 20261120-21 — T303 T304
 
 **Fatto**
