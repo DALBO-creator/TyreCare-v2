@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-20 — ciclo 20261120-18 — T270 T271
+
+**Fatto**
+
+- T270: il test axe di `/admin/commenti` ora gira con un commento reale in elenco, scritto da un cliente
+  nuovo; aggiunto il test axe di `/admin/andamento`.
+- T271: nuovo e2e in `strada.spec.ts` che prova il focus sull'h1 dopo un annullo riuscito dell'aiuto su
+  strada (T228), con richiesta e annullo finti via `page.route`.
+
+**Verifica**
+
+- e2e non eseguiti in sandbox, verificati dalla CI del treno. Gate del supervisore: 2/2 approvati al primo
+  giro.
+
 ### Sessione agenti — 2026-11-20 — ciclo 20261120-15 — T307 T309
 
 **Fatto**
