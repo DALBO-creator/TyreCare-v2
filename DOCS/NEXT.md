@@ -19,8 +19,8 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
 >
-> Ultima sessione: ciclo agenti 20261120-00 (T295 T296): test DOM di Nuovo controllo e test dei testi di
-> orari e servizi (789 test).
+> Ultima sessione: ciclo agenti 20261120-03 (T302 T278): test DOM di «Aiuto su strada» e commento di
+> `prenotazioni.ts` spostato (795 test).
 
 **0 — Da chiedere al titolare**
 
