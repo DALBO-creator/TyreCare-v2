@@ -169,6 +169,10 @@ del cliente): "Targa", "Marca", "Modello", e facoltativi "Anno" e "Telaio"; poi 
 - **Monta:** se il veicolo non ha pneumatici, "Monta gli pneumatici". Scegli le "Posizioni", poi
   "Stagione", "Misura" (come sul fianco, es. 205/55 R16 91V), "Marca", "Modello", "DOT (facoltativo)" e
   "Data di montaggio". Premi "Monta pneumatici".
+  Se i DOT delle ruote sono diversi, spunta "DOT diverso per ogni ruota": il campo "DOT (facoltativo)" si
+  spegne e compare un campo per ogni posizione scelta (es. "DOT Anteriore sinistro"; "Ultime 4 cifre:
+  settimana e anno (es. 3823)."). Quello che hai scritto resta se cambi le posizioni. Lo stesso vale in
+  "Cambia pneumatici", che apre la stessa pagina; in "Correggi pneumatici" il DOT è uno solo.
 - **Cambia:** per montare pneumatici diversi premi "Cambia pneumatici": quelli vecchi restano nello
   storico.
 - **Smonta:** nella sezione "Pneumatici montati", "Smonta" toglie gli pneumatici senza metterne altri
@@ -184,6 +188,9 @@ Il veicolo si colora in base allo stato: rosso da sostituire, giallo da controll
 - **Nuovo controllo:** dal veicolo, "Nuovo controllo". Scrivi "Data" e "Km (facoltativi)"; per ogni ruota
   "Battistrada mm" e "Pressione bar", e se vuoi "Usura" e "Danni (facoltativo)". Le "Note (facoltative)"
   le vede anche il cliente. Premi "Salva controllo".
+  Se esci prima di salvare, le misure scritte restano solo su questo telefono o computer per 7 giorni: alla
+  riapertura compare "Abbiamo ripreso le misure che non avevi salvato." e, con "Scarta la bozza", riparti
+  da zero. La bozza sparisce dopo "Salva controllo"; se il salvataggio non riesce, resta.
 - **Correzione:** nella sezione dei controlli del veicolo apri quello giusto e premi "Correggi o elimina":
   "Salva modifiche", oppure "Elimina controllo" (si eliminano anche le sue misure, senza ritorno).
 - **Report da stampare:** apri il controllo con "Apri il report" e premi "Stampa o salva in PDF".
