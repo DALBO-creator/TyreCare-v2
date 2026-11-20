@@ -322,7 +322,6 @@ export async function annullaPrenotazione(id: string): Promise<void> {
   if (error) throw traduci(error);
 }
 
-/** Numero di richieste ancora da confermare (da oggi in poi), per l'avviso nella home dell'officina. */
 /**
  * Registra in officina il veicolo della richiesta, sulla scheda del cliente già collegato all'account
  * di chi ha prenotato oppure su un cliente nuovo, collegato (funzione SQL). Restituisce l'id del veicolo.
@@ -358,6 +357,7 @@ export async function caricaClienteDellaPrenotazione(
   return data;
 }
 
+/** Numero di richieste ancora da confermare (da oggi in poi), per l'avviso nella home dell'officina. */
 export async function contaRichiesteDaConfermare(officinaId: string, dal: string): Promise<number> {
   const { count, error } = await getSupabase()
     .from('prenotazioni')

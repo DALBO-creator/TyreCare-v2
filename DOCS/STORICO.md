@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-20 — ciclo 20261120-03 — T302 T278
+
+**Fatto**
+
+- T302: aggiunto `pagine/strada.test.ts` (6 test DOM) per «Aiuto su strada» del cliente: modulo, richiesta
+  aperta, accettata con e senza «Chiama», limite orario, annullo con focus sull'h1.
+- T278: in `lib/prenotazioni.ts` il commento di `contaRichiesteDaConfermare` stava sopra
+  `registraClienteDaPrenotazione`; spostato sopra la funzione giusta (diff di soli commenti).
+
+**Verifica**
+
+- Corsia C3 coordinata dal direttore, 2 esecutori sonnet. Prova d'insieme verde: 81 file, 795 test, JS
+  iniziale 68,1 kB, CSS 32,0 kB; e2e non eseguiti (li fa la CI).
+- Gate del supervisore: 2/2 approvati al primo giro. Rilievi `nota`: `vi.clearAllTimers()` inutile in
+  `strada.test.ts` e commento che promette il falso (idea T337).
+
 ### Sessione agenti — 2026-11-20 — ciclo 20261120-00 — T295 T296
 
 **Fatto**

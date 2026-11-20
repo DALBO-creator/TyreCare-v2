@@ -4015,6 +4015,18 @@ Le soglie vengono da `statoBattistrada`: 3,5 mm è verde d'estate e giallo d'inv
 fuso. `dettagliServizio` salta la durata nulla o 0 e unisce le parti con « · ». Il test di
 `periodoChiusura` fissa il comportamento reale (mai l'anno), diverso dal suo commento (idea T336).
 
+## Test della pagina Aiuto su strada (T302)
+
+**File coinvolti:** `apps/web/src/pagine/strada.test.ts` (6 test, happy-dom).
+**Come funziona:** provano la pagina «Aiuto su strada» del cliente: modulo, richiesta aperta, accettata con e
+senza «Chiama», limite orario, annullo con focus sull'h1. `lib/strada` è finto con `importOriginal`, così
+`MESSAGGI`, gli schemi e `creaGenerazione` restano veri e i testi attesi si leggono da `MESSAGGI`.
+
+### Codice complesso
+Il layout richiede i finti di `lib/notifiche`, `lib/profilo` e `ui/avvisi-push`; `router` ha
+`visualizzazioneCorrente` e `ancoraAttuale` fissi. Il focus sull'h1 dopo l'annullo arriva dopo il `close` del
+dialogo, quindi si attende con `vi.waitFor`. happy-dom gestisce `showModal`/`close` senza polyfill.
+
 ## Scollegare un cliente (database)
 
 **File coinvolti:** `supabase/migrations/20261108000600_*.sql` (funzione `public.scollega_cliente`), il suo
