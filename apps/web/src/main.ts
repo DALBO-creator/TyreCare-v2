@@ -68,6 +68,12 @@ const ROTTE: Rotta[] = [
   },
   // Garage del cliente: i suoi veicoli uniti per targa tra le officine
   {
+    percorso: '/garage',
+    accesso: 'utente',
+    titolo: 'Il tuo garage',
+    mostra: pigra(() => import('./pagine/garage'), 'mostraGarage'),
+  },
+  {
     percorso: '/garage/veicolo',
     accesso: 'utente',
     titolo: 'Il tuo veicolo',
