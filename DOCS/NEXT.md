@@ -19,10 +19,12 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
 >
-> Ultima sessione: ciclo agenti 20261120-18 (T270 T271): test axe di `/admin/commenti` con un commento reale e
-> di `/admin/andamento`, e e2e del focus sull'h1 dopo l'annullo dell'aiuto su strada (e2e verificati dalla CI
-> del treno). Prima: ciclo 20261120-15 (T307 T309), testo per i clienti del pilota e guida officine; quando il
-> dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei due testi.
+> Ultima sessione: ciclo agenti 20261120-21 (T303 T304): test della scheda veicolo del garage e nuova rotta
+> pigra `/garage` («Il tuo garage»), con link dalla home dell'officina se il garage non è vuoto (e2e
+> verificato dalla CI del treno). Prima: ciclo 20261120-18 (T270 T271), test axe delle pagine admin e e2e
+> del focus dopo l'annullo dell'aiuto su strada; ciclo 20261120-15 (T307 T309): quando il dominio del
+> sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei due testi del pilota.
+> In coda: pronti T297, T311, T312; idee nuove T342 e T343 (le valuta il pianificatore).
 
 **0 — Da chiedere al titolare**
 

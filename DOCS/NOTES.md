@@ -4063,6 +4063,25 @@ per una funzione void); `.maybeSingle()` legge come lista e decide la cardinalit
 Il test attende il modulo e le assenze, poi verifica il focus sull'h1 «Aiuto su strada» (`tabindex="-1"`): il
 pulsante premuto sparisce col ridisegno, quindi il focus non può restare lì.
 
+## Test della scheda veicolo del garage (T303)
+
+**File coinvolti:** `apps/web/src/pagine/garage-veicolo.test.ts` (10 test, happy-dom).
+**Come funziona:** montano `mostraGarageVeicolo` con `?targa=`; `caricaGarage` e `caricaOfficinePrenotabili`
+sono finti. Casi: veicolo non trovato, gomme rosse con avviso e «Prenota la sostituzione», storico vuoto,
+due officine. «Prenota» compare solo per le officine prenotabili (`servizi.length > 0` e `haOrari`); gli
+stati rosso/giallo/verde si verificano con `statoBattistrada`; le carte sono `article.tc-officina`.
+
+## Il tuo garage per chi lavora in officina (T304)
+
+**File coinvolti:** `apps/web/src/pagine/garage.ts` (pigra, rotta `/garage`), `home.ts`.
+**Come funziona:** `/garage` («Il tuo garage») riusa `sezioneVeicoli` di `home.ts`. `home.ts` passa
+`garage.length` (già caricato) come 4° parametro `veicoliGarage` (default 0) a `mostraHomeOfficina`: in fondo
+appare «Il tuo garage · N veicoli» (singolare/plurale) solo se > 0; nessuna voce nella barra.
+
+### Codice complesso
+`home.ts` è ora un chunk condiviso precaricato: `index` pesa 26,07 kB e il totale caricato all'avvio non
+cambia. L'e2e copre solo il caso senza veicoli (titolare del seed); il caso con veicoli è un unit test.
+
 ## Scollegare un cliente (database)
 
 **File coinvolti:** `supabase/migrations/20261108000600_*.sql` (funzione `public.scollega_cliente`), il suo

@@ -71,6 +71,7 @@ export async function mostraHomeOfficina(
   app: HTMLElement,
   n: number,
   dati: DatiUtente,
+  veicoliGarage = 0,
 ): Promise<void> {
   const attiva = officinaAttiva(dati.officine)!;
   app.innerHTML = paginaApp(caricamento());
@@ -209,6 +210,13 @@ export async function mostraHomeOfficina(
               </div>`
         }
       </section>
+      ${
+        veicoliGarage > 0
+          ? `<p class="text-center mt-4 mb-0">
+        <a href="/garage">Il tuo garage · ${veicoliGarage === 1 ? '1 veicolo' : `${veicoliGarage} veicoli`}</a>
+      </p>`
+          : ''
+      }
     </div>`);
 
   app.querySelector<HTMLSelectElement>('#tc-officina')?.addEventListener('change', (e) => {

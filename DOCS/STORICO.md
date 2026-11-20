@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-20 — ciclo 20261120-21 — T303 T304
+
+**Fatto**
+
+- T303: `garage-veicolo.test.ts`, 10 unit test DOM della scheda veicolo del garage (non trovato, gomme
+  rosse con avviso e «Prenota la sostituzione», storico vuoto, due officine); nessun cambio alla pagina.
+- T304: nuova rotta pigra `/garage` («Il tuo garage») che riusa `sezioneVeicoli` di `home.ts`; la home
+  dell'officina mostra in fondo «Il tuo garage · N veicoli» solo se il garage non è vuoto (R45).
+
+**Verifica**
+
+- 811 test verdi nella prova d'insieme; e2e `garage-officina.spec.ts` non eseguito in sandbox, lo prova la
+  CI del treno. Gate del supervisore: 2/2 approvati al primo giro. JS di `index` più leggero, totale
+  caricato all'avvio invariato.
+
 ### Sessione agenti — 2026-11-20 — ciclo 20261120-18 — T270 T271
 
 **Fatto**
