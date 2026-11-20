@@ -4,6 +4,31 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-20 — ciclo 20261120-15 — T307 T309
+
+**Fatto**
+
+- T307: nuovo `DOCS/pilota/testo-per-i-clienti.md` con il cartello A5 per il banco e il messaggio WhatsApp
+  per far entrare i clienti di LA SANTI GOMME; rimando in `guida-avvio.md` punto 6. L'indirizzo del sito è
+  `[DA COMPLETARE]` fino alla scelta del dominio.
+- T309: `guida-officina.md` spiega la bozza del controllo (misure riprese, «Scarta la bozza», 7 giorni, solo
+  su quel dispositivo) e «DOT diverso per ogni ruota» nel montaggio e in «Cambia pneumatici».
+
+**Verifica**
+
+- Corsia C4 coordinata dal direttore, 2 esecutori sonnet. Prova d'insieme verde: 795 test, JS iniziale
+  68,1 kB; e2e non eseguiti (li fa la CI).
+- Gate del supervisore: 2/2 approvati al primo giro. Rilievo `nota`: `guida-officina.md` riga 172, frase
+  imprecisa sul DOT che resta cambiando posizioni (da sistemare col prossimo compito sul file).
+
+**Note**
+
+- Idee: passo Android (menu ⋮ → «Installa app») anche in `guida-cliente.md`; il commento «Solo nel
+  montaggio» di `collegaDotPerRuota` è impreciso (vale anche in «Cambia pneumatici»); guida-officina §9:
+  scrivere «resta per le ruote che lasci scelte» invece di «resta se cambi le posizioni».
+- T307: il passo 2 dice «apri il link che ti abbiamo mandato» e non «link dell'email», perché l'invito non
+  parte da solo; aggiunta la riga per chi ha già un account («Accedi», poi «Collega i miei veicoli»).
+
 ### Sessione agenti — 2026-11-20 — ciclo 20261120-03 — T302 T278
 
 **Fatto**
