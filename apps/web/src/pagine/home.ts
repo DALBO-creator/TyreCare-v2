@@ -36,7 +36,7 @@ export async function mostraHome(app: HTMLElement): Promise<void> {
   }
   if (!ancoraAttuale(n)) return;
   if (devonoRiaccettare(dati.profilo.termini_versione)) return mostraRiaccetta(app, n);
-  if (dati.officine.length > 0) return mostraHomeOfficina(app, n, dati);
+  if (dati.officine.length > 0) return mostraHomeOfficina(app, n, dati, garage.length);
 
   const { profilo } = dati;
   app.innerHTML = paginaApp(`
@@ -109,7 +109,8 @@ function mostraRiaccetta(app: HTMLElement, n: number): void {
   });
 }
 
-function sezioneVeicoli(garage: VeicoloGarage[]): string {
+/** Sezione «I tuoi veicoli»: le carte del garage o lo stato vuoto (usata anche da `/garage`). */
+export function sezioneVeicoli(garage: VeicoloGarage[]): string {
   return `
     <section aria-labelledby="tc-veicoli">
       <h2 id="tc-veicoli" class="tc-etichetta">I tuoi veicoli</h2>

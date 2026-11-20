@@ -164,9 +164,14 @@ describe('home del cliente', () => {
     const dati = utente();
     dati.officine = [{ id: 'o1' } as unknown as DatiUtente['officine'][number]];
     caricaDatiUtente.mockResolvedValue(dati);
-    caricaGarage.mockResolvedValue([]);
+    caricaGarage.mockResolvedValue([
+      veicolo('AB123CD', 5, DOT_RECENTE),
+      veicolo('EF456GH', 5, DOT_RECENTE),
+    ]);
     await montaHome();
     expect(mostraHomeOfficina).toHaveBeenCalledTimes(1);
+    // Il quarto argomento è il numero di veicoli del garage già caricato
+    expect(mostraHomeOfficina.mock.calls[0]?.[3]).toBe(2);
     expect(document.querySelector('.tc-garage')).toBeNull();
   });
 });
