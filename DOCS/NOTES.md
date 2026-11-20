@@ -4082,6 +4082,30 @@ appare «Il tuo garage · N veicoli» (singolare/plurale) solo se > 0; nessuna v
 `home.ts` è ora un chunk condiviso precaricato: `index` pesa 26,07 kB e il totale caricato all'avvio non
 cambia. L'e2e copre solo il caso senza veicoli (titolare del seed); il caso con veicoli è un unit test.
 
+## E2E: montaggio con DOT per ruota (T311)
+
+**File coinvolti:** `e2e/tests/montaggio-dot.spec.ts` (nuovo; non eseguito in locale, lo verifica la CI).
+**Come funziona:** il test spunta «DOT diverso per ogni ruota», compila i campi `DOT <posizione>` e controlla
+la scheda del veicolo: una riga per ruota, ognuna col suo DOT. Dati unici: cliente nuovo e targa
+`unico().slice(-6)`.
+
+### Codice complesso
+Pneumatici uguali con DOT diverso non si raggruppano (`chiaveGruppo` in `pagine/veicolo.ts`), quindi una riga
+per ruota. Il DOT errato è segnalato dal modulo con `aria-invalid` e il messaggio dello schema condiviso
+(`packages/shared/src/officina.ts`).
+
+## Test della barra di navigazione (T312)
+
+**File coinvolti:** `apps/web/src/ui/layout.test.ts` (8 test DOM, happy-dom; nessuna modifica al codice).
+**Come funziona:** si fingono `lib/profilo` (`lavoraInOfficina`) e `lib/notifiche` e si chiama `paginaApp()`.
+Casi: voci e href per cliente e officina, voce attiva per percorsi diretti, `anche` e sottopagine, link
+«Salta al contenuto».
+
+### Codice complesso
+Il percorso corrente si imposta con `history.replaceState` (`attiva()` legge `location.pathname`). Le etichette
+si leggono dallo `<span>` testo della voce, senza il badge; ogni test controlla che le voci con
+`aria-current` siano esattamente una.
+
 ## Scollegare un cliente (database)
 
 **File coinvolti:** `supabase/migrations/20261108000600_*.sql` (funzione `public.scollega_cliente`), il suo
