@@ -111,7 +111,7 @@ export async function mostraAdminAndamento(app: HTMLElement): Promise<void> {
       <div class="tc-avviso tc-avviso--rosso mb-3" data-errore-carica role="alert" tabindex="-1" hidden></div>
       ${RIQUADRO_ERRORE}
       <p class="small mb-3" role="status" data-copiato hidden></p>
-      <button type="button" class="btn btn-outline-primary w-100 mb-3" data-copia>Copia i numeri</button>
+      <button type="button" class="btn btn-outline-light w-100 mb-3" data-copia>Copia i numeri</button>
       <div data-elenco aria-live="polite">${elenco(righe, periodo)}</div>
     </div>`);
 
