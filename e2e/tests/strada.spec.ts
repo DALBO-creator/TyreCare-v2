@@ -133,3 +133,57 @@ test('se l’annullo fallisce la pagina mostra ancora la richiesta e il dialogo 
     await contesto.close();
   }
 });
+
+test('dopo un annullo riuscito la pagina torna al modulo e il focus va sul titolo', async ({
+  browser,
+}) => {
+  test.setTimeout(180_000);
+  const email = await nuovoAccountCliente('Gino');
+  const contesto = await browser.newContext();
+  const page = await contesto.newPage();
+  try {
+    await accedi(page, email);
+    // Nessuna officina del seed offre il servizio: la richiesta aperta e l'annullo riuscito sono finti
+    const descrizione = `Gomma a terra ${unico()}`;
+    const riga = {
+      id: '00000000-0000-4000-8000-000000000221',
+      stato: 'APERTA',
+      descrizione,
+      scade_il: new Date(Date.now() + 3600_000).toISOString(),
+      accettata_il: null,
+      targa: null,
+      officina: null,
+    };
+    let annullata = false;
+    // postgrest-js legge con .maybeSingle() come lista (nessun header vnd.pgrst.object): niente riga = []
+    await page.route('**/rest/v1/richieste_strada?*', (route) => {
+      if (route.request().method() !== 'GET') return route.fallback();
+      return route.fulfill({ json: annullata ? [] : [riga] });
+    });
+    // Come PostgREST per una funzione void: 200 con corpo vuoto
+    await page.route('**/rest/v1/rpc/annulla_richiesta_strada', (route) => {
+      annullata = true;
+      return route.fulfill({ status: 200, body: '' });
+    });
+    await page.goto('/strada');
+
+    const stato = page.getByRole('heading', { name: "Stiamo cercando un'officina vicina" });
+    await expect(stato).toBeVisible();
+    await expect(page.getByText(descrizione)).toBeVisible();
+
+    await page.getByRole('button', { name: 'Annulla la richiesta' }).click();
+    const dialogo = page.getByRole('dialog');
+    await dialogo.getByRole('button', { name: 'Annulla la richiesta' }).click();
+    await expect(dialogo).toHaveCount(0);
+
+    // Stato senza richiesta: il modulo è disegnato, la richiesta annullata non c'è più
+    await expect(page.getByRole('button', { name: 'Usa la mia posizione e invia' })).toBeVisible();
+    await expect(page.getByLabel('Cosa è successo')).toBeVisible();
+    await expect(stato).toHaveCount(0);
+    await expect(page.getByText(descrizione)).toHaveCount(0);
+    // Il pulsante premuto è sparito col ridisegno: il focus va sul titolo, non si perde sul body
+    await expect(page.getByRole('heading', { level: 1, name: 'Aiuto su strada' })).toBeFocused();
+  } finally {
+    await contesto.close();
+  }
+});
