@@ -183,14 +183,38 @@ test.describe('amministratore', () => {
     await controllaAccessibilita(admin, '/admin/officine');
   });
 
-  // Elenco vuoto o con commenti, a seconda di cosa hanno scritto gli altri test: la pagina è la stessa
+  // L'elenco è pieno: un cliente nuovo (il limite è di 20 commenti in 24 ore per utente) scrive un
+  // commento e l'admin lo trova in cima (ordine `created_at desc`) prima dell'analisi
   test('/admin/commenti: nessuna violazione di accessibilità grave', async ({ browser }) => {
+    test.setTimeout(180_000);
+
+    const testo = `Commento per axe ${unico()}`;
+    const email = await nuovoAccountCliente('Commentatore');
+    const cliente = await entra(browser, email);
+    await cliente.goto('/commento');
+    await cliente.getByLabel('Cosa vuoi dirci?').fill(testo);
+    await cliente.getByRole('button', { name: 'Invia', exact: true }).click();
+    await expect(cliente.getByText('Grazie, abbiamo ricevuto il tuo commento.')).toBeVisible();
+
     // L'admin del seed ha la 2FA: `entra` scrive anche il codice
     const page = await entra(browser, 'admin@tyrecare.test');
     await page.goto('/admin/commenti');
     await expect(
       page.getByRole('heading', { level: 1, name: 'Commenti degli utenti' }),
     ).toBeVisible();
+    await expect(page.locator('.tc-lista__riga').filter({ hasText: testo })).toBeVisible();
     await controllaAccessibilita(page, '/admin/commenti');
+  });
+
+  test('/admin/andamento: nessuna violazione di accessibilità grave', async ({ browser }) => {
+    test.setTimeout(180_000);
+
+    const page = await entra(browser, 'admin@tyrecare.test');
+    await page.goto('/admin/andamento');
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'Andamento del pilota' }),
+    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Gomme Rossi' })).toBeVisible();
+    await controllaAccessibilita(page, '/admin/andamento');
   });
 });
