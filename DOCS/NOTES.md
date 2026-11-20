@@ -4027,6 +4027,23 @@ Il layout richiede i finti di `lib/notifiche`, `lib/profilo` e `ui/avvisi-push`;
 `visualizzazioneCorrente` e `ancoraAttuale` fissi. Il focus sull'h1 dopo l'annullo arriva dopo il `close` del
 dialogo, quindi si attende con `vi.waitFor`. happy-dom gestisce `showModal`/`close` senza polyfill.
 
+## Testo per i clienti del pilota (T307)
+
+**File coinvolti:** `DOCS/pilota/testo-per-i-clienti.md`, rimando in `DOCS/pilota/guida-avvio.md` (punto 6).
+**Come funziona:** due testi pronti, il cartello A5 per il banco e il messaggio WhatsApp, basati su
+`guida-cliente.md`, sui pulsanti di `pagine/invito.ts` («Crea account», «Accedi», «Collega i miei veicoli») e
+sul testo iPhone di `ui/avvisi-push.ts`. L'invito non parte da solo: l'officina lo crea con «Invita
+nell'app» e manda il link (valido 14 giorni). Si citano solo funzioni già in `guida-cliente.md`; il
+segnaposto `[DA COMPLETARE]` dell'indirizzo del sito va sostituito in entrambi i testi.
+
+## Guida officine: bozza del controllo e DOT per ruota (T309)
+
+**File coinvolti:** `DOCS/pilota/guida-officina.md` (§9 e §10).
+**Come funziona:** §10 spiega la bozza sul dispositivo per 7 giorni, cancellata solo dopo un salvataggio
+riuscito (resta se fallisce); «Scarta la bozza» riparte da zero. §9: la casella «DOT diverso per ogni ruota»
+vale nel montaggio e in «Cambia pneumatici» (stessa pagina `monta-pneumatici.ts`), non in «Correggi
+pneumatici». Aggiornare la guida se cambiano l'avviso, i pulsanti o `TESTO_AIUTO_DOT`.
+
 ## Scollegare un cliente (database)
 
 **File coinvolti:** `supabase/migrations/20261108000600_*.sql` (funzione `public.scollega_cliente`), il suo

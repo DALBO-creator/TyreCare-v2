@@ -33,6 +33,7 @@ Una pagina per partire da solo. Fai i passi nell'ordine; ognuno richiede pochi m
    la sua email. Poi "Scrivi l'email", "Condividi il link" o "Copia il link": il link vale 14 giorni e si
    vede solo in quel momento. Il cliente crea l'account con quella stessa email e trova i suoi veicoli nel
    garage.
+   Testo pronto per il banco e per WhatsApp: [testo-per-i-clienti.md](testo-per-i-clienti.md).
 7. **Richieste di appuntamento.** I clienti chiedono un giorno e una fascia (mattina o pomeriggio). Le
    trovi in **Appuntamenti** sotto "Da confermare" (e con un avviso giallo nella Home). Apri la richiesta:
    "Conferma appuntamento" con l'ora precisa, "Proponi un altro orario" oppure "Rifiuta la richiesta" (se è
