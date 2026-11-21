@@ -3389,8 +3389,8 @@ messaggio reale lo rivelano.
 (`rifiutaAffiliazione`, `ERRORI_RIFIUTO`), `e2e/tests/admin-rifiuta.spec.ts`.
 **Come funziona:** le officine IN_ATTESA hanno «Rifiuta la richiesta» (stile `tc-pulsante-elimina` con
 `mt-0`) accanto ad «Attiva». `chiediConferma` → `rifiutaAffiliazione(id)` →
-`rpc('rifiuta_affiliazione', { p_officina_id })` (dal T234 con il motivo facoltativo). La funzione SQL
-avvisa i membri («Richiesta non accettata») e cancella l'officina: la partita IVA torna libera.
+`rpc('rifiuta_affiliazione', { p_officina_id })` (dal T234 con il motivo facoltativo). La funzione SQL avvisa
+i membri («Richiesta non accettata») e cancella l'officina: la partita IVA torna libera.
 
 ### Codice complesso
 `apps/web/src/lib/admin.ts` — `ERRORI_RIFIUTO` traduce `OFFICINA_NON_TROVATA`, `OFFICINA_NON_IN_ATTESA`,
@@ -3403,9 +3403,9 @@ una volta sola): con il dialogo modale aperto la pagina è inerte e il focus non
 
 **File coinvolti:** `apps/web/src/ui/conferma.ts` (`chiediConferma`), `apps/web/src/lib/admin.ts`
 (`rifiutaAffiliazione`), `apps/web/src/pagine/admin-officine.ts`, `e2e/tests/admin-rifiuta.spec.ts`.
-**Come funziona:** `chiediConferma` accetta `campo?: { etichetta, max }`. Se c'è, sopra i pulsanti compaiono
-`<label>`, `<textarea id="tc-dialogo-campo">` con `maxlength` e un contatore «n / max». `azione(testo?)`
-riceve il valore grezzo: trim e scelta di non mandare un vuoto spettano al chiamante
+**Come funziona:** `chiediConferma` accetta `campo?: { etichetta, max }`. Se c'è, sopra i pulsanti
+compaiono `<label>`, `<textarea id="tc-dialogo-campo">` con `maxlength` e un contatore «n / max».
+`azione(testo?)` riceve il valore grezzo: trim e scelta di non mandare un vuoto spettano al chiamante
 (`rifiutaAffiliazione` manda `p_motivo` solo se non vuoto dopo `trim`). Il motivo (max 300) arriva
 nell'avviso a chi aveva chiesto.
 
@@ -4046,11 +4046,12 @@ pneumatici». Aggiornare la guida se cambiano l'avviso, i pulsanti o `TESTO_AIUT
 
 ## Accessibilità delle pagine admin con dati (T270)
 
-**File coinvolti:** i test axe delle pagine admin (`/admin/commenti`, `/admin/andamento`).
+**File coinvolti:** `e2e/tests/accessibilita.spec.ts` (pagine `/admin/commenti` e `/admin/andamento`).
 **Come funziona:** `/admin/commenti` si analizza con un commento reale in elenco, scritto da un cliente nuovo;
 `/admin/andamento` ha il suo test axe. I dati si creano prima dell'analisi: il commento usa `unico()` e un
 account nuovo (limite `TROPPI_COMMENTI`); poi si attende l'elemento con quel testo e infine le animazioni
-(`controllaAccessibilita`).
+(`controllaAccessibilita`). Correzione del treno #109 (73de6bf): il pulsante «Copia i numeri» passa da
+`btn-outline-primary` a `btn-outline-light`, perché il contrasto non superava axe.
 
 ## E2E aiuto su strada: focus dopo l'annullo (T271)
 
@@ -4169,7 +4170,7 @@ stare nel modulo comune; `beforeEach(azzeraFinto)`. I filtri si verificano con
 
 ## Test unitari di `lib/prenotazioni.ts`
 
-**File coinvolti:** `apps/web/src/lib/prenotazioni.test.ts` (25 test; nessun cambio al codice).
+**File coinvolti:** `apps/web/src/lib/prenotazioni.test.ts` (nessun cambio al codice).
 **Come funziona:** provano richiesta, risposta di officina e cliente, annullamento, conteggio delle richieste
 e registrazione del cliente: argomenti esatti di `rpc` e filtri, errori di Supabase sempre rilanciati.
 
@@ -4316,3 +4317,19 @@ pagina dell'URL. Le pagine pubbliche e quelle da ospite non chiedono il codice.
 - **Permessi minimi** (`20261114200000_sicurezza_permessi.sql`): vedi `DOCS/SICUREZZA.md`. Le funzioni
   nuove non sono più eseguibili da `anon` per default: una funzione pubblica nuova ha bisogno di un
   `grant execute … to anon` esplicito.
+
+## Nuovo controllo: stato in diretta e reset del modulo (T346)
+
+**File coinvolti:** `apps/web/src/pagine/nuovo-controllo.ts`, `apps/web/src/ui/modulo.ts`, test in
+`nuovo-controllo.test.ts` e `ui/modulo.test.ts`.
+**Come funziona:** `collegaStatoInDiretta(form, montati)` collega il listener `input` e restituisce
+`aggiornaTutti()`, che ridisegna i badge di tutte le ruote dai valori attuali, senza eventi. `collegaBozza`
+lo usa quando applica la bozza all'apertura e dopo «Scarta la bozza» (dopo `form.reset()`). Solo gli `input`
+dell'utente programmano il salvataggio della bozza.
+
+### Codice complesso
+Prima la bozza rilanciava `input` finti: in `collegaModulo` i campi risultavano «modificati» e usciva
+l'errore «obbligatorio» all'uscita da un battistrada vuoto. Ora `collegaModulo` ascolta `reset` (l'evento
+arriva prima che i valori tornino iniziali, quindi non legge valori): svuota `modificati`, toglie gli
+errori visibili e nasconde il riquadro generale. La validazione resta attiva: un nuovo `input` + `focusout`
+rimostra l'errore.

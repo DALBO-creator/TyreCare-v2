@@ -14,18 +14,17 @@
 > anche in *Preview* su Vercel e controllo della CSP sull'anteprima.
 > Poi: caricare la demo per LA SANTI GOMME (`DOCS/pilota/demo-la-santi.md`) e compilare i segnaposto di
 > `DATI_FORNITORE` (`packages/shared/src/fornitore.ts`) e di `DOCS/legale/README.md`.
-> **ai-org:** ripulire la coda dai compiti su Stripe (superati da PLAN P25) e dire agli agenti che le
-> funzioni nuove non sono più eseguibili da `anon` per default e che il seed usa `Password123`.
+> **ai-org:** dire agli agenti che le funzioni nuove non sono più eseguibili da `anon` per default e che il
+> seed usa `Password123`.
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
-> pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
+> pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261121-03 (T297): 5 test DOM di «Scollega l'account» nella scheda cliente.
-> Prima: ciclo 20261121-00 (T311 T312), e2e del montaggio con DOT per ruota e 8 test della barra di
-> navigazione. Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
+> Ultima sessione: ciclo agenti 20261121-09 (T346 T347): «Scarta la bozza» di Nuovo controllo riporta il
+> modulo come appena aperto; test di regressione di `importAnnullabile` e `scollegaCliente`.
+> Prima: ciclo 20261121-03 (T297), 5 test DOM di «Scollega l'account» nella scheda cliente. Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda: nessun compito `pronto` dopo T297, il prossimo ciclo lancia il pianificatore (pianificazione
-> settimanale: domenica 2026-11-22); idee nuove T342, T343, T344 e T345 (unit test di `scollegaCliente` in
-> `lib/officina` per la traduzione del 42501), le valuta il pianificatore.
+> In coda: 15 compiti `pronti` dopo T347 (prossima coppia T348 T349 di C3); pianificazione settimanale
+> domenica 2026-11-22.
 
 **0 — Da chiedere al titolare**
 
@@ -103,7 +102,8 @@ Per l'avvio dell'ambiente vedi "Sessioni nel cloud" o "Solo per i PC di Davide" 
   **solo** a `albodavide1@gmail.com`
 - Rifinire il disegno dell'auto in `src/ui/auto.ts` (facoltativo)
 - Invito di un utente in un'officina (oggi un titolare può aggiungere un `profile_id` ma non ha modo di
-  trovarlo): flusso di invito via email/codice su Fastify
+  trovarlo): già coperto dalle funzioni SQL `crea_invito_cliente` e `accetta_invito` (non c'è un flusso su
+  Fastify)
 - Deploy di `apps/api` su un secondo progetto Vercel → quando servirà la prima rotta usata dal web; servirà
   anche CORS (`@fastify/cors`) e la variabile `SUPABASE_URL`
 

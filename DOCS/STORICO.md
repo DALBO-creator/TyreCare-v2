@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-21 — ciclo 20261121-09 — T346 T347
+
+**Fatto**
+
+- T346: «Scarta la bozza» riporta Nuovo controllo come appena aperto: `collegaStatoInDiretta` restituisce
+  `aggiornaTutti()` (niente più `input` finti) e `collegaModulo` ascolta `reset`, togliendo errori e campi
+  «modificati».
+- T347: test di regressione per `importAnnullabile` (elenco crescente e misto, import CONTROLLI più recente
+  in fondo) e per `scollegaCliente` (`CLIENTE_NON_TROVATO`, `instanceof ErroreModulo` nel 42501).
+- Coda vuota: lanciato il pianificatore (17 compiti pronti T346–T362; compiti Stripe T253 T291 T308 T274
+  scartati).
+
+**Verifica**
+
+- 832 test verdi nella prova d'insieme; gate del supervisore: 2/2 approvati al primo giro.
+
 ### Sessione agenti — 2026-11-21 — ciclo 20261121-03 — T297
 
 **Fatto**
@@ -51,7 +67,8 @@
 **Fatto**
 
 - T270: il test axe di `/admin/commenti` ora gira con un commento reale in elenco, scritto da un cliente
-  nuovo; aggiunto il test axe di `/admin/andamento`.
+  nuovo; aggiunto il test axe di `/admin/andamento` (`e2e/tests/accessibilita.spec.ts`). Correzione del
+  treno #109 (73de6bf): «Copia i numeri» da `btn-outline-primary` a `btn-outline-light`.
 - T271: nuovo e2e in `strada.spec.ts` che prova il focus sull'h1 dopo un annullo riuscito dell'aiuto su
   strada (T228), con richiesta e annullo finti via `page.route`.
 
