@@ -46,9 +46,10 @@ const NOMI: Record<GiornoSettimana, string> = {
 };
 
 /**
- * Il periodo di una chiusura: "Mercoledì 14 ottobre" (giorno singolo) oppure "Da mercoledì 14 a venerdì 16
- * ottobre" (stesso anno): in questi casi mai l'anno. Se `dal` e `al` sono in anni diversi l'anno compare su
- * entrambi i giorni: "Da giovedì 31 dicembre 2026 a sabato 2 gennaio 2027".
+ * Il periodo di una chiusura. Un giorno solo: "Mercoledì 14 ottobre". Più giorni nello stesso anno:
+ * "Da mercoledì 14 ottobre a venerdì 16 ottobre". In entrambi i casi mai l'anno. Se `dal` e `al` sono
+ * in anni diversi l'anno compare su entrambi i giorni: "Da giovedì 31 dicembre 2026 a sabato 2
+ * gennaio 2027".
  */
 export function periodoChiusura(c: Pick<ChiusuraOfficina, 'dal' | 'al'>): string {
   const maiuscola = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
