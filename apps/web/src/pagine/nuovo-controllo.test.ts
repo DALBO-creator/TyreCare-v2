@@ -172,6 +172,30 @@ describe('pagina Nuovo controllo con bozza', () => {
     expect(pulsante('Scarta la bozza')).toBeDefined();
   });
 
+  it('mostra da quanto è salvata la bozza sotto il primo paragrafo', async () => {
+    const adesso = Date.parse('2026-11-21T10:00:00Z');
+    vi.useFakeTimers({ toFake: ['Date'] });
+    vi.setSystemTime(adesso);
+    salvaBozza(chiave, POSIZIONI_MONTATE, bozzaValida, adesso - 5 * 60_000);
+    await apri();
+    const p = avviso().querySelectorAll('p');
+    expect(p[0]!.textContent).toBe('Abbiamo ripreso le misure che non avevi salvato.');
+    expect(p[1]!.textContent).toBe('Ultima modifica: 5 min fa.');
+    expect(p[1]!.classList.contains('small')).toBe(true);
+  });
+
+  it('all’apertura cancella le bozze scadute di altri veicoli e tiene le altre', async () => {
+    const scaduta = chiaveBozza('u1', 'v-vecchio');
+    const recente = chiaveBozza('u1', 'v-altro');
+    salvaBozza(scaduta, POSIZIONI_MONTATE, bozzaValida, Date.now() - 8 * 24 * 60 * 60_000);
+    salvaBozza(recente, POSIZIONI_MONTATE, bozzaValida, Date.now() - 60_000);
+    localStorage.setItem('tc-tema', 'scuro');
+    await apri();
+    expect(localStorage.getItem(scaduta)).toBeNull();
+    expect(localStorage.getItem(recente)).not.toBeNull();
+    expect(localStorage.getItem('tc-tema')).toBe('scuro');
+  });
+
   it('«Scarta la bozza» rimette i valori iniziali, cancella la bozza e toglie l’avviso', async () => {
     salvaBozza(chiave, POSIZIONI_MONTATE, { ...bozzaValida, eseguito_il: '2026-01-02' });
     await apri();
