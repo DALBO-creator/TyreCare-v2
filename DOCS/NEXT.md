@@ -19,11 +19,13 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261121-09 (T346 T347): «Scarta la bozza» di Nuovo controllo riporta il
-> modulo come appena aperto; test di regressione di `importAnnullabile` e `scollegaCliente`.
-> Prima: ciclo 20261121-03 (T297), 5 test DOM di «Scollega l'account» nella scheda cliente. Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
+> Ultima sessione: ciclo agenti 20261121-15 (T348 T349): «Torna al garage» porta chi lavora in officina a
+> `/garage`; test degli errori di caricamento della scheda e dell'aggiornamento automatico di `strada`.
+> Prima: ciclo 20261121-09 (T346 T347), «Scarta la bozza» senza campi «modificati»; test di
+> `importAnnullabile` e `CLIENTE_NON_TROVATO`.
+> Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda: 15 compiti `pronti` dopo T347 (prossima coppia T348 T349 di C3); pianificazione settimanale
+> In coda: 13 compiti `pronti` dopo T349 (prossimo T350 di C1, da solo); pianificazione settimanale
 > domenica 2026-11-22.
 
 **0 — Da chiedere al titolare**

@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-21 — ciclo 20261121-15 — T348 T349
+
+**Fatto**
+
+- T348: la scheda veicolo del garage rimanda chi lavora in officina a `/garage` con «Torna al garage»
+  (prima `/`); test degli errori di caricamento (`caricaGarage` e `caricaOfficinePrenotabili` che rifiutano).
+- T349: `strada.test.ts` usa i fake timer solo per `setInterval`/`clearInterval` (niente intervalli vivi da
+  15 s tra i test); due test nuovi provano l'aggiornamento automatico (richiesta non più in corso; da
+  APERTA ad ACCETTATA).
+
+**Verifica**
+
+- Revisione a coppia e gate del supervisore al primo giro per entrambi; prova d'insieme verde (837 test,
+  JS iniziale 68,8 kB).
+
 ### Sessione agenti — 2026-11-21 — ciclo 20261121-09 — T346 T347
 
 **Fatto**
