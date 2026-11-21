@@ -4,6 +4,19 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-21 — ciclo 20261121-03 — T297
+
+**Fatto**
+
+- T297: `pagine/cliente.test.ts`, 5 unit test DOM di «Scollega l'account» nella scheda cliente (pulsante
+  solo al titolare per un cliente con account; conferma con una sola chiamata a `scollegaCliente`, ridisegno
+  e focus via `setTimeout`; errore 42501 solo nel dialogo); nessun cambio al codice dell'app.
+
+**Verifica**
+
+- 824 test verdi (85 file), format/lint/typecheck/build verdi; gate del supervisore: 1/1 approvato al primo
+  giro.
+
 ### Sessione agenti — 2026-11-21 — ciclo 20261121-00 — T311 T312
 
 **Fatto**
