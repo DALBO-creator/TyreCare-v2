@@ -39,7 +39,7 @@ vi.mock('../lib/router', async (importOriginal) => ({
   ancoraAttuale: () => true,
 }));
 
-import { MESSAGGI } from '../lib/strada';
+import { INTERVALLO_AGGIORNAMENTO_MS, MESSAGGI } from '../lib/strada';
 import { mostraStrada } from './strada';
 
 const richiesta = (extra: Partial<RichiestaInCorso> = {}): RichiestaInCorso => ({
@@ -59,6 +59,8 @@ const testo = (sel: string) => app().querySelector(sel)!.textContent!.replace(/\
 const dialogo = () => document.querySelector<HTMLDialogElement>('dialog.tc-dialogo');
 
 beforeEach(() => {
+  // solo gli intervalli: setTimeout e Date restano veri, i vi.waitFor funzionano
+  vi.useFakeTimers({ toFake: ['setInterval', 'clearInterval'] });
   vi.resetAllMocks();
   richiestaInCorso.mockResolvedValue(null);
   caricaGarage.mockResolvedValue([]);
@@ -69,10 +71,39 @@ beforeEach(() => {
 afterEach(() => {
   // niente intervalli di 15 s vivi tra i test
   vi.clearAllTimers();
+  vi.useRealTimers();
   document.body.innerHTML = '';
 });
 
 describe('pagina «Aiuto su strada» del cliente', () => {
+  it('aggiornamento ogni 15 s: richiesta non più in corso, torna il modulo con la nota', async () => {
+    richiestaInCorso.mockResolvedValueOnce(richiesta()).mockResolvedValueOnce(null);
+    await apri();
+    expect(testo('#tc-stato')).toBe("Stiamo cercando un'officina vicina");
+    await vi.advanceTimersByTimeAsync(INTERVALLO_AGGIORNAMENTO_MS);
+    await vi.waitFor(() =>
+      expect(testo('.tc-avviso--giallo[role="status"]')).toBe('La richiesta non è più in corso.'),
+    );
+    expect(app().querySelector('#tc-stato')).toBeNull();
+    expect(app().querySelector('form')).not.toBeNull();
+  });
+
+  it('aggiornamento ogni 15 s: da APERTA ad ACCETTATA si ridisegna con lo stato nuovo', async () => {
+    richiestaInCorso.mockResolvedValueOnce(richiesta()).mockResolvedValueOnce(
+      richiesta({
+        stato: 'ACCETTATA',
+        accettata_il: new Date().toISOString(),
+        officina: { ragione_sociale: 'Gomme Rossi', telefono: '+39 02 1234 5678' },
+      }),
+    );
+    await apri();
+    expect(testo('#tc-stato')).toBe("Stiamo cercando un'officina vicina");
+    await vi.advanceTimersByTimeAsync(INTERVALLO_AGGIORNAMENTO_MS);
+    await vi.waitFor(() => expect(testo('#tc-stato')).toBe("Un'officina ti aiuta"));
+    expect(app().textContent).not.toContain("Stiamo cercando un'officina vicina");
+    expect(testo('section strong')).toBe('Gomme Rossi');
+  });
+
   it('senza richieste mostra il modulo con il telefono del profilo', async () => {
     await apri();
     expect(testo('h1')).toBe('Aiuto su strada');
