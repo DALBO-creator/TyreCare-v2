@@ -30,6 +30,8 @@ Bozza del 2026-10-31, da stampare o mandare ai clienti. Pochi passi, nell'ordine
    "Avvisami su questo dispositivo": ti avvisiamo quando l'officina risponde, anche con l'app chiusa.
    - **iPhone:** gli avvisi funzionano solo con l'app nella schermata Home. Apri il sito con Safari, tocca
      Condividi, poi "Aggiungi alla schermata Home". Apri TyreCare dall'icona e attiva gli avvisi.
+   - **Android (Chrome):** menu ⋮ → "Installa app" (o "Aggiungi a schermata Home"). Gli avvisi funzionano
+     anche dal browser; con l'app sulla schermata Home la apri più in fretta.
 7. **Gomma a terra? Aiuto su strada.** Dalla Home tocca "Gomma a terra? Chiedi aiuto su strada".
    - Serve se sei fermo e non puoi ripartire. **Se ci sono feriti o pericolo chiama prima il 112**: l'app
      non è un servizio di emergenza.
