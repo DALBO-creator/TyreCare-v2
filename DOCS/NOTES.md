@@ -4374,3 +4374,30 @@ rimostra l'errore.
 Se `caricaGarage` rifiuta, `gestisciErroreCaricamento` disegna l'avviso con «Riprova». Se
 `caricaOfficinePrenotabili` rifiuta, il `.catch(() => [])` lascia la scheda senza «Prenota» ma con il
 telefono.
+
+## Chiusure a cavallo d'anno (T353)
+
+**File coinvolti:** `apps/web/src/pagine/orari.ts` (+ test), `apps/web/src/ui/prenotazione.ts`.
+**Come funziona:** `periodoChiusura` restituisce il giorno singolo con la maiuscola oppure «Da … a …».
+L'anno compare solo se `dal` e `al` sono in anni diversi, e allora su entrambi i giorni. Lo stesso testo
+finisce nell'`aria-label` «Elimina la chiusura: …» e nell'elenco delle chiusure della scheda officina.
+
+### Codice complesso
+- Il confronto degli anni è sui primi 4 caratteri della data ISO, senza creare oggetti `Date`.
+- `formattaGiorno` (`ui/prenotazione.ts`) resta senza anno perché è condiviso con le prenotazioni.
+
+## Bozza del controllo: pulizia e ultima modifica (T354)
+
+**File coinvolti:** `apps/web/src/lib/bozza-controllo.ts`, `apps/web/src/pagine/nuovo-controllo.ts` (+ test).
+**Come funziona:** `collegaBozza` chiama `pulisciBozzeScadute(ora)` a ogni apertura del Nuovo controllo,
+prima di `leggiBozza`. L'avviso di ripresa mostra «Ultima modifica: …» con `tempoTrascorso` di
+`lib/notifiche` (già nel file iniziale, quindi nessun peso in più), con la prima lettera minuscola
+(«adesso», «ieri»).
+
+### Codice complesso
+- `pulisciBozzeScadute` raccoglie prima in un array le chiavi di `localStorage` con prefisso
+  `tc-bozza-controllo:` e cancella solo dopo: cancellando durante lo scorrimento gli indici di `key(i)`
+  si spostano.
+- Illeggibile = JSON non valido, non oggetto o senza `salvata_il` numerico finito. Scaduta se
+  `ora - salvata_il > DURATA_BOZZA_MS` (7 giorni).
+- Ogni accesso a `localStorage` è in `try/catch`.

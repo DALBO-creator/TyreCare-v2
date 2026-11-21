@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-22 — ciclo 20261122-00 — T353 T354
+
+**Fatto**
+
+- T353: le chiusure dell'officina a cavallo d'anno mostrano l'anno su entrambi i giorni («Da giovedì 31
+  dicembre 2026 a sabato 2 gennaio 2027»); giorno singolo e stesso anno restano senza anno. Corretto il
+  commento di `collegaDotPerRuota`: la casella DOT per ruota è nella pagina `/veicolo/pneumatici`,
+  condivisa da «Monta pneumatici» e «Cambia pneumatici».
+- T354: la bozza del Nuovo controllo mostra «Ultima modifica: <tempo>» sotto l'avviso di ripresa;
+  all'apertura `pulisciBozzeScadute` toglie dal telefono le bozze illeggibili o più vecchie di 7 giorni,
+  anche di altri veicoli.
+
+**Verifica**
+
+- Revisione a coppia (T353 con due ritocchi ai commenti) e gate del supervisore al primo giro; controlli
+  veloci verdi (849 test); JS iniziale invariato.
+
 ### Sessione agenti — 2026-11-21 — ciclo 20261121-21 — T351 T352
 
 **Fatto**

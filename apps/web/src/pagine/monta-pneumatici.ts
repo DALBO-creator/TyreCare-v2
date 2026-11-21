@@ -83,9 +83,10 @@ export async function mostraMontaPneumatici(app: HTMLElement): Promise<void> {
 const TESTO_AIUTO_DOT = 'Ultime 4 cifre: settimana e anno (es. 3823).';
 
 /**
- * Solo nel montaggio: sotto il DOT unico, la casella «DOT diverso per ogni ruota». Spuntata, il campo
- * unico si disattiva (non viene inviato) e compare un campo per ogni posizione scelta; i campi seguono
- * le caselle delle posizioni senza perdere quanto già scritto per le ruote che restano. Tolta la
+ * La casella «DOT diverso per ogni ruota» sta nella pagina `/veicolo/pneumatici`, usata sia da
+ * «Monta pneumatici» sia da «Cambia pneumatici», sotto il DOT unico. Spuntata, il campo unico si
+ * disattiva (non viene inviato) e compare un campo per ogni posizione scelta; i campi seguono le
+ * caselle delle posizioni senza perdere quanto già scritto per le ruote che restano. Tolta la
  * spunta, i campi per ruota spariscono dal modulo e il campo unico si riattiva.
  */
 function collegaDotPerRuota(form: HTMLFormElement): void {

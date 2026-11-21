@@ -4,6 +4,7 @@ import {
   creaSalvataggioRitardato,
   chiaveBozza,
   leggiBozza,
+  pulisciBozzeScadute,
   salvaBozza,
   DURATA_BOZZA_MS,
 } from './bozza-controllo';
@@ -18,6 +19,10 @@ beforeEach(() => {
     getItem: (k: string) => dati.get(k) ?? null,
     setItem: (k: string, v: string) => void dati.set(k, v),
     removeItem: (k: string) => void dati.delete(k),
+    key: (i: number) => [...dati.keys()][i] ?? null,
+    get length() {
+      return dati.size;
+    },
   });
 });
 afterEach(() => vi.unstubAllGlobals());
@@ -131,5 +136,64 @@ describe('creaSalvataggioRitardato', () => {
     expect(scrivi).toHaveBeenCalledTimes(1);
     s.programma();
     expect(scrivi).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('pulizia delle bozze scadute', () => {
+  const scritta = (chiave: string, valore: unknown) =>
+    dati.set(chiave, typeof valore === 'string' ? valore : JSON.stringify(valore));
+  const ok = { posizioni: POS, valori: {} };
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it('cancella la scaduta e tiene la valida', () => {
+    scritta('tc-bozza-controllo:u1:v1', { ...ok, salvata_il: T0 - DURATA_BOZZA_MS - 1 });
+    scritta('tc-bozza-controllo:u1:v2', { ...ok, salvata_il: T0 - DURATA_BOZZA_MS });
+    scritta('tc-bozza-controllo:u1:v3', { ...ok, salvata_il: T0 - 1000 });
+    pulisciBozzeScadute(T0);
+    expect([...dati.keys()].sort()).toEqual([
+      'tc-bozza-controllo:u1:v2',
+      'tc-bozza-controllo:u1:v3',
+    ]);
+  });
+
+  it('cancella le bozze illeggibili o senza salvata_il numerico', () => {
+    scritta('tc-bozza-controllo:u1:a', 'non è json');
+    scritta('tc-bozza-controllo:u1:b', { ...ok });
+    scritta('tc-bozza-controllo:u1:c', { ...ok, salvata_il: 'ieri' });
+    scritta('tc-bozza-controllo:u1:d', 'null');
+    pulisciBozzeScadute(T0);
+    expect(dati.size).toBe(0);
+  });
+
+  it('cancella tutte le scadute anche se sono molte e consecutive', () => {
+    for (let i = 0; i < 6; i++) scritta(`tc-bozza-controllo:u1:v${i}`, { ...ok, salvata_il: 1 });
+    pulisciBozzeScadute(T0);
+    expect(dati.size).toBe(0);
+  });
+
+  it('non tocca le chiavi di altre app', () => {
+    scritta('tc-tema', 'scuro');
+    scritta('altro:tc-bozza-controllo:x', 'non è json');
+    scritta('tc-bozza-controllo:u1:v1', 'non è json');
+    pulisciBozzeScadute(T0);
+    expect([...dati.keys()].sort()).toEqual(['altro:tc-bozza-controllo:x', 'tc-tema']);
+  });
+
+  it('con localStorage che lancia non dà errori', () => {
+    scritta('tc-bozza-controllo:u1:v1', { ...ok, salvata_il: 1 });
+    const l = localStorage;
+    vi.spyOn(l, 'key').mockImplementation(() => {
+      throw new Error('negato');
+    });
+    expect(() => pulisciBozzeScadute(T0)).not.toThrow();
+    vi.restoreAllMocks();
+    vi.spyOn(l, 'getItem').mockImplementation(() => {
+      throw new Error('negato');
+    });
+    vi.spyOn(l, 'removeItem').mockImplementation(() => {
+      throw new Error('negato');
+    });
+    expect(() => pulisciBozzeScadute(T0)).not.toThrow();
   });
 });

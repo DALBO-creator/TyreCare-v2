@@ -7,6 +7,8 @@
 
 export const DURATA_BOZZA_MS = 7 * 24 * 60 * 60 * 1000;
 
+const PREFISSO_BOZZA = 'tc-bozza-controllo:';
+
 export interface BozzaControllo {
   /** Istante del salvataggio, in millisecondi dal 1970. */
   salvata_il: number;
@@ -18,7 +20,7 @@ export interface BozzaControllo {
 
 /** La chiave contiene l'id utente: un altro account sullo stesso telefono non vede le note. */
 export function chiaveBozza(utenteId: string, veicoloId: string): string {
-  return `tc-bozza-controllo:${utenteId}:${veicoloId}`;
+  return `${PREFISSO_BOZZA}${utenteId}:${veicoloId}`;
 }
 
 export function salvaBozza(
@@ -71,6 +73,44 @@ export function leggiBozza(
     return { salvata_il, posizioni: salvate.map(String), valori: puliti };
   } catch {
     return null;
+  }
+}
+
+/**
+ * Toglie dal dispositivo le bozze di controllo illeggibili o più vecchie di 7 giorni (anche di altri
+ * veicoli, che nessuno riaprirebbe). Prima raccoglie le chiavi, poi cancella: cancellando mentre
+ * scorre, gli indici di `localStorage.key(i)` si spostano. Non tocca le chiavi di altre parti dell'app.
+ */
+export function pulisciBozzeScadute(ora: number = Date.now()): void {
+  let chiavi: string[] = [];
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k !== null && k.startsWith(PREFISSO_BOZZA)) chiavi.push(k);
+    }
+  } catch {
+    chiavi = [];
+  }
+  for (const chiave of chiavi) {
+    try {
+      const grezza = localStorage.getItem(chiave);
+      if (grezza === null) continue;
+      let salvata_il: unknown;
+      try {
+        const b: unknown = JSON.parse(grezza);
+        salvata_il =
+          b && typeof b === 'object' ? (b as { salvata_il?: unknown }).salvata_il : undefined;
+      } catch {
+        salvata_il = undefined;
+      }
+      const scaduta =
+        typeof salvata_il !== 'number' ||
+        !Number.isFinite(salvata_il) ||
+        ora - salvata_il > DURATA_BOZZA_MS;
+      if (scaduta) localStorage.removeItem(chiave);
+    } catch {
+      // una chiave che non si legge o non si cancella resta dov'è
+    }
   }
 }
 
