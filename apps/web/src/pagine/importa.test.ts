@@ -43,6 +43,30 @@ describe('importAnnullabile', () => {
     expect(importAnnullabile(passati, adesso)?.id).toBe('clienti');
   });
 
+  it("con l'elenco crescente sceglie il più recente, non il primo", () => {
+    const passati = [
+      imp('vecchio', 'CLIENTI_VEICOLI', 3 * GIORNO),
+      imp('medio', 'CLIENTI_VEICOLI', 2 * GIORNO),
+      imp('nuovo', 'CLIENTI_VEICOLI', 1 * ORA),
+    ];
+    expect(importAnnullabile(passati, adesso)?.id).toBe('nuovo');
+    // ordine misto: il più recente in mezzo, conta la data e non la posizione
+    const misto = [
+      imp('medio', 'CLIENTI_VEICOLI', 2 * GIORNO),
+      imp('nuovo', 'CLIENTI_VEICOLI', 1 * ORA),
+      imp('vecchio', 'CLIENTI_VEICOLI', 3 * GIORNO),
+    ];
+    expect(importAnnullabile(misto, adesso)?.id).toBe('nuovo');
+  });
+
+  it("con l'elenco crescente un import di controlli più recente in fondo non conta", () => {
+    const passati = [
+      imp('clienti', 'CLIENTI_VEICOLI', 2 * GIORNO),
+      imp('controlli', 'CONTROLLI', 1 * ORA),
+    ];
+    expect(importAnnullabile(passati, adesso)?.id).toBe('clienti');
+  });
+
   it("se l'ultimo è già annullato non c'è nulla da annullare, anche se il penultimo non lo è", () => {
     const passati = [
       imp('ultimo', 'CLIENTI_VEICOLI', 1 * GIORNO, '2026-11-15T12:00:00Z'),
