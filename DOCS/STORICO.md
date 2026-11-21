@@ -4,6 +4,20 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-21 — ciclo 20261121-18 — T350
+
+**Fatto**
+
+- T350: un invito già usato il cui cliente è stato scollegato o ricollegato a un altro account vale come
+  annullato: `info_invito` dà `ANNULLATO` (non più «veicoli già nel tuo garage») e `accetta_invito` dà
+  `INVITO_ANNULLATO`, anche allo stesso account. Migrazione `20261121000100_invito_usato_scollegato.sql`,
+  pgTAP `invito-usato-scollegato.test.sql` (18 test).
+
+**Verifica**
+
+- Revisione a coppia e gate del supervisore al primo giro; controlli veloci verdi (837 test); il pgTAP nuovo
+  non è stato eseguito in locale: verifica nella CI del treno.
+
 ### Sessione agenti — 2026-11-21 — ciclo 20261121-15 — T348 T349
 
 **Fatto**

@@ -3870,6 +3870,22 @@ scollegamento e un'accettazione in parallelo non si sovrappongono. I controlli (
 `CLIENTE_NON_TROVATO`, `CLIENTE_NON_COLLEGATO`) arrivano prima, quindi un cliente non collegato non perde i
 suoi inviti. Gli inviti già usati e quelli di altri clienti non cambiano.
 
+## Inviti usati dopo lo scollegamento (T350)
+
+**File coinvolti:** `supabase/migrations/20261121000100_invito_usato_scollegato.sql`,
+`supabase/tests/database/invito-usato-scollegato.test.sql` (18 test, non eseguito in locale).
+**Come funziona:** lo stato di un invito usato si calcola alla lettura, confrontando
+`inviti_cliente.usato_da` con `clienti_officina.profile_id`. Se sono diversi (cliente scollegato con
+`scollega_cliente` o ricollegato a un altro account) `info_invito` dà `ANNULLATO` a tutti e `usato_da_te` è
+vero solo se chi chiama è ancora l'account collegato. `accetta_invito` fa lo stesso controllo prima di
+confrontare l'utente: anche chi l'aveva usato riceve `INVITO_ANNULLATO` e chiede un invito nuovo. L'app non
+cambia (i testi per `ANNULLATO` ci sono già).
+
+### Codice complesso
+La riga dell'invito non viene toccata (niente `annullato_il`): ricollegando lo stesso account l'invito torna
+`USATO`. Se l'account è stato cancellato, `usato_da` e `profile_id` sono entrambi null (`on delete set
+null`): il confronto non scatta e resta `USATO`, come prima.
+
 ## Sospensione di un'officina: avviso solo da ATTIVA (T290)
 
 **File coinvolti:** `supabase/migrations/20261108001300_sospendi_solo_attiva.sql`,
