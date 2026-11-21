@@ -3625,6 +3625,20 @@ officina, da incollare nella tabella della telefonata settimanale. Link nel Prof
   sovrascrive quella attuale.
 - «Copia i numeri» usa `navigator.clipboard.writeText`; se manca o rifiuta mostra un avviso `role="alert"`.
 
+## Andamento pilota: periodo dopo un errore (T351)
+
+**File coinvolti:** `apps/web/src/pagine/admin-andamento.ts`, `apps/web/src/pagine/admin-andamento.test.ts`.
+**Come funziona:** se il caricamento dei numeri al cambio di periodo fallisce, il selettore torna al periodo
+dei numeri ancora mostrati e compare l'avviso, invece di restare sul periodo che non si è caricato.
+
+### Codice complesso
+- In `mostraAdminAndamento` `tipo` è il periodo dei numeri mostrati e si aggiorna solo a caricamento
+  riuscito, insieme a `righe` e `periodo`; nel `change` il tipo richiesto è la locale `richiesto`.
+- Nel `catch`, se la richiesta è ancora la più recente, `selettore.value = tipo` e compare l'avviso; una
+  risposta vecchia (`mia !== richiesta`) esce senza toccare il selettore, che resta sul valore del cambio
+  più recente.
+- Il test (4 casi) usa promesse controllate a mano per decidere l'ordine delle risposte.
+
 ## Test della pagina Notifiche e della home del cliente (T300, T301)
 
 **File coinvolti:** `apps/web/src/pagine/notifiche.test.ts`, `apps/web/src/pagine/home.test.ts`.
