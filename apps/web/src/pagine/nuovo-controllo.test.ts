@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { oggiISO } from '@tyrecare/shared';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 // Le icone creano SVG con `document`: qui bastano segnaposto
 vi.mock('../ui/icone', () => ({ icona: () => '<svg></svg>' }));
@@ -132,6 +132,13 @@ describe('pagina Nuovo controllo con bozza', () => {
     await vi.waitFor(() => expect(pulsante('Salva controllo')).toBeDefined());
   }
 
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  const esci = (nome: string) =>
+    campoDi(nome).dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+
   beforeEach(() => {
     localStorage.clear();
     registraControllo.mockReset();
@@ -179,6 +186,49 @@ describe('pagina Nuovo controllo con bozza', () => {
     expect(leggiBozza(chiave, POSIZIONI_MONTATE)).toBeNull();
     expect(pulsante('Scarta la bozza')).toBeUndefined();
     expect(avviso().textContent?.trim()).toBe('');
+  });
+
+  it('dopo «Scarta la bozza» uscire da un battistrada vuoto non mostra errori', async () => {
+    salvaBozza(chiave, POSIZIONI_MONTATE, bozzaValida);
+    await apri();
+    pulsante('Scarta la bozza')!.click();
+    esci('mm_ANT_SX');
+    esci('mm_POST_SX');
+    expect(campoDi('mm_ANT_SX').getAttribute('aria-invalid')).not.toBe('true');
+    expect(campoDi('mm_POST_SX').getAttribute('aria-invalid')).not.toBe('true');
+  });
+
+  it('un errore visibile sui km sparisce con «Scarta la bozza»', async () => {
+    salvaBozza(chiave, POSIZIONI_MONTATE, bozzaValida);
+    await apri();
+    scrivi('km', 'abc');
+    esci('km');
+    expect(campoDi('km').getAttribute('aria-invalid')).toBe('true');
+    pulsante('Scarta la bozza')!.click();
+    expect(campoDi('km').getAttribute('aria-invalid')).not.toBe('true');
+    expect(campoDi('km').classList.contains('is-invalid')).toBe(false);
+    expect(document.getElementById('campo-km-errore')!.hidden).toBe(true);
+  });
+
+  it('un input dell’utente scrive la bozza entro 500 ms', async () => {
+    vi.useFakeTimers();
+    await apri();
+    expect(leggiBozza(chiave, POSIZIONI_MONTATE)).toBeNull();
+    scrivi('mm_ANT_SX', '6');
+    await vi.advanceTimersByTimeAsync(500);
+    expect(leggiBozza(chiave, POSIZIONI_MONTATE)?.valori.mm_ANT_SX).toBe('6');
+  });
+
+  it('aprendo la pagina con una bozza nessuna scrittura parte da sola', async () => {
+    vi.useFakeTimers();
+    salvaBozza(chiave, POSIZIONI_MONTATE, bozzaValida);
+    const prima = leggiBozza(chiave, POSIZIONI_MONTATE)!.salvata_il;
+    const spia = vi.spyOn(Storage.prototype, 'setItem');
+    await apri();
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(spia).not.toHaveBeenCalled();
+    expect(leggiBozza(chiave, POSIZIONI_MONTATE)!.salvata_il).toBe(prima);
+    spia.mockRestore();
   });
 
   it('salvataggio riuscito: registra il controllo e cancella la bozza', async () => {

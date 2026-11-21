@@ -184,4 +184,28 @@ describe('collegaModulo', () => {
     await vi.waitFor(() => expect(invia).toHaveBeenCalledTimes(2));
     expect(riquadro().hidden).toBe(true);
   });
+
+  it('reset del modulo: toglie errori e riquadro, e la validazione resta attiva', () => {
+    const esci = () => input('nome').dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    input('nome').value = '';
+    input('nome').dispatchEvent(new Event('input', { bubbles: true }));
+    esci();
+    riquadro().hidden = false;
+    expect(input('nome').classList.contains('is-invalid')).toBe(true);
+    expect(errore('nome').hidden).toBe(false);
+
+    form.reset();
+    expect(input('nome').classList.contains('is-invalid')).toBe(false);
+    expect(input('nome').getAttribute('aria-invalid')).toBe('false');
+    expect(errore('nome').hidden).toBe(true);
+    expect(riquadro().hidden).toBe(true);
+
+    esci();
+    expect(input('nome').classList.contains('is-invalid')).toBe(false);
+
+    input('nome').dispatchEvent(new Event('input', { bubbles: true }));
+    esci();
+    expect(input('nome').classList.contains('is-invalid')).toBe(true);
+    expect(errore('nome').textContent).toBe('Inserisci il nome');
+  });
 });

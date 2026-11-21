@@ -77,7 +77,7 @@ export async function mostraNuovoControllo(app: HTMLElement): Promise<void> {
     </div>`);
 
   const form = app.querySelector('form')!;
-  collegaStatoInDiretta(form, montati);
+  const aggiornaTutti = collegaStatoInDiretta(form, montati);
   const utenteId = sessioneCorrente()?.user.id;
   const chiave = utenteId ? chiaveBozza(utenteId, veicolo.id) : null;
   const chiudiBozza = chiave
@@ -86,6 +86,7 @@ export async function mostraNuovoControllo(app: HTMLElement): Promise<void> {
         form,
         chiave,
         montati.map((p) => p.posizione),
+        aggiornaTutti,
       )
     : null;
   collegaModulo(form, creaControlloSchema(montati.map((p) => p.posizione)), async (controllo) => {
@@ -211,10 +212,9 @@ function bloccoMisura(p: Pneumatico, m?: Misura): string {
  * Mentre si scrive il battistrada mostra subito lo stato della ruota (verde/giallo/rosso, con la
  * soglia della sua stagione): chi misura vede al volo se c'è da proporre una sostituzione.
  */
-export function collegaStatoInDiretta(form: HTMLFormElement, montati: Pneumatico[]): void {
+export function collegaStatoInDiretta(form: HTMLFormElement, montati: Pneumatico[]): () => void {
   const stagioni = new Map(montati.map((p) => [p.posizione, p.stagione]));
-  form.addEventListener('input', (e) => {
-    const input = e.target as HTMLInputElement;
+  const disegna = (input: HTMLInputElement) => {
     const posizione = input.name.startsWith('mm_') ? (input.name.slice(3) as Posizione) : null;
     const stagione = posizione && stagioni.get(posizione);
     const box = posizione && form.querySelector<HTMLElement>(`[data-stato="${posizione}"]`);
@@ -226,7 +226,14 @@ export function collegaStatoInDiretta(form: HTMLFormElement, montati: Pneumatico
       valore !== '' && Number.isFinite(mm) && mm >= 0 && mm <= 20
         ? badgeStato(statoBattistrada(mm, stagione))
         : '';
-  });
+  };
+  form.addEventListener('input', (e) => disegna(e.target as HTMLInputElement));
+  // Ridisegna tutti i badge dai valori attuali, senza eventi (non sono modifiche dell'utente)
+  return () => {
+    for (const input of form.querySelectorAll<HTMLInputElement>('input[name^="mm_"]')) {
+      disegna(input);
+    }
+  };
 }
 
 const ATTESA_SALVATAGGIO_MS = 500;
@@ -256,6 +263,7 @@ function collegaBozza(
   form: HTMLFormElement,
   chiave: string,
   posizioni: readonly string[],
+  aggiornaTutti: () => void,
 ): () => void {
   const leggiValori = (): Record<string, string> =>
     Object.fromEntries(campiDelModulo(form).map((el) => [el.name, el.value]));
@@ -263,23 +271,11 @@ function collegaBozza(
     () => salvaBozza(chiave, posizioni, leggiValori()),
     ATTESA_SALVATAGGIO_MS,
   );
-  // Gli `input` lanciati dal ricalcolo dello stato non sono modifiche dell'utente: non si salvano
-  let inRicalcolo = false;
-  const ricalcolaStato = () => {
-    inRicalcolo = true;
-    try {
-      for (const el of campiDelModulo(form)) {
-        if (el.name.startsWith('mm_')) el.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-    } finally {
-      inRicalcolo = false;
-    }
-  };
   const applica = (bozza: BozzaControllo) => {
     for (const el of campiDelModulo(form)) {
       if (el.name in bozza.valori) el.value = bozza.valori[el.name]!;
     }
-    ricalcolaStato();
+    aggiornaTutti();
   };
 
   const bozza = leggiBozza(chiave, posizioni);
@@ -294,7 +290,8 @@ function collegaBozza(
     posto.querySelector('[data-scarta-bozza]')!.addEventListener('click', () => {
       salvataggio.annulla();
       form.reset();
-      ricalcolaStato();
+      // I valori sono già quelli iniziali (reset è sincrono)
+      aggiornaTutti();
       cancellaBozza(chiave);
       posto.innerHTML = '';
       app.querySelector<HTMLElement>('h1')?.focus();
@@ -302,9 +299,7 @@ function collegaBozza(
   }
 
   // Dopo aver applicato la bozza: da qui in poi ogni modifica dell'utente la aggiorna
-  form.addEventListener('input', () => {
-    if (!inRicalcolo) salvataggio.programma();
-  });
+  form.addEventListener('input', () => salvataggio.programma());
 
   return () => {
     salvataggio.ferma();
