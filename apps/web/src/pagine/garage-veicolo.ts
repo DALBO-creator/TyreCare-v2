@@ -3,6 +3,7 @@ import { formattaTarga, normalizzaTarga } from '@tyrecare/shared';
 import { caricaGarage, type OfficinaGarage, type VeicoloGarage } from '../lib/garage';
 import { esc } from '../lib/html';
 import { caricaOfficinePrenotabili } from '../lib/prenotazioni';
+import { lavoraInOfficina } from '../lib/profilo';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
 import { avvisoPneumatici } from '../ui/avviso-pneumatici';
 import { ICONE_STAGIONE, cruscotto } from '../ui/cruscotto';
@@ -167,7 +168,7 @@ function nonNelGarage(): string {
           Questo veicolo non è nel tuo garage. Se è tuo, chiedi alla tua officina di collegarlo al tuo
           account.
         </p>
-        <a class="btn btn-outline-light mt-3" href="/">Torna al garage</a>
+        <a class="btn btn-outline-light mt-3" href="${lavoraInOfficina() ? '/garage' : '/'}">Torna al garage</a>
       </div>
     </div>`;
 }
