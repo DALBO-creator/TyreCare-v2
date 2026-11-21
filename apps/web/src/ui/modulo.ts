@@ -307,6 +307,14 @@ export function collegaModulo<S extends z.ZodType>(
   });
 
   const riquadro = form.querySelector<HTMLElement>('[data-errore-modulo]');
+
+  // `reset` arriva prima che i valori tornino iniziali: qui non si leggono valori. Il modulo
+  // torna come appena aperto: nessun campo "modificato", nessun errore visibile.
+  form.addEventListener('reset', () => {
+    modificati.clear();
+    for (const nome of nomi()) mostraErrore(nome, undefined);
+    if (riquadro) riquadro.hidden = true;
+  });
   const pulsante = form.querySelector<HTMLButtonElement>('[type="submit"]');
 
   form.addEventListener('submit', async (e) => {

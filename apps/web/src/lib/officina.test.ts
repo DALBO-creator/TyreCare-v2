@@ -158,11 +158,18 @@ describe('scollegaCliente', () => {
     expect((e as Error).message).toBe('Il cliente non è più collegato: ricarica la pagina.');
   });
 
+  it('CLIENTE_NON_TROVATO: messaggio in italiano', async () => {
+    rpc.mockResolvedValue({ error: { message: 'CLIENTE_NON_TROVATO', code: 'P0001' } });
+    const e = await scollegaCliente('c1').catch((x: unknown) => x);
+    expect(e).toBeInstanceOf(ErroreModulo);
+    expect((e as Error).message).toBe('Il cliente non esiste più: ricarica la pagina.');
+  });
+
   it('42501: solo il titolare', async () => {
     rpc.mockResolvedValue({ error: { message: 'Accesso riservato', code: '42501' } });
-    await expect(scollegaCliente('c1')).rejects.toThrow(
-      'Solo il titolare può scollegare un cliente.',
-    );
+    const e = await scollegaCliente('c1').catch((x: unknown) => x);
+    expect(e).toBeInstanceOf(ErroreModulo);
+    expect((e as Error).message).toBe('Solo il titolare può scollegare un cliente.');
   });
 
   it('errore sconosciuto: rilanciato', async () => {
