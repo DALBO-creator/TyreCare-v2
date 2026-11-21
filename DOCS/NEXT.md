@@ -19,10 +19,9 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261121-15 (T348 T349): «Torna al garage» porta chi lavora in officina a
-> `/garage`; test degli errori di caricamento della scheda e dell'aggiornamento automatico di `strada`.
-> Prima: ciclo 20261121-09 (T346 T347), «Scarta la bozza» senza campi «modificati»; test di
-> `importAnnullabile` e `CLIENTE_NON_TROVATO`.
+> Ultima sessione: ciclo agenti 20261121-18 (T350): un invito usato il cui cliente è stato scollegato o
+> ricollegato vale come annullato (`ANNULLATO` / `INVITO_ANNULLATO`).
+> Prima: ciclo 20261121-15 (T348 T349), «Torna al garage» verso `/garage` e test di `strada`.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
 > In coda: 13 compiti `pronti` dopo T349 (prossimo T350 di C1, da solo); pianificazione settimanale
