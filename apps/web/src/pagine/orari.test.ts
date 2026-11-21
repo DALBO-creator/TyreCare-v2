@@ -21,7 +21,12 @@ describe('periodoChiusura', () => {
   });
   it("a cavallo d'anno", () => {
     expect(periodoChiusura({ dal: '2026-12-31', al: '2027-01-02' })).toBe(
-      'Da giovedì 31 dicembre a sabato 2 gennaio',
+      'Da giovedì 31 dicembre 2026 a sabato 2 gennaio 2027',
+    );
+  });
+  it("a cavallo d'anno, dal 24 dicembre al 6 gennaio: l'anno su entrambi i giorni", () => {
+    expect(periodoChiusura({ dal: '2026-12-24', al: '2027-01-06' })).toBe(
+      'Da giovedì 24 dicembre 2026 a mercoledì 6 gennaio 2027',
     );
   });
   it("un giorno di un altro anno: il testo non mostra mai l'anno", () => {
