@@ -3,12 +3,18 @@ import { statoBattistrada } from '@tyrecare/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { OfficinaGarage, VeicoloGarage } from '../lib/garage';
 
-const { caricaGarage, caricaOfficinePrenotabili } = vi.hoisted(() => ({
-  caricaGarage: vi.fn(),
-  caricaOfficinePrenotabili: vi.fn(),
-}));
+const { caricaGarage, caricaOfficinePrenotabili, lavoraInOfficina, segnalaErrore } = vi.hoisted(
+  () => ({
+    caricaGarage: vi.fn(),
+    caricaOfficinePrenotabili: vi.fn(),
+    lavoraInOfficina: vi.fn(),
+    segnalaErrore: vi.fn(),
+  }),
+);
 vi.mock('../lib/garage', () => ({ caricaGarage }));
 vi.mock('../lib/prenotazioni', () => ({ caricaOfficinePrenotabili }));
+vi.mock('../lib/profilo', () => ({ lavoraInOfficina, sessioneNonValida: () => false }));
+vi.mock('../lib/errori-app', () => ({ segnalaErrore }));
 vi.mock('../lib/auth', () => ({
   esci: vi.fn(),
   sessioneCorrente: vi.fn(),
@@ -80,6 +86,8 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'], now: OGGI });
   caricaGarage.mockReset();
   caricaOfficinePrenotabili.mockReset().mockResolvedValue([]);
+  lavoraInOfficina.mockReset().mockReturnValue(false);
+  segnalaErrore.mockReset();
 });
 afterEach(() => vi.useRealTimers());
 
@@ -95,6 +103,42 @@ describe('scheda del veicolo nel garage', () => {
       'Torna al garage',
     );
     expect(document.querySelector('.tc-cruscotto')).toBeNull();
+  });
+
+  it('chi lavora in officina: «Torna al garage» porta a /garage, il cliente a /', async () => {
+    caricaGarage.mockResolvedValue([veicolo(5)]);
+    await monta('ZZ999ZZ');
+    expect(document.querySelector('.tc-vuoto a.btn')!.getAttribute('href')).toBe('/');
+    lavoraInOfficina.mockReturnValue(true);
+    await monta('ZZ999ZZ');
+    const link = document.querySelector('.tc-vuoto a.btn')!;
+    expect(link.getAttribute('href')).toBe('/garage');
+    expect(link.textContent!.trim()).toBe('Torna al garage');
+  });
+
+  it('caricaGarage che rifiuta: avviso di caricamento con «Riprova»', async () => {
+    caricaGarage.mockRejectedValue(new Error('rete'));
+    await monta();
+    expect(testo('.tc-avviso')).toBe(
+      'Non riusciamo a caricare i tuoi dati. Controlla la connessione e riprova.',
+    );
+    expect(testo('.tc-contenuto a.btn')).toBe('Riprova');
+    expect(segnalaErrore).toHaveBeenCalledTimes(1);
+    expect(document.querySelector('.tc-cruscotto')).toBeNull();
+  });
+
+  it('officine prenotabili che rifiutano: scheda disegnata, niente «Prenota», telefono presente', async () => {
+    caricaGarage.mockResolvedValue([veicolo(1)]);
+    caricaOfficinePrenotabili.mockRejectedValue(new Error('rete'));
+    await monta();
+    expect(testo('h1')).toBe('Panda');
+    expect(document.querySelector('.tc-cruscotto')).not.toBeNull();
+    const prenota = [...document.querySelectorAll('a')].filter(
+      (a) => a.textContent!.trim() === 'Prenota',
+    );
+    expect(prenota).toHaveLength(0);
+    expect(testo('.tc-officina__telefono')).toBe('02 1234567');
+    expect(document.querySelector('a[href="tel:021234567"]')).not.toBeNull();
   });
 
   it('la targa dell’indirizzo è normalizzata prima della ricerca', async () => {

@@ -4333,3 +4333,14 @@ l'errore «obbligatorio» all'uscita da un battistrada vuoto. Ora `collegaModulo
 arriva prima che i valori tornino iniziali, quindi non legge valori): svuota `modificati`, toglie gli
 errori visibili e nasconde il riquadro generale. La validazione resta attiva: un nuovo `input` + `focusout`
 rimostra l'errore.
+
+## Scheda veicolo del garage: Torna al garage (T348)
+
+**File coinvolti:** `apps/web/src/pagine/garage-veicolo.ts` (+ test), `apps/web/src/lib/profilo.ts`.
+**Come funziona:** `nonNelGarage()` sceglie l'href di «Torna al garage» con `lavoraInOfficina()` di
+`lib/profilo`: `/garage` per titolare e operatore, `/` per il cliente.
+
+### Codice complesso
+Se `caricaGarage` rifiuta, `gestisciErroreCaricamento` disegna l'avviso con «Riprova». Se
+`caricaOfficinePrenotabili` rifiuta, il `.catch(() => [])` lascia la scheda senza «Prenota» ma con il
+telefono.
