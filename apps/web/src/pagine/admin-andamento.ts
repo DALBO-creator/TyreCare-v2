@@ -125,8 +125,8 @@ export async function mostraAdminAndamento(app: HTMLElement): Promise<void> {
 
   selettore.addEventListener('change', async () => {
     const mia = ++richiesta;
-    tipo = selettore.value as TipoPeriodo;
-    const nuovo = periodoScelto(tipo, oggiIso);
+    const richiesto = selettore.value as TipoPeriodo;
+    const nuovo = periodoScelto(richiesto, oggiIso);
     nascondiBox(erroreCarica);
     nascondiBox(erroreCopia);
     copiato.hidden = true;
@@ -136,9 +136,12 @@ export async function mostraAdminAndamento(app: HTMLElement): Promise<void> {
       if (mia !== richiesta || !ancoraAttuale(n)) return;
       righe = nuove;
       periodo = nuovo;
+      tipo = richiesto;
       zona.innerHTML = elenco(righe, periodo);
     } catch {
       if (mia !== richiesta || !ancoraAttuale(n)) return;
+      // Il selettore torna al periodo dei numeri mostrati (elenco, selettore e copia dicono la stessa cosa)
+      selettore.value = tipo;
       mostraErroreInBox(erroreCarica, 'Non riesco a leggere i numeri. Riprova tra poco.');
     }
   });
