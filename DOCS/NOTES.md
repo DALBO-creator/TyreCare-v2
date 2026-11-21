@@ -4106,6 +4106,22 @@ Il percorso corrente si imposta con `history.replaceState` (`attiva()` legge `lo
 si leggono dallo `<span>` testo della voce, senza il badge; ogni test controlla che le voci con
 `aria-current` siano esattamente una.
 
+## Test DOM della scheda cliente (T297)
+
+**File coinvolti:** `apps/web/src/pagine/cliente.test.ts` (5 test DOM, happy-dom; nessuna modifica al codice).
+**Come funziona:** si fingono solo `caricaCliente`, `caricaVeicoli`, `scollegaCliente`, `caricaDatiUtente`,
+`caricaInvitoInCorso` e `mostraPagina` (`importOriginal`: le funzioni pure come `eTitolare` e `nominativo`
+restano vere); il dialogo `chiediConferma` è quello reale. Casi: pulsante «Scollega l'account» solo al
+titolare per un cliente con account, conferma con una sola chiamata a `scollegaCliente`, ridisegno e focus,
+errore 42501 nel dialogo.
+
+### Codice complesso
+Il focus dopo l'esito si prova con `vi.useFakeTimers({ toFake: ['setTimeout'] })`: prima dei timer si
+attendono solo microtask, perché `vi.waitFor` avanzerebbe i timer finti e darebbe il focus in anticipo. Il
+«messaggio della pagina» dopo l'esito è il ridisegno (`mostraPagina`): il codice non ha un messaggio
+esplicito. L'errore 42501 si verifica nel `[role=alert]` del dialogo e assente fuori (dritta T101); la
+traduzione del codice in `lib/officina` non è provata qui (idea T345).
+
 ## Scollegare un cliente (database)
 
 **File coinvolti:** `supabase/migrations/20261108000600_*.sql` (funzione `public.scollega_cliente`), il suo

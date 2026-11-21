@@ -19,10 +19,13 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`), `/admin/commenti` con un commento di prova per axe.
 >
-> Ultima sessione: ciclo agenti 20261121-00 (T311 T312): e2e del montaggio con DOT per ruota (verificato
-> dalla CI del treno) e 8 test della barra di navigazione. Promemoria: quando il dominio del sito è scelto,
-> completare l'indirizzo `[DA COMPLETARE]` nei due testi del pilota (T307).
-> In coda: pronto T297; idee nuove T342, T343 e T344 (le valuta il pianificatore).
+> Ultima sessione: ciclo agenti 20261121-03 (T297): 5 test DOM di «Scollega l'account» nella scheda cliente.
+> Prima: ciclo 20261121-00 (T311 T312), e2e del montaggio con DOT per ruota e 8 test della barra di
+> navigazione. Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
+> due testi del pilota (T307).
+> In coda: nessun compito `pronto` dopo T297, il prossimo ciclo lancia il pianificatore (pianificazione
+> settimanale: domenica 2026-11-22); idee nuove T342, T343, T344 e T345 (unit test di `scollegaCliente` in
+> `lib/officina` per la traduzione del 42501), le valuta il pianificatore.
 
 **0 — Da chiedere al titolare**
 
