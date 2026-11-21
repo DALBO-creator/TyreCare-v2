@@ -19,12 +19,12 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261121-21 (T351 T352): il selettore del periodo dell'andamento pilota
-> torna a quello mostrato se il caricamento fallisce; guide con il passo Android e i DOT per ruota.
-> Prima: ciclo 20261121-18 (T350), inviti usati dopo lo scollegamento annullati.
+> Ultima sessione: ciclo agenti 20261122-00 (T353 T354): chiusure a cavallo d'anno con l'anno; la bozza
+> del controllo dice quando è stata scritta e quelle scadute si cancellano.
+> Prima: ciclo 20261121-21 (T351 T352), periodo dell'andamento pilota dopo un errore e guide Android.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda: 10 compiti `pronti` dopo T352 (prossimi T353 e T354 di C2); pianificazione settimanale
+> In coda: 8 compiti `pronti` dopo T354 (prossimi T355 e T356 di C3); pianificazione settimanale
 > domenica 2026-11-22.
 
 **0 — Da chiedere al titolare**
