@@ -171,7 +171,8 @@ del cliente): "Targa", "Marca", "Modello", e facoltativi "Anno" e "Telaio"; poi 
   "Data di montaggio". Premi "Monta pneumatici".
   Se i DOT delle ruote sono diversi, spunta "DOT diverso per ogni ruota": il campo "DOT (facoltativo)" si
   spegne e compare un campo per ogni posizione scelta (es. "DOT Anteriore sinistro"; "Ultime 4 cifre:
-  settimana e anno (es. 3823)."). Quello che hai scritto resta se cambi le posizioni. Lo stesso vale in
+  settimana e anno (es. 3823)."). Quello che hai scritto resta per le ruote che lasci scelte; se togli una
+  posizione il suo campo sparisce e, se la rimetti, riparte vuoto. Lo stesso vale in
   "Cambia pneumatici", che apre la stessa pagina; in "Correggi pneumatici" il DOT è uno solo.
 - **Cambia:** per montare pneumatici diversi premi "Cambia pneumatici": quelli vecchi restano nello
   storico.

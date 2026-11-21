@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-21 — ciclo 20261121-21 — T351 T352
+
+**Fatto**
+
+- T351: nell'andamento del pilota il selettore del periodo torna a quello dei numeri mostrati quando il
+  caricamento al cambio fallisce; primo unit test DOM della pagina (4 casi, anche i cambi rapidi fuori
+  ordine).
+- T352: `guida-cliente.md` ha il passo Android (Chrome) accanto a quello iPhone per gli avvisi;
+  `guida-officina.md` dice che i DOT per ruota restano solo per le ruote ancora scelte (un campo tolto e
+  rimesso riparte vuoto).
+
+**Verifica**
+
+- Revisione a coppia e gate del supervisore al primo giro; controlli veloci verdi (841 test).
+
 ### Sessione agenti — 2026-11-21 — ciclo 20261121-18 — T350
 
 **Fatto**
