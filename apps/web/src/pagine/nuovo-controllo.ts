@@ -14,10 +14,12 @@ import {
   chiaveBozza,
   creaSalvataggioRitardato,
   leggiBozza,
+  pulisciBozzeScadute,
   salvaBozza,
   type BozzaControllo,
 } from '../lib/bozza-controllo';
 import { esc } from '../lib/html';
+import { tempoTrascorso } from '../lib/notifiche';
 import { registraControllo, type Pneumatico } from '../lib/officina';
 import { vaiA, visualizzazioneCorrente } from '../lib/router';
 import { paginaApp } from '../ui/layout';
@@ -252,6 +254,12 @@ function campiDelModulo(
   );
 }
 
+/** «5 min fa», «adesso», «ieri», «13 ott»: minuscola iniziale, perché segue «Ultima modifica:». */
+function ultimaModifica(salvataIl: number): string {
+  const t = tempoTrascorso(new Date(salvataIl).toISOString());
+  return t.charAt(0).toLowerCase() + t.slice(1);
+}
+
 /**
  * Bozza sul dispositivo (R44): a ogni `input` salva i campi (al massimo una scrittura ogni 500 ms,
  * con un timer finale che non perde l'ultimo carattere); all'apertura riempie i campi da una bozza
@@ -278,6 +286,7 @@ function collegaBozza(
     aggiornaTutti();
   };
 
+  pulisciBozzeScadute();
   const bozza = leggiBozza(chiave, posizioni);
   if (bozza) {
     applica(bozza);
@@ -285,6 +294,7 @@ function collegaBozza(
     posto.innerHTML = `
       <div class="tc-avviso tc-avviso--info mb-3" role="status">
         <p class="mb-2">Abbiamo ripreso le misure che non avevi salvato.</p>
+        <p class="small mb-2">Ultima modifica: ${esc(ultimaModifica(bozza.salvata_il))}.</p>
         <button type="button" class="btn btn-outline-light" data-scarta-bozza>Scarta la bozza</button>
       </div>`;
     posto.querySelector('[data-scarta-bozza]')!.addEventListener('click', () => {
