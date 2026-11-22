@@ -4,6 +4,25 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-22 — ciclo 20261122-18 — T361 T362
+
+**Fatto**
+
+- T361: 9 unit test di `attivaPush` e `disattivaPush` in `apps/web/src/lib/push.test.ts` (permesso negato o non
+  deciso, iscrizione già presente, nuova iscrizione con la chiave VAPID, annullo dell'iscrizione se la rpc
+  `iscrivi_push` fallisce; spegnimento con e senza iscrizione, registrazione e service worker). Nessun codice
+  dell'app cambiato; il finto di Supabase del file ora espone `rpc` e `from`.
+- T362: con `weak_password` il messaggio dice i requisiti («Password troppo debole: usa almeno 10 caratteri,
+  con una maiuscola, una minuscola e un numero, ed evita le password più comuni.»), come P26; unit test sul
+  testo esatto e sul 10 confrontato con `PASSWORD_MIN` di `@tyrecare/shared` (il 10 è scritto nel testo di
+  `lib/auth.ts` per non portare `zod` nel file iniziale).
+
+**Verifica**
+
+- format:check, lint e typecheck verdi; 86 file / 865 test verdi; build verde, JS iniziale 68,9 kB gzip
+  invariato. Gate del supervisore: 2/2 al primo giro. Corsia C3 coordinata dal direttore (create_session assente).
+- Idea accodata: T367 (`disattivaPush` non controlla l'errore della cancellazione).
+
 ### Sessione agenti — 2026-11-22 — ciclo 20261122-15 — T359 T360
 
 **Fatto**
