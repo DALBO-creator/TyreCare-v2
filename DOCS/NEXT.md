@@ -19,12 +19,12 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261122-03 (T355 T356): unit test di `caricaServizio` e test d'errore
-> dell'invito con il testo reale e il ramo `ErroreModulo`.
-> Prima: ciclo 20261122-00 (T353 T354), chiusure a cavallo d'anno e bozza del controllo.
+> Ultima sessione: ciclo agenti 20261122-09 (T357 T358): conteggio datato delle tabelle con RLS nel README
+> legale e numeri del piano del pilota (§6) con la fonte di ciascuno.
+> Prima: ciclo 20261122-03 (T355 T356), test di `caricaServizio` e dell'invito.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda: 6 compiti `pronti` dopo T356 (prossimi T357 e T358 di C4); pianificazione settimanale
+> In coda: 4 compiti `pronti` dopo T358 (prossimi T359 e T360 di C5); pianificazione settimanale
 > domenica 2026-11-22.
 
 **0 — Da chiedere al titolare**

@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-22 — ciclo 20261122-09 — T357 T358
+
+**Fatto**
+
+- T357: nel README delle bozze legali il conteggio delle tabelle con RLS ha la sua data (2026-11-22, 22
+  tabelle) e non invecchia; la data 2026-10-22 resta solo per le altre misure. Il 23 dei `grep` includeva
+  `stripe_eventi`, cancellata il 2026-11-14.
+- T358: nel piano del pilota §6 chiarito quali numeri leggere direttamente da *Andamento del pilota*
+  («Clienti collegati») e quali sommare dalla tabella settimanale («Controlli inseriti», «Richieste di
+  appuntamento»); la lista di lancio rimanda alla pagina e a §3/§6.
+
+**Verifica**
+
+- Revisione a coppia e gate del supervisore al primo giro per entrambi; controlli veloci verdi (853 test);
+  JS iniziale invariato. Solo documentazione.
+
 ### Sessione agenti — 2026-11-22 — ciclo 20261122-03 — T355 T356
 
 **Fatto**

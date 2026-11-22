@@ -4402,3 +4402,15 @@ prima di `leggiBozza`. L'avviso di ripresa mostra «Ultima modifica: …» con `
 - Illeggibile = JSON non valido, non oggetto o senza `salvata_il` numerico finito. Scaduta se
   `ora - salvata_il > DURATA_BOZZA_MS` (7 giorni).
 - Ogni accesso a `localStorage` è in `try/catch`.
+
+## Conteggio delle tabelle con RLS (T357)
+
+**File coinvolti:** `DOCS/legale/README.md`.
+**Come funziona:** il README delle bozze legali riporta il numero di tabelle con RLS con la sua data
+(2026-11-22, 22 tabelle); la data 2026-10-22 resta solo per le altre misure.
+
+### Codice complesso
+- I `grep` su `create table` e `enable row level security` contano anche le tabelle poi cancellate
+  (`stripe_eventi`).
+- Per il numero vero si sottrae ogni `drop table` (`grep -rni "drop table" supabase/migrations`): oggi
+  23 − 1 = 22.
