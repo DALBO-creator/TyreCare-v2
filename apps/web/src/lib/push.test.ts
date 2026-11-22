@@ -1,9 +1,14 @@
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('./supabase', () => ({ getSupabase: () => ({}) }));
+const { rpc, from } = vi.hoisted(() => ({ rpc: vi.fn(), from: vi.fn() }));
+vi.mock('./supabase', () => ({ getSupabase: () => ({ rpc, from }) }));
 
-import { chiaveInByte, statoPush } from './push';
+import { attivaPush, chiaveInByte, disattivaPush, statoPush } from './push';
 
+beforeEach(() => {
+  rpc.mockReset();
+  from.mockReset();
+});
 afterEach(() => vi.unstubAllGlobals());
 
 describe('chiaveInByte', () => {
@@ -132,5 +137,135 @@ describe('statoPush', () => {
     expect(getSubscription).toHaveBeenCalledTimes(1);
     browser({ permesso: 'granted', iscrizione: null });
     expect(await statoPush()).toBe('spente');
+  });
+});
+
+const ENDPOINT = 'https://push.example/abc';
+
+/** Iscrizione finta: `toJSON` con le chiavi, `unsubscribe` spiabile. */
+function iscrizioneFinta() {
+  return {
+    endpoint: ENDPOINT,
+    toJSON: () => ({ endpoint: ENDPOINT, keys: { p256dh: 'P', auth: 'A' } }),
+    unsubscribe: vi.fn(() => Promise.resolve(true)),
+  };
+}
+
+/** Finge il browser per `attivaPush`: `ready` è un getter spia, così si vede se viene letto. */
+function browserAttiva(
+  o: { permesso?: string; esistente?: ReturnType<typeof iscrizioneFinta> | null } = {},
+) {
+  const { permesso = 'granted', esistente = null } = o;
+  const nuova = iscrizioneFinta();
+  const getSubscription = vi.fn(() => Promise.resolve(esistente));
+  const subscribe = vi.fn(() => Promise.resolve(nuova));
+  const readLetto = vi.fn();
+  const requestPermission = vi.fn(() => Promise.resolve(permesso));
+  const sw = {
+    get ready() {
+      readLetto();
+      return Promise.resolve({ pushManager: { getSubscription, subscribe } });
+    },
+  };
+  vi.stubGlobal('navigator', { serviceWorker: sw });
+  vi.stubGlobal('Notification', { permission: 'default', requestPermission });
+  return { getSubscription, subscribe, readLetto, requestPermission, nuova };
+}
+
+describe('attivaPush', () => {
+  it('permesso negato: bloccate, senza leggere il service worker né salvare', async () => {
+    const b = browserAttiva({ permesso: 'denied' });
+    expect(await attivaPush()).toBe('bloccate');
+    expect(b.requestPermission).toHaveBeenCalledTimes(1);
+    expect(b.readLetto).not.toHaveBeenCalled();
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('permesso non deciso (default): spente, senza leggere il service worker né salvare', async () => {
+    const b = browserAttiva({ permesso: 'default' });
+    expect(await attivaPush()).toBe('spente');
+    expect(b.requestPermission).toHaveBeenCalledTimes(1);
+    expect(b.readLetto).not.toHaveBeenCalled();
+    expect(rpc).not.toHaveBeenCalled();
+  });
+
+  it('con iscrizione già presente la salva senza iscriversi di nuovo', async () => {
+    const esistente = iscrizioneFinta();
+    const b = browserAttiva({ esistente });
+    rpc.mockResolvedValue({ error: null });
+    expect(await attivaPush()).toBe('attive');
+    expect(b.subscribe).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenCalledTimes(1);
+    expect(rpc).toHaveBeenCalledWith('iscrivi_push', {
+      p_endpoint: ENDPOINT,
+      p_p256dh: 'P',
+      p_auth: 'A',
+    });
+    expect(esistente.unsubscribe).not.toHaveBeenCalled();
+  });
+
+  it('senza iscrizione chiama subscribe con la chiave VAPID in byte e salva quella nuova', async () => {
+    const b = browserAttiva();
+    rpc.mockResolvedValue({ error: null });
+    expect(await attivaPush()).toBe('attive');
+    expect(b.subscribe).toHaveBeenCalledTimes(1);
+    expect(b.subscribe).toHaveBeenCalledWith({
+      userVisibleOnly: true,
+      applicationServerKey: expect.any(Uint8Array),
+    });
+    // Chiave VAPID non compressa: 65 byte, il primo è 0x04.
+    const [opzioni] = b.subscribe.mock.calls[0] as unknown as [
+      { applicationServerKey: Uint8Array },
+    ];
+    expect(opzioni.applicationServerKey.length).toBe(65);
+    expect(opzioni.applicationServerKey[0]).toBe(4);
+    expect(rpc).toHaveBeenCalledWith('iscrivi_push', {
+      p_endpoint: ENDPOINT,
+      p_p256dh: 'P',
+      p_auth: 'A',
+    });
+  });
+
+  it('se il salvataggio fallisce annulla l’iscrizione e rilancia l’errore', async () => {
+    const b = browserAttiva();
+    const errore = { message: 'x' };
+    rpc.mockResolvedValue({ error: errore });
+    await expect(attivaPush()).rejects.toBe(errore);
+    expect(b.nuova.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('disattivaPush', () => {
+  it('con iscrizione la cancella dal database, la annulla e dà spente', async () => {
+    const iscrizione = iscrizioneFinta();
+    browser({ iscrizione });
+    const eq = vi.fn(() => Promise.resolve({ error: null }));
+    const del = vi.fn(() => ({ eq }));
+    from.mockReturnValue({ delete: del });
+    expect(await disattivaPush()).toBe('spente');
+    expect(from).toHaveBeenCalledWith('iscrizioni_push');
+    expect(del).toHaveBeenCalledTimes(1);
+    expect(eq).toHaveBeenCalledWith('endpoint', ENDPOINT);
+    expect(iscrizione.unsubscribe).toHaveBeenCalledTimes(1);
+  });
+
+  it('senza iscrizione: spente, senza toccare il database', async () => {
+    const { getSubscription } = browser({ iscrizione: null });
+    expect(await disattivaPush()).toBe('spente');
+    expect(getSubscription).toHaveBeenCalledTimes(1);
+    expect(from).not.toHaveBeenCalled();
+  });
+
+  it('senza registrazione: spente, senza toccare il database', async () => {
+    const { getSubscription } = browser({ registrazione: false });
+    expect(await disattivaPush()).toBe('spente');
+    expect(getSubscription).not.toHaveBeenCalled();
+    expect(from).not.toHaveBeenCalled();
+  });
+
+  it('senza serviceWorker: spente, senza toccare il database', async () => {
+    browser({ serviceWorker: false });
+    expect(await disattivaPush()).toBe('spente');
+    expect(from).not.toHaveBeenCalled();
   });
 });
