@@ -1,8 +1,10 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { InfoInvito } from '../lib/inviti';
+import { ErroreModulo } from '../lib/errori';
 import type * as routerReale from '../lib/router';
 
+const MESSAGGIO = 'Messaggio di messaggioErrore';
 const { leggiInvito, accettaInvito, sessioneCorrente, esci, mostraPagina } = vi.hoisted(() => ({
   leggiInvito: vi.fn(),
   accettaInvito: vi.fn(),
@@ -14,7 +16,7 @@ vi.mock('../lib/inviti', () => ({ leggiInvito, accettaInvito }));
 vi.mock('../lib/auth', () => ({
   sessioneCorrente,
   esci,
-  messaggioErrore: (e: unknown) => (e instanceof Error ? e.message : 'Errore'),
+  messaggioErrore: () => MESSAGGIO,
 }));
 vi.mock('../lib/supabase', () => ({
   getSupabase: () => ({}),
@@ -92,7 +94,7 @@ describe('pagina dell’invito', () => {
     await vi.waitFor(() =>
       expect(app().querySelector<HTMLElement>('[data-errore]')!.hidden).toBe(false),
     );
-    expect(app().querySelector('[data-errore]')!.textContent).toContain('Uscita non riuscita');
+    expect(app().querySelector('[data-errore]')!.textContent!.trim()).toBe(MESSAGGIO);
     expect(pulsante('[data-esci]').disabled).toBe(false);
     expect(mostraPagina).not.toHaveBeenCalled();
   });
@@ -118,9 +120,22 @@ describe('pagina dell’invito', () => {
     await vi.waitFor(() =>
       expect(app().querySelector<HTMLElement>('[data-errore]')!.hidden).toBe(false),
     );
-    expect(app().querySelector('[data-errore]')!.textContent).toContain(
-      'Accettazione non riuscita',
+    expect(app().querySelector('[data-errore]')!.textContent!.trim()).toBe(MESSAGGIO);
+    expect(pulsante('[data-accetta]').disabled).toBe(false);
+  });
+
+  it('se l’accettazione rifiuta con un ErroreModulo mostra il suo testo, non quello di messaggioErrore', async () => {
+    leggiInvito.mockResolvedValue(info());
+    sessioneCorrente.mockReturnValue(sessione('mario@esempio.it'));
+    accettaInvito.mockRejectedValue(new ErroreModulo('Testo del modulo'));
+    await apri();
+    pulsante('[data-accetta]').click();
+    await vi.waitFor(() =>
+      expect(app().querySelector<HTMLElement>('[data-errore]')!.hidden).toBe(false),
     );
+    const box = app().querySelector('[data-errore]')!.textContent!.trim();
+    expect(box).toBe('Testo del modulo');
+    expect(box).not.toContain(MESSAGGIO);
     expect(pulsante('[data-accetta]').disabled).toBe(false);
   });
 
