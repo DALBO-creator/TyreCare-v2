@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-22 — ciclo 20261122-15 — T359 T360
+
+**Fatto**
+
+- T359: nuovo e2e in `admin-andamento.spec.ts`: l'amministratore concede i permessi degli appunti, clicca
+  «Copia i numeri», attende «Numeri copiati.» e il testo incollato ha il formato di `rigaCopiabile`, una riga
+  per officina (la parte axe era già in T270).
+- T360: la barra di navigazione evidenzia una sola voce: vince il percorso più lungo che corrisponde (proprio
+  o in `anche`), a parità la prima; per un cliente su `/officina/orari` è attiva solo «Profilo».
+
+**Verifica**
+
+- Revisione a coppia e gate del supervisore al primo giro per entrambi; controlli veloci verdi (855 test);
+  JS iniziale 68,9 kB; l'e2e di T359 è verificato dalla CI.
+
 ### Sessione agenti — 2026-11-22 — ciclo 20261122-09 — T357 T358
 
 **Fatto**
