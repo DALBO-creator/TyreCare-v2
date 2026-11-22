@@ -73,11 +73,39 @@ const VOCI_NAV: VoceNav[] = [
   },
 ];
 
-// La voce resta evidenziata anche nelle sottopagine (es. /profilo/password)
-const attiva = ({ percorso, anche = [] }: VoceNav) =>
-  [percorso, ...anche].some(
-    (p) => location.pathname === p || location.pathname.startsWith(`${p}/`),
-  );
+/**
+ * Lunghezza del percorso della voce che corrisponde a `pathname` (uguale, oppure con `/` dopo, così
+ * la voce resta evidenziata nelle sottopagine, es. /profilo/password); -1 se nessuno corrisponde.
+ * Vale il percorso più lungo tra quello proprio e quelli in `anche`.
+ */
+export function lunghezzaCorrispondenza(
+  { percorso, anche = [] }: Pick<VoceNav, 'percorso' | 'anche'>,
+  pathname: string,
+): number {
+  let migliore = -1;
+  for (const p of [percorso, ...anche]) {
+    if ((pathname === p || pathname.startsWith(`${p}/`)) && p.length > migliore)
+      migliore = p.length;
+  }
+  return migliore;
+}
+
+/** La sola voce attiva: vince il percorso più lungo (il più specifico); a parità la prima. */
+export function voceAttiva<T extends Pick<VoceNav, 'percorso' | 'anche'>>(
+  voci: T[],
+  pathname: string,
+): T | undefined {
+  let scelta: T | undefined;
+  let massimo = -1;
+  for (const v of voci) {
+    const l = lunghezzaCorrispondenza(v, pathname);
+    if (l > massimo) {
+      massimo = l;
+      scelta = v;
+    }
+  }
+  return scelta;
+}
 
 /**
  * Impaginazione da computer (da 992 px, `_desktop.scss`): le pagine con elenchi o schede usano tutta
@@ -158,6 +186,10 @@ function attivaScorciatoie(): void {
 export function paginaApp(corpo: string): string {
   attivaScorciatoie();
   avviaNotifiche();
+  const vociVisibili = VOCI_NAV.filter((v) =>
+    lavoraInOfficina() ? !v.soloCliente : !v.soloOfficina,
+  );
+  const corrente = voceAttiva(vociVisibili, location.pathname);
   return `
     <a class="tc-salta" href="#tc-principale">Salta al contenuto</a>
     <header class="tc-appbar">
@@ -167,11 +199,11 @@ export function paginaApp(corpo: string): string {
       data-pagina="${impaginazione()}">${corpo}</main>
     <nav class="tc-bottomnav" aria-label="Navigazione principale">
       <span class="tc-bottomnav__marchio" aria-hidden="true">${MARCHIO}</span>
-      ${VOCI_NAV.filter((v) => (lavoraInOfficina() ? !v.soloCliente : !v.soloOfficina))
+      ${vociVisibili
         .map(
           (v) => `
         <a class="tc-bottomnav__voce" href="${v.percorso}"${
-          attiva(v) ? ' aria-current="page"' : ''
+          v === corrente ? ' aria-current="page"' : ''
         }>${iconaVoce(v)}${testoVoce(v)}</a>`,
         )
         .join('')}
