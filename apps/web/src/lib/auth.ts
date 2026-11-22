@@ -113,7 +113,8 @@ const MESSAGGI: Record<string, string> = {
     "Devi prima confermare l'email: apri il link che ti abbiamo inviato (controlla anche lo spam).",
   user_already_exists: 'Esiste già un account con questa email. Prova ad accedere.',
   email_exists: 'Esiste già un account con questa email. Prova ad accedere.',
-  weak_password: 'Password troppo debole: scegline una più lunga o meno comune.',
+  weak_password:
+    'Password troppo debole: usa almeno 10 caratteri, con una maiuscola, una minuscola e un numero, ed evita le password più comuni.',
   same_password: 'La nuova password deve essere diversa da quella attuale.',
   over_email_send_rate_limit: 'Abbiamo già inviato troppe email. Riprova tra qualche minuto.',
   over_request_rate_limit: 'Troppi tentativi ravvicinati. Riprova tra qualche minuto.',

@@ -1,4 +1,5 @@
 import { AuthApiError } from '@supabase/supabase-js';
+import { PASSWORD_MIN } from '@tyrecare/shared';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type * as Supabase from './supabase';
 import { messaggioErrore } from './auth';
@@ -14,6 +15,20 @@ describe('messaggioErrore', () => {
     expect(messaggioErrore(errore)).toBe(
       'Esiste già un account con questa email. Prova ad accedere.',
     );
+  });
+
+  it('weak_password dice i requisiti della password', () => {
+    const errore = new AuthApiError(
+      'Password is known to be weak and easy to guess',
+      422,
+      'weak_password',
+    );
+    const messaggio = messaggioErrore(errore);
+    expect(messaggio).toBe(
+      'Password troppo debole: usa almeno 10 caratteri, con una maiuscola, una minuscola e un numero, ed evita le password più comuni.',
+    );
+    // il 10 è scritto nel testo (auth.ts non importa shared): questo lo tiene allineato
+    expect(messaggio).toContain(`almeno ${PASSWORD_MIN} caratteri`);
   });
 });
 

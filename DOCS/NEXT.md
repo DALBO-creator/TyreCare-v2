@@ -19,13 +19,13 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261122-15 (T359 T360): test e2e che legge gli appunti dopo «Copia i
-> numeri» e barra di navigazione con una sola voce attiva.
-> Prima: ciclo 20261122-09 (T357 T358), conteggio datato delle tabelle con RLS e numeri del piano del pilota.
+> Ultima sessione: ciclo agenti 20261122-18 (T361 T362): unit test di `attivaPush` e `disattivaPush` e
+> messaggio di `weak_password` con i requisiti della password.
+> Prima: ciclo 20261122-15 (T359 T360): e2e «Copia i numeri», una sola voce attiva nella barra.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda: 2 compiti `pronti` dopo T360 (prossimi T361 e T362 di C3); pianificazione settimanale
-> domenica 2026-11-22.
+> In coda: nessun compito `pronto` dopo T362; la pianificazione settimanale (domenica 22 novembre, sera)
+> scrive la coda nuova.
 
 **0 — Da chiedere al titolare**
 
