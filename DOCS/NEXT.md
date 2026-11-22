@@ -14,18 +14,15 @@
 > anche in *Preview* su Vercel e controllo della CSP sull'anteprima.
 > Poi: caricare la demo per LA SANTI GOMME (`DOCS/pilota/demo-la-santi.md`) e compilare i segnaposto di
 > `DATI_FORNITORE` (`packages/shared/src/fornitore.ts`) e di `DOCS/legale/README.md`.
-> **ai-org:** dire agli agenti che le funzioni nuove non sono più eseguibili da `anon` per default e che il
-> seed usa `Password123`.
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261122-18 (T361 T362): unit test di `attivaPush` e `disattivaPush` e
-> messaggio di `weak_password` con i requisiti della password.
-> Prima: ciclo 20261122-15 (T359 T360): e2e «Copia i numeri», una sola voce attiva nella barra.
+> Ultima sessione: ciclo agenti 20261123-00 (T368 T369): `admin_riepilogo` con prove in scadenza nel giorno
+> italiano e numeri degli abbonamenti; test pgTAP di «Conferma email» e «Disconnetti» dell'admin.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda: nessun compito `pronto` dopo T362; la pianificazione settimanale (domenica 22 novembre, sera)
-> scrive la coda nuova.
+> In coda: T368 e T369 fatti; resta T386 (le chiavi nuove di `admin_riepilogo` nel pannello); la
+> pianificazione settimanale scrive la coda nuova.
 
 **0 — Da chiedere al titolare**
 
