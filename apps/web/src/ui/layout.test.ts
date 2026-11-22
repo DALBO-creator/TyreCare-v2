@@ -10,7 +10,7 @@ vi.mock('../lib/notifiche', () => ({
   testoNonLette: () => '',
 }));
 
-import { paginaApp } from './layout';
+import { lunghezzaCorrispondenza, paginaApp, voceAttiva } from './layout';
 
 /** Disegna la pagina come se l'utente fosse su `percorso`. */
 function disegna(percorso: string, inOfficina: boolean): void {
@@ -76,6 +76,22 @@ describe('barra di navigazione', () => {
   it('evidenzia la voce anche nelle sottopagine', () => {
     expect(attivaDi('/profilo/password')).toBe('Profilo');
     expect(attivaDi('/officine/qualcosa')).toBe('Officine');
+  });
+
+  it('su un percorso coperto da due voci vince la più specifica', () => {
+    disegna('/officina/orari', false);
+    expect(attive().map(etichetta)).toEqual(['Profilo']);
+    disegna('/officina', false);
+    expect(attive().map(etichetta)).toEqual(['Officine']);
+  });
+
+  it('lunghezzaCorrispondenza e voceAttiva: -1 senza corrispondenza, a parità la prima', () => {
+    const a = { percorso: '/x', anche: ['/y'] };
+    const b = { percorso: '/z', anche: ['/y'] };
+    expect(lunghezzaCorrispondenza(a, '/altro')).toBe(-1);
+    expect(lunghezzaCorrispondenza(a, '/x/uno')).toBe(2);
+    expect(voceAttiva([a, b], '/y')).toBe(a);
+    expect(voceAttiva([a, b], '/nulla')).toBeUndefined();
   });
 
   it('non confonde percorsi che iniziano con lo stesso testo', () => {
