@@ -59,10 +59,11 @@ Nei documenti sono segnati con `[DA COMPLETARE: …]`. Si possono compilare nell
 
 ## Da fare prima del lancio (misure di sicurezza che oggi mancano)
 
-Il DPA (§9) e il registro descrivono **solo** le misure verificate nel codice il 2026-10-22: RLS attiva su
-tutte le 22 tabelle in `public` (`enable row level security` nelle migrazioni, con test pgTAP anche per gli
-accessi negati), accessi per ruolo, HTTPS, database Supabase in eu-west-1, password cifrate, codici degli
-inviti come impronta SHA-256, chiave di servizio solo nella funzione sul server. Queste invece **mancano**
+Il DPA (§9) e il registro descrivono **solo** le misure verificate nel codice. RLS attiva su tutte le tabelle
+in `public` (conteggio rifatto il 2026-11-22, T357: 22 tabelle; `enable row level security` nelle migrazioni,
+con test pgTAP anche per gli accessi negati). Verificate il 2026-10-22: accessi per ruolo, HTTPS, database
+Supabase in eu-west-1, password cifrate, codici degli inviti come impronta SHA-256, chiave di servizio solo
+nella funzione sul server. Queste invece **mancano**
 o non si possono verificare dal repository, e non vanno scritte come già fatte finché non lo sono:
 
 - [~] **Registro degli accessi del personale di TyreCare** ai dati delle officine: chi usa la chiave di
