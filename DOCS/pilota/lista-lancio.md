@@ -52,7 +52,8 @@ Il piano generale è in [`piano-pilota.md`](piano-pilota.md).
 - [ ] **Primo cliente invitato** e collegato (ha accettato l'invito). Documento:
   [`guida-avvio.md`](guida-avvio.md) passo 6.
 - [ ] **Incontro di avvio fatto** e telefonata settimanale fissata. Documento:
-  [`piano-pilota.md`](piano-pilota.md) §4–5.
+  [`piano-pilota.md`](piano-pilota.md) §4–5. Per i numeri da annotare ogni settimana: **Profilo → Andamento del
+  pilota**, periodo «Settimana scorsa» ([`piano-pilota.md`](piano-pilota.md) §3); i totali di fine pilota sono in §6.
 
 ## Solo per la Fase 7 — Commerciale
 

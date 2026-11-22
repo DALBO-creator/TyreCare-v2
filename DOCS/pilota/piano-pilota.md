@@ -65,6 +65,11 @@ Si passa alla Fase 7 se, entro la fine della durata:
 - il titolare dice che la userebbe ancora e la consiglierebbe a un collega (chiedilo a voce, alla fine);
 - nessuna violazione dei dati e nessun problema aperto che blocchi il lavoro dell'officina.
 
+I numeri si leggono così in *Profilo → Andamento del pilota*: «Clienti collegati» è il totale di oggi, lo
+leggi direttamente; «Controlli inseriti» e «Richieste di appuntamento» sono la **somma** delle righe settimanali
+della tua tabella (§3), perché la pagina mostra al massimo «Ultimi 30 giorni». Per questo ogni settimana annoti
+«Settimana scorsa» (§5).
+
 Poi: seguire le voci "solo Fase 7" della lista di lancio (abbonamenti registrati a mano) e invitare 2–3 officine nuove
 con gli stessi passi, partendo da [`crea-officina.md`](crea-officina.md).
 
