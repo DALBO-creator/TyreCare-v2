@@ -4257,6 +4257,8 @@ giusto ridisegna la stessa rotta. Il controllo vero è nel database: `is_admin()
 
 - `/admin`: numeri da `admin_riepilogo()` (un solo json) e «Da guardare» (officine in attesa, prove in
   scadenza entro 7 giorni, email non confermate, commenti recenti) con il collegamento alla pagina giusta.
+  Dal 2026-11-23 `admin_riepilogo` conta le prove in scadenza nel giorno italiano e porta anche
+  `abbonamenti_attivi`, `prove_in_corso` e `ricavo_mensile` (vedi «Riepilogo admin: numeri degli abbonamenti»).
 - `/admin/utenti`: `admin_cerca_utenti(testo)` cerca in email, nome, cognome, telefono o ID (i primi 50; `%`
   e `_` valgono come testo). Azioni: correggi nome/cognome/telefono e ruolo CLIENTE↔OFFICINA, conferma
   email (quando l'email di conferma non arriva), email per una nuova password (`resetPasswordForEmail`),
@@ -4429,3 +4431,28 @@ prima di `leggiBozza`. L'avviso di ripresa mostra «Ultima modifica: …» con `
   (`stripe_eventi`).
 - Per il numero vero si sottrae ogni `drop table` (`grep -rni "drop table" supabase/migrations`): oggi
   23 − 1 = 22.
+
+## Riepilogo admin: numeri degli abbonamenti (T368)
+
+**File coinvolti:** `supabase/migrations/20261123000100_riepilogo_abbonamenti.sql`,
+`supabase/tests/database/admin-riepilogo.test.sql`.
+**Come funziona:** la migrazione ricrea `admin_riepilogo()` con tre chiavi nuove. `ricavo_mensile` è in euro al
+mese, IVA esclusa, sui soli abbonamenti ATTIVO: vale `importo_concordato` o, se manca,
+`listino_abbonamento(piano)` (100 €/mese, 1000 €/anno); per ANNUALE si divide per 12 e si arrotonda a 2
+decimali (R48). `abbonamenti_attivi` e `prove_in_corso` contano gli stati ATTIVO e PROVA. Il pannello non
+mostra ancora le chiavi nuove (T386).
+
+### Codice complesso
+- `prove_in_scadenza` conta le PROVA con `prova_fino_al` tra oggi e oggi + 7 inclusi, dove «oggi» è il giorno
+  italiano e non `current_date` (UTC): tra mezzanotte e le 2 in Italia la data UTC è ancora ieri.
+
+## Test pgTAP admin-account (T369)
+
+**File coinvolti:** `supabase/tests/database/admin-account.test.sql`.
+**Come funziona:** 23 test per «Conferma email» e «Disconnetti» dell'admin: rifiuto ad admin aal1, titolare e
+cliente, utente inesistente, voce nel registro, sessioni dell'utente cancellate e quelle degli altri no.
+Utenti, sessioni e refresh token sono inseriti da `postgres`.
+
+### Codice complesso
+- Le letture su `auth.*` si fanno con `reset role`, perché il ruolo dei test non le vede.
+- `refresh_tokens.user_id` è testo, `sessions.user_id` è uuid: i confronti vanno scritti di conseguenza.

@@ -4,6 +4,25 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-23 — ciclo 20261123-00 — T368 T369
+
+**Fatto**
+
+- T368: `admin_riepilogo` ricreata (`20261123000100_riepilogo_abbonamenti.sql`): le prove in scadenza usano il
+  giorno italiano invece di `current_date` UTC; nuove chiavi `abbonamenti_attivi`, `prove_in_corso` e
+  `ricavo_mensile`. Test pgTAP `admin-riepilogo.test.sql` (18 test).
+- T369: nuovo `supabase/tests/database/admin-account.test.sql` (23 test) per «Conferma email» e «Disconnetti»
+  dell'admin: rifiuto ad admin aal1, titolare e cliente, utente inesistente, voce nel registro, sessioni
+  dell'utente cancellate e quelle degli altri no.
+
+**Verifica**
+
+- Revisione: 1 giro per compito. Gate del supervisore: 1/1 al primo giro per compito. Prova d'insieme verde
+  (865 test); JS iniziale 68,9 kB invariato. pgTAP non eseguito in sandbox: lo prova la CI `database`.
+- Nota del supervisore (T369, non bloccante): la FK `refresh_tokens.session_id` è `on delete cascade`, quindi il
+  conteggio a 0 dei refresh token passerebbe anche senza la seconda delete.
+- Il pannello non mostra ancora le tre chiavi nuove: è coperto da T386.
+
 ### Sessione agenti — 2026-11-22 — ciclo 20261122-18 — T361 T362
 
 **Fatto**
