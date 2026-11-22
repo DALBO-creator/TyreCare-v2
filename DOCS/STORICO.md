@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-22 — ciclo 20261122-03 — T355 T356
+
+**Fatto**
+
+- T355: unit test di `caricaServizio` in `lib/prenotazioni.test.ts` (catena esatta
+  `select('*')`/`eq('id')`/`maybeSingle()`, servizio assente → `null`, errore rilanciato).
+- T356: in `pagine/invito.test.ts` il mock di `messaggioErrore` ha un testo fisso, così i test d'errore di
+  uscita e accettazione provano il testo che legge il cliente (2 attese aggiornate); test nuovo per il
+  ramo `ErroreModulo` dell'accettazione, verificato togliendo il ramo.
+
+**Verifica**
+
+- Revisione a coppia e gate del supervisore al primo giro per entrambi; controlli veloci verdi (853 test);
+  JS iniziale invariato.
+
 ### Sessione agenti — 2026-11-22 — ciclo 20261122-00 — T353 T354
 
 **Fatto**

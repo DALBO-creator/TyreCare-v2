@@ -6,6 +6,7 @@ import {
   caricaMiePrenotazioni,
   caricaPrenotazione,
   caricaPrenotazioniOfficina,
+  caricaServizio,
   caricaServizi,
   contaRichiesteDaConfermare,
   registraClienteDaPrenotazione,
@@ -323,5 +324,25 @@ describe('caricaServizi', () => {
   it('un errore di Supabase arriva al chiamante', async () => {
     finto.risultato = { data: null, error: ERRORE_DB };
     await expect(caricaServizi('o-1')).rejects.toBe(ERRORE_DB);
+  });
+});
+
+describe('caricaServizio', () => {
+  it('legge il servizio per id dalla tabella dei servizi, senza altri filtri', async () => {
+    const riga = { id: 's-1', nome: 'Cambio gomme', officina_id: 'o-1' };
+    finto.risultato = { data: riga, error: null };
+    expect(await caricaServizio('s-1')).toEqual(riga);
+    expect(from).toHaveBeenCalledWith('servizi_officina');
+    expect(chiamate).toEqual([['select', '*'], ['eq', 'id', 's-1'], ['maybeSingle']]);
+  });
+
+  it('servizio assente: null', async () => {
+    finto.risultato = { data: null, error: null };
+    expect(await caricaServizio('s-1')).toBeNull();
+  });
+
+  it('un errore di Supabase arriva al chiamante', async () => {
+    finto.risultato = { data: null, error: ERRORE_DB };
+    await expect(caricaServizio('s-1')).rejects.toBe(ERRORE_DB);
   });
 });

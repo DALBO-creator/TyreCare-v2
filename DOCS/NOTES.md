@@ -4377,7 +4377,8 @@ telefono.
 
 ## Chiusure a cavallo d'anno (T353)
 
-**File coinvolti:** `apps/web/src/pagine/orari.ts` (+ test), `apps/web/src/ui/prenotazione.ts`.
+**File coinvolti:** `apps/web/src/pagine/orari.ts` (+ test),
+`apps/web/src/pagine/monta-pneumatici.ts` (solo commento).
 **Come funziona:** `periodoChiusura` restituisce il giorno singolo con la maiuscola oppure «Da … a …».
 L'anno compare solo se `dal` e `al` sono in anni diversi, e allora su entrambi i giorni. Lo stesso testo
 finisce nell'`aria-label` «Elimina la chiusura: …» e nell'elenco delle chiusure della scheda officina.
