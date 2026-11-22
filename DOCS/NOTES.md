@@ -293,7 +293,8 @@ si rivela a un estraneo chi ha un account.
   facoltativo) e "Cambia password" → `/profilo/password` (password attuale + nuova). Email e ruolo non si
   cambiano da qui.
 - Dopo il salvataggio si torna al Profilo con un avviso verde di conferma (`tornaAlProfilo`). La voce
-  "Profilo" della navigazione inferiore resta evidenziata anche nelle sottopagine.
+  "Profilo" della navigazione inferiore resta evidenziata anche nelle sottopagine (regola precisata in
+  «Barra di navigazione: una sola voce attiva (T360)»).
 - **Telefono:** trattini, punti e parentesi diventano spazi, campo vuoto → `null`; poi lo stesso controllo
   del vincolo `check` del database (`^\+?[0-9 ]{6,20}$`), così l'errore compare sotto il campo e non arriva
   dal database.
@@ -4136,6 +4137,20 @@ Casi: voci e href per cliente e officina, voce attiva per percorsi diretti, `anc
 Il percorso corrente si imposta con `history.replaceState` (`attiva()` legge `location.pathname`). Le etichette
 si leggono dallo `<span>` testo della voce, senza il badge; ogni test controlla che le voci con
 `aria-current` siano esattamente una.
+
+## Barra di navigazione: una sola voce attiva (T360)
+
+**File coinvolti:** `apps/web/src/ui/layout.ts` (+ `layout.test.ts`).
+**Come funziona:** la barra evidenzia una sola voce: vince il percorso più lungo che corrisponde (proprio o in
+`anche`), a parità la prima. Per un cliente su `/officina/orari` è attiva solo «Profilo».
+
+### Codice complesso
+`paginaApp` filtra le voci per ruolo (`soloCliente`/`soloOfficina`) e poi chiama
+`voceAttiva(vociVisibili, location.pathname)`. `lunghezzaCorrispondenza` dà −1 se nessun percorso della voce
+(`percorso` o `anche`) è uguale al pathname o suo prefisso seguito da `/`, altrimenti la lunghezza del più
+lungo; `voceAttiva` prende il massimo con `>` stretto (a parità la prima) e solo quella riceve
+`aria-current="page"`. Esempio: cliente su `/officina` → «Officine» (9), su `/officina/orari` → «Profilo» (15);
+prima evidenziava entrambe. `/` vale solo per il pathname esattamente `/`.
 
 ## Test DOM della scheda cliente (T297)
 
