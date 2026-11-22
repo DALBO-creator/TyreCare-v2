@@ -21,8 +21,8 @@
 > italiano e numeri degli abbonamenti; test pgTAP di «Conferma email» e «Disconnetti» dell'admin.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda: T368 e T369 fatti; resta T386 (le chiavi nuove di `admin_riepilogo` nel pannello); la
-> pianificazione settimanale scrive la coda nuova.
+> In coda (ai-org): 38 compiti `pronto` (T370–T407, pianificazione del 22 novembre); T386 mostra nel
+> pannello le chiavi nuove di `admin_riepilogo`.
 
 **0 — Da chiedere al titolare**
 
