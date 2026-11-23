@@ -52,8 +52,9 @@ Con le impostazioni già salvate:
 1. Apri l'app pubblicata e prova a registrare un account di prova (email tua, non di un cliente).
 2. Prova una password di 10 caratteri solo lettere minuscole, poi una con maiuscole e minuscole ma senza
    numeri: devono essere rifiutate.
-3. Prova una password nota e banale (es. «password1»): se la protezione dalle password trapelate è attiva,
-   deve essere rifiutata.
+3. Prova una password comune che rispetta le regole dell'app (es. «Password123»: 11 caratteri, maiuscola,
+   minuscola, numero): l'app la accetta ma, se la protezione dalle password trapelate è attiva, Supabase
+   la rifiuta con il messaggio `weak_password` (vedi sopra).
 4. Prova una password valida (di almeno 10 caratteri con maiuscola, minuscola e numero): la registrazione
    riesce.
 5. Annota il messaggio mostrato ai punti 2-3 e confrontalo con quelli sopra: se è diverso o poco chiaro,
