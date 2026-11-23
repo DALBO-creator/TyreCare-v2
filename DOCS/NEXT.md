@@ -21,7 +21,7 @@
 > conferma del rinnovo in `/admin/abbonamento` (con 10 unit test DOM).
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda (ai-org): 34 compiti `pronto` (T374–T407, pianificazione del 22 novembre); T386 mostra nel
+> In coda (ai-org): 32 compiti `pronto` (T376–T407, pianificazione del 22 novembre); T386 mostra nel
 > pannello le chiavi nuove di `admin_riepilogo`.
 
 **0 — Da chiedere al titolare**
