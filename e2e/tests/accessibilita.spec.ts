@@ -227,7 +227,7 @@ test.describe('amministratore', () => {
   }[] = [
     {
       percorso: '/admin',
-      titolo: 'Pannello amministratore',
+      titolo: 'Pannello',
       atteso: (page) => page.getByRole('heading', { level: 2, name: 'Strumenti', exact: true }),
     },
     {
