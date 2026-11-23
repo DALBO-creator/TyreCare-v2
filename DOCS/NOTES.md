@@ -4485,3 +4485,26 @@ Utenti, sessioni e refresh token sono inseriti da `postgres`.
 ### Codice complesso
 - Le letture su `auth.*` si fanno con `reset role`, perché il ruolo dei test non le vede.
 - `refresh_tokens.user_id` è testo, `sessions.user_id` è uuid: i confronti vanno scritti di conseguenza.
+
+## Push: disattivazione coerente col server (T372)
+
+**File coinvolti:** `apps/web/src/lib/push.ts`, `apps/web/src/lib/push.test.ts`,
+`apps/web/src/ui/avvisi-push.ts`.
+**Come funziona:** prima si cancella la riga in `iscrizioni_push`; se la delete restituisce `error`,
+`disattivaPush` lo rilancia e `unsubscribe()` non viene chiamato. Così non resta un'iscrizione sul server
+senza il browser (notifiche a un dispositivo spento). Stesso stile di `attivaPush`. Il `.catch` di
+`ui/avvisi-push.ts` mostra «Non è stato possibile cambiare gli avvisi…» e ridisegna lo stato precedente.
+
+## Test DOM della pagina appuntamento (T373)
+
+**File coinvolti:** `apps/web/src/pagine/appuntamenti.test.ts`.
+**Come funziona:** monta `mostraAppuntamento` con finti per `lib/prenotazioni` (letture e azioni,
+`importOriginal` per le funzioni pure), `lib/profilo` (`caricaDatiUtente`: il ruolo, cioè cliente senza
+officine oppure officina con `officina_id` della prenotazione), `lib/auth`, `lib/notifiche`,
+`ui/avvisi-push`, `lib/supabase` e `vaiA` del router.
+
+### Codice complesso
+- «Oggi» è fissato con `vi.setSystemTime` e `toFake: ['Date']`, così i timer restano veri.
+- L'errore tradotto si prova facendo delegare il finto `rispondiPrenotazione` alla funzione vera, con `rpc`
+  che risponde `STATO_NON_VALIDO`; il riquadro delle azioni è `[data-errore-azione]`.
+- Il pulsante disattivato durante la chiamata si prova con una promessa risolta a mano.
