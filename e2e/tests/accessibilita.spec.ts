@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import {
   PASSWORD,
   accedi,
@@ -217,4 +217,56 @@ test.describe('amministratore', () => {
     await expect(page.getByRole('heading', { name: 'Gomme Rossi' })).toBeVisible();
     await controllaAccessibilita(page, '/admin/andamento');
   });
+
+  // L'h1 compare già durante il controllo d'accesso: l'attesa specifica è un elemento disegnato solo
+  // dopo il caricamento dei dati (elenco o stato vuoto, perché errori e registro possono essere vuoti)
+  const PAGINE_ADMIN: {
+    percorso: string;
+    titolo: string;
+    atteso: (page: Page) => Locator;
+  }[] = [
+    {
+      percorso: '/admin',
+      titolo: 'Pannello amministratore',
+      atteso: (page) => page.getByRole('heading', { level: 2, name: 'Strumenti', exact: true }),
+    },
+    {
+      percorso: '/admin/utenti',
+      titolo: 'Account',
+      atteso: (page) => page.getByLabel('Cerca per email, nome, cognome, telefono o ID'),
+    },
+    {
+      percorso: '/admin/errori',
+      titolo: "Errori dell'app",
+      atteso: (page) =>
+        page
+          .locator('.tc-contenuto > .tc-lista')
+          .or(page.getByText('Nessun errore negli ultimi 30 giorni')),
+    },
+    {
+      percorso: '/admin/registro',
+      titolo: 'Registro delle azioni',
+      atteso: (page) =>
+        page.locator('.tc-contenuto > .tc-lista').or(page.getByText('Nessuna azione registrata')),
+    },
+    {
+      percorso: '/admin/abbonamento?id=b0000000-0000-4000-8000-000000000001',
+      titolo: 'Abbonamento',
+      atteso: (page) => page.locator('.tc-contenuto').getByText('Gomme Rossi'),
+    },
+  ];
+
+  for (const { percorso, titolo, atteso } of PAGINE_ADMIN) {
+    test(`${percorso}: nessuna violazione di accessibilità grave`, async ({ browser }) => {
+      test.setTimeout(180_000);
+
+      const page = await entra(browser, 'admin@tyrecare.test');
+      await page.goto(percorso);
+      await expect(
+        page.getByRole('heading', { level: 1, name: titolo, exact: true }),
+      ).toBeVisible();
+      await expect(atteso(page)).toBeVisible();
+      await controllaAccessibilita(page, percorso);
+    });
+  }
 });
