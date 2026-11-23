@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-23 — ciclo 20261123-15 — T372 T373
+
+**Fatto**
+
+- T372: `disattivaPush` ora rilancia l'errore della delete su `iscrizioni_push` prima di `unsubscribe()`
+  (R49): se il database fallisce il browser resta iscritto e la pagina mostra «Non è stato possibile
+  cambiare gli avvisi…», invece di spegnere solo il telefono mentre il server continua a mandare. Unit test
+  nuovo; prova di mutazione.
+- T373: 15 unit test DOM della pagina `/appuntamento` (`pagine/appuntamenti.test.ts`): pulsanti per stato di
+  cliente e officina, «Accetta il nuovo orario» (disattivato durante la chiamata), «Completato», annullo con
+  dialogo, errori tradotti dal percorso d'origine. Prove di mutazione su `azioniOfficina`, `azioniCliente` e
+  `collegaAzioni`.
+
+**Verifica**
+
+- Gate del supervisore: 2/2 al primo giro. Prova d'insieme verde (905 test; JS iniziale 68,9 kB).
+
 ### Sessione agenti — 2026-11-23 — ciclo 20261123-03 — T370 T371
 
 **Fatto**

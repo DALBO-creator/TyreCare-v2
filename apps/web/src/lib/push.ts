@@ -71,11 +71,18 @@ export async function attivaPush(): Promise<StatoPush> {
   return 'attive';
 }
 
-/** Spegne le push su questo dispositivo (le notifiche restano nell'app). */
+/**
+ * Spegne le push su questo dispositivo (le notifiche restano nell'app).
+ * Se il database fallisce l'errore sale prima di `unsubscribe`: il server continuerebbe a mandare.
+ */
 export async function disattivaPush(): Promise<StatoPush> {
   const iscrizione = await (await registrazione())?.pushManager.getSubscription();
   if (iscrizione) {
-    await getSupabase().from('iscrizioni_push').delete().eq('endpoint', iscrizione.endpoint);
+    const { error } = await getSupabase()
+      .from('iscrizioni_push')
+      .delete()
+      .eq('endpoint', iscrizione.endpoint);
+    if (error) throw error;
     await iscrizione.unsubscribe();
   }
   return 'spente';
