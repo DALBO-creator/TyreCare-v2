@@ -4538,7 +4538,7 @@ dell'h1 e una funzione che dà l'elemento atteso. Le pagine sono `/admin`, `/adm
 ## Test della 2FA (`lib/mfa`) (T377)
 
 **File coinvolti:** `apps/web/src/lib/mfa.test.ts`.
-**Come funziona:** 14 unit test su `iniziaAttivazione`, `verificaCodice` e `disattiva`. Il file finge
+**Come funziona:** 12 unit test su `iniziaAttivazione`, `verificaCodice` e `disattiva`. Il file finge
 `getSupabase().auth.mfa` e `refreshSession` con `vi.hoisted` + `vi.mock('./supabase')`; `sessioneCorrente`
 di `./auth` è finto con `importOriginal`. La sessione finta è `{ access_token, user: { factors } }`.
 

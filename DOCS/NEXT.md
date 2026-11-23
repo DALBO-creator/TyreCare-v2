@@ -17,7 +17,7 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261123-21 (T376 T377): test axe delle pagine admin con dati e 14 unit
+> Ultima sessione: ciclo agenti 20261123-21 (T376 T377): test axe delle pagine admin con dati e 12 unit
 > test di `lib/mfa`.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).

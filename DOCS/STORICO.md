@@ -11,7 +11,7 @@
 - T376: 5 test axe nuovi per `/admin`, `/admin/utenti`, `/admin/errori`, `/admin/registro` e
   `/admin/abbonamento` (Gomme Rossi), mai analizzate dopo la PR #99. Ognuno attende l'h1 esatto e un
   elemento disegnato dopo i dati, senza regole escluse.
-- T377: 14 unit test di `lib/mfa` per `iniziaAttivazione`, `verificaCodice` e `disattiva` (attivazioni a
+- T377: 12 unit test di `lib/mfa` per `iniziaAttivazione`, `verificaCodice` e `disattiva` (attivazioni a
   metà, errori di Supabase, ordine verifica, unenroll, rinnovo). Prova di mutazione sul filtro `unverified`
   e sull'ordine di `disattiva`.
 
