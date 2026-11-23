@@ -249,6 +249,16 @@ describe('disattivaPush', () => {
     expect(iscrizione.unsubscribe).toHaveBeenCalledTimes(1);
   });
 
+  it("se la cancellazione dal database fallisce rilancia e non annulla l'iscrizione", async () => {
+    const iscrizione = iscrizioneFinta();
+    browser({ iscrizione });
+    const errore = { message: 'x', code: '42501' };
+    const eq = vi.fn(() => Promise.resolve({ error: errore }));
+    from.mockReturnValue({ delete: vi.fn(() => ({ eq })) });
+    await expect(disattivaPush()).rejects.toBe(errore);
+    expect(iscrizione.unsubscribe).not.toHaveBeenCalled();
+  });
+
   it('senza iscrizione: spente, senza toccare il database', async () => {
     const { getSubscription } = browser({ iscrizione: null });
     expect(await disattivaPush()).toBe('spente');
