@@ -25,6 +25,7 @@ test('l’amministratore registra un pagamento: rinnovo, installazione e note in
 
   // Rinnovo di un mese: diventa «Attivo» con una scadenza
   await admin.getByRole('button', { name: 'Rinnova di un mese' }).click();
+  await admin.getByRole('button', { name: 'Sì, rinnova' }).click();
   await expect(admin.getByText(/Abbonamento rinnovato fino al/)).toBeVisible();
   await expect(admin.locator('[data-stato]')).toHaveText('Attivo');
   await expect(admin.locator('[data-scadenza]')).toBeVisible();

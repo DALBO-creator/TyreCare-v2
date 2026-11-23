@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-23 — ciclo 20261123-18 — T374 T375
+
+**Fatto**
+
+- T374: guide del pilota allineate a P26 (`lista-lancio`, `sicurezza-account`, `crea-officina`,
+  `guida-cliente`): password di almeno 10 caratteri con maiuscola, minuscola e numero. `sicurezza-account`
+  riporta i messaggi veri dell'app (modulo e `weak_password`) e prova la protezione dalle password
+  trapelate con «Password123» («password1» ora è rifiutata dall'app).
+- T375: in `/admin/abbonamento` «Rinnova di un mese/anno» chiede conferma (dialogo con la ragione sociale e
+  «Sì, rinnova»); l'errore del rinnovo si legge nel dialogo; «Installazione pagata/non pagata» restano senza
+  conferma. 10 unit test DOM della pagina; l'e2e clicca anche «Sì, rinnova».
+
+**Verifica**
+
+- Gate del supervisore: 2/2 al primo giro. Prova d'insieme verde (915 test; JS iniziale 68,9 kB). e2e
+  `admin-abbonamento.spec.ts` verificato dalla CI.
+
 ### Sessione agenti — 2026-11-23 — ciclo 20261123-15 — T372 T373
 
 **Fatto**
