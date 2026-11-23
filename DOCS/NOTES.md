@@ -4522,3 +4522,26 @@ pagata» passano ancora da `esegui`, senza conferma.
 - Dentro `azione`, dopo il rinnovo, `vaiConConferma(...)` è senza try/catch: se il rinnovo fallisce
   l'errore resta nel dialogo aperto e il riquadro `[data-errore-azioni]` non si usa.
 - `admin-abbonamento.test.ts` usa il `<dialog>` vero: togliendo la conferma falliscono 4 test su 10.
+
+## Accessibilità delle pagine admin (T376)
+
+**File coinvolti:** `e2e/tests/accessibilita.spec.ts`.
+**Come funziona:** `describe('amministratore')` scorre `PAGINE_ADMIN`: per ogni pagina il percorso, il titolo
+dell'h1 e una funzione che dà l'elemento atteso. Le pagine sono `/admin`, `/admin/utenti`, `/admin/errori`,
+`/admin/registro` e `/admin/abbonamento` (Gomme Rossi); nessuna regola axe è esclusa.
+
+### Codice complesso
+- L'h1 da solo non basta come attesa: compare prima dei dati, quindi si attende anche un elemento disegnato
+  dopo. Per errori e registro l'attesa è l'elenco `.or` lo stato vuoto.
+- Il titolo è quello di `intestazioneSottopagina` della pagina disegnata (per `/admin` è «Pannello»).
+
+## Test della 2FA (`lib/mfa`) (T377)
+
+**File coinvolti:** `apps/web/src/lib/mfa.test.ts`.
+**Come funziona:** 12 unit test su `iniziaAttivazione`, `verificaCodice` e `disattiva`. Il file finge
+`getSupabase().auth.mfa` e `refreshSession` con `vi.hoisted` + `vi.mock('./supabase')`; `sessioneCorrente`
+di `./auth` è finto con `importOriginal`. La sessione finta è `{ access_token, user: { factors } }`.
+
+### Codice complesso
+- L'ordine verifica, unenroll, rinnovo si prova registrando le chiamate in un array.
+- Gli errori di Supabase si controllano con `rejects.toBe(err)` (stesso oggetto, non solo il messaggio).

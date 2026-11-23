@@ -17,11 +17,11 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261123-18 (T374 T375): guide del pilota allineate alle password di P26 e
-> conferma del rinnovo in `/admin/abbonamento` (con 10 unit test DOM).
+> Ultima sessione: ciclo agenti 20261123-21 (T376 T377): test axe delle pagine admin con dati e 12 unit
+> test di `lib/mfa`.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda (ai-org): 32 compiti `pronto` (T376–T407, pianificazione del 22 novembre); T386 mostra nel
+> In coda (ai-org): 30 compiti `pronto` (T378–T407, pianificazione del 22 novembre); T386 mostra nel
 > pannello le chiavi nuove di `admin_riepilogo`.
 
 **0 — Da chiedere al titolare**
