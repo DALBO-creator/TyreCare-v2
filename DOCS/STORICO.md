@@ -4,6 +4,25 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-23 — ciclo 20261123-03 — T370 T371
+
+**Fatto**
+
+- T370: unit test DOM di `pagine/importa-controlli.ts` (15 test: permessi, file vuoto o senza colonne,
+  nessuna riga valida, anteprima con conteggi e limite di 100 errori, import con doppio clic, errori di rete,
+  42501 e 23514). Due prove di mutazione: taglio a 100 errori e pulsante disabilitato.
+- T371: unit test DOM di `pagine/invita-cliente.ts` (9 test): cliente non trovato o già collegato, creazione
+  dell'invito, mailto, copia e condivisione del link. Prove di mutazione: focus sull'h1 e pulsante di
+  condivisione forzato.
+
+**Verifica**
+
+- Corsia C2 coordinata dal direttore in sessione. Revisione a coppia: 1 giro. Gate del supervisore: 2/2 al
+  primo giro. Prova d'insieme verde (88 file, 889 test); JS iniziale 68,9 kB invariato.
+- Note del supervisore (non bloccanti): in T370 il link «Torna ai veicoli» è cercato per classe
+  (`a.btn-primary`); in T371 `strong` e `[role="status"]` sono selettori generici.
+- Bug trovato e messo in coda come idea: «E altri ${n} errori.» senza `plurale()` in `importa-controlli.ts`.
+
 ### Sessione agenti — 2026-11-23 — ciclo 20261123-00 — T368 T369
 
 **Fatto**
@@ -19,16 +38,16 @@
 
 - Revisione: 1 giro per compito. Gate del supervisore: 1/1 al primo giro per compito. Prova d'insieme verde
   (865 test); JS iniziale 68,9 kB invariato. pgTAP non eseguito in sandbox: lo prova la CI `database`.
-- Nota del supervisore (T369, non bloccante): la FK `refresh_tokens.session_id` è `on delete cascade`, quindi il
-  conteggio a 0 dei refresh token passerebbe anche senza la seconda delete.
+- Nota del supervisore (T369, non bloccante): la FK `refresh_tokens.session_id` è `on delete cascade`, quindi
+  il conteggio a 0 dei refresh token passerebbe anche senza la seconda delete.
 - Il pannello non mostra ancora le tre chiavi nuove: è coperto da T386.
 
 ### Sessione agenti — 2026-11-22 — ciclo 20261122-18 — T361 T362
 
 **Fatto**
 
-- T361: 9 unit test di `attivaPush` e `disattivaPush` in `apps/web/src/lib/push.test.ts` (permesso negato o non
-  deciso, iscrizione già presente, nuova iscrizione con la chiave VAPID, annullo dell'iscrizione se la rpc
+- T361: 9 unit test di `attivaPush` e `disattivaPush` in `apps/web/src/lib/push.test.ts` (permesso negato o
+  non deciso, iscrizione già presente, nuova iscrizione con la chiave VAPID, annullo dell'iscrizione se la rpc
   `iscrivi_push` fallisce; spegnimento con e senza iscrizione, registrazione e service worker). Nessun codice
   dell'app cambiato; il finto di Supabase del file ora espone `rpc` e `from`.
 - T362: con `weak_password` il messaggio dice i requisiti («Password troppo debole: usa almeno 10 caratteri,
@@ -39,7 +58,8 @@
 **Verifica**
 
 - format:check, lint e typecheck verdi; 86 file / 865 test verdi; build verde, JS iniziale 68,9 kB gzip
-  invariato. Gate del supervisore: 2/2 al primo giro. Corsia C3 coordinata dal direttore (create_session assente).
+  invariato. Gate del supervisore: 2/2 al primo giro. Corsia C3 coordinata dal direttore (create_session
+  assente).
 - Idea accodata: T367 (`disattivaPush` non controlla l'errore della cancellazione).
 
 ### Sessione agenti — 2026-11-22 — ciclo 20261122-15 — T359 T360

@@ -3976,6 +3976,35 @@ L'invio è `form.requestSubmit()` e l'attesa `vi.waitFor`; ogni «nessuna chiama
 l'errore è comparso, altrimenti passerebbe a vuoto. Credenziali errate:
 `new AuthError(msg, 400, 'invalid_credentials')`.
 
+## Test DOM di Importa i controlli (T370)
+
+**File coinvolti:** `apps/web/src/pagine/importa-controlli.test.ts` (15 test DOM, happy-dom); nessuna modifica
+al codice.
+**Come funziona:** si fingono `leggiTabella`, `importaControlli` e `caricaContestoOfficina`;
+`controllaTabellaControlli` ed `eTitolare` restano vere e il test costruisce la `Tabella`. Casi: permessi,
+file vuoto o senza colonne, nessuna riga valida, anteprima con conteggi e limite di 100 errori, import con
+doppio clic, errori di rete, 42501 e 23514.
+
+### Codice complesso
+- Il file arriva con un evento `change` su `#tc-file` e un `File` finto.
+- Le chiamate a `importaControlli` si contano sul totale: anteprima (`simula: true`) più import
+  (`simula: false`).
+- I testi si confrontano con gli spazi ridotti (`testo()`); gli errori di rete sono
+  `TypeError('Failed to fetch')`.
+
+## Test DOM di Invita nell'app (T371)
+
+**File coinvolti:** `apps/web/src/pagine/invita-cliente.test.ts` (9 test DOM, happy-dom); nessuna modifica al
+codice.
+**Come funziona:** si fingono `caricaCliente`, `caricaDatiUtente`, `creaInvito` e il router; `linkInvito`,
+`mailtoInvito` e `GIORNI_VALIDITA` restano veri. Casi: cliente non trovato o già collegato, creazione
+dell'invito, mailto, copia e condivisione del link.
+
+### Codice complesso
+- `navigator.clipboard` e `navigator.share` si ridefiniscono con `Object.defineProperty` e in `afterEach` si
+  ripristinano dai descrittori originali.
+- La scadenza attesa è scritta a mano, non calcolata con il codice sotto prova.
+
 ## Test DOM della pagina dell'invito (T298)
 
 **File coinvolti:** `apps/web/src/pagine/invito.test.ts` (12 test, happy-dom); `invito.ts` è invariato.
@@ -4436,8 +4465,8 @@ prima di `leggiBozza`. L'avviso di ripresa mostra «Ultima modifica: …» con `
 
 **File coinvolti:** `supabase/migrations/20261123000100_riepilogo_abbonamenti.sql`,
 `supabase/tests/database/admin-riepilogo.test.sql`.
-**Come funziona:** la migrazione ricrea `admin_riepilogo()` con tre chiavi nuove. `ricavo_mensile` è in euro al
-mese, IVA esclusa, sui soli abbonamenti ATTIVO: vale `importo_concordato` o, se manca,
+**Come funziona:** la migrazione ricrea `admin_riepilogo()` con tre chiavi nuove. `ricavo_mensile` è in euro
+al mese, IVA esclusa, sui soli abbonamenti ATTIVO: vale `importo_concordato` o, se manca,
 `listino_abbonamento(piano)` (100 €/mese, 1000 €/anno); per ANNUALE si divide per 12 e si arrotonda a 2
 decimali (R48). `abbonamenti_attivi` e `prove_in_corso` contano gli stati ATTIVO e PROVA. Il pannello non
 mostra ancora le chiavi nuove (T386).

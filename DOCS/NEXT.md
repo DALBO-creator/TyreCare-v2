@@ -17,8 +17,8 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261123-00 (T368 T369): `admin_riepilogo` con prove in scadenza nel giorno
-> italiano e numeri degli abbonamenti; test pgTAP di «Conferma email» e «Disconnetti» dell'admin.
+> Ultima sessione: ciclo agenti 20261123-03 (T370 T371): unit test DOM delle pagine Importa i controlli e
+> Invita nell'app.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
 > In coda (ai-org): 38 compiti `pronto` (T370–T407, pianificazione del 22 novembre); T386 mostra nel
