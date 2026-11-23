@@ -17,8 +17,8 @@
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
 >
-> Ultima sessione: ciclo agenti 20261123-15 (T372 T373): la disattivazione degli avvisi push rilancia
-> l'errore del database prima di `unsubscribe()` (R49) e 15 unit test DOM della pagina Appuntamento.
+> Ultima sessione: ciclo agenti 20261123-18 (T374 T375): guide del pilota allineate alle password di P26 e
+> conferma del rinnovo in `/admin/abbonamento` (con 10 unit test DOM).
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
 > In coda (ai-org): 34 compiti `pronto` (T374–T407, pianificazione del 22 novembre); T386 mostra nel

@@ -4508,3 +4508,17 @@ officine oppure officina con `officina_id` della prenotazione), `lib/auth`, `lib
 - L'errore tradotto si prova facendo delegare il finto `rispondiPrenotazione` alla funzione vera, con `rpc`
   che risponde `STATO_NON_VALIDO`; il riquadro delle azioni è `[data-errore-azione]`.
 - Il pulsante disattivato durante la chiamata si prova con una promessa risolta a mano.
+
+## Abbonamento admin: conferma del rinnovo (T375)
+
+**File coinvolti:** `apps/web/src/pagine/admin-abbonamento.ts`,
+`apps/web/src/pagine/admin-abbonamento.test.ts`, `e2e/tests/admin-abbonamento.spec.ts`.
+**Come funziona:** «Rinnova di un mese/anno» apre `chiediConferma` (titolo «Rinnovare l’abbonamento di un
+mese?/un anno?», testo «Registra il pagamento di <ragione sociale> e avvisa i titolari.», pulsante «Sì,
+rinnova»); solo la conferma chiama `rinnovaAbbonamento(id, 'MESE'|'ANNO')`. «Installazione pagata/non
+pagata» passano ancora da `esegui`, senza conferma.
+
+### Codice complesso
+- Dentro `azione`, dopo il rinnovo, `vaiConConferma(...)` è senza try/catch: se il rinnovo fallisce
+  l'errore resta nel dialogo aperto e il riquadro `[data-errore-azioni]` non si usa.
+- `admin-abbonamento.test.ts` usa il `<dialog>` vero: togliendo la conferma falliscono 4 test su 10.
