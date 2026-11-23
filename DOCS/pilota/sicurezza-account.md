@@ -34,23 +34,30 @@ valori differiscono, l'utente vede l'errore di Supabase al posto di quello chiar
 ## Da verificare: i messaggi dell'app
 
 Dal 2026-11-16 l'app controlla in anticipo lunghezza (da 10 a 72 caratteri) e caratteri (maiuscola,
-minuscola, numero): il messaggio di Supabase compare solo se il pannello è più severo. Nota storica: prima i
-requisiti li
-controlla solo Supabase. Nel codice (`apps/web/src/lib/auth.ts`) il codice di errore `weak_password` è già
-tradotto in «Password troppo debole: scegline una più lunga o meno comune.», che però non dice che servono
-lettere e numeri. Il codice non è stato cambiato: è un compito per gli agenti (messaggio che nomini i
-requisiti, o controllo anticipato nel modulo). Prima del compito, prova a mano come sotto e guarda cosa compare.
+minuscola, numero) e mostra questi messaggi (testi in `packages/shared/src/auth.ts`):
+
+- password troppo corta: «La password deve avere almeno 10 caratteri»;
+- senza maiuscola, minuscola o numero: «La password deve avere almeno una maiuscola, una minuscola e un
+  numero»;
+- password che l'app accetta ma Supabase rifiuta (per esempio una password molto comune): «Password troppo
+  debole: usa almeno 10 caratteri, con una maiuscola, una minuscola e un numero, ed evita le password più
+  comuni.» (codice `weak_password`, in `apps/web/src/lib/auth.ts`).
+
+Il messaggio di Supabase compare quindi solo se il pannello è più severo dell'app.
 
 ## Come verificare
 
 Con le impostazioni già salvate:
 
 1. Apri l'app pubblicata e prova a registrare un account di prova (email tua, non di un cliente).
-2. Prova una password di 8 caratteri solo lettere, poi una solo numeri: devono essere rifiutate.
+2. Prova una password di 10 caratteri solo lettere minuscole, poi una con maiuscole e minuscole ma senza
+   numeri: devono essere rifiutate.
 3. Prova una password nota e banale (es. «password1»): se la protezione dalle password trapelate è attiva,
    deve essere rifiutata.
-4. Prova una password valida (lettere e numeri, 8 o più caratteri): la registrazione riesce.
-5. Annota il messaggio mostrato ai punti 2-3: se è poco chiaro, segnalalo agli agenti (sopra).
+4. Prova una password valida (di almeno 10 caratteri con maiuscola, minuscola e numero): la registrazione
+   riesce.
+5. Annota il messaggio mostrato ai punti 2-3 e confrontalo con quelli sopra: se è diverso o poco chiaro,
+   segnalalo agli agenti.
 6. Dall'account di prova prova «cambia password» dal Profilo. Poi elimina l'account di prova.
 
 Nota: gli account creati dal pannello ("Add user", vedi [`crea-officina.md`](crea-officina.md)) usano una

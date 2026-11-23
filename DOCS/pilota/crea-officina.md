@@ -12,7 +12,8 @@ Segnaposto: `<ragione sociale>`, `<partita IVA, 11 cifre>`, `<email del titolare
 Supabase → progetto di produzione → **Authentication → Users → "Add user" → "Create new user"**.
 
 - Email: `<email del titolare>`.
-- Password: `<password provvisoria>` (almeno 8 caratteri, scegline una nuova ogni volta).
+- Password: `<password provvisoria>` (almeno 10 caratteri, con una maiuscola, una minuscola
+  e un numero; scegline una nuova ogni volta).
 - Spunta **"Auto Confirm User"**. Serve perché, finché il dominio di TyreCare (P23) non è pronto, le email
   di conferma arrivano solo a Davide: senza la spunta il titolare non riceverebbe mai il messaggio.
 
