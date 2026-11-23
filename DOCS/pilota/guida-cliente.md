@@ -6,9 +6,9 @@ Bozza del 2026-10-31, da stampare o mandare ai clienti. Pochi passi, nell'ordine
    TyreCare con il nome dell'officina e l'email a cui è arrivato l'invito. Il link vale 14 giorni:
    se è scaduto, chiedi un nuovo invito alla tua officina (l'ultimo invito annulla i precedenti).
 2. **Crea il tuo account.** Tocca "Crea account" e usa **la stessa email dell'invito**. Scegli una password
-   (almeno 8 caratteri). Spunta la casella "Ho letto l'informativa privacy e accetto i termini di servizio",
-   poi "Crea account". Se ti chiede di controllare la posta, apri l'email e conferma. Se hai già un
-   account, tocca "Ho già un account".
+   (almeno 10 caratteri, con una maiuscola, una minuscola e un numero). Spunta la casella "Ho letto
+   l'informativa privacy e accetto i termini di servizio", poi "Crea account". Se ti chiede di controllare
+   la posta, apri l'email e conferma. Se hai già un account, tocca "Ho già un account".
 3. **Il tuo garage.** Nella Home trovi "I tuoi veicoli". Ogni veicolo ha un'etichetta di stato:
    - **In buono stato** (verde): le gomme vanno bene.
    - **Da controllare** (giallo): fai dare un'occhiata alle gomme dalla tua officina.
