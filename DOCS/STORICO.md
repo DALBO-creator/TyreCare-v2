@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-23 — ciclo 20261123-21 — T376 T377
+
+**Fatto**
+
+- T376: 5 test axe nuovi per `/admin`, `/admin/utenti`, `/admin/errori`, `/admin/registro` e
+  `/admin/abbonamento` (Gomme Rossi), mai analizzate dopo la PR #99. Ognuno attende l'h1 esatto e un
+  elemento disegnato dopo i dati, senza regole escluse.
+- T377: 14 unit test di `lib/mfa` per `iniziaAttivazione`, `verificaCodice` e `disattiva` (attivazioni a
+  metà, errori di Supabase, ordine verifica, unenroll, rinnovo). Prova di mutazione sul filtro `unverified`
+  e sull'ordine di `disattiva`.
+
+**Verifica**
+
+- Gate del supervisore: T377 al primo giro, T376 al secondo (titolo dell'h1 di `/admin` corretto in
+  «Pannello»). Prova d'insieme verde (927 test; JS iniziale 68,9 kB). e2e verificati dalla CI.
+
 ### Sessione agenti — 2026-11-23 — ciclo 20261123-18 — T374 T375
 
 **Fatto**
