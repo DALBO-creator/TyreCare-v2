@@ -23,6 +23,7 @@ import {
 import { ErroreModulo } from '../lib/errori';
 import { esc } from '../lib/html';
 import { ancoraAttuale, visualizzazioneCorrente } from '../lib/router';
+import { chiediConferma } from '../ui/conferma';
 import { icona } from '../ui/icone';
 import { caricamento, paginaApp } from '../ui/layout';
 import {
@@ -154,6 +155,7 @@ export async function mostraAdminAbbonamento(app: HTMLElement): Promise<void> {
     return;
   }
   const officinaId = id;
+  const ragioneSociale = a.ragione_sociale;
   const qui = `/admin/abbonamento?id=${encodeURIComponent(officinaId)}`;
 
   app.innerHTML = paginaApp(`
@@ -213,9 +215,21 @@ export async function mostraAdminAbbonamento(app: HTMLElement): Promise<void> {
   app.querySelectorAll<HTMLButtonElement>('[data-rinnova]').forEach((b) =>
     b.addEventListener('click', () => {
       const periodo = b.dataset.rinnova === 'ANNO' ? 'ANNO' : 'MESE';
-      void esegui(async () => {
-        const scade = await rinnovaAbbonamento(officinaId, periodo);
-        return `Abbonamento rinnovato fino al ${formattaData(scade)}.`;
+      // Il rinnovo registra un pagamento e avvisa i titolari: prima si chiede conferma. Se l'azione
+      // fallisce, l'errore lo mostra il dialogo (resta aperto), non il riquadro della pagina.
+      chiediConferma({
+        titolo: `Rinnovare l’abbonamento di ${periodo === 'ANNO' ? 'un anno' : 'un mese'}?`,
+        testo: `Registra il pagamento di ${ragioneSociale} e avvisa i titolari.`,
+        pulsante: 'Sì, rinnova',
+        iconaPulsante: CalendarPlus,
+        inCorso: 'Rinnovo…',
+        origine: b,
+        azione: async () => {
+          const scade = await rinnovaAbbonamento(officinaId, periodo);
+          vaiConConferma(qui, `Abbonamento rinnovato fino al ${formattaData(scade)}.`, {
+            sostituisci: true,
+          });
+        },
       });
     }),
   );
