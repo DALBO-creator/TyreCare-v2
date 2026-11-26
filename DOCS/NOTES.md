@@ -4509,6 +4509,39 @@ officine oppure officina con `officina_id` della prenotazione), `lib/auth`, `lib
   che risponde `STATO_NON_VALIDO`; il riquadro delle azioni è `[data-errore-azione]`.
 - Il pulsante disattivato durante la chiamata si prova con una promessa risolta a mano.
 
+## Test DOM del calendario (T378)
+
+**File coinvolti:** `apps/web/src/pagine/calendario.test.ts` (23 test DOM, happy-dom); nessuna modifica al
+codice.
+**Come funziona:** monta `mostraCalendario` con finti per il router, `../lib/supabase` e
+`caricaContestoOfficina`. Con `importOriginal` si fingono solo `caricaOrariECapienza`, `caricaSettimana`,
+`caricaChiusure` e `gestisciErroreCaricamento`; le funzioni pure e `parametro` restano vere. Prova la settimana
+da `?giorno=`, l'agenda con gli appuntamenti, le chiusure, le frecce («Settimana precedente» e «Settimana
+successiva» sono pulsanti con `aria-label`), `selettoreVista` e gli errori di caricamento.
+
+### Codice complesso
+- La data è fissata con `vi.useFakeTimers({ toFake: ['Date'] })` a giovedì 2026-11-26 10:00 UTC: i timer
+  restano veri.
+- `?giorno=` si imposta con `history.replaceState` prima di `mostraCalendario`; i cambi di settimana
+  asincroni si attendono con `vi.waitFor`.
+- Due stati vuoti diversi: `.tc-vuoto` se il giorno aperto è tutto vuoto, `.tc-agenda__libero` per la singola
+  fascia vuota.
+
+## Unisci clienti: test DOM (T379)
+
+**File coinvolti:** `apps/web/src/pagine/unisci-cliente.test.ts` (14 test DOM, happy-dom); nessuna modifica
+al codice.
+**Come funziona:** prova permessi (titolare/operatore), ricerca e conferma con il dialogo vero di
+`chiediConferma` (polyfill di `<dialog>` solo se manca). Finti: `caricaCliente`, `caricaElencoClienti`,
+`unisciClienti`, `caricaDatiUtente`, `vaiConConferma`, `gestisciErroreCaricamento`; veri `eTitolare`,
+`nominativo`, `filtraClienti`.
+
+### Codice complesso
+- L'ordine degli id è bloccato: `unisciClienti(scelto.id, attuale.id)` = (doppione da eliminare, scheda che
+  resta).
+- L'elenco finto contiene anche il cliente attuale, per provare che il filtro lo esclude.
+- Una ricerca di soli spazi mostra l'elenco intero.
+
 ## Abbonamento admin: conferma del rinnovo (T375)
 
 **File coinvolti:** `apps/web/src/pagine/admin-abbonamento.ts`,

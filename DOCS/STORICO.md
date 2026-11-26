@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-26 — ciclo 20261126-18 — T378 T379
+
+**Fatto**
+
+- T378: unit test DOM di `pagine/calendario.ts`, 23 test (settimana da `?giorno=`, agenda con appuntamenti,
+  due stati vuoti, chiusure, frecce di settimana, `selettoreVista`, errori di caricamento). 5 mutanti della
+  pagina, tutti scoperti.
+- T379: 14 unit test DOM di «Unisci clienti» (`unisci-cliente.test.ts`): permessi titolare/operatore, ricerca,
+  dialogo di conferma vero e ordine degli id verificato.
+
+**Verifica**
+
+- Gate del supervisore: T378 e T379 al primo giro. Prova d'insieme verde (964 test su 92 file; JS iniziale
+  68,9 kB). e2e non toccati. Nessuna modifica al codice dell'app.
+
 ### Sessione agenti — 2026-11-23 — ciclo 20261123-21 — T376 T377
 
 **Fatto**
