@@ -4542,6 +4542,36 @@ al codice.
 - L'elenco finto contiene anche il cliente attuale, per provare che il filtro lo esclude.
 - Una ricerca di soli spazi mostra l'elenco intero.
 
+## Test DOM di officine e prenotazione (T380)
+
+**File coinvolti:** `apps/web/src/pagine/officine.test.ts` (22 blocchi, 25 casi, happy-dom); nessuna
+modifica al codice.
+**Come funziona:** monta le pagine di elenco, scheda e «Chiedi un appuntamento». Finti: `lib/prenotazioni`,
+`lib/profilo`, il router (`vaiA`) e, di `lib/supabase`, solo `rpc`; le pagine importate restano vere.
+Prova elenco e ricerca, «Vicino a me», scheda, invio del modulo ed errori tradotti.
+
+### Codice complesso
+- Il tempo è fisso al 2026-12-10 con `vi.useFakeTimers({ toFake: ['Date'] })`; il giorno si sceglie da
+  `giorniPrenotabili` e poi si invia l'evento `change`.
+- La geolocalizzazione si finge con `Object.defineProperty(navigator, 'geolocation', …)` e si ripristina in
+  `afterEach`.
+- Gli errori vengono dal codice d'origine: si finge solo `rpc` e si passa dalla vera `richiediPrenotazione`
+  (`FASCIA_PIENA` sotto `fascia`).
+
+## Test DOM di elenco, Proponi e Rifiuta appuntamenti (T381)
+
+**File coinvolti:** `apps/web/src/pagine/appuntamenti.test.ts` (22 blocchi, 28 casi); nessuna modifica al
+codice.
+**Come funziona:** estende i test di T373 con l'elenco degli appuntamenti, «Proponi un altro orario» e
+«Rifiuta/Annulla». `caricaMiePrenotazioni` e `caricaPrenotazioniOfficina` sono nei `vi.hoisted` di T373;
+`officinaAttiva` resta vera.
+
+### Codice complesso
+- Le sezioni dell'elenco si provano con id diversi per riga, così un confronto sbagliato non passa.
+- Il fuso UTC+1 si prova con l'ISO UTC scritto a mano, non calcolato dal codice provato.
+- Gli errori sono tradotti dalla vera `rispondiPrenotazione` con `rpc` finto; la conferma si legge con
+  `avvisoConferma()`.
+
 ## Abbonamento admin: conferma del rinnovo (T375)
 
 **File coinvolti:** `apps/web/src/pagine/admin-abbonamento.ts`,
