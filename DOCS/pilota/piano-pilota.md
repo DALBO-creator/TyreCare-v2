@@ -39,7 +39,8 @@ l'account amministratore, non con quello del titolare.
 Un'ora, in officina, con il telefono del titolare. Prima: l'officina è creata e attivata e il DPA è firmato
 (vedi la lista di lancio). Poi si seguono i passi di [`guida-avvio.md`](guida-avvio.md):
 
-1. Accesso, cambio password, app sulla schermata Home (su iPhone le notifiche funzionano solo da lì).
+1. Accesso, cambio password, app sulla Home: iPhone da Safari con Condividi, Android da Chrome con menu ⋮
+   (su iPhone le notifiche funzionano solo dall'icona).
 2. Orari e chiusure; servizi e prezzi.
 3. Import di clienti e veicoli dal gestionale (GESTITYRE) con la mappatura delle colonne.
 4. Primo controllo di uno pneumatico fatto insieme.

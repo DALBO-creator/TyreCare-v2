@@ -10,7 +10,9 @@ appuntamenti, ma non vedono orari, dati dell'officina, import, unione dei client
 ## 1. Primo accesso e profilo
 
 Apri l'app dal telefono ed entra con l'email e la password provvisoria. Per aggiungere l'app alla
-schermata Home (serve per le notifiche su iPhone) segui il passo 1 di `guida-avvio.md`.
+schermata Home (serve per le notifiche su iPhone) segui il passo 1 di `guida-avvio.md`: su iPhone (Safari)
+Condividi → "Aggiungi alla schermata Home"; su Android (Chrome) menu ⋮ → "Installa app" (o "Aggiungi a
+schermata Home").
 
 - Cambia la password da **Profilo → "Cambia password"**.
 - Scrivi nome e cognome in **Profilo → "Modifica i tuoi dati"**.
@@ -174,6 +176,8 @@ del cliente): "Targa", "Marca", "Modello", e facoltativi "Anno" e "Telaio"; poi 
   settimana e anno (es. 3823)."). Quello che hai scritto resta per le ruote che lasci scelte; se togli una
   posizione il suo campo sparisce e, se la rimetti, riparte vuoto. Lo stesso vale in
   "Cambia pneumatici", che apre la stessa pagina; in "Correggi pneumatici" il DOT è uno solo.
+  Se togli la spunta, i campi per ruota spariscono, il campo "DOT (facoltativo)" si riaccende e vale il DOT
+  unico: i valori scritti per ruota non vengono inviati.
 - **Cambia:** per montare pneumatici diversi premi "Cambia pneumatici": quelli vecchi restano nello
   storico.
 - **Smonta:** nella sezione "Pneumatici montati", "Smonta" toglie gli pneumatici senza metterne altri
