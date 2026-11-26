@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-26 — ciclo 20261126-21 — T380 T381
+
+**Fatto**
+
+- T380: unit test DOM di `pagine/officine.test.ts`, 22 blocchi (25 casi con `it.each`): elenco e ricerca,
+  «Vicino a me» con geolocalizzazione finta, scheda dell'officina e modulo «Chiedi un appuntamento» con
+  invio ed errori tradotti.
+- T381: 22 blocchi (28 casi con `it.each`) in `pagine/appuntamenti.test.ts`: elenco appuntamenti (stati
+  vuoti, sezioni e link per officina e cliente, finestra OGGI-30), «Proponi un altro orario» (permessi,
+  fuso UTC+1, errori) e «Rifiuta/Annulla» (titoli, conferme).
+
+**Verifica**
+
+- Gate del supervisore: T380 e T381 al primo giro. Prova d'insieme verde (1017 test su 93 file; JS iniziale
+  68,9 kB). e2e non toccati. Nessuna modifica al codice dell'app.
+
 ### Sessione agenti — 2026-11-26 — ciclo 20261126-18 — T378 T379
 
 **Fatto**

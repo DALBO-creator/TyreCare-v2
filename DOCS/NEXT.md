@@ -16,9 +16,12 @@
 > `DATI_FORNITORE` (`packages/shared/src/fornitore.ts`) e di `DOCS/legale/README.md`.
 > Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
 > pannello (`ricavoMensile` è già in `shared`).
+> Idee in coda dai test del ciclo 21: T416 (stato vuoto della ricerca officine in minuscolo), T417 (test del
+> titolare di un'altra officina in Proponi/Rifiuta), T418 (PROPOSTA/RICHIESTA passate assenti dall'elenco
+> dell'officina).
 >
-> Ultima sessione: ciclo agenti 20261126-18 (T378 T379): unit test DOM del calendario dell'officina e di
-> «Unisci clienti».
+> Ultima sessione: ciclo agenti 20261126-21 (T380 T381): unit test DOM di officine e prenotazione e di
+> elenco, Proponi e Rifiuta appuntamenti.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
 > In coda (ai-org): 30 compiti `pronto` (T378–T407, pianificazione del 22 novembre); T386 mostra nel
