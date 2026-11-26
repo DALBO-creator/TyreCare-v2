@@ -17,7 +17,8 @@ sito]` scrivete l'indirizzo vero del sito. Il link personale per ogni cliente lo
 2. **Apri il link che ti abbiamo mandato.** Tocca "Crea account" e usa la stessa email dell'invito.
    Se hai già un account, tocca "Accedi", poi "Collega i miei veicoli".
 3. **Aggiungi TyreCare alla schermata Home.** Su iPhone apri il sito con Safari, tocca Condividi,
-   poi "Aggiungi alla schermata Home". Su Android: menu ⋮ → "Installa app".
+   poi "Aggiungi alla schermata Home". Su Android: menu ⋮ → "Installa app"
+   (o "Aggiungi a schermata Home").
 
 **Cosa ci guadagni**
 
