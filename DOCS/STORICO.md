@@ -4,6 +4,21 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-27 — ciclo 20261127-00 — T382 T383
+
+**Fatto**
+
+- T382: le guide del pilota (guida-officina, piano-pilota, testo-per-i-clienti) hanno il passo Android
+  accanto a iPhone, con le parole di guida-cliente; guida-officina spiega che togliendo la spunta «DOT
+  diverso per ogni ruota» torna a valere il DOT unico.
+- T383: registro dei trattamenti (M1) e README legale senza numero fisso di tabelle («22 al 2026-11-22»,
+  con rinvio a `sicurezza.test.sql`); ricucito il paragrafo RLS del README (rilievo del treno #119).
+
+**Verifica**
+
+- Gate del supervisore: T382 e T383 al primo giro. Solo documenti, nessuna modifica al codice. Conteggio
+  rifatto: 23 create table meno 1 drop (`stripe_eventi`) = 22 tabelle.
+
 ### Sessione agenti — 2026-11-26 — ciclo 20261126-21 — T380 T381
 
 **Fatto**
