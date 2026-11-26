@@ -26,10 +26,12 @@ lancio": non vanno considerate attive finché non sono realizzate.
 
 Valgono per tutti i trattamenti; ogni scheda indica solo le particolarità.
 
-- **M1 — Regole di accesso per riga (RLS).** Tutte le 22 tabelle in `public` hanno
+- **M1 — Regole di accesso per riga (RLS).** Tutte le tabelle in `public` (22 al 2026-11-22) hanno
   `enable row level security`: ogni utente legge e modifica solo le righe che gli spettano (il proprio
   account, la propria officina, i veicoli collegati al proprio account). Verificate con test pgTAP in
   `supabase/tests/database/`, anche per gli accessi negati (es. un'altra officina non vede i controlli).
+  Il test `supabase/tests/database/sicurezza.test.sql` fallisce se una tabella nuova di `public` nasce
+  senza RLS, quindi il numero può crescere senza che questa misura smetta di valere.
 - **M2 — Accessi per ruolo.** Ruoli: cliente, membro dell'officina (titolare o operatore),
   amministratore di TyreCare. Operazioni delicate solo al titolare dell'officina (eliminare clienti e
   veicoli, import, catalogo dei servizi); l'amministratore nell'app non vede i dati dei clienti delle
