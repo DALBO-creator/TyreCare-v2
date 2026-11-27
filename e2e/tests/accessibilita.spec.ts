@@ -36,6 +36,9 @@ const PAGINE = [
   { percorso: '/per-le-officine', titolo: 'TyreCare per le officine' },
   // Pubblica (accesso 'pubblica' in main.ts): l'h1 viene dal Markdown dell'informativa
   { percorso: '/privacy', titolo: /^Informativa sul trattamento dei dati personali/ },
+  // Pubbliche come /privacy: l'h1 viene dal Markdown (DOCS/legale), si controlla solo l'inizio
+  { percorso: '/termini', titolo: /^Termini di servizio/ },
+  { percorso: '/cookie', titolo: /^Cookie policy/ },
   { percorso: '/pagina-che-non-esiste', titolo: 'Pagina non trovata' },
 ];
 
@@ -86,6 +89,10 @@ const PAGINE_CLIENTE = [
   { percorso: '/notifiche', titolo: 'Notifiche' },
   // Il titolo è il nome del profilo del seed (Giulia Verdi)
   { percorso: '/profilo', titolo: 'Giulia Verdi' },
+  // Profilo: dati, password e verifica in due passaggi (Giulia non ha la 2FA: schermata di avvio)
+  { percorso: '/profilo/dati', titolo: 'I tuoi dati' },
+  { percorso: '/profilo/password', titolo: 'Cambia password' },
+  { percorso: '/profilo/sicurezza', titolo: 'Verifica in due passaggi' },
   { percorso: '/commento', titolo: 'Invia un commento' },
   // Pagina di prenotazione di "Gomme Rossi": il titolo è fisso, il nome dell'officina è nell'etichetta
   {
@@ -132,6 +139,17 @@ const PAGINE_TITOLARE = [
   // Giulia Verdi (seed): il titolo è il nominativo "cognome nome"
   { percorso: '/cliente?id=c0000000-0000-4000-8000-000000000001', titolo: 'Verdi Giulia' },
   { percorso: '/clienti/importa-controlli', titolo: 'Importa i controlli' },
+  // Profilo e sicurezza del titolare (Mario non ha la 2FA: schermata di avvio)
+  { percorso: '/profilo/dati', titolo: 'I tuoi dati' },
+  { percorso: '/profilo/password', titolo: 'Cambia password' },
+  { percorso: '/profilo/sicurezza', titolo: 'Verifica in due passaggi' },
+  // Pagine di dettaglio sui dati di Gomme Rossi (seed): Panda di Giulia (d0…01), il suo pneumatico
+  // anteriore sinistro (e0…01, Michelin Alpin 6) e il controllo del 14 settembre 2026 (f0…01)
+  { percorso: '/veicolo?id=d0000000-0000-4000-8000-000000000001', titolo: 'Panda' },
+  { percorso: '/pneumatico?id=e0000000-0000-4000-8000-000000000001', titolo: 'Michelin Alpin 6' },
+  { percorso: '/controllo?id=f0000000-0000-4000-8000-000000000001', titolo: '14 settembre 2026' },
+  // Mario non ha veicoli suoi (seed): la pagina mostra il titolo con l'elenco vuoto
+  { percorso: '/garage', titolo: 'Il tuo garage' },
 ];
 
 test.describe('titolare (Gomme Rossi)', () => {
