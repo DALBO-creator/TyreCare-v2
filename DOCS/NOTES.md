@@ -4594,6 +4594,32 @@ DOT con data fissata (`toFake: ['Date']`), elenco dal più recente e ritorno al 
 - L'avviso «Smontato» si seleziona con `.tc-avviso[role="status"]`, perché il layout ha un altro
   `role="status"`.
 
+## e2e della verifica in due passaggi (cliente) (T393)
+
+**File coinvolti:** `e2e/tests/due-fattori.spec.ts`; nessuna modifica al codice.
+**Come funziona:** un cliente nuovo (`nuovoAccountCliente('Nome')`) attiva la verifica in due passaggi dal
+profilo, rientra (codice sbagliato: errore; codice giusto: home), la disattiva e rientra senza codice.
+Il segreto si legge da `[data-segreto]`, i codici si calcolano con `codiceTotp`.
+
+### Codice complesso
+- Supabase può rifiutare lo stesso codice nella stessa finestra di 30 s: l'helper `codiceNuovo` attende
+  (max 31 s) un codice diverso dall'ultimo prima dell'accesso e prima di «Disattiva» (anche `disattiva()`
+  rifà `challengeAndVerify`). In tutto fino a circa un minuto di attese: timeout 180 s.
+- L'assenza del campo codice si verifica dopo l'h1 della home.
+
+## Test DOM del profilo (T394)
+
+**File coinvolti:** `apps/web/src/pagine/profilo.test.ts` (11 casi); nessuna modifica al codice.
+**Come funziona:** prova le voci per cliente, titolare, operatore e admin `aal1`/`aal2`, «Scarica i tuoi
+dati» (attesa, nome del file, errore tradotto) ed «Esci». Finti `caricaDatiUtente`,
+`contaOfficineInAttesa`, `sessioneAal2`, `raccogliMieiDati`, `scaricaJson`, `esci`; veri
+`nomeFileMieiDati` e `messaggioErrore`.
+
+### Codice complesso
+- La sezione Officina compare con almeno un'officina; orari e dati solo per il titolare.
+- Il numero delle officine in attesa compare solo con `aal2` e se la query riesce.
+- Il download disabilita il pulsante («Preparazione…») e mostra gli errori in `[data-errore-dati]`.
+
 ## Abbonamento admin: conferma del rinnovo (T375)
 
 **File coinvolti:** `apps/web/src/pagine/admin-abbonamento.ts`,
