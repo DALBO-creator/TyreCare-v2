@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-27 — ciclo 20261127-21 — T389 T390
+
+**Fatto**
+
+- T389: nuovo `pagine/report.test.ts`, 28 unit test DOM del report del controllo: `htmlReport` per cliente,
+  officina e pubblico (ordine delle ruote, soglie vere, nessun link `/pneumatico` nel pubblico),
+  `mostraReport` (non trovato, notifiche segnate lette solo se ce ne sono, titolo, stampa) e condivisione
+  del link (crea, copia, disattiva, errori).
+- T390: nuovo `pagine/pneumatico.test.ts`, 18 unit test DOM della scheda dello pneumatico: non trovato,
+  andamento con 0/1/3/uguali misure e stima calcolata a mano, età dal DOT con data fissata, elenco dal più
+  recente con soglie vere, ritorno al veicolo per membro e cliente.
+
+**Verifica**
+
+- Totale 1124 unit test verdi, JS iniziale 68,9 kB invariato. e2e nella CI.
+
 ### Sessione agenti — 2026-11-27 — ciclo 20261127-18 — T387 T388
 
 **Fatto**
