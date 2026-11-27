@@ -4572,6 +4572,28 @@ codice.
 - Gli errori sono tradotti dalla vera `rispondiPrenotazione` con `rpc` finto; la conferma si legge con
   `avvisoConferma()`.
 
+## Test DOM del report (T389)
+
+**File coinvolti:** `apps/web/src/pagine/report.test.ts` (28 casi); nessuna modifica al codice.
+**Come funziona:** prova `htmlReport` per cliente, officina e pubblico, `mostraReport` (non trovato,
+notifiche lette solo se ce ne sono, titolo, stampa) e la condivisione del link (crea, copia, disattiva).
+
+### Codice complesso
+- happy-dom non ha `window.print`: si mette uno stub, spiato e tolto in `afterEach`.
+- `navigator.clipboard` si definisce e si ripristina con il suo descrittore originale.
+- Nel report pubblico il cruscotto ha immagini (`role="img"`) al posto dei link a `/pneumatico`.
+
+## Test DOM della scheda pneumatico (T390)
+
+**File coinvolti:** `apps/web/src/pagine/pneumatico.test.ts` (18 casi); nessuna modifica al codice.
+**Come funziona:** prova non trovato, andamento con 0/1/3/uguali misure (stima calcolata a mano), età dal
+DOT con data fissata (`toFake: ['Date']`), elenco dal più recente e ritorno al veicolo.
+
+### Codice complesso
+- Le misure si passano in ordine crescente: la pagina usa `.at(-1)` e `.reverse()`.
+- L'avviso «Smontato» si seleziona con `.tc-avviso[role="status"]`, perché il layout ha un altro
+  `role="status"`.
+
 ## Abbonamento admin: conferma del rinnovo (T375)
 
 **File coinvolti:** `apps/web/src/pagine/admin-abbonamento.ts`,
