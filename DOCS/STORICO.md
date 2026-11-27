@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-27 — ciclo 20261127-15 — T386 T391
+
+**Fatto**
+
+- T386: il pannello `/admin` ha la sezione «Abbonamenti» (attivi, in prova, scaduti, ricavo al mese IVA
+  esclusa con `formattaEuro`); «Abbonamenti scaduti» spostato da Officine; legge i numeri di T368. Primi
+  unit test DOM di `pagine/admin.ts` (8) e 2 su `leggiRiepilogo`.
+- T391: nuovo `pagine/abbonamento.test.ts`, 10 unit test DOM della pagina Abbonamento (operatore, errore,
+  nessun abbonamento, tono e titolo dei 4 stati con data fissata, prezzi di listino, «Il tuo piano»,
+  contatto).
+
+**Verifica**
+
+- Gate del supervisore: T386 e T391 al primo giro. Prova d'insieme verde (1052 unit test, JS iniziale
+  68,9 kB invariato). Mutazioni: ricavo senza `formattaEuro` (2 test rossi), `TONO_AVVISO.azione` giallo
+  (2 test rossi). e2e verificati dalla CI del treno.
+
 ### Sessione agenti — 2026-11-27 — ciclo 20261127-03 — T384 T385
 
 **Fatto**

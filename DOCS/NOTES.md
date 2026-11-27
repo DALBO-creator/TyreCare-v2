@@ -4468,8 +4468,8 @@ prima di `leggiBozza`. L'avviso di ripresa mostra «Ultima modifica: …» con `
 **Come funziona:** la migrazione ricrea `admin_riepilogo()` con tre chiavi nuove. `ricavo_mensile` è in euro
 al mese, IVA esclusa, sui soli abbonamenti ATTIVO: vale `importo_concordato` o, se manca,
 `listino_abbonamento(piano)` (100 €/mese, 1000 €/anno); per ANNUALE si divide per 12 e si arrotonda a 2
-decimali (R48). `abbonamenti_attivi` e `prove_in_corso` contano gli stati ATTIVO e PROVA. Il pannello non
-mostra ancora le chiavi nuove (T386).
+decimali (R48). `abbonamenti_attivi` e `prove_in_corso` contano gli stati ATTIVO e PROVA. Il pannello le
+mostra dal T386 (voce «Pannello admin: Abbonamenti»).
 
 ### Codice complesso
 - `prove_in_scadenza` conta le PROVA con `prova_fino_al` tra oggi e oggi + 7 inclusi, dove «oggi» è il giorno
@@ -4608,3 +4608,18 @@ di `./auth` è finto con `importOriginal`. La sessione finta è `{ access_token,
 ### Codice complesso
 - L'ordine verifica, unenroll, rinnovo si prova registrando le chiamate in un array.
 - Gli errori di Supabase si controllano con `rejects.toBe(err)` (stesso oggetto, non solo il messaggio).
+
+## Pannello admin: Abbonamenti (T386)
+
+**File coinvolti:** `apps/web/src/lib/admin-pannello.ts`, `apps/web/src/pagine/admin.ts`, test
+`apps/web/src/lib/admin-pannello.test.ts` e `apps/web/src/pagine/admin.test.ts`.
+**Come funziona:** `/admin` ha una sezione «Abbonamenti» con attivi, in prova, scaduti e ricavo al mese;
+«Abbonamenti scaduti» è stato spostato qui da Officine. `admin_riepilogo` restituisce anche
+`abbonamenti_attivi`, `prove_in_corso` e `ricavo_mensile` (T368); `leggiRiepilogo` li legge con `Number`.
+Sotto il blocco una nota dice «IVA esclusa, solo abbonamenti attivi». Primi unit test DOM di
+`pagine/admin.ts` (8) e 2 su `leggiRiepilogo`.
+
+### Codice complesso
+- `leggiRiepilogo` tiene i decimali e una voce mancante vale 0.
+- `numero(valore, etichetta, testo?)` accetta un testo già formattato, che passa comunque da `esc()`.
+- Il ricavo usa `formattaEuro`: 100 diventa «100 €», 175,5 diventa «175,50 €».
