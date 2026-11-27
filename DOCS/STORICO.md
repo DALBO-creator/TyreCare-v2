@@ -4,6 +4,25 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-27 — ciclo 20261127-18 — T387 T388
+
+**Fatto**
+
+- T387: nuovo `pagine/dati-officina.test.ts`, 11 unit test DOM di «Dati dell'officina» (operatore solo
+  avviso, titolare con campi riempiti, raggio 5–100, casella aiuto su strada senza posizione,
+  geolocalizzazione assente/riuscita/rifiutata, salvataggio con conferma).
+- T388: nuovo `pagine/monta-pneumatici.test.ts`, 15 unit test DOM del montaggio: DOT per ruota (spunta,
+  campi per posizione, valori conservati), invio con DOT per ruota o unico, errore sul DOT di 3 cifre,
+  avviso con pneumatici montati, `campiPneumatico` precompilato.
+
+**Verifica**
+
+- Gate del supervisore: T387 e T388 al primo giro. Prova d'insieme verde (1078 unit test, JS iniziale
+  68,9 kB invariato). Mutazioni su `casella.disabled` e sul controllo `geolocation`. e2e nella CI.
+- Rilievi `nota`: nel compito T387 testi diversi dal codice («Usa la mia posizione» → «Usa la posizione
+  attuale», un solo campo posizione); in T388 `oggiISO()` calcolato in test e pagina (rischio a
+  mezzanotte trascurabile).
+
 ### Sessione agenti — 2026-11-27 — ciclo 20261127-15 — T386 T391
 
 **Fatto**

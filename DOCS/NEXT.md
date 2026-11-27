@@ -18,8 +18,8 @@
 > titolare di un'altra officina in Proponi/Rifiuta), T418 (PROPOSTA/RICHIESTA passate assenti dall'elenco
 > dell'officina).
 >
-> Ultima sessione: ciclo agenti 20261127-15 (T386 T391): sezione «Abbonamenti» con il ricavo al mese nel
-> pannello admin; unit test DOM della pagina Abbonamento.
+> Ultima sessione: ciclo agenti 20261127-18 (T387 T388): unit test DOM di «Dati dell'officina» e di
+> «Monta pneumatici» (DOT per ruota).
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
 > In coda (ai-org): 20 compiti `pronto` (T387–T407, pianificazione del 22 novembre).
