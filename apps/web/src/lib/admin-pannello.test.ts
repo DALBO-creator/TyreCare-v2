@@ -51,6 +51,22 @@ describe('leggiRiepilogo', () => {
   });
 });
 
+describe('leggiRiepilogo, abbonamenti', () => {
+  it('tiene i decimali del ricavo mensile', () => {
+    const r = leggiRiepilogo({ abbonamenti_attivi: 3, prove_in_corso: 2, ricavo_mensile: 175.5 });
+    expect(r.ricavo_mensile).toBe(175.5);
+    expect(r.abbonamenti_attivi).toBe(3);
+    expect(r.prove_in_corso).toBe(2);
+  });
+
+  it('vale 0 se le voci mancano', () => {
+    const r = leggiRiepilogo({ utenti: 1 });
+    expect(r.ricavo_mensile).toBe(0);
+    expect(r.abbonamenti_attivi).toBe(0);
+    expect(r.prove_in_corso).toBe(0);
+  });
+});
+
 describe('registro', () => {
   it('descrive le voci', () => {
     expect(descriviVoce({ azione: 'update', tabella: 'officine' })).toBe('Modifica · officina');

@@ -1,3 +1,4 @@
+import { formattaEuro } from '@tyrecare/shared';
 import {
   Building2,
   ChevronRight,
@@ -18,10 +19,10 @@ import { gestisciErroreCaricamento, intestazioneSottopagina } from './comune';
 
 // Pannello dell'amministratore (/admin): numeri della piattaforma, cose da guardare e strumenti.
 
-function numero(valore: number, etichetta: string): string {
+function numero(valore: number, etichetta: string, testo?: string): string {
   return `
     <div class="tc-riepilogo__voce">
-      <span class="tc-riepilogo__numero">${valore.toLocaleString('it-IT')}</span>
+      <span class="tc-riepilogo__numero">${esc(testo ?? valore.toLocaleString('it-IT'))}</span>
       <span class="tc-riepilogo__etichetta">${esc(etichetta)}</span>
     </div>`;
 }
@@ -128,8 +129,18 @@ export async function mostraAdmin(app: HTMLElement): Promise<void> {
           ${numero(r.officine_attive, 'Attive')}
           ${numero(r.officine_in_attesa, 'In attesa')}
           ${numero(r.officine_sospese, 'Sospese')}
-          ${numero(r.abbonamenti_scaduti, 'Abbonamenti scaduti')}
         </div>
+      </section>
+
+      <section aria-labelledby="tc-admin-abbonamenti">
+        <h2 id="tc-admin-abbonamenti" class="tc-etichetta">Abbonamenti</h2>
+        <div class="tc-riepilogo tc-riepilogo--admin">
+          ${numero(r.abbonamenti_attivi, 'Attivi')}
+          ${numero(r.prove_in_corso, 'In prova')}
+          ${numero(r.abbonamenti_scaduti, 'Abbonamenti scaduti')}
+          ${numero(r.ricavo_mensile, 'Ricavo al mese', formattaEuro(r.ricavo_mensile))}
+        </div>
+        <p class="small text-body-secondary mt-2">IVA esclusa, solo abbonamenti attivi</p>
       </section>
 
       <section aria-labelledby="tc-admin-uso">
