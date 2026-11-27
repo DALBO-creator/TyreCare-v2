@@ -4,6 +4,24 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-27 — ciclo 20261127-03 — T384 T385
+
+**Fatto**
+
+- T384: il controllo axe di `e2e/tests/accessibilita.spec.ts` copre ora `/termini`, `/cookie`,
+  `/profilo/dati`, `/profilo/password`, `/profilo/sicurezza` (cliente e titolare) e, per il titolare,
+  `/veicolo`, `/pneumatico`, `/controllo` e `/garage` (stato vuoto: Mario non ha veicoli nel seed); h1
+  copiati dal codice, id del seed di Gomme Rossi.
+- T385: nuovo `apps/web/src/pagine/sicurezza.test.ts`, 15 unit test DOM di `/profilo/sicurezza`
+  (attivazione con il QR solo `data:image/`, disattivazione, codice errato tradotto da `messaggioErrore`),
+  della richiesta del codice dopo la password e di `mostraAdminSenza2fa`.
+
+**Verifica**
+
+- Gate del supervisore: T384 e T385 al primo giro. Prova d'insieme verde (1032 unit test, JS iniziale
+  68,9 kB invariato). Prova di mutazione su `startsWith('data:image/')` rifatta dal supervisore (2 test
+  falliscono). e2e di T384 verificati dalla CI del treno.
+
 ### Sessione agenti — 2026-11-27 — ciclo 20261127-00 — T382 T383
 
 **Fatto**

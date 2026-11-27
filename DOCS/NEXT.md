@@ -20,8 +20,8 @@
 > titolare di un'altra officina in Proponi/Rifiuta), T418 (PROPOSTA/RICHIESTA passate assenti dall'elenco
 > dell'officina).
 >
-> Ultima sessione: ciclo agenti 20261127-00 (T382 T383): guide del pilota con il passo Android; registro
-> dei trattamenti e README legale senza numero fisso di tabelle.
+> Ultima sessione: ciclo agenti 20261127-03 (T384 T385): axe su profilo, 2FA, dettagli del titolare,
+> termini e cookie; unit test DOM della verifica in due passaggi.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
 > In coda (ai-org): 30 compiti `pronto` (T378–T407, pianificazione del 22 novembre); T386 mostra nel
