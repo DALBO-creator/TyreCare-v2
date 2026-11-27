@@ -14,18 +14,15 @@
 > anche in *Preview* su Vercel e controllo della CSP sull'anteprima.
 > Poi: caricare la demo per LA SANTI GOMME (`DOCS/pilota/demo-la-santi.md`) e compilare i segnaposto di
 > `DATI_FORNITORE` (`packages/shared/src/fornitore.ts`) e di `DOCS/legale/README.md`.
-> Idee in coda: `/admin/abbonamento` e `/profilo/sicurezza` nel controllo axe, riepilogo dei ricavi nel
-> pannello (`ricavoMensile` è già in `shared`).
 > Idee in coda dai test del ciclo 21: T416 (stato vuoto della ricerca officine in minuscolo), T417 (test del
 > titolare di un'altra officina in Proponi/Rifiuta), T418 (PROPOSTA/RICHIESTA passate assenti dall'elenco
 > dell'officina).
 >
-> Ultima sessione: ciclo agenti 20261127-03 (T384 T385): axe su profilo, 2FA, dettagli del titolare,
-> termini e cookie; unit test DOM della verifica in due passaggi.
+> Ultima sessione: ciclo agenti 20261127-15 (T386 T391): sezione «Abbonamenti» con il ricavo al mese nel
+> pannello admin; unit test DOM della pagina Abbonamento.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda (ai-org): 30 compiti `pronto` (T378–T407, pianificazione del 22 novembre); T386 mostra nel
-> pannello le chiavi nuove di `admin_riepilogo`.
+> In coda (ai-org): 20 compiti `pronto` (T387–T407, pianificazione del 22 novembre).
 
 **0 — Da chiedere al titolare**
 
