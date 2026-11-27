@@ -4,6 +4,23 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-28 — ciclo 20261128-00 — T393 T394
+
+**Fatto**
+
+- T393: nuovo `e2e/tests/due-fattori.spec.ts`: un cliente nuovo attiva la verifica in due passaggi dal
+  profilo, rientra (codice sbagliato: errore; codice giusto: home), la disattiva e rientra senza codice.
+- T394: nuovo `pagine/profilo.test.ts`, 11 unit test DOM del profilo: voci per cliente, titolare,
+  operatore, admin `aal1`/`aal2`, «Scarica i tuoi dati» (attesa, nome del file, errore tradotto) ed «Esci».
+
+**Verifica**
+
+- Gate del supervisore: T393 e T394 al primo giro. Prova d'insieme verde (1135 unit test, JS iniziale
+  68,9 kB invariato). Mutazioni su filtro `TITOLARE` e controllo `sessioneAal2`. e2e `due-fattori.spec.ts`
+  nella CI del treno.
+- Rilievi `nota`: in T394 il compito citava una voce «abbonamento» e una voce 2FA per l'admin `aal1` che
+  nel codice non esistono (nessun conteggio e link «Officine da attivare» senza numero).
+
 ### Sessione agenti — 2026-11-27 — ciclo 20261127-21 — T389 T390
 
 **Fatto**
