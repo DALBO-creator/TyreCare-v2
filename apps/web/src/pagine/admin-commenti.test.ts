@@ -1,10 +1,10 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type * as M_admin from '../lib/admin';
-import type * as M_router from '../lib/router';
-import type * as M_comune from './comune';
 import type { CommentoAdmin } from '../lib/admin';
 import { formattaDataOra } from '../lib/admin';
+import type * as M_router from '../lib/router';
+import type * as M_comune from './comune';
 
 const { caricaCommentiAdmin, gestisciErroreCaricamento } = vi.hoisted(() => ({
   caricaCommentiAdmin: vi.fn(),
