@@ -1,8 +1,8 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type * as M_admin from '../lib/admin';
-import type * as M_comune from './comune';
 import type * as M_router from '../lib/router';
+import type * as M_comune from './comune';
 import type { CommentoAdmin } from '../lib/admin';
 import { formattaDataOra } from '../lib/admin';
 
@@ -28,8 +28,8 @@ vi.mock('./comune', async (importOriginal) => ({
   gestisciErroreCaricamento,
 }));
 
-import { accessoAdmin } from './admin-comune';
 import { mostraAdminCommenti } from './admin-commenti';
+import { accessoAdmin } from './admin-comune';
 
 const commento = (over: Partial<CommentoAdmin> = {}): CommentoAdmin => ({
   id: '11111111-1111-4111-8111-111111111111',
