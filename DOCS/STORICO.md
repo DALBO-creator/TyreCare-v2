@@ -4,6 +4,22 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-28 — ciclo 20261128-15 — T397 T398
+
+**Fatto**
+
+- T397: all'uscita dall'account (`esci`) si tolgono dal dispositivo le bozze del Nuovo controllo
+  dell'utente (R50, idea T364). Nuovo `lib/bozza-chiave.ts` senza import, JS iniziale +144 B gzip
+  (69,0 kB). 7 unit test.
+- T398: unit test DOM (happy-dom) di «Elimina account» e «I tuoi dati»: conferma, ordine `impostaConferma`
+  → `esci`, errore tradotto dal codice `TITOLARE_DI_OFFICINA`, validazione e normalizzazione del modulo.
+  12 test.
+
+**Verifica**
+
+- Gate del supervisore: 2/2 approvati al primo giro; nessuna decisione presa al posto di Davide. Prova
+  d'insieme verde (108 file, 1211 test, JS iniziale 69,0 kB).
+
 ### Sessione agenti — 2026-11-28 — ciclo 20261128-09 — T395 T396
 
 **Fatto**
