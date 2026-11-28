@@ -1,8 +1,8 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type * as M_comune from './comune';
 import type * as M_profilo from '../lib/profilo';
 import type * as M_router from '../lib/router';
+import type * as M_comune from './comune';
 
 const {
   richiediAffiliazione,
