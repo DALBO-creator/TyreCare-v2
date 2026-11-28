@@ -1,18 +1,18 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type * as M_comune from './comune';
 import type * as M_officina from '../lib/officina';
 import type * as M_profilo from '../lib/profilo';
+import type * as M_comune from './comune';
 
 // Le icone creano SVG con `document`: qui bastano segnaposto
 vi.mock('../ui/icone', () => ({ icona: () => '<svg></svg>' }));
 
-const { caricaControllo, modificaControllo, eliminaControllo, caricaDatiUtente, vaiConConferma } =
+const { caricaControllo, caricaDatiUtente, eliminaControllo, modificaControllo, vaiConConferma } =
   vi.hoisted(() => ({
     caricaControllo: vi.fn(),
-    modificaControllo: vi.fn(),
-    eliminaControllo: vi.fn(),
     caricaDatiUtente: vi.fn(),
+    eliminaControllo: vi.fn(),
+    modificaControllo: vi.fn(),
     vaiConConferma: vi.fn(),
   }));
 
