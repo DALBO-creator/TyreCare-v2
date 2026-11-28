@@ -22,11 +22,11 @@
 > pubblico negli errori), T427 (focus dopo attiva/disattiva push), T428 (test della traduzione errori di
 > `lib/affiliazione.ts`).
 >
-> Ultima sessione: ciclo agenti 20261128-18 (T401 T402): unit test DOM di Registra officina, Report
-> pubblico e `ui/avvisi-push`.
+> Ultima sessione: ciclo agenti 20261128-21 (T400 T406): unit test DOM di Registro delle azioni ed Errori
+> dell'app, Per le officine e Commenti dell'admin.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda (ai-org): 6 compiti `pronto` (T400, T403–T407, pianificazione del 22 novembre).
+> In coda (ai-org): 4 compiti `pronto` (T403, T404, T405, T407, pianificazione del 22 novembre).
 
 **0 — Da chiedere al titolare**
 
