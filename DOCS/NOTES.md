@@ -4620,6 +4620,33 @@ dati» (attesa, nome del file, errore tradotto) ed «Esci». Finti `caricaDatiUt
 - Il numero delle officine in attesa compare solo con `aal2` e se la query riesce.
 - Il download disabilita il pulsante («Preparazione…») e mostra gli errori in `[data-errore-dati]`.
 
+## Test DOM di Account (admin) (T392)
+
+**File coinvolti:** `apps/web/src/pagine/admin-utenti.test.ts` (18 casi); nessuna modifica al codice.
+**Come funziona:** prova `segnaliUtente`, l'elenco, il filtro `non-confermati`, ricerca e stato vuoto,
+«Blocca» (dialogo, annulla, errore), «Sblocca», «Chiudi le sessioni», niente blocco né ruolo per un ADMIN.
+Finte solo le funzioni `admin_*` di `lib/admin-pannello` (`importOriginal`); `accessoAdmin` finto `true`.
+
+### Codice complesso
+- Filtro e ricerca leggono l'URL: `history.replaceState` va chiamato prima di montare la pagina.
+- `chiediConferma` è vero (`dialog.tc-dialogo`, `[data-conferma]`, `[data-annulla]`, alert nel dialogo);
+  l'errore del dialogo nasce da `traduciErrorePannello({code:'42501'})`.
+- Gli esiti `[data-ok-utente]` si leggono sulla riga ridisegnata da `ricarica()`.
+
+## Test DOM di Officine (admin) (T399)
+
+**File coinvolti:** `apps/web/src/pagine/admin-officine.test.ts` (18 casi); nessuna modifica al codice.
+**Come funziona:** prova i pulsanti per stato (IN_ATTESA, ATTIVA, SOSPESA), piano e abbonamento,
+Attiva/Sospendi/Rifiuta con conferma ed errori nel dialogo, il riquadro «Database» in tutti gli stati.
+Finte solo le 5 funzioni di `lib/admin` che leggono o scrivono; `statoDatabase` è vera e decide il testo
+del riquadro.
+
+### Codice complesso
+- `__ULTIMA_MIGRAZIONE__` e `__VERSIONE_APP__` con `vi.stubGlobal` (funziona anche con il `define` di Vite)
+  e `vi.unstubAllGlobals()` a fine test.
+- Il campo vuoto del rifiuto arriva come `''`: il `trim` lo fa `rifiutaAffiliazione`.
+- L'errore generico nel dialogo è `messaggioErrore(e)`; un `ErroreModulo` compare com'è.
+
 ## Abbonamento admin: conferma del rinnovo (T375)
 
 **File coinvolti:** `apps/web/src/pagine/admin-abbonamento.ts`,

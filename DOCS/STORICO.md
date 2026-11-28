@@ -4,6 +4,25 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-28 — ciclo 20261128-03 — T392 T399
+
+**Fatto**
+
+- T392: nuovo `pagine/admin-utenti.test.ts`, 18 unit test DOM della pagina Account (admin): `segnaliUtente`,
+  elenco, filtro `non-confermati`, ricerca e stato vuoto, «Blocca» (dialogo, annulla, errore), «Sblocca»,
+  «Chiudi le sessioni», niente blocco né ruolo per un ADMIN.
+- T399: nuovo `pagine/admin-officine.test.ts`, 18 unit test DOM della pagina Officine (admin): pulsanti per
+  stato (IN_ATTESA, ATTIVA, SOSPESA), piano e abbonamento, Attiva/Sospendi/Rifiuta con conferma ed errori
+  nel dialogo, riquadro «Database» in tutti gli stati.
+
+**Verifica**
+
+- Gate del supervisore: T392 e T399 al primo giro (T399 con un giro di revisione del coordinatore). Prova
+  d'insieme verde (1171 unit test, JS iniziale 68,9 kB invariato). Mutazioni: T392 su `!u.email_confermata`,
+  filtro `non-confermati` e ramo admin; T399 su condizione IN_ATTESA e ramo AGGIORNATO.
+- Rilievi `nota`: etichette dei ruoli scritte a mano nel test di `segnaliUtente`; `attendi()` con un solo
+  `setTimeout 0`.
+
 ### Sessione agenti — 2026-11-28 — ciclo 20261128-00 — T393 T394
 
 **Fatto**

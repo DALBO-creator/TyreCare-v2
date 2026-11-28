@@ -18,11 +18,10 @@
 > titolare di un'altra officina in Proponi/Rifiuta), T418 (PROPOSTA/RICHIESTA passate assenti dall'elenco
 > dell'officina).
 >
-> Ultima sessione: ciclo agenti 20261128-00 (T393 T394): e2e della verifica in due passaggi del
-> cliente e unit test DOM del profilo.
+> Ultima sessione: ciclo agenti 20261128-03 (T392 T399): unit test DOM delle pagine admin Account e Officine.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda (ai-org): 14 compiti `pronto` (T392, T395–T407, pianificazione del 22 novembre).
+> In coda (ai-org): 12 compiti `pronto` (T395–T398, T400–T407, pianificazione del 22 novembre).
 
 **0 — Da chiedere al titolare**
 
