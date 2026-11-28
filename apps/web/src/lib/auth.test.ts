@@ -88,4 +88,72 @@ describe('esci', () => {
     expect(removeItem).not.toHaveBeenCalled();
     expect(assign).not.toHaveBeenCalled();
   });
+
+  describe('bozze dei controlli', () => {
+    let dati: Map<string, string>;
+    const sessioneDi = (id: string) => ({ access_token: 't', user: { id } });
+
+    beforeEach(() => {
+      dati = new Map([
+        ['tc-bozza-controllo:u1:v1', '{}'],
+        ['tc-bozza-controllo:u1:v2', '{}'],
+        ['tc-bozza-controllo:u2:v1', '{}'],
+        ['tc-altro', 'x'],
+      ]);
+      vi.stubGlobal('localStorage', {
+        getItem: (k: string) => dati.get(k) ?? null,
+        removeItem: (k: string) => void dati.delete(k),
+        key: (i: number) => [...dati.keys()][i] ?? null,
+        get length() {
+          return dati.size;
+        },
+      });
+    });
+
+    afterEach(() => vi.restoreAllMocks());
+
+    it("toglie le bozze dell'utente, non quelle di un altro né le altre chiavi", async () => {
+      getSession.mockResolvedValue({ data: { session: sessioneDi('u1') } });
+      signOut.mockResolvedValue({ error: null });
+      const { esci, inizializzaAuth } = await import('./auth');
+      await inizializzaAuth(() => {});
+      await esci();
+      expect([...dati.keys()].sort()).toEqual(['tc-altro', 'tc-bozza-controllo:u2:v1']);
+    });
+
+    it('le toglie anche senza rete', async () => {
+      getSession.mockResolvedValue({ data: { session: sessioneDi('u1') } });
+      signOut.mockResolvedValue({ error: new Error('Failed to fetch') });
+      const { esci, inizializzaAuth } = await import('./auth');
+      await inizializzaAuth(() => {});
+      await esci();
+      expect([...dati.keys()].sort()).toEqual(['tc-altro', 'tc-bozza-controllo:u2:v1']);
+    });
+
+    it('senza sessione non tocca nulla', async () => {
+      getSession.mockResolvedValue({ data: { session: null } });
+      signOut.mockResolvedValue({ error: null });
+      const { esci, inizializzaAuth } = await import('./auth');
+      await inizializzaAuth(() => {});
+      await esci();
+      expect(dati.size).toBe(4);
+    });
+
+    it('con localStorage che lancia esce lo stesso', async () => {
+      getSession.mockResolvedValue({ data: { session: sessioneDi('u1') } });
+      signOut.mockResolvedValue({ error: null });
+      vi.stubGlobal('localStorage', {
+        get length(): number {
+          throw new Error('negato');
+        },
+        removeItem: () => {
+          throw new Error('negato');
+        },
+      });
+      const { esci, inizializzaAuth } = await import('./auth');
+      await inizializzaAuth(() => {});
+      await expect(esci()).resolves.toBeUndefined();
+      expect(signOut).toHaveBeenCalledWith({ scope: 'local' });
+    });
+  });
 });

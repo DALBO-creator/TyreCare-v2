@@ -7,6 +7,7 @@ import type {
   Registrazione,
 } from '@tyrecare/shared';
 import { VERSIONE_TERMINI } from '@tyrecare/shared';
+import { pulisciBozzeUtente } from './bozza-chiave';
 import { erroreDiRete } from './rete';
 import { destinazioneDopoAccesso } from './router';
 import { chiaveSessione, getSupabase } from './supabase';
@@ -86,6 +87,9 @@ export async function cambiaPassword({ attuale, password }: CambioPassword): Pro
 }
 
 export async function esci(): Promise<void> {
+  // Le bozze dei controlli sono dell'utente: via prima di uscire (vale anche senza rete)
+  const id = sessione?.user.id;
+  if (id) pulisciBozzeUtente(id);
   // `local`: esce da questo dispositivo, non da tutti
   const { error } = await getSupabase().auth.signOut({ scope: 'local' });
   if (error) {
