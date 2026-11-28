@@ -4788,3 +4788,38 @@ disattiva (T372) e `statoPush` che lancia. `lib/push` e `lib/supabase` sono fint
 - Il disabled si prova con una promessa sospesa, risolta a mano, senza fake timer.
 - L'errore si legge con `[role=alert]`, i pulsanti con `data-push`; con `{ invito: true }` il contenitore è
   vuoto per ogni stato diverso da `spente`.
+
+## Test DOM di Registro delle azioni ed Errori dell'app (T400)
+
+**File coinvolti:** `apps/web/src/pagine/admin-registro.test.ts`, `apps/web/src/pagine/admin-errori.test.ts`.
+**Come funziona:** 19 unit test DOM (9 + 10). Il registro finge `caricaRegistro` e `./admin-comune`; gli
+errori fingono `caricaDatiUtente` e `caricaErroriApp`, con `raggruppaErrori` vera. Coprono stati vuoti,
+azione, data, amministratore, ID e dettagli, conteggi «1 volta/3 volte» e «1 utente/2 utenti», percorso e
+versione mancanti, id utente abbreviato, accesso negato e errore di caricamento.
+
+### Codice complesso
+- Il registro finge `caricaRegistro` con `importOriginal`: restano veri `descriviVoce` e `dettagliVoce`.
+- Gli errori fingono `caricaDatiUtente` con `importOriginal` di `../lib/profilo`, perché `ui/layout.ts`
+  usa `lavoraInOfficina`.
+- Entrambe fingono solo `gestisciErroreCaricamento` di `./comune` (`importOriginal`), il router e
+  `lib/supabase`.
+- Le date attese usano `formattaDataOra` vera; i conteggi hanno i testi esatti dei ternari del codice
+  (non `plurale()`).
+
+## Test DOM di Per le officine e Commenti dell'admin (T406)
+
+**File coinvolti:** `apps/web/src/pagine/per-le-officine.test.ts`,
+`apps/web/src/pagine/admin-commenti.test.ts`.
+**Come funziona:** 16 unit test DOM (9 + 7; in `per-le-officine` 8 dichiarati, `it.each` sui 2 piani).
+`per-le-officine` è una pagina sincrona senza dati: si finge solo `lib/supabase`. Coprono prezzi, installazione, giorni di prova, domande frequenti, contatto della
+disdetta, link di registrazione e accesso, sito con `noopener`; per i commenti vuoti, ordine, autore
+mancante, «Da:», escape, accesso negato ed errore.
+
+### Codice complesso
+- I prezzi si leggono da `section[aria-labelledby="tc-prezzo-<piano>"]` (`it.each` sui piani) e si
+  confrontano con `PIANI`, `prezzoPiano`, `formattaEuro(PREZZO_INSTALLAZIONE)` e `GIORNI_PROVA`.
+- I titoli delle domande sono un elenco fisso nel test, perché `DOMANDE` non è esportato.
+- `admin-commenti` finge `caricaCommentiAdmin` (`importOriginal` di `lib/admin`, `formattaDataOra` vera),
+  `gestisciErroreCaricamento`, `./admin-comune` e il router.
+- L'ordine dal più recente lo fa la query (`order('created_at', { ascending: false })`): il test verifica
+  che la pagina lo mantenga.

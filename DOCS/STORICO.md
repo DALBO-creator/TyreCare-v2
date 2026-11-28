@@ -4,6 +4,27 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-28 — ciclo 20261128-21 — T400 T406
+
+**Fatto**
+
+- T400: unit test DOM di `admin-registro` (9) e `admin-errori` (10), 19 test: stati vuoti, azione, data,
+  amministratore, ID e dettagli del registro, conteggi «1 volta/3 volte» e «1 utente/2 utenti» (il codice usa
+  un ternario, non `plurale()`: il test segue il codice), percorso e versione mancanti, id utente
+  abbreviato, accesso negato (`accessoAdmin` false; ruolo non ADMIN negli errori), errore di caricamento.
+  Mutazioni provate.
+- T406: unit test DOM di `per-le-officine` (9, `it.each` sui piani) e `admin-commenti` (7), 16 test:
+  prezzi da `PIANI`/`prezzoPiano`, installazione da `PREZZO_INSTALLAZIONE`, `GIORNI_PROVA`, le 6 domande
+  frequenti in ordine, contatto della disdetta con `CONTATTO_EMAIL`, link di registrazione e accesso, sito
+  con `noopener`; commenti vuoti, ordine ricevuto (lo dà la query), autore mancante, «Da:», escape, accesso
+  negato, errore. Mutazioni provate.
+
+**Verifica**
+
+- Revisione a coppia in 2 giri per entrambi (ordine degli import); gate del supervisore 2/2 approvati al
+  primo giro (T406 con un commit di sola forma sugli import nel treno). Prova d'insieme verde (115 file,
+  1279 test, build verde). Nessuna decisione presa al posto di Davide. Idee T429 T430 accodate in ai-org.
+
 ### Sessione agenti — 2026-11-28 — ciclo 20261128-18 — T401 T402
 
 **Fatto**
