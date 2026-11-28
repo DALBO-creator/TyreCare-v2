@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { pulisciBozzeUtente } from './bozza-chiave';
 import {
   cancellaBozza,
   creaSalvataggioRitardato,
@@ -195,5 +196,46 @@ describe('pulizia delle bozze scadute', () => {
       throw new Error('negato');
     });
     expect(() => pulisciBozzeScadute(T0)).not.toThrow();
+  });
+});
+
+describe('pulizia delle bozze di un utente', () => {
+  it("toglie solo le bozze dell'utente, non quelle di u10 né le altre chiavi", () => {
+    dati.set(chiaveBozza('u1', 'v1'), '{}');
+    dati.set(chiaveBozza('u1', 'v2'), '{}');
+    dati.set(chiaveBozza('u10', 'v1'), '{}');
+    dati.set(chiaveBozza('u2', 'v1'), '{}');
+    dati.set('tc-altro', 'x');
+    pulisciBozzeUtente('u1');
+    expect([...dati.keys()].sort()).toEqual([
+      'tc-altro',
+      'tc-bozza-controllo:u10:v1',
+      'tc-bozza-controllo:u2:v1',
+    ]);
+  });
+
+  it('con id vuoto non tocca nulla', () => {
+    dati.set(chiaveBozza('u1', 'v1'), '{}');
+    dati.set('tc-bozza-controllo::x', '{}');
+    pulisciBozzeUtente('');
+    expect(dati.size).toBe(2);
+  });
+
+  it('con localStorage che lancia non lancia', () => {
+    dati.set(chiaveBozza('u1', 'v1'), '{}');
+    vi.stubGlobal('localStorage', {
+      get length(): number {
+        throw new Error('negato');
+      },
+    });
+    expect(() => pulisciBozzeUtente('u1')).not.toThrow();
+    vi.stubGlobal('localStorage', {
+      length: 1,
+      key: () => chiaveBozza('u1', 'v1'),
+      removeItem: () => {
+        throw new Error('negato');
+      },
+    });
+    expect(() => pulisciBozzeUtente('u1')).not.toThrow();
   });
 });

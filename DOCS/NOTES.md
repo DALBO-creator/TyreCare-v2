@@ -4676,6 +4676,38 @@ e la conferma al singolare e al plurale. Finti `caricaControllo`, `modificaContr
 - L'invio è un evento `submit` più un `setTimeout(0)`, perché `collegaModulo` è asincrono.
 - Gli errori dello schema sono in `#campo-<nome>-errore`, con `aria-invalid` sulle caselle del gruppo.
 
+## Bozze del controllo tolte all'uscita (T397)
+
+**File coinvolti:** `apps/web/src/lib/bozza-chiave.ts`, `apps/web/src/lib/bozza-controllo.ts`,
+`apps/web/src/lib/auth.ts`; test in `apps/web/src/lib/bozza-controllo.test.ts` (3) e
+`apps/web/src/lib/auth.test.ts` (4).
+**Come funziona:** `lib/bozza-chiave.ts` contiene `PREFISSO_BOZZA`, `chiaveBozza` e
+`pulisciBozzeUtente(utenteId)`. `esci()` legge l'id dalla sessione in memoria prima di `signOut` e chiama la
+pulizia, quindi vale anche senza rete. Così le bozze del Nuovo controllo non restano sul dispositivo
+condiviso (R50).
+
+### Codice complesso
+- `pulisciBozzeUtente` toglie le chiavi `tc-bozza-controllo:<id>:`: il `:` finale evita che `u1` tocchi
+  `u10`. Le chiavi si raccolgono prima di cancellarle (togliere durante l'iterazione sposta gli indici);
+  try/catch ovunque, perché lo storage può mancare o lanciare.
+- Il file sta separato da `bozza-controllo.ts` perché `auth.ts` è nel JS iniziale e non deve importare il
+  modulo più grande (dritta T056); `bozza-controllo.ts` ri-esporta `chiaveBozza`.
+- Limite noto: una sessione che scade da sola (SIGNED_OUT senza `esci()`) non pulisce le bozze (idea T425).
+
+## Test DOM del profilo (elimina account, I tuoi dati) (T398)
+
+**File coinvolti:** `apps/web/src/pagine/elimina-account.test.ts`,
+`apps/web/src/pagine/modifica-profilo.test.ts`; nessuna modifica al codice.
+**Come funziona:** `elimina-account.test.ts` tiene veri `lib/profilo` e il dialogo `chiediConferma`; finge
+solo `getSupabase().rpc` e `auth.signOut`, `esci`/`sessioneCorrente` e `vaiA`. `modifica-profilo.test.ts`
+finge `caricaDatiUtente`/`salvaProfilo` e l'intero modulo `./profilo` (pesante).
+
+### Codice complesso
+- `impostaConferma` è spiato con `vi.mock('./comune', importOriginal)`; l'ordine rispetto a `esci` si prova
+  con `invocationCallOrder`.
+- L'invio si prova con `form.requestSubmit()`; l'errore di campo con `aria-invalid` e `#campo-<nome>-errore`.
+- L'errore di eliminazione passa dalla vera `traduci` con il codice `TITOLARE_DI_OFFICINA`.
+
 ## Abbonamento admin: conferma del rinnovo (T375)
 
 **File coinvolti:** `apps/web/src/pagine/admin-abbonamento.ts`,
