@@ -16,12 +16,14 @@
 > `DATI_FORNITORE` (`packages/shared/src/fornitore.ts`) e di `DOCS/legale/README.md`.
 > Idee in coda dai test del ciclo 21: T416 (stato vuoto della ricerca officine in minuscolo), T417 (test del
 > titolare di un'altra officina in Proponi/Rifiuta), T418 (PROPOSTA/RICHIESTA passate assenti dall'elenco
-> dell'officina).
+> dell'officina). Dal ciclo 09: T423 (unit test di «Elimina controllo» in Modifica controllo), T424 (rilettura
+> periodica di Richieste su strada che fallisce in silenzio).
 >
-> Ultima sessione: ciclo agenti 20261128-03 (T392 T399): unit test DOM delle pagine admin Account e Officine.
+> Ultima sessione: ciclo agenti 20261128-09 (T395 T396): unit test DOM di Richieste su strada (officina),
+> Modifica controllo e Smonta pneumatici.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda (ai-org): 12 compiti `pronto` (T395–T398, T400–T407, pianificazione del 22 novembre).
+> In coda (ai-org): 10 compiti `pronto` (T397, T398, T400–T407, pianificazione del 22 novembre).
 
 **0 — Da chiedere al titolare**
 

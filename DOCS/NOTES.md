@@ -4647,6 +4647,35 @@ del riquadro.
 - Il campo vuoto del rifiuto arriva come `''`: il `trim` lo fa `rifiutaAffiliazione`.
 - L'errore generico nel dialogo è `messaggioErrore(e)`; un `ErroreModulo` compare com'è.
 
+## Test DOM di Richieste su strada (officina) (T395)
+
+**File coinvolti:** `apps/web/src/pagine/strada-officina.test.ts` (8 casi); nessuna modifica al codice.
+**Come funziona:** prova l'avviso per titolare e operatore quando l'aiuto non è offerto, gli elenchi vuoti,
+«Accetta» con dialogo (annulla, conferma, errore) e l'aggiornamento periodico che si ferma uscendo dalla
+pagina. Finte solo letture e scritture di `lib/strada-officina`, `caricaContestoOfficina`,
+`officinaOffreStrada` e il router; `eTitolare`, `traduci`, `MESSAGGI` e `INTERVALLO_AGGIORNAMENTO_MS` sono
+veri (`importOriginal`).
+
+### Codice complesso
+- `ancoraAttuale` è controllato da un oggetto hoisted: `stato.ancora = false` simula l'uscita dalla pagina.
+- Fake timer solo per `setInterval`/`clearInterval`, nel `describe` del timer, così `vi.waitFor` resta usabile.
+- L'errore di accettazione passa dalla vera `traduci` con `RICHIESTA_NON_DISPONIBILE`.
+
+## Test DOM di Modifica controllo e Smonta pneumatici (T396)
+
+**File coinvolti:** `apps/web/src/pagine/modifica-controllo.test.ts` (6 casi),
+`apps/web/src/pagine/smonta-pneumatici.test.ts` (7 casi); nessuna modifica al codice.
+**Come funziona:** Modifica prova campi riempiti, invio, «non trovato» (anche per un'altra officina e per un
+id non valido) ed errore nel riquadro; Smonta prova le caselle in ordine di posizione, l'errore dello schema
+e la conferma al singolare e al plurale. Finti `caricaControllo`, `modificaControllo`, `caricaDatiUtente`
+(`lib/profilo` vero con `importOriginal`: il layout usa `lavoraInOfficina`), `vaiConConferma`,
+`caricaSchedaDaUrl`.
+
+### Codice complesso
+- `?id=<uuid>` si imposta con `history.replaceState` prima di montare la pagina.
+- L'invio è un evento `submit` più un `setTimeout(0)`, perché `collegaModulo` è asincrono.
+- Gli errori dello schema sono in `#campo-<nome>-errore`, con `aria-invalid` sulle caselle del gruppo.
+
 ## Abbonamento admin: conferma del rinnovo (T375)
 
 **File coinvolti:** `apps/web/src/pagine/admin-abbonamento.ts`,
