@@ -6,6 +6,7 @@ import type * as M_router from '../lib/router';
 import type { OfficinaAdmin } from '../lib/admin';
 import { ETICHETTE_STATO_ABBONAMENTO } from '../lib/abbonamento';
 import { ERRORI_RIFIUTO } from '../lib/admin';
+import { messaggioErrore } from '../lib/auth';
 import { ErroreModulo } from '../lib/errori';
 import { ETICHETTE_STATO_OFFICINA } from './comune';
 
@@ -43,8 +44,6 @@ vi.mock('./admin-comune', () => ({ accessoAdmin: vi.fn().mockResolvedValue(true)
 
 import { mostraAdminOfficine } from './admin-officine';
 
-// Testo di `messaggioErrore` per un errore qualunque (non di rete, non di autenticazione)
-const MESSAGGIO_GENERICO = 'Qualcosa è andato storto. Riprova tra poco.';
 const MSG_RIFIUTO = ERRORI_RIFIUTO['OFFICINA_NON_IN_ATTESA']!;
 const ATTESA = '20261114200000';
 const ID_A = '11111111-1111-4111-8111-111111111111';
@@ -214,26 +213,32 @@ describe('admin officine: azioni', () => {
 
   it('errore di attivaOfficina: resta nel dialogo aperto, niente ricarica', async () => {
     await monta([officina({ id: ID_A })]);
-    attivaOfficina.mockRejectedValue(new Error('rete caduta'));
+    const errore = new Error('rete caduta');
+    attivaOfficina.mockRejectedValue(errore);
     caricaOfficineAdmin.mockClear();
     clic(app().querySelector('[data-attiva]'));
     clic(dialogo()!.querySelector('[data-conferma]'));
     await attendi();
 
-    expect(testo(dialogo()!.querySelector('[role="alert"]')!)).toBe(MESSAGGIO_GENERICO);
+    const atteso = messaggioErrore(errore);
+    expect(atteso).not.toBe('rete caduta');
+    expect(testo(dialogo()!.querySelector('[role="alert"]')!)).toBe(atteso);
     expect(dialogo()!.hasAttribute('open')).toBe(true);
     expect(caricaOfficineAdmin).not.toHaveBeenCalled();
   });
 
   it('errore di sospendiOfficina: resta nel dialogo aperto, niente ricarica', async () => {
     await monta([officina({ id: ID_B, stato_affiliazione: 'ATTIVA' })]);
-    sospendiOfficina.mockRejectedValue(new Error('rete caduta'));
+    const errore = new Error('rete caduta');
+    sospendiOfficina.mockRejectedValue(errore);
     caricaOfficineAdmin.mockClear();
     clic(app().querySelector('[data-sospendi]'));
     clic(dialogo()!.querySelector('[data-conferma]'));
     await attendi();
 
-    expect(testo(dialogo()!.querySelector('[role="alert"]')!)).toBe(MESSAGGIO_GENERICO);
+    const atteso = messaggioErrore(errore);
+    expect(atteso).not.toBe('rete caduta');
+    expect(testo(dialogo()!.querySelector('[role="alert"]')!)).toBe(atteso);
     expect(dialogo()!.hasAttribute('open')).toBe(true);
     expect(caricaOfficineAdmin).not.toHaveBeenCalled();
   });
