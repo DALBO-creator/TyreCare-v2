@@ -26,7 +26,7 @@
 > pubblico e `ui/avvisi-push`.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
-> In coda (ai-org): 8 compiti `pronto` (T400–T407, pianificazione del 22 novembre).
+> In coda (ai-org): 6 compiti `pronto` (T400, T403–T407, pianificazione del 22 novembre).
 
 **0 — Da chiedere al titolare**
 
