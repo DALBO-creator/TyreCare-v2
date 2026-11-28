@@ -5,9 +5,11 @@
  * senza memoria (modalità privata, spazio pieno) la pagina funziona come senza bozza.
  */
 
-export const DURATA_BOZZA_MS = 7 * 24 * 60 * 60 * 1000;
+import { PREFISSO_BOZZA } from './bozza-chiave';
 
-const PREFISSO_BOZZA = 'tc-bozza-controllo:';
+export { chiaveBozza } from './bozza-chiave';
+
+export const DURATA_BOZZA_MS = 7 * 24 * 60 * 60 * 1000;
 
 export interface BozzaControllo {
   /** Istante del salvataggio, in millisecondi dal 1970. */
@@ -16,11 +18,6 @@ export interface BozzaControllo {
   posizioni: string[];
   /** Coppie nome/valore dei campi del modulo. */
   valori: Record<string, string>;
-}
-
-/** La chiave contiene l'id utente: un altro account sullo stesso telefono non vede le note. */
-export function chiaveBozza(utenteId: string, veicoloId: string): string {
-  return `${PREFISSO_BOZZA}${utenteId}:${veicoloId}`;
 }
 
 export function salvaBozza(
