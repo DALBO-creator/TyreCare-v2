@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type * as M_admin_pannello from '../lib/admin-pannello';
-import type * as M_comune from './comune';
-import type * as M_router from '../lib/router';
-import type { VoceRegistro } from '../lib/admin-pannello';
 import { formattaDataOra } from '../lib/admin';
+import type * as M_admin_pannello from '../lib/admin-pannello';
+import type { VoceRegistro } from '../lib/admin-pannello';
 import { descriviVoce, dettagliVoce } from '../lib/admin-pannello';
+import type * as M_router from '../lib/router';
+import type * as M_comune from './comune';
 
 const { accessoAdmin, caricaRegistro, gestisciErroreCaricamento } = vi.hoisted(() => ({
   accessoAdmin: vi.fn(),

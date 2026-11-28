@@ -1,11 +1,11 @@
 // @vitest-environment happy-dom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { formattaDataOra } from '../lib/admin';
 import type * as M_admin_errori from '../lib/admin-errori';
-import type * as M_comune from './comune';
+import type { RigaErrore } from '../lib/admin-errori';
 import type * as M_profilo from '../lib/profilo';
 import type * as M_router from '../lib/router';
-import type { RigaErrore } from '../lib/admin-errori';
-import { formattaDataOra } from '../lib/admin';
+import type * as M_comune from './comune';
 
 const { caricaDatiUtente, caricaErroriApp, gestisciErroreCaricamento } = vi.hoisted(() => ({
   caricaDatiUtente: vi.fn(),
