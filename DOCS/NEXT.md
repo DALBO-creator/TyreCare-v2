@@ -18,10 +18,12 @@
 > titolare di un'altra officina in Proponi/Rifiuta), T418 (PROPOSTA/RICHIESTA passate assenti dall'elenco
 > dell'officina). Dal ciclo 09: T423 (unit test di «Elimina controllo» in Modifica controllo), T424 (rilettura
 > periodica di Richieste su strada che fallisce in silenzio). Dal ciclo 15: T425 (pulire le bozze del Nuovo
-> controllo anche quando la sessione scade da sola, senza `esci()`).
+> controllo anche quando la sessione scade da sola, senza `esci()`). Dal ciclo 18: T426 (titolo del report
+> pubblico negli errori), T427 (focus dopo attiva/disattiva push), T428 (test della traduzione errori di
+> `lib/affiliazione.ts`).
 >
-> Ultima sessione: ciclo agenti 20261128-15 (T397 T398): bozze del Nuovo controllo tolte all'uscita
-> dall'account (R50) e unit test DOM di Elimina account e I tuoi dati.
+> Ultima sessione: ciclo agenti 20261128-18 (T401 T402): unit test DOM di Registra officina, Report
+> pubblico e `ui/avvisi-push`.
 > Promemoria: quando il dominio del sito è scelto, completare l'indirizzo `[DA COMPLETARE]` nei
 > due testi del pilota (T307).
 > In coda (ai-org): 8 compiti `pronto` (T400–T407, pianificazione del 22 novembre).

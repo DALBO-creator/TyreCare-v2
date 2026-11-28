@@ -4759,3 +4759,32 @@ Sotto il blocco una nota dice «IVA esclusa, solo abbonamenti attivi». Primi un
 - `leggiRiepilogo` tiene i decimali e una voce mancante vale 0.
 - `numero(valore, etichetta, testo?)` accetta un testo già formattato, che passa comunque da `esc()`.
 - Il ricavo usa `formattaEuro`: 100 diventa «100 €», 175,5 diventa «175,50 €».
+
+## Test DOM di Registra officina e Report pubblico (T401)
+
+**File coinvolti:** `apps/web/src/pagine/registra-officina.test.ts`,
+`apps/web/src/pagine/report-pubblico.test.ts`.
+**Come funziona:** 15 unit test DOM (7 + 8). Si fingono `lib/affiliazione`, `lib/profilo`, `lib/report`, il
+router e `lib/supabase`; lo schema `RichiestaAffiliazioneSchema` è quello vero. Coprono partita IVA non
+valida, invio normalizzato, «Il tuo account lavora già in un'officina.», link del report valido, scaduto e
+revocato, errore con Riprova e stampa. Il report pubblico non ha link a `/pneumatico` né «Condividi»,
+«Correggi o elimina», «Torna al veicolo».
+
+### Codice complesso
+- `./comune` è finto con `importOriginal`: solo `vaiConConferma` e `gestisciErroreCaricamento`.
+- `htmlReport` è un `vi.fn` che avvolge il vero: si controlla la chiamata con `{ membro: false, pubblico:
+  true }` e l'HTML reale.
+- L'URL si imposta con `history.replaceState('/r?c=ABC')`; `window.print` con `vi.stubGlobal('print', …)`.
+
+## Test DOM di `ui/avvisi-push` (T402)
+
+**File coinvolti:** `apps/web/src/ui/avvisi-push.test.ts`.
+**Come funziona:** 12 unit test (18 casi con `it.each`): i 5 stati (anche `installa`), l'invito solo con
+`spente` e «fatto» dopo l'attivazione, il pulsante disattivato durante la chiamata, gli errori di attiva e
+disattiva (T372) e `statoPush` che lancia. `lib/push` e `lib/supabase` sono finti.
+
+### Codice complesso
+- I finti usano `vi.hoisted` + `importOriginal`; si chiama `collegaAvvisiPush` su un `div`.
+- Il disabled si prova con una promessa sospesa, risolta a mano, senza fake timer.
+- L'errore si legge con `[role=alert]`, i pulsanti con `data-push`; con `{ invito: true }` il contenitore è
+  vuoto per ogni stato diverso da `spente`.

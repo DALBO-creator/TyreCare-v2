@@ -4,6 +4,24 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-28 — ciclo 20261128-18 — T401 T402
+
+**Fatto**
+
+- T401: unit test DOM (happy-dom) di `registra-officina` (7) e `report-pubblico` (8), 15 test: partita IVA
+  non valida, invio normalizzato dallo schema vero, «già in officina», link valido, scaduto e revocato,
+  errore con Riprova, stampa. «Officina in attesa» del compito non esiste: si usa il testo vero «Il tuo
+  account lavora già in un'officina.».
+- T402: unit test DOM di `ui/avvisi-push`, 12 test (18 casi): i 5 stati (anche `installa`), invito solo con
+  `spente` e «fatto» dopo l'attivazione, pulsante disattivato durante la chiamata, errori di attiva e
+  disattiva (T372), `statoPush` che lancia. Mutazioni provate.
+
+**Verifica**
+
+- Gate del supervisore: 2/2 approvati al primo giro (T401 con un giro di revisione per l'ordine degli
+  import). Prova d'insieme verde (111 file, 1244 test, build verde, JS iniziale 69,0 kB invariato). Nessuna
+  decisione presa al posto di Davide. Idee T426 T427 T428 accodate in ai-org.
+
 ### Sessione agenti — 2026-11-28 — ciclo 20261128-15 — T397 T398
 
 **Fatto**
