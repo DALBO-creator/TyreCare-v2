@@ -4678,8 +4678,9 @@ e la conferma al singolare e al plurale. Finti `caricaControllo`, `modificaContr
 
 ## Bozze del controllo tolte all'uscita (T397)
 
-**File coinvolti:** `apps/web/src/lib/bozza-chiave.ts`, `apps/web/src/lib/bozza-chiave.test.ts`,
-`apps/web/src/lib/bozza-controllo.ts`, `apps/web/src/lib/auth.ts`.
+**File coinvolti:** `apps/web/src/lib/bozza-chiave.ts`, `apps/web/src/lib/bozza-controllo.ts`,
+`apps/web/src/lib/auth.ts`; test in `apps/web/src/lib/bozza-controllo.test.ts` (3) e
+`apps/web/src/lib/auth.test.ts` (4).
 **Come funziona:** `lib/bozza-chiave.ts` contiene `PREFISSO_BOZZA`, `chiaveBozza` e
 `pulisciBozzeUtente(utenteId)`. `esci()` legge l'id dalla sessione in memoria prima di `signOut` e chiama la
 pulizia, quindi vale anche senza rete. Così le bozze del Nuovo controllo non restano sul dispositivo
