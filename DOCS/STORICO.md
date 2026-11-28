@@ -4,6 +4,26 @@
 > cima**. Non serve leggerlo all'avvio: cosa fare dopo è in [`NEXT.md`](NEXT.md) → "Prossima sessione".
 > Le sessioni fino alla 19 sono state spostate qui da `NEXT.md` il 2026-10-20 senza modifiche.
 
+### Sessione agenti — 2026-11-28 — ciclo 20261128-09 — T395 T396
+
+**Fatto**
+
+- T395: nuovo `pagine/strada-officina.test.ts`, 8 unit test DOM di «Richieste su strada» (officina): avviso
+  titolare/operatore quando l'aiuto non è offerto, elenchi vuoti, Accetta con dialogo (annulla, conferma,
+  errore), aggiornamento periodico che si ferma uscendo.
+- T396: nuovi `pagine/modifica-controllo.test.ts` (6 test: campi riempiti, invio, «non trovato» anche per
+  un'altra officina e un id non valido, errore nel riquadro) e `pagine/smonta-pneumatici.test.ts` (7 test:
+  caselle in ordine di posizione, errore dello schema, conferma al singolare e al plurale).
+
+**Verifica**
+
+- Gate del supervisore: T395 e T396 al primo giro (T396 con un giro di revisione per l'ordine degli import).
+  Prova d'insieme verde (1192 unit test, JS iniziale 68,9 kB invariato). Mutazioni: T395 su guardia
+  `ancoraAttuale` del timer, testo del titolare e ramo `offre` di `leggi()`; T396 su controllo dell'officina
+  in Modifica e singolare/plurale in Smonta. Rilievi `nota`: asserzione su classi Bootstrap in T395 (meglio il
+  testo dell'elenco vuoto), `vi.mock` e chiavi del mock non in ordine alfabetico, ramo `ErroreModulo` di
+  Modifica controllo scoperto, test «scheda non trovata» di Smonta che prova solo il `return` iniziale.
+
 ### Sessione agenti — 2026-11-28 — ciclo 20261128-03 — T392 T399
 
 **Fatto**
